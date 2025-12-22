@@ -1,0 +1,9 @@
+services:
+  postgres:
+    image: 'postgres:latest'
+    environment:
+      - 'POSTGRES_DB=carbook'
+      - 'POSTGRES_PASSWORD=12345'
+      - 'POSTGRES_USER=myuser'
+    ports:
+      - '61094:5432'

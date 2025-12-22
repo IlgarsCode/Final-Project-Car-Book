@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html
+        xmlns:th="http://www.thymeleaf.org"
+        xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+        layout:decorate="~{layout}">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${about.pageTitle}">About</title>
+</head>
+<body>
+
+<div layout:fragment="content">
+
+    <!-- ===== HERO / BANNER (DB-DƏN GƏLİR) ===== -->
+    <section class="hero-wrap hero-wrap-2 js-fullheight"
+             th:style="'background-image: url(' + ${about.bannerImageUrl} + ');'">
+
+        <div class="overlay"></div>
+
+        <div class="container">
+            <div class="row no-gutters slider-text js-fullheight align-items-end justify-content-start">
+                <div class="col-md-9 ftco-animate pb-5">
+
+                    <p class="breadcrumbs">
+                        <span class="mr-2">
+                            <a th:href="@{/}">
+                                Home <i class="ion-ios-arrow-forward"></i>
+                            </a>
+                        </span>
+                        <span th:text="${about.pageTitle}">About us</span>
+                    </p>
+
+                    <h1 class="mb-3 bread" th:text="${about.pageTitle}">
+                        About Us
+                    </h1>
+
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== ABOUT CONTENT ===== -->
+    <section class="ftco-section ftco-about">
+        <div class="container">
+            <div class="row no-gutters align-items-center">
+
+                <!-- IMAGE (TEMPLATE-DƏKİ KİMİ ÖLÇÜ) -->
+                <div class="col-md-6 p-md-5 img img-2 d-flex align-items-stretch"
+                     th:style="
+                        'background-image: url(' + ${about.imageUrl} + ');
+                         min-height: 600px;
+                         background-size: cover;
+                         background-position: center;
+                         background-repeat: no-repeat;'">
+                </div>
+
+                <!-- TEXT -->
+                <div class="col-md-6 wrap-about ftco-animate">
+                    <div class="heading-section heading-section-white pl-md-5">
+
+                        <span class="subheading" th:text="${about.pageTitle}">
+                            About us
+                        </span>
+
+                        <h2 class="mb-4" th:text="${about.sectionTitle}">
+                            Welcome to Carbook
+                        </h2>
+
+                        <p th:utext="${about.description}">
+                            About description
+                        </p>
+
+                        <p>
+                            <a th:href="@{/car}" class="btn btn-primary py-3 px-4">
+                                Search Vehicle
+                            </a>
+                        </p>
+
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+</div>
+
+</body>
+</html>
