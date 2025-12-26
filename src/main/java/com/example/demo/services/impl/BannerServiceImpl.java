@@ -1,6 +1,5 @@
 package com.example.demo.services.impl;
 
-
 import com.example.demo.enums.BannerType;
 import com.example.demo.model.Banner;
 import com.example.demo.repository.BannerRepository;
@@ -15,22 +14,18 @@ public class BannerServiceImpl implements BannerService {
     private final BannerRepository bannerRepository;
 
     @Override
-    public Banner getActiveBanner(BannerType bannerType) {
-        return null;
-    }
+    public Banner getBanner(BannerType bannerType) {
 
-    @Override
-    public Banner getHomeBanner() {
-        return bannerRepository.findByBannerTypeAndIsActiveTrue(BannerType.HOME);
-    }
+        Banner banner = bannerRepository
+                .findFirstByBannerTypeAndIsActiveTrueOrderByIdDesc(bannerType)
+                .orElse(null);
 
-    @Override
-    public Banner getAboutBanner() {
-        return null;
-    }
+        if (banner == null) {
+            banner = bannerRepository
+                    .findFirstByBannerTypeAndIsActiveTrueOrderByIdDesc(BannerType.DEFAULT)
+                    .orElse(null);
+        }
 
-    @Override
-    public Banner getDefaultBanner() {
-        return bannerRepository.findByBannerTypeAndIsActiveTrue(BannerType.DEFAULT);
+        return banner;
     }
 }

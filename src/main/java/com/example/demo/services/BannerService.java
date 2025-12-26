@@ -6,11 +6,7 @@ import com.example.demo.model.Banner;
 
 public interface BannerService {
 
-    Banner getActiveBanner(BannerType bannerType);
+    Banner getBanner(BannerType bannerType);
 
-    Object getHomeBanner();
-
-    Banner getAboutBanner();
-
-    Banner getDefaultBanner();
 }
+

@@ -1,5 +1,6 @@
 package com.example.demo.controller.web;
 
+import com.example.demo.enums.BannerType;
 import com.example.demo.model.About;
 import com.example.demo.services.AboutService;
 import com.example.demo.services.BannerService;
@@ -18,7 +19,8 @@ public class HomeController {
     @GetMapping("/")
     public String index(Model model) {
 
-        model.addAttribute("banner", bannerService.getHomeBanner());
+        model.addAttribute("banner",
+                bannerService.getBanner(BannerType.HOME));
 
         About about = aboutService.getActiveAbout();
         if (about == null) {
@@ -39,10 +41,10 @@ public class HomeController {
         return "car";
     }
 
-    @GetMapping("/contact")
-    public String contact() {
-        return "contact";
-    }
+//    @GetMapping("/contact")
+//    public String contact() {
+//        return "contact";
+//    }
 
     @GetMapping("/pricing")
     public String pricing() {

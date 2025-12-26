@@ -1,5 +1,6 @@
 package com.example.demo.controller.web;
 
+import com.example.demo.enums.BannerType;
 import com.example.demo.model.About;
 import com.example.demo.model.Banner;
 import com.example.demo.services.AboutService;
@@ -24,10 +25,11 @@ public class AboutController {
             about = new About();
         }
 
-        Banner banner = bannerService.getAboutBanner();
+        model.addAttribute("banner",
+                bannerService.getBanner(BannerType.ABOUT));
 
         model.addAttribute("about", about);
-        model.addAttribute("banner", banner);
+
 
         return "about";
     }
