@@ -4,5 +4,6 @@ public enum BannerType {
     HOME,
     DEFAULT,
     ABOUT,
+    SERVICE,
     CONTACT
 }

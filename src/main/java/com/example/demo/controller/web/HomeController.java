@@ -31,10 +31,10 @@ public class HomeController {
         return "index";
     }
 
-    @GetMapping("/services")
-    public String services() {
-        return "services";
-    }
+//    @GetMapping("/services")
+//    public String services() {
+//        return "services";
+//    }
 
     @GetMapping("/car")
     public String car() {
