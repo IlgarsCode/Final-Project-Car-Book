@@ -4,7 +4,7 @@ import com.example.demo.dto.contact.ContactDto;
 import com.example.demo.enums.BannerType;
 import com.example.demo.services.BannerService;
 import com.example.demo.services.ContactInfoService;
-import com.example.demo.services.ContactService;
+import com.example.demo.services.ContactMessageService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 public class ContactController {
 
     private final BannerService bannerService;
-    private final ContactService contactService;
+    private final ContactMessageService contactMessageService;
     private final ContactInfoService contactInfoService;
 
     @GetMapping("/contact")
@@ -37,7 +37,7 @@ public class ContactController {
     @PostMapping("/contact")
     public String submitContact(@ModelAttribute("contact") ContactDto contactDto) {
 
-        contactService.saveMessage(contactDto);
+        contactMessageService.saveAndSend(contactDto);
 
         return "redirect:/contact?success";
     }
