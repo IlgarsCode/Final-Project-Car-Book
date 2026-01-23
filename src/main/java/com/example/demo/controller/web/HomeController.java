@@ -18,24 +18,20 @@ public class HomeController {
     private final AboutService aboutService;
     private final ServicePageService servicePageService;
 
-    // ================= HOME =================
     @GetMapping("/")
     public String index(Model model) {
 
-        // 🔹 Home banner
         model.addAttribute(
                 "banner",
                 bannerService.getBanner(BannerType.HOME)
         );
 
-        // 🔹 About section
         About about = aboutService.getActiveAbout();
         if (about == null) {
             about = new About();
         }
         model.addAttribute("about", about);
 
-        // 🔹 Services (ANA SƏHİFƏ ÜÇÜN)
         model.addAttribute(
                 "services",
                 servicePageService.getActiveServices()
@@ -44,7 +40,6 @@ public class HomeController {
         return "index";
     }
 
-    // ================= STATIC PAGES =================
     @GetMapping("/car")
     public String car() {
         return "car";
