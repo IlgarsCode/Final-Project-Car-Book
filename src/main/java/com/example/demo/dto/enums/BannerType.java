@@ -6,5 +6,6 @@ public enum BannerType {
     ABOUT,
     SERVICE,
     CONTACT,
-    BLOG
+    BLOG,
+    CAR
 }

@@ -40,10 +40,10 @@ public class HomeController {
         return "index";
     }
 
-    @GetMapping("/car")
-    public String car() {
-        return "car";
-    }
+//    @GetMapping("/car")
+//    public String car() {
+//        return "car";
+//    }
 
     @GetMapping("/pricing")
     public String pricing() {
