@@ -45,7 +45,6 @@
         </div>
     </section>
 
-    <!-- CAR LIST -->
     <section class="ftco-section bg-light">
         <div class="container">
             <div class="row">
@@ -61,29 +60,43 @@
 
                         <div class="text">
 
-                            <!-- CAR TITLE (YENİ ƏLAVƏ EDİLDİ) -->
-                            <span class="subheading d-block mb-1"
-                                  th:text="${car.title}">
-                                Car title
+                            <!-- BRAND (BİRİNCİ - BOLD) -->
+                            <span class="d-block mb-1"
+                                  style="font-weight:700; color:#000;"
+                                  th:text="${car.brand}">
+                            Mercedes-Benz
+                        </span>
+
+                            <!-- TITLE + PRICE (EYNİ SƏTRDƏ) -->
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+
+                                <!-- TITLE (BOLD DEYİL) -->
+                                <span style="color:#000; font-weight:400;"
+                                      th:text="${car.title}">
+                                GL 550
                             </span>
 
-                            <!-- CAR NAME -->
-                            <h2 class="mb-0">
+                                <!-- PRICE -->
+                                <span>
+                                <span style="color:#4f86f7; font-weight:600;">
+                                    $<span th:text="${car.pricePerDay}">500</span>
+                                </span>
+                                <span style="color:#000; font-weight:400;">
+                                    /day
+                                </span>
+                            </span>
+
+                            </div>
+
+                            <!-- NAME (ƏSAS AD) -->
+                            <h2 class="mb-3">
                                 <a th:href="@{/car/{id}(id=${car.id})}"
                                    th:text="${car.name}">
-                                    Car name
+                                    Mercedes GL 550
                                 </a>
                             </h2>
 
-                            <div class="d-flex mb-3">
-                                <span class="cat" th:text="${car.brand}"></span>
-
-                                <p class="price ml-auto">
-                                    $<span th:text="${car.pricePerDay}"></span>
-                                    <span>/day</span>
-                                </p>
-                            </div>
-
+                            <!-- BUTTONS -->
                             <p class="d-flex mb-0 d-block">
                                 <a href="#" class="btn btn-primary py-2 mr-1">Book now</a>
 
@@ -100,7 +113,6 @@
             </div>
         </div>
     </section>
-
 </div>
 
 </body>
