@@ -1,8 +1,7 @@
 package com.example.demo.controller.web;
 
-import com.example.demo.enums.BannerType;
+import com.example.demo.dto.enums.BannerType;
 import com.example.demo.model.About;
-import com.example.demo.model.Banner;
 import com.example.demo.services.AboutService;
 import com.example.demo.services.BannerService;
 import lombok.RequiredArgsConstructor;

@@ -1,6 +1,6 @@
 package com.example.demo.controller.web;
 
-import com.example.demo.enums.BannerType;
+import com.example.demo.dto.enums.BannerType;
 import com.example.demo.services.BannerService;
 import com.example.demo.services.ServicePageService;
 import lombok.RequiredArgsConstructor;
@@ -18,13 +18,11 @@ public class ServiceController {
     @GetMapping("/services")
     public String services(Model model) {
 
-        // 🔹 Banner (SERVICE → yoxdursa DEFAULT)
         model.addAttribute(
                 "banner",
                 bannerService.getBanner(BannerType.SERVICE)
         );
 
-        // 🔹 Services list
         model.addAttribute(
                 "services",
                 servicePageService.getActiveServices()

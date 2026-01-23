@@ -1,9 +1,10 @@
 package com.example.demo.controller.web;
 
-import com.example.demo.enums.BannerType;
+import com.example.demo.dto.enums.BannerType;
 import com.example.demo.model.About;
 import com.example.demo.services.AboutService;
 import com.example.demo.services.BannerService;
+import com.example.demo.services.ServicePageService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -15,36 +16,39 @@ public class HomeController {
 
     private final BannerService bannerService;
     private final AboutService aboutService;
+    private final ServicePageService servicePageService;
 
+    // ================= HOME =================
     @GetMapping("/")
     public String index(Model model) {
 
-        model.addAttribute("banner",
-                bannerService.getBanner(BannerType.HOME));
+        // 🔹 Home banner
+        model.addAttribute(
+                "banner",
+                bannerService.getBanner(BannerType.HOME)
+        );
 
+        // 🔹 About section
         About about = aboutService.getActiveAbout();
         if (about == null) {
             about = new About();
         }
         model.addAttribute("about", about);
 
+        // 🔹 Services (ANA SƏHİFƏ ÜÇÜN)
+        model.addAttribute(
+                "services",
+                servicePageService.getActiveServices()
+        );
+
         return "index";
     }
 
-//    @GetMapping("/services")
-//    public String services() {
-//        return "services";
-//    }
-
+    // ================= STATIC PAGES =================
     @GetMapping("/car")
     public String car() {
         return "car";
     }
-
-//    @GetMapping("/contact")
-//    public String contact() {
-//        return "contact";
-//    }
 
     @GetMapping("/pricing")
     public String pricing() {
@@ -56,12 +60,12 @@ public class HomeController {
         return "blog";
     }
 
-    @GetMapping("/car-single.html")
+    @GetMapping("/car-single")
     public String carSingle() {
         return "car-single";
     }
 
-    @GetMapping("/blog-single.html")
+    @GetMapping("/blog-single")
     public String blogSingle() {
         return "blog-single";
     }

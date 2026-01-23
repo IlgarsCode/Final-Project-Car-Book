@@ -1,6 +1,6 @@
 package com.example.demo.repository;
 
-import com.example.demo.enums.BannerType;
+import com.example.demo.dto.enums.BannerType;
 import com.example.demo.model.Banner;
 import org.springframework.data.jpa.repository.JpaRepository;
 

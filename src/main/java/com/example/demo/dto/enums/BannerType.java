@@ -1,9 +1,10 @@
-package com.example.demo.enums;
+package com.example.demo.dto.enums;
 
 public enum BannerType {
     HOME,
     DEFAULT,
     ABOUT,
     SERVICE,
-    CONTACT
+    CONTACT,
+    BLOG
 }

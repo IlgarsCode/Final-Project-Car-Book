@@ -11,7 +11,6 @@
 
 <div layout:fragment="content">
 
-    <!-- ===== HERO / BANNER ===== -->
     <section class="hero-wrap hero-wrap-2 js-fullheight"
              th:if="${banner != null}"
              th:style="'background-image: url(' + ${banner.photoUrl} + ');'">
@@ -36,7 +35,6 @@
         </div>
     </section>
 
-    <!-- ===== SERVICES LIST ===== -->
     <section class="ftco-section">
         <div class="container">
 
@@ -75,7 +73,6 @@
         </div>
     </section>
 
-    <!-- ===== INTRO SECTION (STATIK) ===== -->
     <section class="ftco-section ftco-intro"
              th:style="'background-image: url(' + ${banner.photoUrl} + ');'">
         <div class="overlay"></div>

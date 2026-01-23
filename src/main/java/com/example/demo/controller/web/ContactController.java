@@ -1,7 +1,7 @@
 package com.example.demo.controller.web;
 
 import com.example.demo.dto.contact.ContactDto;
-import com.example.demo.enums.BannerType;
+import com.example.demo.dto.enums.BannerType;
 import com.example.demo.services.BannerService;
 import com.example.demo.services.ContactInfoService;
 import com.example.demo.services.ContactMessageService;

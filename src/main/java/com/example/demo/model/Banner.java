@@ -1,6 +1,6 @@
 package com.example.demo.model;
 
-import com.example.demo.enums.BannerType;
+import com.example.demo.dto.enums.BannerType;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;

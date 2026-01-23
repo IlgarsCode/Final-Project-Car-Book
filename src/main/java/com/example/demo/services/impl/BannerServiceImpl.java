@@ -1,6 +1,6 @@
 package com.example.demo.services.impl;
 
-import com.example.demo.enums.BannerType;
+import com.example.demo.dto.enums.BannerType;
 import com.example.demo.model.Banner;
 import com.example.demo.repository.BannerRepository;
 import com.example.demo.services.BannerService;

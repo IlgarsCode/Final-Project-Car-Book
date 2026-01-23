@@ -19,7 +19,6 @@ public class ServiceEntity {
     @Column(length = 1000)
     private String description;
 
-    // flaticon-route və s.
     private String icon;
 
     private Boolean isActive = true;
