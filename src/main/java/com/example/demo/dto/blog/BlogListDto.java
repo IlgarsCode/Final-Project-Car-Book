@@ -1,31 +1,17 @@
-package com.example.demo.model;
+package com.example.demo.dto.blog;
 
-import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDate;
 
-@Entity
-@Table(name = "blogs")
 @Getter
 @Setter
-public class Blog {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+public class BlogListDto {
     private Long id;
-
     private String title;
-
-    @Column(columnDefinition = "TEXT")
     private String shortDescription;
-
     private String imageUrl;
-
     private String author;
-
     private LocalDate createdAt;
-
-    private Boolean isActive;
 }

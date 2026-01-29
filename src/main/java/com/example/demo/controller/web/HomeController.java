@@ -2,10 +2,7 @@ package com.example.demo.controller.web;
 
 import com.example.demo.dto.enums.BannerType;
 import com.example.demo.model.About;
-import com.example.demo.services.AboutService;
-import com.example.demo.services.BannerService;
-import com.example.demo.services.ServicePageService;
-import com.example.demo.services.TestimonialService;
+import com.example.demo.services.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -19,6 +16,7 @@ public class HomeController {
     private final AboutService aboutService;
     private final ServicePageService servicePageService;
     private final TestimonialService testimonialService;
+    private final BlogService blogService;
 
     @GetMapping("/")
     public String index(Model model) {
@@ -42,24 +40,19 @@ public class HomeController {
                 "testimonials",
                 testimonialService.getActiveTestimonials()
         );
+        model.addAttribute(
+                "blogs",
+                blogService.getActiveBlogs()
+        );
 
         return "index";
     }
-
-//    @GetMapping("/car")
-//    public String car() {
-//        return "car";
-//    }
 
     @GetMapping("/pricing")
     public String pricing() {
         return "pricing";
     }
 
-    @GetMapping("/blog")
-    public String blog() {
-        return "blog";
-    }
 
     @GetMapping("/car-single")
     public String carSingle() {
