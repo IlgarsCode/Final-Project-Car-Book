@@ -5,6 +5,7 @@ import com.example.demo.model.About;
 import com.example.demo.services.AboutService;
 import com.example.demo.services.BannerService;
 import com.example.demo.services.ServicePageService;
+import com.example.demo.services.TestimonialService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -17,6 +18,7 @@ public class HomeController {
     private final BannerService bannerService;
     private final AboutService aboutService;
     private final ServicePageService servicePageService;
+    private final TestimonialService testimonialService;
 
     @GetMapping("/")
     public String index(Model model) {
@@ -35,6 +37,10 @@ public class HomeController {
         model.addAttribute(
                 "services",
                 servicePageService.getActiveServices()
+        );
+        model.addAttribute(
+                "testimonials",
+                testimonialService.getActiveTestimonials()
         );
 
         return "index";
