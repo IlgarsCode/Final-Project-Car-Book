@@ -1,9 +1,11 @@
 package com.example.demo.services;
 
 import com.example.demo.dto.blog.BlogListDto;
-
-import java.util.List;
+import org.springframework.data.domain.Page;
 
 public interface BlogService {
-    List<BlogListDto> getActiveBlogs();
+
+    Page<BlogListDto> getActiveBlogs(int page, int size);
+
+    Object getActiveBlogs();
 }

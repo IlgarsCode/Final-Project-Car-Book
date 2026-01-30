@@ -66,6 +66,7 @@
                                      th:text="${blog.author}">
                                     Ilgar Oruc
                                 </div>
+                                <div><a href="#" class="meta-chat"><span class="icon-chat"></span> 3</a></div>
                             </div>
 
 
@@ -94,17 +95,39 @@
 
             </div>
 
-            <div class="row mt-5">
+            <!-- ===== PAGINATION (DYNAMIC) ===== -->
+            <div class="row mt-5" th:if="${totalPages != null and totalPages > 1}">
                 <div class="col text-center">
                     <div class="block-27">
                         <ul>
-                            <li><a href="#">&lt;</a></li>
-                            <li class="active"><span>1</span></li>
-                            <li><a href="#">2</a></li>
-                            <li><a href="#">3</a></li>
-                            <li><a href="#">4</a></li>
-                            <li><a href="#">5</a></li>
-                            <li><a href="#">&gt;</a></li>
+
+                            <!-- Prev -->
+                            <li th:classappend="${currentPage == 1} ? 'disabled'">
+                                <a th:if="${currentPage > 1}"
+                                   th:href="@{/blog(page=${currentPage - 1})}">&lt;</a>
+
+                                <span th:if="${currentPage == 1}">&lt;</span>
+                            </li>
+
+                            <!-- Page numbers -->
+                            <li th:each="i : ${#numbers.sequence(1, totalPages)}"
+                                th:classappend="${i == currentPage} ? 'active'">
+                                <a th:if="${i != currentPage}"
+                                   th:href="@{/blog(page=${i})}"
+                                   th:text="${i}">1</a>
+
+                                <span th:if="${i == currentPage}"
+                                      th:text="${i}">1</span>
+                            </li>
+
+                            <!-- Next -->
+                            <li th:classappend="${currentPage == totalPages} ? 'disabled'">
+                                <a th:if="${currentPage < totalPages}"
+                                   th:href="@{/blog(page=${currentPage + 1})}">&gt;</a>
+
+                                <span th:if="${currentPage == totalPages}">&gt;</span>
+                            </li>
+
                         </ul>
                     </div>
                 </div>
