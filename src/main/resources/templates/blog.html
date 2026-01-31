@@ -57,6 +57,7 @@
                         <div class="text px-md-5 pt-4">
 
                             <div class="meta mb-3">
+
                                 <div style="color:#007bff;"
                                      th:text="${#temporals.format(blog.createdAt, 'dd MMMM yyyy')}">
                                     29 Yanvar 2026
@@ -65,9 +66,15 @@
                                 <div style="color:#007bff;"
                                      th:text="${blog.author}">
                                     Ilgar Oruc
-
                                 </div>
-                                <div><a href="#" class="meta-chat"><span class="icon-chat"></span> 3</a></div>
+
+                                <div>
+                                    <a th:href="@{'/blog/' + ${blog.id} + '#comments'}" class="meta-chat">
+                                        <span class="icon-chat"></span>
+                                        <span th:text="${blog.commentCount}">0</span>
+                                    </a>
+                                </div>
+
                             </div>
 
 
