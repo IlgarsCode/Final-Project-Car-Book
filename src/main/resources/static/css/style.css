@@ -9946,3 +9946,15 @@ textarea.form-control {
   100% {
     stroke-dasharray: 89, 200;
     stroke-dashoffset: -136px; } }
+
+.plain-features li {
+  white-space: normal;
+  word-break: normal;
+  overflow-wrap: normal;
+  line-height: 1.8;
+  list-style: none;
+  margin-bottom: 8px;
+  color: #6c757d;
+  font-size: 16px;
+}
+

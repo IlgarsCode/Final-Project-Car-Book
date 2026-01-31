@@ -10,6 +10,7 @@ public enum BannerType {
     CAR,
     TESTIMONIAL,
     BLOGS,
-    BLOG_SINGLE
+    BLOG_SINGLE,
+    CAR_SINGLE
 
 }
