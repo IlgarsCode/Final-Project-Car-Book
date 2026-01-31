@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Getter
 @Setter
@@ -20,4 +21,6 @@ public class BlogDetailDto {
 
     private String authorPhotoUrl;
     private String authorBio;
+    private List<BlogCommentDto> comments;
+    private long commentCount;
 }

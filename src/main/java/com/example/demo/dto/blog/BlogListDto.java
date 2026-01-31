@@ -14,4 +14,5 @@ public class BlogListDto {
     private String imageUrl;
     private String author;
     private LocalDate createdAt;
+    private long commentCount;
 }

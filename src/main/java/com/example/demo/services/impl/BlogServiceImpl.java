@@ -1,7 +1,9 @@
 package com.example.demo.services.impl;
 
+import com.example.demo.dto.blog.BlogCommentDto;
 import com.example.demo.dto.blog.BlogDetailDto;
 import com.example.demo.dto.blog.BlogListDto;
+import com.example.demo.repository.BlogCommentRepository;
 import com.example.demo.repository.BlogRepository;
 import com.example.demo.services.BlogService;
 import lombok.RequiredArgsConstructor;
@@ -16,6 +18,7 @@ import org.springframework.web.server.ResponseStatusException;
 public class BlogServiceImpl implements BlogService {
 
     private final BlogRepository blogRepository;
+    private final BlogCommentRepository blogCommentRepository;
 
     @Override
     public Page<BlogListDto> getActiveBlogs(int page, int size) {
@@ -30,6 +33,11 @@ public class BlogServiceImpl implements BlogService {
                     dto.setImageUrl(blog.getImageUrl());
                     dto.setAuthor(blog.getAuthor());
                     dto.setCreatedAt(blog.getCreatedAt());
+
+                    dto.setCommentCount(
+                            blogCommentRepository
+                                    .countByBlog_IdAndIsActiveTrue(blog.getId())
+                    );
                     return dto;
                 });
     }
@@ -54,11 +62,29 @@ public class BlogServiceImpl implements BlogService {
         dto.setAuthorPhotoUrl(blog.getAuthorPhotoUrl());
         dto.setAuthorBio(blog.getAuthorBio());
 
+        // ===== COMMENTS =====
+        var comments = blogCommentRepository
+                .findAllByBlog_IdAndIsActiveTrueOrderByCreatedAtDesc(id)
+                .stream()
+                .map(c -> {
+                    BlogCommentDto cdto = new BlogCommentDto();
+                    cdto.setId(c.getId());
+                    cdto.setFullName(c.getFullName());
+                    cdto.setMessage(c.getMessage());
+                    cdto.setCreatedAt(c.getCreatedAt());
+                    return cdto;
+                })
+                .toList();
+
+        dto.setComments(comments);
+        dto.setCommentCount(blogCommentRepository.countByBlog_IdAndIsActiveTrue(id));
+
         return dto;
     }
 
     @Override
     public Object getActiveBlogs() {
+        // sən bunu artıq istifadə etmirsən, amma interface-də qalıb deyə boş saxladım
         return null;
     }
 }
