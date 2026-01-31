@@ -6,4 +6,4 @@ services:
       - 'POSTGRES_PASSWORD=12345'
       - 'POSTGRES_USER=myuser'
     ports:
-      - '61094:5432'
+      - '60501:5432'

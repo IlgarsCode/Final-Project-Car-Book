@@ -21,9 +21,17 @@ public class Blog {
     @Column(columnDefinition = "TEXT")
     private String shortDescription;
 
+    @Column(columnDefinition = "TEXT")
+    private String content;
+
     private String imageUrl;
 
     private String author;
+
+    private String authorPhotoUrl;
+
+    @Column(columnDefinition = "TEXT")
+    private String authorBio;
 
     private LocalDate createdAt;
 

@@ -1,12 +1,15 @@
 package com.example.demo.services.impl;
 
+import com.example.demo.dto.blog.BlogDetailDto;
 import com.example.demo.dto.blog.BlogListDto;
 import com.example.demo.repository.BlogRepository;
 import com.example.demo.services.BlogService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 @Service
 @RequiredArgsConstructor
@@ -16,7 +19,6 @@ public class BlogServiceImpl implements BlogService {
 
     @Override
     public Page<BlogListDto> getActiveBlogs(int page, int size) {
-
         var pageable = PageRequest.of(page, size);
 
         return blogRepository.findAllByIsActiveTrueOrderByCreatedAtDesc(pageable)
@@ -30,6 +32,29 @@ public class BlogServiceImpl implements BlogService {
                     dto.setCreatedAt(blog.getCreatedAt());
                     return dto;
                 });
+    }
+
+    @Override
+    public BlogDetailDto getBlogDetail(Long id) {
+        var blog = blogRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Blog tapılmadı"));
+
+        if (Boolean.FALSE.equals(blog.getIsActive())) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Blog aktiv deyil");
+        }
+
+        BlogDetailDto dto = new BlogDetailDto();
+        dto.setId(blog.getId());
+        dto.setTitle(blog.getTitle());
+        dto.setAuthor(blog.getAuthor());
+        dto.setCreatedAt(blog.getCreatedAt());
+        dto.setImageUrl(blog.getImageUrl());
+        dto.setContent(blog.getContent());
+
+        dto.setAuthorPhotoUrl(blog.getAuthorPhotoUrl());
+        dto.setAuthorBio(blog.getAuthorBio());
+
+        return dto;
     }
 
     @Override
