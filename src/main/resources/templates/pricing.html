@@ -5,26 +5,72 @@
         layout:decorate="~{layout}">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>Pricing</title>
 </head>
 <body>
 <div layout:fragment="content">
-    <section class="hero-wrap hero-wrap-2 js-fullheight" style="background-image: url('images/bg_3.jpg');" data-stellar-background-ratio="0.5">
+
+    <section class="hero-wrap hero-wrap-2 js-fullheight"
+             th:if="${banner != null}"
+             th:style="'background-image: url(' + ${banner.photoUrl} + ');'"
+             data-stellar-background-ratio="0.5">
         <div class="overlay"></div>
         <div class="container">
             <div class="row no-gutters slider-text js-fullheight align-items-end justify-content-start">
                 <div class="col-md-9 ftco-animate pb-5">
-                    <p class="breadcrumbs"><span class="mr-2"><a href="index.html">Home <i class="ion-ios-arrow-forward"></i></a></span> <span>Pricing <i class="ion-ios-arrow-forward"></i></span></p>
+                    <p class="breadcrumbs">
+                    <span class="mr-2">
+                        <a th:href="@{/}">Home <i class="ion-ios-arrow-forward"></i></a>
+                    </span>
+                        <span>Pricing <i class="ion-ios-arrow-forward"></i></span>
+                    </p>
+
+                    <h1 class="mb-3 bread"
+                        th:text="${banner.title != null ? banner.title : 'Pricing'}">
+                        Pricing
+                    </h1>
+
+                    <p th:if="${banner.description != null}"
+                       th:text="${banner.description}">
+                    </p>
+
+                    <a th:if="${banner.buttonText != null}"
+                       th:href="${banner.buttonUrl}"
+                       class="btn btn-primary mt-3"
+                       th:text="${banner.buttonText}">
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- əgər banner boşdursa fallback -->
+    <section class="hero-wrap hero-wrap-2 js-fullheight"
+             th:if="${banner == null}"
+             style="background-image: url('/images/bg_3.jpg');"
+             data-stellar-background-ratio="0.5">
+        <div class="overlay"></div>
+        <div class="container">
+            <div class="row no-gutters slider-text js-fullheight align-items-end justify-content-start">
+                <div class="col-md-9 ftco-animate pb-5">
+                    <p class="breadcrumbs">
+                    <span class="mr-2">
+                        <a th:href="@{/}">Home <i class="ion-ios-arrow-forward"></i></a>
+                    </span>
+                        <span>Pricing <i class="ion-ios-arrow-forward"></i></span>
+                    </p>
                     <h1 class="mb-3 bread">Pricing</h1>
                 </div>
             </div>
         </div>
     </section>
 
+    <!-- TABLE -->
     <section class="ftco-section ftco-cart">
         <div class="container">
             <div class="row">
                 <div class="col-md-12 ftco-animate">
+
                     <div class="car-list">
                         <table class="table">
                             <thead class="thead-primary">
@@ -36,303 +82,99 @@
                                 <th class="bg-black heading">Leasing</th>
                             </tr>
                             </thead>
+
                             <tbody>
-                            <tr class="">
-                                <td class="car-image"><div class="img" style="background-image:url(images/car-1.jpg);"></div></td>
+                            <tr th:if="${#lists.isEmpty(pricingRows)}">
+                                <td colspan="5" class="text-center py-5" style="color:#6c757d;">
+                                    Pricing məlumatı tapılmadı.
+                                </td>
+                            </tr>
+
+                            <tr th:each="row : ${pricingRows}">
+                                <td class="car-image">
+                                    <div class="img" th:style="'background-image:url(' + ${row.carImageUrl} + ');'"></div>
+                                </td>
+
                                 <td class="product-name">
-                                    <h3>Cheverolet SUV Car</h3>
+                                    <h3 th:text="${row.carTitle}">Car name</h3>
+
+                                    <!-- rating -->
                                     <p class="mb-0 rated">
                                         <span>rated:</span>
-                                        <span class="ion-ios-star"></span>
-                                        <span class="ion-ios-star"></span>
-                                        <span class="ion-ios-star"></span>
-                                        <span class="ion-ios-star"></span>
-                                        <span class="ion-ios-star"></span>
+
+                                        <span th:each="i : ${#numbers.sequence(1,5)}"
+                                              th:classappend="${i <= T(java.lang.Math).round(row.averageRating)} ? 'ion-ios-star' : 'ion-ios-star-outline'">
+            </span>
+
+                                        <span style="margin-left:8px; color:#6c757d;"
+                                              th:text="'(' + ${row.reviewCount} + ')'">(0)</span>
                                     </p>
                                 </td>
 
+                                <!-- PER HOUR -->
                                 <td class="price">
-                                    <p class="btn-custom"><a href="#">Rent a car</a></p>
+                                    <p class="btn-custom"><a th:href="@{'/car/' + ${row.carSlug}}">Details</a></p>
                                     <div class="price-rate">
                                         <h3>
-                                            <span class="num"><small class="currency">$</small> 10.99</span>
+            <span class="num"><small class="currency">$</small>
+                <span th:text="${row.hourlyRate}">0</span>
+            </span>
                                             <span class="per">/per hour</span>
                                         </h3>
-                                        <span class="subheading">$3/hour fuel surcharges</span>
+
+                                        <span class="subheading"
+                                              th:if="${row.fuelSurchargePerHour != null}"
+                                              th:text="'$' + ${row.fuelSurchargePerHour} + '/hour fuel surcharges'">
+        </span>
                                     </div>
                                 </td>
 
+                                <!-- PER DAY -->
                                 <td class="price">
-                                    <p class="btn-custom"><a href="#">Rent a car</a></p>
+                                    <p class="btn-custom"><a th:href="@{'/car/' + ${row.carSlug}}">Details</a></p>
                                     <div class="price-rate">
                                         <h3>
-                                            <span class="num"><small class="currency">$</small> 60.99</span>
+            <span class="num"><small class="currency">$</small>
+                <span th:text="${row.dailyRate}">0</span>
+            </span>
                                             <span class="per">/per day</span>
                                         </h3>
-                                        <span class="subheading">$3/hour fuel surcharges</span>
+
+                                        <span class="subheading"
+                                              th:if="${row.fuelSurchargePerHour != null}"
+                                              th:text="'$' + ${row.fuelSurchargePerHour} + '/hour fuel surcharges'">
+        </span>
                                     </div>
                                 </td>
 
+                                <!-- LEASING -->
                                 <td class="price">
-                                    <p class="btn-custom"><a href="#">Rent a car</a></p>
+                                    <p class="btn-custom"><a th:href="@{'/car/' + ${row.carSlug}}">Details</a></p>
                                     <div class="price-rate">
                                         <h3>
-                                            <span class="num"><small class="currency">$</small> 995.99</span>
+            <span class="num"><small class="currency">$</small>
+                <span th:text="${row.monthlyLeasingRate}">0</span>
+            </span>
                                             <span class="per">/per month</span>
                                         </h3>
-                                        <span class="subheading">$3/hour fuel surcharges</span>
+
+                                        <span class="subheading"
+                                              th:if="${row.fuelSurchargePerHour != null}"
+                                              th:text="'$' + ${row.fuelSurchargePerHour} + '/hour fuel surcharges'">
+                                        </span>
                                     </div>
                                 </td>
-                            </tr><!-- END TR-->
-
-                            <tr class="">
-                                <td class="car-image"><div class="img" style="background-image:url(images/car-2.jpg);"></div></td>
-                                <td class="product-name">
-                                    <h3>Cheverolet SUV Car</h3>
-                                    <p class="mb-0 rated">
-                                        <span>rated:</span>
-                                        <span class="ion-ios-star"></span>
-                                        <span class="ion-ios-star"></span>
-                                        <span class="ion-ios-star"></span>
-                                        <span class="ion-ios-star"></span>
-                                        <span class="ion-ios-star"></span>
-                                    </p>
-                                </td>
-
-                                <td class="price">
-                                    <p class="btn-custom"><a href="#">Rent a car</a></p>
-                                    <div class="price-rate">
-                                        <h3>
-                                            <span class="num"><small class="currency">$</small> 10.99</span>
-                                            <span class="per">/per hour</span>
-                                        </h3>
-                                        <span class="subheading">$3/hour fuel surcharges</span>
-                                    </div>
-                                </td>
-
-                                <td class="price">
-                                    <p class="btn-custom"><a href="#">Rent a car</a></p>
-                                    <div class="price-rate">
-                                        <h3>
-                                            <span class="num"><small class="currency">$</small> 60.99</span>
-                                            <span class="per">/per day</span>
-                                        </h3>
-                                        <span class="subheading">$3/hour fuel surcharges</span>
-                                    </div>
-                                </td>
-
-                                <td class="price">
-                                    <p class="btn-custom"><a href="#">Rent a car</a></p>
-                                    <div class="price-rate">
-                                        <h3>
-                                            <span class="num"><small class="currency">$</small> 995.99</span>
-                                            <span class="per">/per month</span>
-                                        </h3>
-                                        <span class="subheading">$3/hour fuel surcharges</span>
-                                    </div>
-                                </td>
-                            </tr><!-- END TR-->
-
-                            <tr class="">
-                                <td class="car-image"><div class="img" style="background-image:url(images/car-3.jpg);"></div></td>
-                                <td class="product-name">
-                                    <h3>Cheverolet SUV Car</h3>
-                                    <p class="mb-0 rated">
-                                        <span>rated:</span>
-                                        <span class="ion-ios-star"></span>
-                                        <span class="ion-ios-star"></span>
-                                        <span class="ion-ios-star"></span>
-                                        <span class="ion-ios-star"></span>
-                                        <span class="ion-ios-star"></span>
-                                    </p>
-                                </td>
-
-                                <td class="price">
-                                    <p class="btn-custom"><a href="#">Rent a car</a></p>
-                                    <div class="price-rate">
-                                        <h3>
-                                            <span class="num"><small class="currency">$</small> 10.99</span>
-                                            <span class="per">/per hour</span>
-                                        </h3>
-                                        <span class="subheading">$3/hour fuel surcharges</span>
-                                    </div>
-                                </td>
-
-                                <td class="price">
-                                    <p class="btn-custom"><a href="#">Rent a car</a></p>
-                                    <div class="price-rate">
-                                        <h3>
-                                            <span class="num"><small class="currency">$</small> 60.99</span>
-                                            <span class="per">/per day</span>
-                                        </h3>
-                                        <span class="subheading">$3/hour fuel surcharges</span>
-                                    </div>
-                                </td>
-
-                                <td class="price">
-                                    <p class="btn-custom"><a href="#">Rent a car</a></p>
-                                    <div class="price-rate">
-                                        <h3>
-                                            <span class="num"><small class="currency">$</small> 995.99</span>
-                                            <span class="per">/per month</span>
-                                        </h3>
-                                        <span class="subheading">$3/hour fuel surcharges</span>
-                                    </div>
-                                </td>
-                            </tr><!-- END TR-->
-
-                            <tr class="">
-                                <td class="car-image"><div class="img" style="background-image:url(images/car-4.jpg);"></div></td>
-                                <td class="product-name">
-                                    <h3>Cheverolet SUV Car</h3>
-                                    <p class="mb-0 rated">
-                                        <span>rated:</span>
-                                        <span class="ion-ios-star"></span>
-                                        <span class="ion-ios-star"></span>
-                                        <span class="ion-ios-star"></span>
-                                        <span class="ion-ios-star"></span>
-                                        <span class="ion-ios-star"></span>
-                                    </p>
-                                </td>
-
-                                <td class="price">
-                                    <p class="btn-custom"><a href="#">Rent a car</a></p>
-                                    <div class="price-rate">
-                                        <h3>
-                                            <span class="num"><small class="currency">$</small> 10.99</span>
-                                            <span class="per">/per hour</span>
-                                        </h3>
-                                        <span class="subheading">$3/hour fuel surcharges</span>
-                                    </div>
-                                </td>
-
-                                <td class="price">
-                                    <p class="btn-custom"><a href="#">Rent a car</a></p>
-                                    <div class="price-rate">
-                                        <h3>
-                                            <span class="num"><small class="currency">$</small> 60.99</span>
-                                            <span class="per">/per day</span>
-                                        </h3>
-                                        <span class="subheading">$3/hour fuel surcharges</span>
-                                    </div>
-                                </td>
-
-                                <td class="price">
-                                    <p class="btn-custom"><a href="#">Rent a car</a></p>
-                                    <div class="price-rate">
-                                        <h3>
-                                            <span class="num"><small class="currency">$</small> 995.99</span>
-                                            <span class="per">/per month</span>
-                                        </h3>
-                                        <span class="subheading">$3/hour fuel surcharges</span>
-                                    </div>
-                                </td>
-                            </tr><!-- END TR-->
-
-
-                            <tr class="">
-                                <td class="car-image"><div class="img" style="background-image:url(images/car-5.jpg);"></div></td>
-                                <td class="product-name">
-                                    <h3>Cheverolet SUV Car</h3>
-                                    <p class="mb-0 rated">
-                                        <span>rated:</span>
-                                        <span class="ion-ios-star"></span>
-                                        <span class="ion-ios-star"></span>
-                                        <span class="ion-ios-star"></span>
-                                        <span class="ion-ios-star"></span>
-                                        <span class="ion-ios-star"></span>
-                                    </p>
-                                </td>
-
-                                <td class="price">
-                                    <p class="btn-custom"><a href="#">Rent a car</a></p>
-                                    <div class="price-rate">
-                                        <h3>
-                                            <span class="num"><small class="currency">$</small> 10.99</span>
-                                            <span class="per">/per hour</span>
-                                        </h3>
-                                        <span class="subheading">$3/hour fuel surcharges</span>
-                                    </div>
-                                </td>
-
-                                <td class="price">
-                                    <p class="btn-custom"><a href="#">Rent a car</a></p>
-                                    <div class="price-rate">
-                                        <h3>
-                                            <span class="num"><small class="currency">$</small> 60.99</span>
-                                            <span class="per">/per day</span>
-                                        </h3>
-                                        <span class="subheading">$3/hour fuel surcharges</span>
-                                    </div>
-                                </td>
-
-                                <td class="price">
-                                    <p class="btn-custom"><a href="#">Rent a car</a></p>
-                                    <div class="price-rate">
-                                        <h3>
-                                            <span class="num"><small class="currency">$</small> 995.99</span>
-                                            <span class="per">/per month</span>
-                                        </h3>
-                                        <span class="subheading">$3/hour fuel surcharges</span>
-                                    </div>
-                                </td>
-                            </tr><!-- END TR-->
-
-
-                            <tr class="">
-                                <td class="car-image"><div class="img" style="background-image:url(images/car-6.jpg);"></div></td>
-                                <td class="product-name">
-                                    <h3>Cheverolet SUV Car</h3>
-                                    <p class="mb-0 rated">
-                                        <span>rated:</span>
-                                        <span class="ion-ios-star"></span>
-                                        <span class="ion-ios-star"></span>
-                                        <span class="ion-ios-star"></span>
-                                        <span class="ion-ios-star"></span>
-                                        <span class="ion-ios-star"></span>
-                                    </p>
-                                </td>
-
-                                <td class="price">
-                                    <p class="btn-custom"><a href="#">Rent a car</a></p>
-                                    <div class="price-rate">
-                                        <h3>
-                                            <span class="num"><small class="currency">$</small> 10.99</span>
-                                            <span class="per">/per hour</span>
-                                        </h3>
-                                        <span class="subheading">$3/hour fuel surcharges</span>
-                                    </div>
-                                </td>
-
-                                <td class="price">
-                                    <p class="btn-custom"><a href="#">Rent a car</a></p>
-                                    <div class="price-rate">
-                                        <h3>
-                                            <span class="num"><small class="currency">$</small> 60.99</span>
-                                            <span class="per">/per day</span>
-                                        </h3>
-                                        <span class="subheading">$3/hour fuel surcharges</span>
-                                    </div>
-                                </td>
-
-                                <td class="price">
-                                    <p class="btn-custom"><a href="#">Rent a car</a></p>
-                                    <div class="price-rate">
-                                        <h3>
-                                            <span class="num"><small class="currency">$</small> 995.99</span>
-                                            <span class="per">/per month</span>
-                                        </h3>
-                                        <span class="subheading">$3/hour fuel surcharges</span>
-                                    </div>
-                                </td>
-                            </tr><!-- END TR-->
+                            </tr>
                             </tbody>
+
                         </table>
                     </div>
+
                 </div>
             </div>
         </div>
     </section>
+
 </div>
 </body>
 </html>
