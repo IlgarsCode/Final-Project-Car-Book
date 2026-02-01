@@ -29,11 +29,15 @@ public class BlogController {
     private final BlogRepository blogRepository;
     private final BlogCommentRepository blogCommentRepository;
 
-    // ✅ Car categories sidebar üçün
+    // sidebar: car categories + say
     private final CarCategoryRepository carCategoryRepository;
 
+    // ✅ BLOG LIST PAGE: /blog
     @GetMapping("/blog")
-    public String blogPage(@RequestParam(name = "page", defaultValue = "1") int page, Model model) {
+    public String blogPage(
+            @RequestParam(name = "page", defaultValue = "1") int page,
+            Model model
+    ) {
         int size = 5;
         int pageIndex = Math.max(page - 1, 0);
 
@@ -44,16 +48,21 @@ public class BlogController {
         model.addAttribute("totalPages", blogsPage.getTotalPages());
 
         model.addAttribute("banner", bannerService.getBanner(BannerType.BLOGS));
+
+        // istəsən blog listdə də sidebar görə bilərsən:
+        // model.addAttribute("carCategories", carCategoryRepository.findAllWithActiveCarCount());
+
         return "blog";
     }
 
+    // ✅ BLOG SINGLE PAGE: /blog/{id}
     @GetMapping("/blog/{id}")
     public String blogSingle(@PathVariable Long id, Model model) {
 
         model.addAttribute("blog", blogService.getBlogDetail(id));
         model.addAttribute("banner", bannerService.getBanner(BannerType.BLOG_SINGLE));
 
-        // ✅ Car Categories sidebar
+        // ✅ SIDEBAR: car categories + say
         model.addAttribute("carCategories", carCategoryRepository.findAllWithActiveCarCount());
 
         // ✅ comment form
@@ -62,6 +71,7 @@ public class BlogController {
         return "blog-single";
     }
 
+    // ✅ ADD COMMENT: /blog/{id}/comment
     @PostMapping("/blog/{id}/comment")
     public String addComment(
             @PathVariable Long id,
@@ -70,6 +80,7 @@ public class BlogController {
             Model model
     ) {
         if (bindingResult.hasErrors()) {
+            // səhifəni error ilə yenidən göstər
             model.addAttribute("blog", blogService.getBlogDetail(id));
             model.addAttribute("banner", bannerService.getBanner(BannerType.BLOG_SINGLE));
 
@@ -97,6 +108,7 @@ public class BlogController {
 
         blogCommentRepository.save(comment);
 
+        // PRG: refresh edəndə təkrar post etməsin
         return "redirect:/blog/" + id + "#comments";
     }
 }

@@ -214,16 +214,14 @@
                         <div class="categories">
                             <h3>Car Categories</h3>
 
-                            <ul class="p-0 m-0" style="list-style:none;">
-                                <li th:each="cat : ${carCategories}">
-                                    <a th:href="@{/car(category=${cat.slug})}"
-                                       style="display:flex; justify-content:space-between; align-items:center;">
-                                        <span th:text="${cat.name}">SUV</span>
-                                        <span th:text="'(' + ${cat.carCount} + ')'">(0)</span>
+                            <ul class="category-list">
+                                <li th:each="cc : ${carCategories}">
+                                    <a th:href="@{/car(category=${cc.slug})}" class="cat-row">
+                                        <div class="cat-left" th:text="${cc.name}">SUV</div>
+                                        <div class="cat-right" th:text="'(' + ${cc.carCount} + ')'">(0)</div>
                                     </a>
                                 </li>
                             </ul>
-
                         </div>
                     </div>
 
