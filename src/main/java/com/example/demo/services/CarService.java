@@ -12,4 +12,6 @@ public interface CarService {
 
     // related cars üçün
     List<CarListDto> getRelatedCars(Long currentCarId, int limit);
+
+    Object getCarDetail(String slug);
 }

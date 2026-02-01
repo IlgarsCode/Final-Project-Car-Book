@@ -3,6 +3,8 @@ package com.example.demo.dto.car;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.List;
+
 @Getter
 @Setter
 public class CarDetailDto {
@@ -24,4 +26,7 @@ public class CarDetailDto {
     private String featuresCol1;
     private String featuresCol2;
     private String featuresCol3;
+
+    private List<CarReviewDto> reviews;
+    private CarReviewStatsDto reviewStats;
 }
