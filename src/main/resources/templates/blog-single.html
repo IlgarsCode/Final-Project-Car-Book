@@ -227,13 +227,39 @@
 
                     <div class="sidebar-box ftco-animate">
                         <h3>Recent Blog</h3>
-                        <div class="block-21 mb-4 d-flex">
-                            <a class="blog-img mr-4" style="background-image: url(images/image_1.jpg);"></a>
+
+                        <div th:if="${#lists.isEmpty(recentBlogs)}" style="color:#6c757d;">
+                            Hələ başqa blog yoxdur.
+                        </div>
+
+                        <div class="block-21 mb-4 d-flex" th:each="rb : ${recentBlogs}">
+                            <a class="blog-img mr-4"
+                               th:href="@{'/blog/' + ${rb.id}}"
+                               th:style="'background-image: url(' + (${rb.imageUrl} != null ? ${rb.imageUrl} : '/images/image_1.jpg') + ');'">
+                            </a>
+
                             <div class="text">
-                                <h3 class="heading"><a href="#">Why Lead Generation is Key for Business Growth</a></h3>
+                                <h3 class="heading">
+                                    <a th:href="@{'/blog/' + ${rb.id}}"
+                                       th:text="${rb.title}">
+                                        Blog title
+                                    </a>
+                                </h3>
+
                                 <div class="meta">
-                                    <div><a href="#"><span class="icon-calendar"></span> Oct. 29, 2019</a></div>
-                                    <div><a href="#"><span class="icon-person"></span> Admin</a></div>
+                                    <div>
+                                        <a th:href="@{'/blog/' + ${rb.id}}">
+                                            <span class="icon-calendar"></span>
+                                            <span th:text="${#temporals.format(rb.createdAt, 'dd MMMM, yyyy')}">01 Fevral, 2026</span>
+                                        </a>
+                                    </div>
+
+                                    <div>
+                                        <a th:href="@{'/blog/' + ${rb.id}}">
+                                            <span class="icon-person"></span>
+                                            <span th:text="${rb.author}">Admin</span>
+                                        </a>
+                                    </div>
                                 </div>
                             </div>
                         </div>

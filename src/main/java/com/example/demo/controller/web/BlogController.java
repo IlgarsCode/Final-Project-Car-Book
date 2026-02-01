@@ -65,6 +65,8 @@ public class BlogController {
         // ✅ SIDEBAR: car categories + say
         model.addAttribute("carCategories", carCategoryRepository.findAllWithActiveCarCount());
 
+        model.addAttribute("recentBlogs", blogService.getRecentBlogs(id, 3));
+
         // ✅ comment form
         model.addAttribute("commentForm", new BlogCommentCreateDto());
 
