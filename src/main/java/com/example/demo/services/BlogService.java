@@ -8,7 +8,7 @@ import java.util.List;
 
 public interface BlogService {
 
-    Page<BlogListDto> getActiveBlogs(int page, int size);
+    Page<BlogListDto> getActiveBlogs(int page, int size, String search);
 
     BlogDetailDto getBlogDetail(Long id);
 

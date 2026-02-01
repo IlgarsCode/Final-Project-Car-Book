@@ -200,12 +200,16 @@
                 </div>
 
                 <!-- RIGHT SIDEBAR (STATİK) -->
-                <div class="col-md-4 sidebar ftco-animate">
+                <div class="col-lg-4 sidebar ftco-animate">
+
+                    <!-- SEARCH (indiki kimi qalsın, amma action real olsun) -->
                     <div class="sidebar-box">
-                        <form action="#" class="search-form">
+                        <form th:action="@{/blog}" method="get" class="search-form">
                             <div class="form-group">
                                 <span class="icon icon-search"></span>
-                                <input type="text" class="form-control" placeholder="Type a keyword and hit enter">
+                                <input type="text" name="search" class="form-control"
+                                       th:value="${search}"
+                                       placeholder="Type a keyword and hit enter">
                             </div>
                         </form>
                     </div>

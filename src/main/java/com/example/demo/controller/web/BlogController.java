@@ -36,22 +36,22 @@ public class BlogController {
     @GetMapping("/blog")
     public String blogPage(
             @RequestParam(name = "page", defaultValue = "1") int page,
+            @RequestParam(name = "search", required = false) String search,
             Model model
     ) {
         int size = 5;
         int pageIndex = Math.max(page - 1, 0);
 
-        var blogsPage = blogService.getActiveBlogs(pageIndex, size);
+        var blogsPage = blogService.getActiveBlogs(pageIndex, size, search);
 
         model.addAttribute("blogs", blogsPage.getContent());
         model.addAttribute("currentPage", blogsPage.getNumber() + 1);
         model.addAttribute("totalPages", blogsPage.getTotalPages());
 
+        // ✅ search-i view-da saxla (input boşalmasın)
+        model.addAttribute("search", search);
+
         model.addAttribute("banner", bannerService.getBanner(BannerType.BLOGS));
-
-        // istəsən blog listdə də sidebar görə bilərsən:
-        // model.addAttribute("carCategories", carCategoryRepository.findAllWithActiveCarCount());
-
         return "blog";
     }
 

@@ -23,23 +23,26 @@ public class BlogServiceImpl implements BlogService {
     private final BlogCommentRepository blogCommentRepository;
 
     @Override
-    public Page<BlogListDto> getActiveBlogs(int page, int size) {
+    public Page<BlogListDto> getActiveBlogs(int page, int size, String search) {
         var pageable = PageRequest.of(page, size);
 
-        return blogRepository.findAllByIsActiveTrueOrderByCreatedAtDesc(pageable)
-                .map(blog -> {
-                    BlogListDto dto = new BlogListDto();
-                    dto.setId(blog.getId());
-                    dto.setTitle(blog.getTitle());
-                    dto.setShortDescription(blog.getShortDescription());
-                    dto.setImageUrl(blog.getImageUrl());
-                    dto.setAuthor(blog.getAuthor());
-                    dto.setCreatedAt(blog.getCreatedAt());
-                    dto.setCommentCount(
-                            blogCommentRepository.countByBlog_IdAndIsActiveTrue(blog.getId())
-                    );
-                    return dto;
-                });
+        var blogsPage = (search == null || search.isBlank())
+                ? blogRepository.findAllByIsActiveTrueOrderByCreatedAtDesc(pageable)
+                : blogRepository.searchActive(search.trim(), pageable);
+
+        return blogsPage.map(blog -> {
+            BlogListDto dto = new BlogListDto();
+            dto.setId(blog.getId());
+            dto.setTitle(blog.getTitle());
+            dto.setShortDescription(blog.getShortDescription());
+            dto.setImageUrl(blog.getImageUrl());
+            dto.setAuthor(blog.getAuthor());
+            dto.setCreatedAt(blog.getCreatedAt());
+            dto.setCommentCount(
+                    blogCommentRepository.countByBlog_IdAndIsActiveTrue(blog.getId())
+            );
+            return dto;
+        });
     }
 
     @Override
@@ -58,7 +61,6 @@ public class BlogServiceImpl implements BlogService {
         dto.setCreatedAt(blog.getCreatedAt());
         dto.setImageUrl(blog.getImageUrl());
         dto.setContent(blog.getContent());
-
         dto.setAuthorPhotoUrl(blog.getAuthorPhotoUrl());
         dto.setAuthorBio(blog.getAuthorBio());
 
@@ -81,29 +83,23 @@ public class BlogServiceImpl implements BlogService {
         return dto;
     }
 
-    // ✅ RECENT BLOGS (sidebar)
     @Override
     public List<BlogListDto> getRecentBlogs(Long excludeId, int limit) {
         var pageable = PageRequest.of(0, limit);
-
         var list = (excludeId == null)
                 ? blogRepository.findRecentActiveBlogs(pageable)
                 : blogRepository.findRecentActiveBlogsExclude(excludeId, pageable);
 
-        return list.stream()
-                .map(b -> {
-                    BlogListDto dto = new BlogListDto();
-                    dto.setId(b.getId());
-                    dto.setTitle(b.getTitle());
-                    dto.setImageUrl(b.getImageUrl());
-                    dto.setAuthor(b.getAuthor());
-                    dto.setCreatedAt(b.getCreatedAt());
-
-                    // istəsən comment sayını da göstərərik
-                    dto.setCommentCount(blogCommentRepository.countByBlog_IdAndIsActiveTrue(b.getId()));
-                    return dto;
-                })
-                .toList();
+        return list.stream().map(b -> {
+            BlogListDto dto = new BlogListDto();
+            dto.setId(b.getId());
+            dto.setTitle(b.getTitle());
+            dto.setImageUrl(b.getImageUrl());
+            dto.setAuthor(b.getAuthor());
+            dto.setCreatedAt(b.getCreatedAt());
+            dto.setCommentCount(blogCommentRepository.countByBlog_IdAndIsActiveTrue(b.getId()));
+            return dto;
+        }).toList();
     }
 
     @Override
