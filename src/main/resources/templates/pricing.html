@@ -10,6 +10,7 @@
 <body>
 <div layout:fragment="content">
 
+    <!-- ===== BANNER (DINAMIK) ===== -->
     <section class="hero-wrap hero-wrap-2 js-fullheight"
              th:if="${banner != null}"
              th:style="'background-image: url(' + ${banner.photoUrl} + ');'"
@@ -19,20 +20,14 @@
             <div class="row no-gutters slider-text js-fullheight align-items-end justify-content-start">
                 <div class="col-md-9 ftco-animate pb-5">
                     <p class="breadcrumbs">
-                    <span class="mr-2">
-                        <a th:href="@{/}">Home <i class="ion-ios-arrow-forward"></i></a>
-                    </span>
+                        <span class="mr-2">
+                            <a th:href="@{/}">Home <i class="ion-ios-arrow-forward"></i></a>
+                        </span>
                         <span>Pricing <i class="ion-ios-arrow-forward"></i></span>
                     </p>
 
-                    <h1 class="mb-3 bread"
-                        th:text="${banner.title != null ? banner.title : 'Pricing'}">
-                        Pricing
-                    </h1>
-
-                    <p th:if="${banner.description != null}"
-                       th:text="${banner.description}">
-                    </p>
+                    <h1 class="mb-3 bread" th:text="${banner.title}">Pricing</h1>
+                    <p th:text="${banner.description}"></p>
 
                     <a th:if="${banner.buttonText != null}"
                        th:href="${banner.buttonUrl}"
@@ -44,33 +39,48 @@
         </div>
     </section>
 
-    <!-- əgər banner boşdursa fallback -->
-    <section class="hero-wrap hero-wrap-2 js-fullheight"
-             th:if="${banner == null}"
-             style="background-image: url('/images/bg_3.jpg');"
-             data-stellar-background-ratio="0.5">
-        <div class="overlay"></div>
-        <div class="container">
-            <div class="row no-gutters slider-text js-fullheight align-items-end justify-content-start">
-                <div class="col-md-9 ftco-animate pb-5">
-                    <p class="breadcrumbs">
-                    <span class="mr-2">
-                        <a th:href="@{/}">Home <i class="ion-ios-arrow-forward"></i></a>
-                    </span>
-                        <span>Pricing <i class="ion-ios-arrow-forward"></i></span>
-                    </p>
-                    <h1 class="mb-3 bread">Pricing</h1>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- TABLE -->
+    <!-- ===== PRICING TABLE ===== -->
     <section class="ftco-section ftco-cart">
         <div class="container">
+
+            <!-- FILTER -->
+            <div class="row mb-4">
+                <div class="col-md-12 ftco-animate d-flex justify-content-between align-items-center flex-wrap"
+                     style="gap:12px;">
+
+                    <h3 class="mb-0">Pricing</h3>
+
+                    <form th:action="@{/pricing}" method="get"
+                          class="d-flex align-items-center flex-wrap"
+                          style="gap:10px;">
+
+                        <select name="category" class="form-control" style="max-width:260px;">
+                            <option value=""
+                                    th:selected="${selectedCategory == null or selectedCategory == ''}">
+                                All Categories
+                            </option>
+
+                            <option th:each="cc : ${carCategories}"
+                                    th:value="${cc.slug}"
+                                    th:text="${cc.name + ' (' + cc.carCount + ')'}"
+                                    th:selected="${selectedCategory == cc.slug}">
+                            </option>
+                        </select>
+
+                        <button class="btn btn-primary" type="submit">Filter</button>
+
+                        <a class="btn btn-outline-secondary"
+                           th:href="@{/pricing}"
+                           th:if="${selectedCategory != null and selectedCategory != ''}">
+                            Reset
+                        </a>
+                    </form>
+                </div>
+            </div>
+
+            <!-- TABLE -->
             <div class="row">
                 <div class="col-md-12 ftco-animate">
-
                     <div class="car-list">
                         <table class="table">
                             <thead class="thead-primary">
@@ -84,30 +94,33 @@
                             </thead>
 
                             <tbody>
-                            <tr th:if="${#lists.isEmpty(pricingRows)}">
+
+                            <tr th:if="${#lists.isEmpty(rows)}">
                                 <td colspan="5" class="text-center py-5" style="color:#6c757d;">
                                     Pricing məlumatı tapılmadı.
                                 </td>
                             </tr>
 
-                            <tr th:each="row : ${pricingRows}">
+                            <tr th:each="row : ${rows}">
                                 <td class="car-image">
-                                    <div class="img" th:style="'background-image:url(' + ${row.carImageUrl} + ');'"></div>
+                                    <div class="img"
+                                         th:style="'background-image:url(' + ${row.carImageUrl} + ');'">
+                                    </div>
                                 </td>
 
                                 <td class="product-name">
-                                    <h3 th:text="${row.carTitle}">Car name</h3>
+                                    <h3 th:text="${row.carTitle}">Car</h3>
 
-                                    <!-- rating -->
+                                    <!-- RATING (DINAMIK) -->
                                     <p class="mb-0 rated">
                                         <span>rated:</span>
 
                                         <span th:each="i : ${#numbers.sequence(1,5)}"
-                                              th:classappend="${i <= T(java.lang.Math).round(row.averageRating)} ? 'ion-ios-star' : 'ion-ios-star-outline'">
-            </span>
+                                              th:class="${i <= T(java.lang.Math).round(row.averageRating) ? 'ion-ios-star' : 'ion-ios-star-outline'}">
+                                        </span>
 
-                                        <span style="margin-left:8px; color:#6c757d;"
-                                              th:text="'(' + ${row.reviewCount} + ')'">(0)</span>
+                                        <small style="margin-left:8px; color:#6c757d;"
+                                               th:text="'(' + ${row.reviewCount} + ')'">(0)</small>
                                     </p>
                                 </td>
 
@@ -165,13 +178,13 @@
                                     </div>
                                 </td>
                             </tr>
-                            </tbody>
 
+                            </tbody>
                         </table>
                     </div>
-
                 </div>
             </div>
+
         </div>
     </section>
 

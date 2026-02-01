@@ -35,4 +35,16 @@ public class CarPricing {
     private BigDecimal fuelSurchargePerHour;
 
     private Boolean isActive = true;
+
+    public BigDecimal getPerHourRate() {
+        return hourlyRate;
+    }
+
+    public BigDecimal getPerDayRate() {
+        return dailyRate;
+    }
+
+    public BigDecimal getLeasingPerMonth() {
+        return monthlyLeasingRate;
+    }
 }

@@ -7,8 +7,9 @@ import com.example.demo.services.PricingService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -18,53 +19,55 @@ public class PricingServiceImpl implements PricingService {
     private final CarReviewRepository carReviewRepository;
 
     @Override
-    public List<CarPricingRowDto> getActivePricingRows() {
+    public List<CarPricingRowDto> getPricingRows(String categorySlug) {
 
-        var rows = carPricingRepository.findActivePricingRows();
+        var rows = (categorySlug == null || categorySlug.isBlank())
+                ? carPricingRepository.findActivePricingRows()
+                : carPricingRepository.findActivePricingRowsByCategorySlug(categorySlug);
 
-        // 1) carId-ləri topla
-        List<Long> carIds = rows.stream()
-                .map(x -> x.getCar().getId())
-                .distinct()
-                .toList();
+        // rating hesabı üçün map-lər
+        Map<Long, Long> countMap = new HashMap<>();
+        Map<Long, Double> avgMap = new HashMap<>();
 
-        // 2) avg map
-        Map<Long, Double> avgMap = carReviewRepository.findAverageRatingsByCarIds(carIds)
-                .stream()
-                .collect(Collectors.toMap(
-                        CarReviewRepository.CarAvgView::getCarId,
-                        v -> v.getAvgRating() != null ? v.getAvgRating() : 0.0
-                ));
+        for (var cp : rows) {
+            var car = cp.getCar();
+            Long carId = car.getId();
 
-        // 3) count map
-        Map<Long, Long> countMap = carReviewRepository.countActiveReviewsByCarIds(carIds)
-                .stream()
-                .collect(Collectors.toMap(
-                        CarReviewRepository.CarCountView::getCarId,
-                        CarReviewRepository.CarCountView::getReviewCount
-                ));
+            long total = carReviewRepository.countByCar_IdAndIsActiveTrue(carId);
+            countMap.put(carId, total);
 
-        // 4) DTO list
+            if (total == 0) {
+                avgMap.put(carId, 0.0);
+                continue;
+            }
+
+            long c1 = carReviewRepository.countByCar_IdAndRatingAndIsActiveTrue(carId, 1);
+            long c2 = carReviewRepository.countByCar_IdAndRatingAndIsActiveTrue(carId, 2);
+            long c3 = carReviewRepository.countByCar_IdAndRatingAndIsActiveTrue(carId, 3);
+            long c4 = carReviewRepository.countByCar_IdAndRatingAndIsActiveTrue(carId, 4);
+            long c5 = carReviewRepository.countByCar_IdAndRatingAndIsActiveTrue(carId, 5);
+
+            double avg = (1.0 * c1 + 2.0 * c2 + 3.0 * c3 + 4.0 * c4 + 5.0 * c5) / total;
+            avgMap.put(carId, avg);
+        }
+
         return rows.stream()
                 .map(cp -> {
                     var car = cp.getCar();
                     Long carId = car.getId();
 
                     CarPricingRowDto dto = new CarPricingRowDto();
-
-                    // ===== CAR INFO =====
                     dto.setCarId(carId);
                     dto.setCarTitle(car.getTitle());
                     dto.setCarImageUrl(car.getImageUrl());
                     dto.setCarSlug(car.getSlug());
 
-                    // ===== PRICING (CarPricing entity-dən) =====
                     dto.setHourlyRate(cp.getHourlyRate());
                     dto.setDailyRate(cp.getDailyRate());
                     dto.setMonthlyLeasingRate(cp.getMonthlyLeasingRate());
+
                     dto.setFuelSurchargePerHour(cp.getFuelSurchargePerHour());
 
-                    // ===== RATING (reviews-dan) =====
                     dto.setAverageRating(avgMap.getOrDefault(carId, 0.0));
                     dto.setReviewCount(countMap.getOrDefault(carId, 0L));
 
