@@ -40,5 +40,9 @@ public class Car {
     @Column(columnDefinition = "TEXT")
     private String featuresCol3;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "category_id")
+    private CarCategory category;
+
     private Boolean isActive = true;
 }

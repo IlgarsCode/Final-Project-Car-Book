@@ -10,6 +10,8 @@ public interface CarService {
     List<CarListDto> getActiveCars();
     CarDetailDto getCarDetailBySlug(String slug);
 
+    List<CarListDto> getActiveCars(String categorySlug);
+
     // related cars üçün
     List<CarListDto> getRelatedCars(Long currentCarId, int limit);
 

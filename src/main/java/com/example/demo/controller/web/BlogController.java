@@ -5,6 +5,7 @@ import com.example.demo.dto.enums.BannerType;
 import com.example.demo.model.BlogComment;
 import com.example.demo.repository.BlogCommentRepository;
 import com.example.demo.repository.BlogRepository;
+import com.example.demo.repository.CarCategoryRepository;
 import com.example.demo.services.BannerService;
 import com.example.demo.services.BlogService;
 import jakarta.validation.Valid;
@@ -25,14 +26,14 @@ public class BlogController {
     private final BlogService blogService;
     private final BannerService bannerService;
 
-    // ✅ comment üçün lazım olanlar
     private final BlogRepository blogRepository;
     private final BlogCommentRepository blogCommentRepository;
+
+    // ✅ Car categories sidebar üçün
+    private final CarCategoryRepository carCategoryRepository;
+
     @GetMapping("/blog")
-    public String blogPage(
-            @RequestParam(name = "page", defaultValue = "1") int page,
-            Model model
-    ) {
+    public String blogPage(@RequestParam(name = "page", defaultValue = "1") int page, Model model) {
         int size = 5;
         int pageIndex = Math.max(page - 1, 0);
 
@@ -43,7 +44,6 @@ public class BlogController {
         model.addAttribute("totalPages", blogsPage.getTotalPages());
 
         model.addAttribute("banner", bannerService.getBanner(BannerType.BLOGS));
-
         return "blog";
     }
 
@@ -53,7 +53,10 @@ public class BlogController {
         model.addAttribute("blog", blogService.getBlogDetail(id));
         model.addAttribute("banner", bannerService.getBanner(BannerType.BLOG_SINGLE));
 
-        // ✅ form üçün boş dto
+        // ✅ Car Categories sidebar
+        model.addAttribute("carCategories", carCategoryRepository.findAllWithActiveCarCount());
+
+        // ✅ comment form
         model.addAttribute("commentForm", new BlogCommentCreateDto());
 
         return "blog-single";
@@ -67,9 +70,12 @@ public class BlogController {
             Model model
     ) {
         if (bindingResult.hasErrors()) {
-            // səhifəni error ilə yenidən göstər
             model.addAttribute("blog", blogService.getBlogDetail(id));
             model.addAttribute("banner", bannerService.getBanner(BannerType.BLOG_SINGLE));
+
+            // ✅ error olanda da sidebar gəlsin
+            model.addAttribute("carCategories", carCategoryRepository.findAllWithActiveCarCount());
+
             return "blog-single";
         }
 
@@ -91,7 +97,6 @@ public class BlogController {
 
         blogCommentRepository.save(comment);
 
-        // PRG: refresh-də təkrar yazmasın
         return "redirect:/blog/" + id + "#comments";
     }
 }

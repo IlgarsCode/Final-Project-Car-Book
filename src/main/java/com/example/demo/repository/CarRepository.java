@@ -11,4 +11,6 @@ public interface CarRepository extends JpaRepository<Car, Long> {
     List<Car> findAllByIsActiveTrueOrderByIdDesc();
 
     Optional<Car> findBySlugAndIsActiveTrue(String slug);
+
+    List<Car> findAllByIsActiveTrueAndCategory_SlugOrderByIdDesc(String slug);
 }

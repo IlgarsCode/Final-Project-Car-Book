@@ -23,23 +23,24 @@ public class CarServiceImpl implements CarService {
     private final CarReviewRepository carReviewRepository;
     private final ModelMapper modelMapper;
 
-    // =======================
-    // CAR LIST
-    // =======================
     @Override
     public List<CarListDto> getActiveCars() {
-        return carRepository.findAllByIsActiveTrueOrderByIdDesc()
-                .stream()
+        return getActiveCars(null);
+    }
+
+    @Override
+    public List<CarListDto> getActiveCars(String categorySlug) {
+        var list = (categorySlug == null || categorySlug.isBlank())
+                ? carRepository.findAllByIsActiveTrueOrderByIdDesc()
+                : carRepository.findAllByIsActiveTrueAndCategory_SlugOrderByIdDesc(categorySlug);
+
+        return list.stream()
                 .map(car -> modelMapper.map(car, CarListDto.class))
                 .toList();
     }
 
-    // =======================
-    // CAR DETAIL (SINGLE)
-    // =======================
     @Override
     public CarDetailDto getCarDetailBySlug(String slug) {
-
         var car = carRepository.findBySlugAndIsActiveTrue(slug)
                 .orElseThrow(() ->
                         new ResponseStatusException(HttpStatus.NOT_FOUND, "Car tapılmadı")
@@ -47,7 +48,6 @@ public class CarServiceImpl implements CarService {
 
         CarDetailDto dto = modelMapper.map(car, CarDetailDto.class);
 
-        // ---------- REVIEWS ----------
         var reviews = carReviewRepository
                 .findAllByCar_IdAndIsActiveTrueOrderByCreatedAtDesc(car.getId())
                 .stream()
@@ -65,7 +65,6 @@ public class CarServiceImpl implements CarService {
 
         dto.setReviews(reviews);
 
-        // ---------- REVIEW STATS ----------
         long total = carReviewRepository.countByCar_IdAndIsActiveTrue(car.getId());
 
         CarReviewStatsDto stats = new CarReviewStatsDto();
@@ -92,13 +91,9 @@ public class CarServiceImpl implements CarService {
         }
 
         dto.setReviewStats(stats);
-
         return dto;
     }
 
-    // =======================
-    // RELATED CARS
-    // =======================
     @Override
     public List<CarListDto> getRelatedCars(Long currentCarId, int limit) {
         return carRepository.findAllByIsActiveTrueOrderByIdDesc()

@@ -21,9 +21,12 @@ public class CarController {
     private final BannerService bannerService;
 
     @GetMapping("/car")
-    public String carPage(Model model) {
+    public String carPage(
+            @RequestParam(name = "category", required = false) String categorySlug,
+            Model model
+    ) {
         model.addAttribute("banner", bannerService.getBanner(BannerType.CAR));
-        model.addAttribute("cars", carService.getActiveCars());
+        model.addAttribute("cars", carService.getActiveCars(categorySlug));
         return "car";
     }
 
