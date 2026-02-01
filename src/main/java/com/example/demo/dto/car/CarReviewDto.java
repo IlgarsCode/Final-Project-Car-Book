@@ -14,4 +14,7 @@ public class CarReviewDto {
     private Integer rating;
     private String photoUrl;
     private LocalDateTime createdAt;
+
+    public void setEmail(String email) {
+    }
 }

@@ -214,93 +214,217 @@
                                 </p>
                             </div>
 
+                            <!-- REVIEW -->
                             <div class="tab-pane fade" id="pills-review" role="tabpanel" aria-labelledby="pills-review-tab">
                                 <div class="row">
 
-                                    <!-- LEFT: Reviews -->
+                                    <!-- LEFT: Reviews list -->
                                     <div class="col-md-7">
                                         <h3 class="head">
                                             <span th:text="${reviewCount}">0</span> Reviews
                                         </h3>
 
-                                        <div th:if="${reviews != null and !reviews.isEmpty()}">
-
-                                            <div class="review d-flex" th:each="r : ${reviews}">
-                                                <div class="user-img" style="background-image: url(/images/person_1.jpg)"></div>
-
-                                                <div class="desc">
-                                                    <h4>
-                                                        <span class="text-left" th:text="${r.fullName}">Jacob Webb</span>
-                                                        <span class="text-right"
-                                                              th:text="${#temporals.format(r.createdAt, 'dd MMMM yyyy')}">14 March 2018</span>
-                                                    </h4>
-
-                                                    <p class="star">
-                            <span>
-                                <i class="ion-ios-star" th:each="i : ${#numbers.sequence(1, r.rating)}"></i>
-                            </span>
-                                                    </p>
-
-                                                    <p th:text="${r.message}">Review text</p>
-                                                </div>
-                                            </div>
-
+                                        <!-- Empty state -->
+                                        <div th:if="${#lists.isEmpty(reviews)}" class="mt-3">
+                                            <p style="color:#6c757d;">Hələ review yoxdur. İlk review yaz 🙂</p>
                                         </div>
 
-                                        <div th:if="${reviews == null or reviews.isEmpty()}">
-                                            <p style="color:#6c757d;">Hələ review yoxdur.</p>
+                                        <!-- Reviews -->
+                                        <div th:each="r : ${reviews}" class="review d-flex" style="margin-bottom: 20px;">
+                                            <!-- user image -->
+                                            <div class="user-img"
+                                                 th:style="${r.photoUrl != null ? 'background-image:url(' + r.photoUrl + ')' : 'background-image:url(/images/person_1.jpg)'}">
+                                            </div>
+
+                                            <!-- content -->
+                                            <div class="desc" style="width:100%;">
+                                                <h4 style="display:flex; justify-content:space-between; align-items:center;">
+                                                    <span class="text-left" th:text="${r.fullName}">User</span>
+                                                    <span class="text-right"
+                                                          th:text="${r.createdAt != null ? #temporals.format(r.createdAt, 'dd MMM yyyy') : ''}">
+              01 Jan 2026
+            </span>
+                                                </h4>
+
+                                                <!-- stars -->
+                                                <p class="star" style="display:flex; justify-content:space-between; align-items:center;">
+            <span>
+              <i class="ion-ios-star" th:if="${r.rating >= 1}"></i><i class="ion-ios-star-outline" th:if="${r.rating < 1}"></i>
+              <i class="ion-ios-star" th:if="${r.rating >= 2}"></i><i class="ion-ios-star-outline" th:if="${r.rating < 2}"></i>
+              <i class="ion-ios-star" th:if="${r.rating >= 3}"></i><i class="ion-ios-star-outline" th:if="${r.rating < 3}"></i>
+              <i class="ion-ios-star" th:if="${r.rating >= 4}"></i><i class="ion-ios-star-outline" th:if="${r.rating < 4}"></i>
+              <i class="ion-ios-star" th:if="${r.rating >= 5}"></i><i class="ion-ios-star-outline" th:if="${r.rating < 5}"></i>
+            </span>
+                                                </p>
+
+                                                <p th:text="${r.message}">Message...</p>
+                                            </div>
+                                        </div>
+
+                                        <!-- Pagination (small buttons) -->
+                                        <div th:if="${reviewsPage != null && reviewsPage.totalPages > 1}"
+                                             style="display:flex; align-items:center; gap:8px; margin-top:10px;">
+
+                                            <a class="btn btn-sm btn-light"
+                                               th:classappend="${reviewsPage.first} ? ' disabled' : ''"
+                                               th:href="@{'/car/' + ${car.slug} + '?rpage=' + ${rpage - 1} + '#pills-review'}">
+                                                ‹
+                                            </a>
+
+                                            <span style="color:#000; font-size:14px;">
+          <span th:text="${rpage + 1}">1</span>/<span th:text="${reviewsPage.totalPages}">1</span>
+        </span>
+
+                                            <a class="btn btn-sm btn-light"
+                                               th:classappend="${reviewsPage.last} ? ' disabled' : ''"
+                                               th:href="@{'/car/' + ${car.slug} + '?rpage=' + ${rpage + 1} + '#pills-review'}">
+                                                ›
+                                            </a>
+
                                         </div>
                                     </div>
 
-                                    <!-- RIGHT: Form -->
+                                    <!-- RIGHT: Stats + Form -->
                                     <div class="col-md-5">
                                         <div class="rating-wrap">
                                             <h3 class="head">Give a Review</h3>
 
+                                            <!-- STATS -->
+                                            <div class="wrap" th:if="${reviewStats != null}" style="margin-bottom: 25px;">
+
+                                                <!-- helper style for spacing / color -->
+                                                <style>
+                                                    .rw-line { display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; }
+                                                    .rw-left { display:flex; align-items:center; gap:10px; color:#000; }
+                                                    .rw-right { color:#000; display:flex; align-items:center; gap:10px; }
+                                                    .rw-per { color:#000; min-width: 55px; text-align:left; }
+                                                </style>
+
+                                                <!-- 5 stars -->
+                                                <div class="rw-line">
+                                                    <div class="rw-left">
+              <span>
+                <i class="ion-ios-star"></i><i class="ion-ios-star"></i><i class="ion-ios-star"></i><i class="ion-ios-star"></i><i class="ion-ios-star"></i>
+              </span>
+                                                        <span class="rw-per">(<span th:text="${reviewStats.percent5}">0</span>%)</span>
+                                                    </div>
+                                                    <div class="rw-right">
+                                                        <span th:text="${reviewStats.count5}">0</span>
+                                                        <span>Reviews</span>
+                                                    </div>
+                                                </div>
+
+                                                <!-- 4 stars -->
+                                                <div class="rw-line">
+                                                    <div class="rw-left">
+              <span>
+                <i class="ion-ios-star"></i><i class="ion-ios-star"></i><i class="ion-ios-star"></i><i class="ion-ios-star"></i><i class="ion-ios-star-outline"></i>
+              </span>
+                                                        <span class="rw-per">(<span th:text="${reviewStats.percent4}">0</span>%)</span>
+                                                    </div>
+                                                    <div class="rw-right">
+                                                        <span th:text="${reviewStats.count4}">0</span>
+                                                        <span>Reviews</span>
+                                                    </div>
+                                                </div>
+
+                                                <!-- 3 stars -->
+                                                <div class="rw-line">
+                                                    <div class="rw-left">
+              <span>
+                <i class="ion-ios-star"></i><i class="ion-ios-star"></i><i class="ion-ios-star"></i><i class="ion-ios-star-outline"></i><i class="ion-ios-star-outline"></i>
+              </span>
+                                                        <span class="rw-per">(<span th:text="${reviewStats.percent3}">0</span>%)</span>
+                                                    </div>
+                                                    <div class="rw-right">
+                                                        <span th:text="${reviewStats.count3}">0</span>
+                                                        <span>Reviews</span>
+                                                    </div>
+                                                </div>
+
+                                                <!-- 2 stars -->
+                                                <div class="rw-line">
+                                                    <div class="rw-left">
+              <span>
+                <i class="ion-ios-star"></i><i class="ion-ios-star"></i><i class="ion-ios-star-outline"></i><i class="ion-ios-star-outline"></i><i class="ion-ios-star-outline"></i>
+              </span>
+                                                        <span class="rw-per">(<span th:text="${reviewStats.percent2}">0</span>%)</span>
+                                                    </div>
+                                                    <div class="rw-right">
+                                                        <span th:text="${reviewStats.count2}">0</span>
+                                                        <span>Reviews</span>
+                                                    </div>
+                                                </div>
+
+                                                <!-- 1 star -->
+                                                <div class="rw-line">
+                                                    <div class="rw-left">
+              <span>
+                <i class="ion-ios-star"></i><i class="ion-ios-star-outline"></i><i class="ion-ios-star-outline"></i><i class="ion-ios-star-outline"></i><i class="ion-ios-star-outline"></i>
+              </span>
+                                                        <span class="rw-per">(<span th:text="${reviewStats.percent1}">0</span>%)</span>
+                                                    </div>
+                                                    <div class="rw-right">
+                                                        <span th:text="${reviewStats.count1}">0</span>
+                                                        <span>Reviews</span>
+                                                    </div>
+                                                </div>
+
+                                            </div>
+
+                                            <!-- FORM -->
                                             <form th:action="@{'/car/' + ${car.slug} + '/review'}"
                                                   th:object="${reviewForm}"
-                                                  method="post"
-                                                  class="p-4 bg-light">
+                                                  method="post">
 
                                                 <div class="form-group">
-                                                    <label>Full name *</label>
-                                                    <input type="text" class="form-control" th:field="*{fullName}">
-                                                    <small class="text-danger"
-                                                           th:if="${#fields.hasErrors('fullName')}"
-                                                           th:errors="*{fullName}"></small>
+                                                    <input type="text" class="form-control"
+                                                           th:field="*{fullName}"
+                                                           placeholder="Full name">
+                                                    <small class="text-danger" th:if="${#fields.hasErrors('fullName')}" th:errors="*{fullName}"></small>
                                                 </div>
 
                                                 <div class="form-group">
-                                                    <label>Rating *</label>
+                                                    <input type="email" class="form-control"
+                                                           th:field="*{email}"
+                                                           placeholder="Email (optional)">
+                                                    <small class="text-danger" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></small>
+                                                </div>
+
+                                                <div class="form-group">
+                                                    <label style="color:#000;">Rating</label>
                                                     <select class="form-control" th:field="*{rating}">
-                                                        <option value="" disabled selected>Choose</option>
-                                                        <option th:each="i : ${#numbers.sequence(1,5)}"
-                                                                th:value="${i}"
-                                                                th:text="${i}"></option>
+                                                        <option value="">Select</option>
+                                                        <option value="5">5</option>
+                                                        <option value="4">4</option>
+                                                        <option value="3">3</option>
+                                                        <option value="2">2</option>
+                                                        <option value="1">1</option>
                                                     </select>
-                                                    <small class="text-danger"
-                                                           th:if="${#fields.hasErrors('rating')}"
-                                                           th:errors="*{rating}"></small>
+                                                    <small class="text-danger" th:if="${#fields.hasErrors('rating')}" th:errors="*{rating}"></small>
                                                 </div>
 
                                                 <div class="form-group">
-                                                    <label>Message *</label>
-                                                    <textarea class="form-control" rows="5" th:field="*{message}"></textarea>
-                                                    <small class="text-danger"
-                                                           th:if="${#fields.hasErrors('message')}"
-                                                           th:errors="*{message}"></small>
+            <textarea class="form-control" rows="4"
+                      th:field="*{message}"
+                      placeholder="Your message"></textarea>
+                                                    <small class="text-danger" th:if="${#fields.hasErrors('message')}" th:errors="*{message}"></small>
                                                 </div>
 
                                                 <div class="form-group">
-                                                    <button type="submit" class="btn btn-primary py-2 px-4">Post Review</button>
+                                                    <button type="submit" class="btn btn-primary py-2 px-4">
+                                                        Submit Review
+                                                    </button>
                                                 </div>
-
                                             </form>
+
                                         </div>
                                     </div>
 
                                 </div>
                             </div>
+
+
 
                         </div><!-- tab-content -->
 
