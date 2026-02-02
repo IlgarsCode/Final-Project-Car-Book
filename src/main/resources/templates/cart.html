@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+<head>
+    <meta charset="UTF-8">
+    <title>Cart</title>
+</head>
+<body>
+<div layout:fragment="content">
+
+    <section class="hero-wrap hero-wrap-2 js-fullheight" style="background-image: url('/images/bg_3.jpg');" data-stellar-background-ratio="0.5">
+        <div class="overlay"></div>
+        <div class="container">
+            <div class="row no-gutters slider-text js-fullheight align-items-end justify-content-start">
+                <div class="col-md-9 ftco-animate pb-5">
+                    <p class="breadcrumbs">
+                        <span class="mr-2"><a th:href="@{/}">Home <i class="ion-ios-arrow-forward"></i></a></span>
+                        <span>Cart <i class="ion-ios-arrow-forward"></i></span>
+                    </p>
+                    <h1 class="mb-3 bread">Your Cart</h1>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="ftco-section">
+        <div class="container">
+
+            <div th:if="${cart.items == null or #lists.isEmpty(cart.items)}" class="alert alert-info">
+                Cart boşdur.
+            </div>
+
+            <div th:if="${cart.items != null and !#lists.isEmpty(cart.items)}" class="row">
+                <div class="col-md-12 ftco-animate">
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead class="thead-primary">
+                            <tr class="text-center">
+                                <th>Car</th>
+                                <th>Daily</th>
+                                <th>Qty</th>
+                                <th>Remove</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr th:each="it : ${cart.items}" class="text-center">
+                                <td class="text-left">
+                                    <div class="d-flex align-items-center">
+                                        <div class="img" style="width:90px;height:60px;background-size:cover;background-position:center;border-radius:6px;"
+                                             th:style="'background-image:url(' + (${it.car.imageUrl} != null ? ${it.car.imageUrl} : '/images/car-1.jpg') + ')'">
+                                        </div>
+                                        <div class="pl-3">
+                                            <div class="font-weight-bold" th:text="${it.car.title}">Car title</div>
+                                            <small class="text-muted" th:text="${it.car.brand}">Brand</small>
+                                        </div>
+                                    </div>
+                                </td>
+
+                                <td>
+                                    <span>$</span><span th:text="${it.dailyRateSnapshot}">0</span>
+                                </td>
+
+                                <td th:text="${it.quantity}">1</td>
+
+                                <td>
+                                    <form th:action="@{'/cart/remove/' + ${it.id}}" method="post">
+                                        <button class="btn btn-danger btn-sm">Remove</button>
+                                    </form>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="d-flex justify-content-between">
+                        <form th:action="@{/cart/clear}" method="post">
+                            <button class="btn btn-outline-danger">Clear Cart</button>
+                        </form>
+
+                        <a th:href="@{/checkout}" class="btn btn-primary">Proceed to Checkout</a>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+</div>
+</body>
+</html>

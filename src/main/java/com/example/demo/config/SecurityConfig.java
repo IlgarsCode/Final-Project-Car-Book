@@ -2,7 +2,9 @@ package com.example.demo.config;
 
 import com.example.demo.security.CustomUserDetailsService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.context.annotation.*;
+import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -17,7 +19,7 @@ public class SecurityConfig {
 
     @Bean
     public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder(); // düzgün seçim
+        return new BCryptPasswordEncoder();
     }
 
     @Bean
@@ -32,24 +34,47 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
         http
-                .csrf(csrf -> csrf.disable()) // form post var, amma hələlik disable. İstəsən sonra açarıq.
+                .csrf(csrf -> csrf.disable())
+
+                // ✅ 4-cü məsələ: provider-i sistemə bağla (sabit işləsin)
+                .authenticationProvider(authenticationProvider(passwordEncoder()))
+
                 .authorizeHttpRequests(auth -> auth
+
+                        .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()
+                        .requestMatchers("/fonts/**").permitAll()
+
+                        .requestMatchers("/auth/**").permitAll()
+
                         .requestMatchers(
-                                "/", "/index", "/car", "/car/**",
-                                "/blog", "/blog/**",
+                                "/", "/index",
+                                "/about", "/services", "/contact",
                                 "/pricing", "/pricing/**",
-                                "/auth/login", "/auth/register",
-                                "/css/**", "/js/**", "/images/**", "/webjars/**"
+                                "/car", "/car/**",
+                                "/blog", "/blog/**"
                         ).permitAll()
+
                         .requestMatchers("/dashboard/**").hasRole("ADMIN")
-                        .anyRequest().authenticated()
+
+                        .requestMatchers(
+                                "/cart/**",
+                                "/booking/**",
+                                "/checkout/**",
+                                "/order/**",
+                                "/profile/**"
+                        ).authenticated()
+
+                        .anyRequest().permitAll()
                 )
                 .formLogin(form -> form
                         .loginPage("/auth/login")
-                        .loginProcessingUrl("/auth/login") // form action buraya
+                        .loginProcessingUrl("/auth/login")
                         .usernameParameter("email")
                         .passwordParameter("password")
+
+                        // bunu sonra "previous page"-ə qayıtmaq kimi edərik
                         .defaultSuccessUrl("/", true)
+
                         .failureUrl("/auth/login?error=true")
                         .permitAll()
                 )
