@@ -111,7 +111,7 @@
                                 <td class="product-name">
                                     <h3 th:text="${row.carTitle}">Car</h3>
 
-                                    <!-- RATING (DINAMIK) -->
+                                    <!-- RATING -->
                                     <p class="mb-0 rated">
                                         <span>rated:</span>
 
@@ -126,48 +126,54 @@
 
                                 <!-- PER HOUR -->
                                 <td class="price">
-                                    <p class="btn-custom"><a th:href="@{'/car/' + ${row.carSlug}}">Details</a></p>
+                                    <p class="btn-custom">
+                                        <a th:href="@{'/car/' + ${row.carSlug} + '?rate=HOURLY'}">Details</a>
+                                    </p>
                                     <div class="price-rate">
                                         <h3>
-            <span class="num"><small class="currency">$</small>
-                <span th:text="${row.hourlyRate}">0</span>
-            </span>
+                                            <span class="num"><small class="currency">$</small>
+                                                <span th:text="${row.hourlyRate}">0</span>
+                                            </span>
                                             <span class="per">/per hour</span>
                                         </h3>
 
                                         <span class="subheading"
                                               th:if="${row.fuelSurchargePerHour != null}"
                                               th:text="'$' + ${row.fuelSurchargePerHour} + '/hour fuel surcharges'">
-        </span>
+                                        </span>
                                     </div>
                                 </td>
 
                                 <!-- PER DAY -->
                                 <td class="price">
-                                    <p class="btn-custom"><a th:href="@{'/car/' + ${row.carSlug}}">Details</a></p>
+                                    <p class="btn-custom">
+                                        <a th:href="@{'/car/' + ${row.carSlug} + '?rate=DAILY'}">Details</a>
+                                    </p>
                                     <div class="price-rate">
                                         <h3>
-            <span class="num"><small class="currency">$</small>
-                <span th:text="${row.dailyRate}">0</span>
-            </span>
+                                            <span class="num"><small class="currency">$</small>
+                                                <span th:text="${row.dailyRate}">0</span>
+                                            </span>
                                             <span class="per">/per day</span>
                                         </h3>
 
                                         <span class="subheading"
                                               th:if="${row.fuelSurchargePerHour != null}"
                                               th:text="'$' + ${row.fuelSurchargePerHour} + '/hour fuel surcharges'">
-        </span>
+                                        </span>
                                     </div>
                                 </td>
 
                                 <!-- LEASING -->
                                 <td class="price">
-                                    <p class="btn-custom"><a th:href="@{'/car/' + ${row.carSlug}}">Details</a></p>
+                                    <p class="btn-custom">
+                                        <a th:href="@{'/car/' + ${row.carSlug} + '?rate=LEASING'}">Details</a>
+                                    </p>
                                     <div class="price-rate">
                                         <h3>
-            <span class="num"><small class="currency">$</small>
-                <span th:text="${row.monthlyLeasingRate}">0</span>
-            </span>
+                                            <span class="num"><small class="currency">$</small>
+                                                <span th:text="${row.monthlyLeasingRate}">0</span>
+                                            </span>
                                             <span class="per">/per month</span>
                                         </h3>
 

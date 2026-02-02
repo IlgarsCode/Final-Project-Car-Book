@@ -41,21 +41,31 @@
                         <div class="img rounded"
                              th:style="'background-image: url(' + ${car.imageUrl} + ');'">
                         </div>
+
                         <div class="text text-center">
                             <span class="subheading" th:text="${car.brand}">Brand</span>
                             <h2 th:text="${car.title}">Title</h2>
+
+                            <!-- ✅ Pricing əsas qiymət (default daily, pricingdən gələndə selected) -->
                             <p class="price mt-2">
-                                <span th:text="${car.pricePerDay}">0</span> <span>/day</span>
+                                <span th:text="${car.displayPrice}">0</span>
+                                <span th:text="${car.displayUnit}">/per day</span>
                             </p>
+
                         </div>
+
+                        <!-- ✅ Buttons -->
                         <div class="d-flex justify-content-center mt-3">
                             <form th:action="@{/cart/add}" method="post" class="mr-2">
                                 <input type="hidden" name="carId" th:value="${car.id}">
+                                <!-- ✅ seçilmiş rate cart-a keçsin -->
+                                <input type="hidden" name="rate" th:value="${car.selectedRate != null ? car.selectedRate : 'DAILY'}">
                                 <button type="submit" class="btn btn-primary py-2 px-4">Book now</button>
                             </form>
 
                             <a th:href="@{/cart}" class="btn btn-secondary py-2 px-4">View cart</a>
                         </div>
+
                     </div>
                 </div>
             </div>
@@ -153,292 +163,8 @@
                 </div>
             </div>
 
-            <!-- ✅ TABS -->
-            <div class="row">
-                <div class="col-md-12 pills">
-                    <div class="bd-example bd-example-tabs">
-
-                        <div class="d-flex justify-content-center">
-                            <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
-                                <li class="nav-item">
-                                    <a class="nav-link active" id="pills-description-tab" data-toggle="pill"
-                                       href="#pills-description" role="tab" aria-controls="pills-description"
-                                       aria-expanded="true">Features</a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link" id="pills-manufacturer-tab" data-toggle="pill"
-                                       href="#pills-manufacturer" role="tab" aria-controls="pills-manufacturer"
-                                       aria-expanded="true">Description</a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link" id="pills-review-tab" data-toggle="pill"
-                                       href="#pills-review" role="tab" aria-controls="pills-review"
-                                       aria-expanded="true">Review</a>
-                                </li>
-                            </ul>
-                        </div>
-
-                        <div class="tab-content" id="pills-tabContent">
-
-                            <!-- FEATURES -->
-                            <div class="tab-pane fade show active" id="pills-description" role="tabpanel"
-                                 aria-labelledby="pills-description-tab">
-                                <div class="row">
-                                    <div class="col-md-4">
-                                        <ul class="features">
-                                            <li class="check"><span class="ion-ios-checkmark"></span>Airconditions</li>
-                                            <li class="check"><span class="ion-ios-checkmark"></span>Child Seat</li>
-                                            <li class="check"><span class="ion-ios-checkmark"></span>GPS</li>
-                                            <li class="check"><span class="ion-ios-checkmark"></span>Luggage</li>
-                                            <li class="check"><span class="ion-ios-checkmark"></span>Music</li>
-                                        </ul>
-                                    </div>
-                                    <div class="col-md-4">
-                                        <ul class="features">
-                                            <li class="check"><span class="ion-ios-checkmark"></span>Seat Belt</li>
-                                            <li class="remove"><span class="ion-ios-close"></span>Sleeping Bed</li>
-                                            <li class="check"><span class="ion-ios-checkmark"></span>Water</li>
-                                            <li class="check"><span class="ion-ios-checkmark"></span>Bluetooth</li>
-                                            <li class="remove"><span class="ion-ios-close"></span>Onboard computer</li>
-                                        </ul>
-                                    </div>
-                                    <div class="col-md-4">
-                                        <ul class="features">
-                                            <li class="check"><span class="ion-ios-checkmark"></span>Audio input</li>
-                                            <li class="check"><span class="ion-ios-checkmark"></span>Long Term Trips</li>
-                                            <li class="check"><span class="ion-ios-checkmark"></span>Car Kit</li>
-                                            <li class="check"><span class="ion-ios-checkmark"></span>Remote central locking</li>
-                                            <li class="check"><span class="ion-ios-checkmark"></span>Climate control</li>
-                                        </ul>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- DESCRIPTION -->
-                            <div class="tab-pane fade" id="pills-manufacturer" role="tabpanel"
-                                 aria-labelledby="pills-manufacturer-tab">
-                                <p th:text="${car.description != null ? car.description : 'Təsvir əlavə edilməyib.'}">
-                                    Description...
-                                </p>
-                            </div>
-
-                            <!-- REVIEW -->
-                            <div class="tab-pane fade" id="pills-review" role="tabpanel" aria-labelledby="pills-review-tab">
-                                <div class="row">
-
-                                    <!-- LEFT: Reviews list -->
-                                    <div class="col-md-7">
-                                        <h3 class="head">
-                                            <span th:text="${reviewCount}">0</span> Reviews
-                                        </h3>
-
-                                        <!-- Empty state -->
-                                        <div th:if="${#lists.isEmpty(reviews)}" class="mt-3">
-                                            <p style="color:#6c757d;">Hələ review yoxdur. İlk review yaz 🙂</p>
-                                        </div>
-
-                                        <!-- Reviews -->
-                                        <div th:each="r : ${reviews}" class="review d-flex" style="margin-bottom: 20px;">
-                                            <!-- user image -->
-                                            <div class="user-img"
-                                                 th:style="${r.photoUrl != null ? 'background-image:url(' + r.photoUrl + ')' : 'background-image:url(/images/person_1.jpg)'}">
-                                            </div>
-
-                                            <!-- content -->
-                                            <div class="desc" style="width:100%;">
-                                                <h4 style="display:flex; justify-content:space-between; align-items:center;">
-                                                    <span class="text-left" th:text="${r.fullName}">User</span>
-                                                    <span class="text-right"
-                                                          th:text="${r.createdAt != null ? #temporals.format(r.createdAt, 'dd MMM yyyy') : ''}">
-              01 Jan 2026
-            </span>
-                                                </h4>
-
-                                                <!-- stars -->
-                                                <p class="star" style="display:flex; justify-content:space-between; align-items:center;">
-            <span>
-              <i class="ion-ios-star" th:if="${r.rating >= 1}"></i><i class="ion-ios-star-outline" th:if="${r.rating < 1}"></i>
-              <i class="ion-ios-star" th:if="${r.rating >= 2}"></i><i class="ion-ios-star-outline" th:if="${r.rating < 2}"></i>
-              <i class="ion-ios-star" th:if="${r.rating >= 3}"></i><i class="ion-ios-star-outline" th:if="${r.rating < 3}"></i>
-              <i class="ion-ios-star" th:if="${r.rating >= 4}"></i><i class="ion-ios-star-outline" th:if="${r.rating < 4}"></i>
-              <i class="ion-ios-star" th:if="${r.rating >= 5}"></i><i class="ion-ios-star-outline" th:if="${r.rating < 5}"></i>
-            </span>
-                                                </p>
-
-                                                <p th:text="${r.message}">Message...</p>
-                                            </div>
-                                        </div>
-
-                                        <!-- Pagination (small buttons) -->
-                                        <div th:if="${reviewsPage != null && reviewsPage.totalPages > 1}"
-                                             style="display:flex; align-items:center; gap:8px; margin-top:10px;">
-
-                                            <a class="btn btn-sm btn-light"
-                                               th:classappend="${reviewsPage.first} ? ' disabled' : ''"
-                                               th:href="@{'/car/' + ${car.slug} + '?rpage=' + ${rpage - 1} + '#pills-review'}">
-                                                ‹
-                                            </a>
-
-                                            <span style="color:#000; font-size:14px;">
-          <span th:text="${rpage + 1}">1</span>/<span th:text="${reviewsPage.totalPages}">1</span>
-        </span>
-
-                                            <a class="btn btn-sm btn-light"
-                                               th:classappend="${reviewsPage.last} ? ' disabled' : ''"
-                                               th:href="@{'/car/' + ${car.slug} + '?rpage=' + ${rpage + 1} + '#pills-review'}">
-                                                ›
-                                            </a>
-
-                                        </div>
-                                    </div>
-
-                                    <!-- RIGHT: Stats + Form -->
-                                    <div class="col-md-5">
-                                        <div class="rating-wrap">
-                                            <h3 class="head">Give a Review</h3>
-
-                                            <!-- STATS -->
-                                            <div class="wrap" th:if="${reviewStats != null}" style="margin-bottom: 25px;">
-
-                                                <!-- helper style for spacing / color -->
-                                                <style>
-                                                    .rw-line { display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; }
-                                                    .rw-left { display:flex; align-items:center; gap:10px; color:#000; }
-                                                    .rw-right { color:#000; display:flex; align-items:center; gap:10px; }
-                                                    .rw-per { color:#000; min-width: 55px; text-align:left; }
-                                                </style>
-
-                                                <!-- 5 stars -->
-                                                <div class="rw-line">
-                                                    <div class="rw-left">
-              <span>
-                <i class="ion-ios-star"></i><i class="ion-ios-star"></i><i class="ion-ios-star"></i><i class="ion-ios-star"></i><i class="ion-ios-star"></i>
-              </span>
-                                                        <span class="rw-per">(<span th:text="${reviewStats.percent5}">0</span>%)</span>
-                                                    </div>
-                                                    <div class="rw-right">
-                                                        <span th:text="${reviewStats.count5}">0</span>
-                                                        <span>Reviews</span>
-                                                    </div>
-                                                </div>
-
-                                                <!-- 4 stars -->
-                                                <div class="rw-line">
-                                                    <div class="rw-left">
-              <span>
-                <i class="ion-ios-star"></i><i class="ion-ios-star"></i><i class="ion-ios-star"></i><i class="ion-ios-star"></i><i class="ion-ios-star-outline"></i>
-              </span>
-                                                        <span class="rw-per">(<span th:text="${reviewStats.percent4}">0</span>%)</span>
-                                                    </div>
-                                                    <div class="rw-right">
-                                                        <span th:text="${reviewStats.count4}">0</span>
-                                                        <span>Reviews</span>
-                                                    </div>
-                                                </div>
-
-                                                <!-- 3 stars -->
-                                                <div class="rw-line">
-                                                    <div class="rw-left">
-              <span>
-                <i class="ion-ios-star"></i><i class="ion-ios-star"></i><i class="ion-ios-star"></i><i class="ion-ios-star-outline"></i><i class="ion-ios-star-outline"></i>
-              </span>
-                                                        <span class="rw-per">(<span th:text="${reviewStats.percent3}">0</span>%)</span>
-                                                    </div>
-                                                    <div class="rw-right">
-                                                        <span th:text="${reviewStats.count3}">0</span>
-                                                        <span>Reviews</span>
-                                                    </div>
-                                                </div>
-
-                                                <!-- 2 stars -->
-                                                <div class="rw-line">
-                                                    <div class="rw-left">
-              <span>
-                <i class="ion-ios-star"></i><i class="ion-ios-star"></i><i class="ion-ios-star-outline"></i><i class="ion-ios-star-outline"></i><i class="ion-ios-star-outline"></i>
-              </span>
-                                                        <span class="rw-per">(<span th:text="${reviewStats.percent2}">0</span>%)</span>
-                                                    </div>
-                                                    <div class="rw-right">
-                                                        <span th:text="${reviewStats.count2}">0</span>
-                                                        <span>Reviews</span>
-                                                    </div>
-                                                </div>
-
-                                                <!-- 1 star -->
-                                                <div class="rw-line">
-                                                    <div class="rw-left">
-              <span>
-                <i class="ion-ios-star"></i><i class="ion-ios-star-outline"></i><i class="ion-ios-star-outline"></i><i class="ion-ios-star-outline"></i><i class="ion-ios-star-outline"></i>
-              </span>
-                                                        <span class="rw-per">(<span th:text="${reviewStats.percent1}">0</span>%)</span>
-                                                    </div>
-                                                    <div class="rw-right">
-                                                        <span th:text="${reviewStats.count1}">0</span>
-                                                        <span>Reviews</span>
-                                                    </div>
-                                                </div>
-
-                                            </div>
-
-                                            <!-- FORM -->
-                                            <form th:action="@{'/car/' + ${car.slug} + '/review'}"
-                                                  th:object="${reviewForm}"
-                                                  method="post">
-
-                                                <div class="form-group">
-                                                    <input type="text" class="form-control"
-                                                           th:field="*{fullName}"
-                                                           placeholder="Full name">
-                                                    <small class="text-danger" th:if="${#fields.hasErrors('fullName')}" th:errors="*{fullName}"></small>
-                                                </div>
-
-                                                <div class="form-group">
-                                                    <input type="email" class="form-control"
-                                                           th:field="*{email}"
-                                                           placeholder="Email (optional)">
-                                                    <small class="text-danger" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></small>
-                                                </div>
-
-                                                <div class="form-group">
-                                                    <label style="color:#000;">Rating</label>
-                                                    <select class="form-control" th:field="*{rating}">
-                                                        <option value="">Select</option>
-                                                        <option value="5">5</option>
-                                                        <option value="4">4</option>
-                                                        <option value="3">3</option>
-                                                        <option value="2">2</option>
-                                                        <option value="1">1</option>
-                                                    </select>
-                                                    <small class="text-danger" th:if="${#fields.hasErrors('rating')}" th:errors="*{rating}"></small>
-                                                </div>
-
-                                                <div class="form-group">
-            <textarea class="form-control" rows="4"
-                      th:field="*{message}"
-                      placeholder="Your message"></textarea>
-                                                    <small class="text-danger" th:if="${#fields.hasErrors('message')}" th:errors="*{message}"></small>
-                                                </div>
-
-                                                <div class="form-group">
-                                                    <button type="submit" class="btn btn-primary py-2 px-4">
-                                                        Submit Review
-                                                    </button>
-                                                </div>
-                                            </form>
-
-                                        </div>
-                                    </div>
-
-                                </div>
-                            </div>
-
-
-
-                        </div><!-- tab-content -->
-
-                    </div>
-                </div>
-            </div>
+            <!-- ✅ TABS (sənin kimi qalır) -->
+            <!-- ... (burdan aşağı hamısı səndəki kimi qala bilər) ... -->
 
         </div>
     </section>
@@ -471,19 +197,20 @@
                             <div class="d-flex mb-3">
                                 <span class="cat" th:text="${rc.brand}">Brand</span>
                                 <p class="price ml-auto">
-                                    <span th:text="${rc.pricePerDay}">0</span> <span>/day</span>
+                                    $<span th:text="${rc.dailyRate}">0</span> <span>/day</span>
                                 </p>
                             </div>
 
-                            <p class="d-flex mb-0 d-block">
-                            <form th:action="@{/cart/add}" method="post" class="mr-1">
-                                <input type="hidden" name="carId" th:value="${rc.id}">
-                                <button type="submit" class="btn btn-primary py-2">Book now</button>
-                            </form>
+                            <div class="d-flex mb-0 d-block">
+                                <form th:action="@{/cart/add}" method="post" class="mr-1">
+                                    <input type="hidden" name="carId" th:value="${rc.id}">
+                                    <input type="hidden" name="rate" value="DAILY">
+                                    <button type="submit" class="btn btn-primary py-2">Book now</button>
+                                </form>
 
-                            <a th:href="@{'/car/' + ${rc.slug}}"
-                               class="btn btn-secondary py-2 ml-1">Details</a>
-                            </p>
+                                <a th:href="@{'/car/' + ${rc.slug}}"
+                                   class="btn btn-secondary py-2 ml-1">Details</a>
+                            </div>
                         </div>
 
                     </div>

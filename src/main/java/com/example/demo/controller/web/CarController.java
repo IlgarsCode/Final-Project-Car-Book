@@ -2,6 +2,7 @@ package com.example.demo.controller.web;
 
 import com.example.demo.dto.car.CarReviewCreateDto;
 import com.example.demo.dto.enums.BannerType;
+import com.example.demo.dto.enums.PricingRateType;
 import com.example.demo.services.BannerService;
 import com.example.demo.services.CarReviewService;
 import com.example.demo.services.CarService;
@@ -32,26 +33,26 @@ public class CarController {
 
     @GetMapping("/car/{slug}")
     public String carSingle(@PathVariable String slug,
+                            @RequestParam(name = "rate", required = false) String rate,
                             @RequestParam(name = "rpage", defaultValue = "0") int rpage,
                             Model model) {
 
-        var car = carService.getCarDetailBySlug(slug);
+        var rateType = PricingRateType.fromParam(rate);
+
+        var car = carService.getCarDetailBySlug(slug, rateType);
 
         model.addAttribute("banner", bannerService.getBanner(BannerType.CAR_SINGLE));
         model.addAttribute("car", car);
         model.addAttribute("relatedCars", carService.getRelatedCars(car.getId(), 3));
 
-        // ✅ Reviews pagination (1 səhifədə 5)
         var reviewsPage = carReviewService.getActiveReviewsByCarSlug(slug, rpage, 5);
         model.addAttribute("reviewsPage", reviewsPage);
         model.addAttribute("reviews", reviewsPage.getContent());
         model.addAttribute("rpage", rpage);
 
-        // ✅ Review count + stats
         model.addAttribute("reviewCount", carReviewService.countActiveByCarSlug(slug));
         model.addAttribute("reviewStats", carReviewService.getStatsByCarSlug(slug));
 
-        // ✅ Form
         model.addAttribute("reviewForm", new CarReviewCreateDto());
 
         return "car-single";
