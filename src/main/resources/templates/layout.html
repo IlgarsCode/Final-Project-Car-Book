@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <html lang="en"
       xmlns:th="http://www.thymeleaf.org"
-      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <title>Carbook - Free Bootstrap 4 Template by Colorlib</title>
     <meta charset="utf-8">
@@ -48,6 +49,38 @@
                 <li class="nav-item"><a th:href="@{/car}" class="nav-link">Cars</a></li>
                 <li class="nav-item"><a th:href="@{/blog}" class="nav-link">Blog</a></li>
                 <li class="nav-item"><a th:href="@{/contact}" class="nav-link">Contact</a></li>
+
+                <!-- ✅ Admin görsün -->
+                <li class="nav-item" sec:authorize="hasRole('ADMIN')">
+                    <a th:href="@{/dashboard}" class="nav-link">Dashboard</a>
+                </li>
+
+                <!-- ✅ Login/Register (yalnız anonymous) -->
+                <li class="nav-item" sec:authorize="isAnonymous()">
+                    <a th:href="@{/auth/login}" class="nav-link">Login</a>
+                </li>
+                <li class="nav-item" sec:authorize="isAnonymous()">
+                    <a th:href="@{/auth/register}" class="nav-link">Register</a>
+                </li>
+
+                <!-- ✅ User info + Logout (yalnız authenticated) -->
+                <li class="nav-item" sec:authorize="isAuthenticated()">
+                    <a href="#" class="nav-link" style="cursor:default;">
+                        <span class="icon-user"></span>
+                        <span th:text="${#authentication.name}">user@email.com</span>
+                    </a>
+                </li>
+
+                <!-- Logout GET olmaz; Security-də logoutUrl POST-dur. Ona görə form ilə edirik -->
+                <li class="nav-item" sec:authorize="isAuthenticated()">
+                    <form th:action="@{/auth/logout}" method="post" style="margin:0;">
+                        <button type="submit" class="nav-link btn btn-link"
+                                style="padding-top: .9rem; padding-bottom: .9rem; color: rgba(255,255,255,.7); text-decoration:none;">
+                            Logout
+                        </button>
+                    </form>
+                </li>
+
             </ul>
         </div>
     </div>
