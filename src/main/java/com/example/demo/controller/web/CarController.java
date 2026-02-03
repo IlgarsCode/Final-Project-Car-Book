@@ -33,13 +33,13 @@ public class CarController {
 
     @GetMapping("/car/{slug}")
     public String carSingle(@PathVariable String slug,
-                            @RequestParam(name = "rate", required = false) String rate,
+                            @RequestParam(name = "rate", required = false) PricingRateType rate,
                             @RequestParam(name = "rpage", defaultValue = "0") int rpage,
                             Model model) {
 
-        var rateType = PricingRateType.fromParam(rate);
+        PricingRateType selected = (rate == null) ? PricingRateType.DAILY : rate;
 
-        var car = carService.getCarDetailBySlug(slug, rateType);
+        var car = carService.getCarDetailBySlug(slug, selected);
 
         model.addAttribute("banner", bannerService.getBanner(BannerType.CAR_SINGLE));
         model.addAttribute("car", car);
@@ -52,7 +52,6 @@ public class CarController {
 
         model.addAttribute("reviewCount", carReviewService.countActiveByCarSlug(slug));
         model.addAttribute("reviewStats", carReviewService.getStatsByCarSlug(slug));
-
         model.addAttribute("reviewForm", new CarReviewCreateDto());
 
         return "car-single";

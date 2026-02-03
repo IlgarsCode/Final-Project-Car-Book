@@ -95,7 +95,7 @@
 
                             <tbody>
 
-                            <tr th:if="${#lists.isEmpty(rows)}">
+                            <tr th:if="${rows == null or #lists.isEmpty(rows)}">
                                 <td colspan="5" class="text-center py-5" style="color:#6c757d;">
                                     Pricing məlumatı tapılmadı.
                                 </td>
@@ -129,16 +129,27 @@
                                     <p class="btn-custom">
                                         <a th:href="@{'/car/' + ${row.carSlug} + '?rate=HOURLY'}">Details</a>
                                     </p>
+
+                                    <!-- ✅ Book now (HOURLY) -->
+                                    <form th:action="@{/cart/add}" method="post" style="margin:0 0 10px 0;">
+                                        <input type="hidden" name="carId" th:value="${row.carId}">
+                                        <input type="hidden" name="rateType" value="HOURLY">
+                                        <!-- unitCount: burada default 1 saxlayırıq -->
+                                        <input type="hidden" name="unitCount" value="1">
+                                        <button type="submit" class="btn btn-primary btn-sm">Book now</button>
+                                    </form>
+
                                     <div class="price-rate">
                                         <h3>
-                                            <span class="num"><small class="currency">$</small>
+                                            <span class="num">
+                                                <small class="currency">$</small>
                                                 <span th:text="${row.hourlyRate}">0</span>
                                             </span>
                                             <span class="per">/per hour</span>
                                         </h3>
 
                                         <span class="subheading"
-                                              th:if="${row.fuelSurchargePerHour != null}"
+                                              th:if="${row.fuelSurchargePerHour != null and row.fuelSurchargePerHour.doubleValue() > 0}"
                                               th:text="'$' + ${row.fuelSurchargePerHour} + '/hour fuel surcharges'">
                                         </span>
                                     </div>
@@ -149,18 +160,23 @@
                                     <p class="btn-custom">
                                         <a th:href="@{'/car/' + ${row.carSlug} + '?rate=DAILY'}">Details</a>
                                     </p>
+
+                                    <!-- ✅ Book now (DAILY) -->
+                                    <form th:action="@{/cart/add}" method="post" style="margin:0 0 10px 0;">
+                                        <input type="hidden" name="carId" th:value="${row.carId}">
+                                        <input type="hidden" name="rateType" value="DAILY">
+                                        <input type="hidden" name="unitCount" value="1">
+                                        <button type="submit" class="btn btn-primary btn-sm">Book now</button>
+                                    </form>
+
                                     <div class="price-rate">
                                         <h3>
-                                            <span class="num"><small class="currency">$</small>
+                                            <span class="num">
+                                                <small class="currency">$</small>
                                                 <span th:text="${row.dailyRate}">0</span>
                                             </span>
                                             <span class="per">/per day</span>
                                         </h3>
-
-                                        <span class="subheading"
-                                              th:if="${row.fuelSurchargePerHour != null}"
-                                              th:text="'$' + ${row.fuelSurchargePerHour} + '/hour fuel surcharges'">
-                                        </span>
                                     </div>
                                 </td>
 
@@ -169,18 +185,23 @@
                                     <p class="btn-custom">
                                         <a th:href="@{'/car/' + ${row.carSlug} + '?rate=LEASING'}">Details</a>
                                     </p>
+
+                                    <!-- ✅ Book now (LEASING) -->
+                                    <form th:action="@{/cart/add}" method="post" style="margin:0 0 10px 0;">
+                                        <input type="hidden" name="carId" th:value="${row.carId}">
+                                        <input type="hidden" name="rateType" value="LEASING">
+                                        <input type="hidden" name="unitCount" value="1">
+                                        <button type="submit" class="btn btn-primary btn-sm">Book now</button>
+                                    </form>
+
                                     <div class="price-rate">
                                         <h3>
-                                            <span class="num"><small class="currency">$</small>
+                                            <span class="num">
+                                                <small class="currency">$</small>
                                                 <span th:text="${row.monthlyLeasingRate}">0</span>
                                             </span>
                                             <span class="per">/per month</span>
                                         </h3>
-
-                                        <span class="subheading"
-                                              th:if="${row.fuelSurchargePerHour != null}"
-                                              th:text="'$' + ${row.fuelSurchargePerHour} + '/hour fuel surcharges'">
-                                        </span>
                                     </div>
                                 </td>
                             </tr>

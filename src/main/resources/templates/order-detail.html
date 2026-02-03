@@ -31,14 +31,17 @@
                 <div><b>Status:</b> <span th:text="${order.status}">PENDING</span></div>
                 <div><b>Pick-up:</b> <span th:text="${order.pickupLocation}"></span></div>
                 <div><b>Drop-off:</b> <span th:text="${order.dropoffLocation}"></span></div>
+
                 <div><b>Dates:</b>
                     <span th:text="${order.pickupDate}"></span> →
                     <span th:text="${order.dropoffDate}"></span>
-                    (<span th:text="${order.rentalDays}"></span> day)
+                    (<span th:text="${order.rentalDays}">1</span> duration)
                 </div>
+
                 <div th:if="${order.pickupTime != null and !order.pickupTime.isBlank()}">
-                    <b>Time:</b> <span th:text="${order.pickupTime}"></span>
+                    <b>Pick-up time:</b> <span th:text="${order.pickupTime}"></span>
                 </div>
+
                 <div class="mt-2"><b>Total:</b> $<span th:text="${order.totalAmount}">0</span></div>
             </div>
 
@@ -47,15 +50,33 @@
                     <thead class="thead-primary">
                     <tr class="text-center">
                         <th>Car</th>
-                        <th>Daily</th>
+                        <th>Package</th>
+                        <th>Unit price</th>
+                        <th>Units</th>
                         <th>Qty</th>
                         <th>Line total</th>
                     </tr>
                     </thead>
+
                     <tbody>
                     <tr th:each="it : ${order.items}" class="text-center">
                         <td class="text-left" th:text="${it.carTitleSnapshot}">Car</td>
-                        <td>$<span th:text="${it.dailyRateSnapshot}">0</span></td>
+
+                        <td>
+                            <span class="badge badge-info" th:text="${it.rateType}">DAILY</span>
+                        </td>
+
+                        <td>
+                            $<span th:text="${it.unitPriceSnapshot}">0</span>
+                            <span th:if="${it.rateType != null and it.rateType.name() == 'HOURLY'
+                                           and it.fuelSurchargePerHourSnapshot != null
+                                           and it.fuelSurchargePerHourSnapshot.doubleValue() > 0}">
+                                <br>
+                                <small class="text-muted">+$<span th:text="${it.fuelSurchargePerHourSnapshot}">0</span>/hour</small>
+                            </span>
+                        </td>
+
+                        <td th:text="${it.unitCountSnapshot}">1</td>
                         <td th:text="${it.quantity}">1</td>
                         <td>$<span th:text="${it.lineTotal}">0</span></td>
                     </tr>

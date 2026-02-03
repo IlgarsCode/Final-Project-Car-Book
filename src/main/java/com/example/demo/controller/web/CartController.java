@@ -1,5 +1,6 @@
 package com.example.demo.controller.web;
 
+import com.example.demo.dto.enums.PricingRateType;
 import com.example.demo.services.CartService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -25,11 +26,12 @@ public class CartController {
     @PostMapping("/add")
     public String addToCart(@AuthenticationPrincipal UserDetails user,
                             @RequestParam Long carId,
+                            @RequestParam(name = "rateType", defaultValue = "DAILY") PricingRateType rateType,
+                            @RequestParam(name = "unitCount", defaultValue = "1") Integer unitCount,
                             @RequestHeader(value = "Referer", required = false) String referer) {
 
-        cartService.addToCart(user.getUsername(), carId);
+        cartService.addToCart(user.getUsername(), carId, rateType, unitCount);
 
-        // haradan add etmisənsə ora qayıtsın
         return "redirect:" + (referer != null ? referer : "/cart");
     }
 

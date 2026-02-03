@@ -1,6 +1,7 @@
 package com.example.demo.services.impl;
 
 import com.example.demo.dto.pricing.CarPricingRowDto;
+import com.example.demo.model.CarPricing;
 import com.example.demo.repository.CarPricingRepository;
 import com.example.demo.repository.CarReviewRepository;
 import com.example.demo.services.PricingService;
@@ -21,15 +22,15 @@ public class PricingServiceImpl implements PricingService {
     @Override
     public List<CarPricingRowDto> getPricingRows(String categorySlug) {
 
-        var rows = (categorySlug == null || categorySlug.isBlank())
-                ? carPricingRepository.findActivePricingRows()
-                : carPricingRepository.findActivePricingRowsByCategorySlug(categorySlug);
+        List<CarPricing> rows =
+                (categorySlug == null || categorySlug.isBlank())
+                        ? carPricingRepository.findActivePricingRows()
+                        : carPricingRepository.findActivePricingRowsByCategorySlug(categorySlug);
 
-        // rating hesabı üçün map-lər
         Map<Long, Long> countMap = new HashMap<>();
         Map<Long, Double> avgMap = new HashMap<>();
 
-        for (var cp : rows) {
+        for (CarPricing cp : rows) {
             var car = cp.getCar();
             Long carId = car.getId();
 

@@ -46,11 +46,29 @@
                             <span class="subheading" th:text="${car.brand}">Brand</span>
                             <h2 th:text="${car.title}">Title</h2>
 
-                            <!-- ✅ Pricing əsas qiymət (default daily, pricingdən gələndə selected) -->
+                            <!-- ✅ Pricing selected -->
                             <p class="price mt-2">
                                 <span th:text="${car.displayPrice}">0</span>
                                 <span th:text="${car.displayUnit}">/per day</span>
                             </p>
+
+                            <!-- ✅ hansı paket seçilib -->
+                            <div class="mt-2">
+                                <span class="badge badge-info"
+                                      th:text="${car.selectedRate != null ? car.selectedRate : 'DAILY'}">
+                                    DAILY
+                                </span>
+                            </div>
+
+                            <!-- ✅ paket dəyişmə linkləri -->
+                            <div class="d-flex justify-content-center mt-3" style="gap:10px; flex-wrap:wrap;">
+                                <a class="btn btn-outline-primary btn-sm"
+                                   th:href="@{'/car/' + ${car.slug} + '?rate=HOURLY'}">Hourly</a>
+                                <a class="btn btn-outline-primary btn-sm"
+                                   th:href="@{'/car/' + ${car.slug} + '?rate=DAILY'}">Daily</a>
+                                <a class="btn btn-outline-primary btn-sm"
+                                   th:href="@{'/car/' + ${car.slug} + '?rate=LEASING'}">Leasing</a>
+                            </div>
 
                         </div>
 
@@ -58,8 +76,14 @@
                         <div class="d-flex justify-content-center mt-3">
                             <form th:action="@{/cart/add}" method="post" class="mr-2">
                                 <input type="hidden" name="carId" th:value="${car.id}">
-                                <!-- ✅ seçilmiş rate cart-a keçsin -->
-                                <input type="hidden" name="rate" th:value="${car.selectedRate != null ? car.selectedRate : 'DAILY'}">
+
+                                <!-- ✅ ƏSAS DÜZƏLİŞ: controller rateType istəyir -->
+                                <input type="hidden" name="rateType"
+                                       th:value="${car.selectedRate != null ? car.selectedRate : 'DAILY'}">
+
+                                <!-- controller unitCount istəyir -->
+                                <input type="hidden" name="unitCount" value="1">
+
                                 <button type="submit" class="btn btn-primary py-2 px-4">Book now</button>
                             </form>
 
@@ -82,7 +106,7 @@
                                 <div class="text">
                                     <h3 class="heading mb-0 pl-3">
                                         Mileage
-                                        <span th:text="${car.mileage != null ? car.mileage : '-'}">40,000</span>
+                                        <span th:text="${car.mileage != null ? car.mileage : '-'}">-</span>
                                     </h3>
                                 </div>
                             </div>
@@ -100,7 +124,7 @@
                                 <div class="text">
                                     <h3 class="heading mb-0 pl-3">
                                         Transmission
-                                        <span th:text="${car.transmission != null ? car.transmission : '-'}">Manual</span>
+                                        <span th:text="${car.transmission != null ? car.transmission : '-'}">-</span>
                                     </h3>
                                 </div>
                             </div>
@@ -118,7 +142,7 @@
                                 <div class="text">
                                     <h3 class="heading mb-0 pl-3">
                                         Seats
-                                        <span th:text="${car.seats != null ? car.seats : '-'}">5 Adults</span>
+                                        <span th:text="${car.seats != null ? car.seats : '-'}">-</span>
                                     </h3>
                                 </div>
                             </div>
@@ -136,7 +160,7 @@
                                 <div class="text">
                                     <h3 class="heading mb-0 pl-3">
                                         Luggage
-                                        <span th:text="${car.luggage != null ? car.luggage : '-'}">4 Bags</span>
+                                        <span th:text="${car.luggage != null ? car.luggage : '-'}">-</span>
                                     </h3>
                                 </div>
                             </div>
@@ -154,7 +178,7 @@
                                 <div class="text">
                                     <h3 class="heading mb-0 pl-3">
                                         Fuel
-                                        <span th:text="${car.fuel != null ? car.fuel : '-'}">Petrol</span>
+                                        <span th:text="${car.fuel != null ? car.fuel : '-'}">-</span>
                                     </h3>
                                 </div>
                             </div>
@@ -163,10 +187,403 @@
                 </div>
             </div>
 
-            <!-- ✅ TABS (sənin kimi qalır) -->
-            <!-- ... (burdan aşağı hamısı səndəki kimi qala bilər) ... -->
 
-        </div>
+            <!-- ✅ TABS (Yeni dizayn) -->
+            <style>
+                .car-tabs-wrap { margin-top: 48px; }
+                .car-tabs-nav {
+                    display: flex;
+                    justify-content: center;
+                    gap: 10px;
+                    flex-wrap: wrap;
+                    margin-bottom: 18px;
+                }
+                .car-tabs-nav .nav-link{
+                    border: 1px solid rgba(0,0,0,.08);
+                    background: #fff;
+                    color: #111;
+                    border-radius: 999px;
+                    padding: 10px 18px;
+                    font-weight: 600;
+                    transition: all .2s ease;
+                }
+                .car-tabs-nav .nav-link:hover{
+                    transform: translateY(-1px);
+                    box-shadow: 0 8px 18px rgba(0,0,0,.08);
+                }
+                .car-tabs-nav .nav-link.active{
+                    background: #1089ff; /* temanın mavi tonu */
+                    color: #fff;
+                    border-color: transparent;
+                    box-shadow: 0 10px 22px rgba(16,137,255,.25);
+                }
+
+                .car-tab-card{
+                    background: #fff;
+                    border-radius: 16px;
+                    box-shadow: 0 12px 28px rgba(0,0,0,.08);
+                    overflow: hidden;
+                }
+                .car-tab-card .card-head{
+                    padding: 18px 22px;
+                    border-bottom: 1px solid rgba(0,0,0,.06);
+                    background: linear-gradient(180deg, rgba(16,137,255,.06), rgba(255,255,255,0));
+                }
+                .car-tab-card .card-head h4{
+                    margin: 0;
+                    font-weight: 800;
+                    letter-spacing: .2px;
+                    text-align: center;
+                }
+                .car-tab-card .card-body{
+                    padding: 22px;
+                }
+
+                .feature-list{
+                    list-style: none;
+                    padding-left: 0;
+                    margin: 0;
+                }
+                .feature-list li{
+                    padding: 10px 12px;
+                    border: 1px solid rgba(0,0,0,.06);
+                    border-radius: 12px;
+                    margin-bottom: 10px;
+                    display: flex;
+                    align-items: center;
+                    gap: 10px;
+                    background: rgba(0,0,0,.015);
+                }
+                .feature-dot{
+                    width: 8px;
+                    height: 8px;
+                    border-radius: 50%;
+                    background: #1089ff;
+                    flex: 0 0 auto;
+                }
+
+                .desc-text{
+                    font-size: 16px;
+                    line-height: 1.8;
+                    color: #444;
+                }
+
+                .review-card{
+                    display: flex;
+                    gap: 14px;
+                    padding: 16px;
+                    border: 1px solid rgba(0,0,0,.06);
+                    border-radius: 16px;
+                    background: #fff;
+                    box-shadow: 0 8px 18px rgba(0,0,0,.05);
+                    margin-bottom: 14px;
+                }
+                .review-avatar{
+                    width: 56px;
+                    height: 56px;
+                    border-radius: 50%;
+                    background-size: cover;
+                    background-position: center;
+                    flex: 0 0 auto;
+                    border: 2px solid rgba(16,137,255,.25);
+                }
+                .review-head{
+                    display:flex;
+                    justify-content: space-between;
+                    align-items: baseline;
+                    gap: 12px;
+                }
+                .review-name{
+                    font-weight: 800;
+                    margin: 0;
+                    color: #111;
+                }
+                .review-date{
+                    color:#888;
+                    font-size: 13px;
+                    white-space: nowrap;
+                }
+                .review-msg{
+                    margin: 8px 0 0;
+                    color:#444;
+                    line-height: 1.7;
+                }
+                .stars span{
+                    font-size: 14px;
+                    margin-right: 2px;
+                }
+            </style>
+
+            <div class="row car-tabs-wrap">
+                <div class="col-md-12">
+
+                    <!-- Tab başlıqları (mərkəzdə) -->
+                    <nav class="nav car-tabs-nav" role="tablist">
+                        <a class="nav-link active"
+                           id="tab-features"
+                           data-toggle="tab"
+                           href="#pane-features"
+                           role="tab"
+                           aria-controls="pane-features"
+                           aria-selected="true">
+                            Features
+                        </a>
+
+                        <a class="nav-link"
+                           id="tab-description"
+                           data-toggle="tab"
+                           href="#pane-description"
+                           role="tab"
+                           aria-controls="pane-description"
+                           aria-selected="false">
+                            Description
+                        </a>
+
+                        <a class="nav-link"
+                           id="tab-reviews"
+                           data-toggle="tab"
+                           href="#pane-reviews"
+                           role="tab"
+                           aria-controls="pane-reviews"
+                           aria-selected="false">
+                            Reviews
+                        </a>
+                    </nav>
+
+                    <!-- Kontent kartı -->
+                    <div class="tab-content car-tab-card">
+
+                        <!-- Features -->
+                        <div class="tab-pane fade show active" id="pane-features" role="tabpanel" aria-labelledby="tab-features">
+                            <div class="card-head">
+                                <h4>Features</h4>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <ul class="feature-list">
+                                            <li th:each="f : ${car.featuresCol1}" th:if="${car.featuresCol1 != null and !car.featuresCol1.isEmpty()}">
+                                                <span class="feature-dot"></span>
+                                                <span th:text="${f}">Feature</span>
+                                            </li>
+                                        </ul>
+                                    </div>
+
+                                    <div class="col-md-4">
+                                        <ul class="feature-list">
+                                            <li th:each="f : ${car.featuresCol2}" th:if="${car.featuresCol2 != null and !car.featuresCol2.isEmpty()}">
+                                                <span class="feature-dot"></span>
+                                                <span th:text="${f}">Feature</span>
+                                            </li>
+                                        </ul>
+                                    </div>
+
+                                    <div class="col-md-4">
+                                        <ul class="feature-list">
+                                            <li th:each="f : ${car.featuresCol3}" th:if="${car.featuresCol3 != null and !car.featuresCol3.isEmpty()}">
+                                                <span class="feature-dot"></span>
+                                                <span th:text="${f}">Feature</span>
+                                            </li>
+                                        </ul>
+                                    </div>
+
+                                    <div class="col-md-12"
+                                         th:if="${(car.featuresCol1 == null or car.featuresCol1.isEmpty())
+                      and (car.featuresCol2 == null or car.featuresCol2.isEmpty())
+                      and (car.featuresCol3 == null or car.featuresCol3.isEmpty())}">
+                                        <p class="text-muted mb-0">Features yoxdur.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Description -->
+                        <div class="tab-pane fade" id="pane-description" role="tabpanel" aria-labelledby="tab-description">
+                            <div class="card-head">
+                                <h4>Description</h4>
+                            </div>
+                            <div class="card-body">
+                                <p class="desc-text" th:if="${car.description != null}" th:text="${car.description}">
+                                    Description
+                                </p>
+                                <p class="text-muted mb-0" th:if="${car.description == null}">Description yoxdur.</p>
+                            </div>
+                        </div>
+
+                        <!-- Reviews -->
+                        <div class="tab-pane fade" id="pane-reviews" role="tabpanel" aria-labelledby="tab-reviews">
+
+                            <style>
+                                /* Qızılı ulduzlar */
+                                .stars .ion-ios-star { color: #f5c518; }              /* dolu ulduz */
+                                .stars .ion-ios-star-outline { color: #d6d6d6; }      /* boş ulduz */
+
+                                /* Rating seçimi üçün qızılı ulduzlu radio */
+                                .rating-select{
+                                    display:flex;
+                                    flex-direction: row-reverse;
+                                    justify-content: flex-end;
+                                    gap: 6px;
+                                    margin-top: 6px;
+                                }
+                                .rating-select input{ display:none; }
+                                .rating-select label{
+                                    cursor:pointer;
+                                    font-size: 20px;
+                                    color:#d6d6d6;
+                                    transition: .15s;
+                                    margin:0;
+                                }
+                                .rating-select input:checked ~ label{ color:#f5c518; }
+                                .rating-select label:hover,
+                                .rating-select label:hover ~ label{ color:#f5c518; }
+
+                                /* Form kartı */
+                                .review-form-card{
+                                    border: 1px solid rgba(0,0,0,.06);
+                                    border-radius: 16px;
+                                    background: #fff;
+                                    box-shadow: 0 10px 24px rgba(0,0,0,.06);
+                                    padding: 18px;
+                                    margin-bottom: 18px;
+                                }
+                                .review-form-card h5{
+                                    margin: 0 0 10px;
+                                    font-weight: 800;
+                                    text-align: center;
+                                }
+                                .review-form-card .form-control{
+                                    border-radius: 12px;
+                                    border: 1px solid rgba(0,0,0,.10);
+                                }
+
+                                /* Review card (səndə olan dizayna uyğun) */
+                                .review-card{
+                                    display:flex;
+                                    gap:14px;
+                                    padding:16px;
+                                    border:1px solid rgba(0,0,0,.06);
+                                    border-radius:16px;
+                                    background:#fff;
+                                    box-shadow:0 8px 18px rgba(0,0,0,.05);
+                                    margin-bottom:14px;
+                                }
+                                .review-avatar{
+                                    width:56px;height:56px;border-radius:50%;
+                                    background-size:cover;background-position:center;
+                                    border:2px solid rgba(245,197,24,.35);
+                                    flex:0 0 auto;
+                                }
+                                .review-head{display:flex;justify-content:space-between;gap:12px;align-items:baseline;}
+                                .review-name{font-weight:800;margin:0;color:#111;}
+                                .review-date{color:#888;font-size:13px;white-space:nowrap;}
+                                .review-msg{margin:8px 0 0;color:#444;line-height:1.7;}
+                            </style>
+
+                            <div class="card-head">
+                                <h4>Reviews</h4>
+                            </div>
+
+                            <div class="card-body">
+
+                                <!-- ✅ Review yazmaq üçün form -->
+                                <div class="review-form-card">
+                                    <h5>Rəy yaz</h5>
+
+                                    <!-- route-u öz endpoint-inə uyğunlaşdır -->
+                                    <form th:action="@{'/car/' + ${car.slug} + '/review'}" method="post"
+                                          th:object="${reviewForm}">
+
+                                        <div class="form-group">
+                                            <label>Ad Soyad</label>
+                                            <input class="form-control" th:field="*{fullName}" placeholder="">
+                                            <small class="text-danger" th:if="${#fields.hasErrors('fullName')}" th:errors="*{fullName}"></small>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label>Email (istəyə görə)</label>
+                                            <input class="form-control" th:field="*{email}" placeholder="">
+                                        </div>
+
+                                        <div class="form-group">
+                                            <!-- UI-da comment yazırıq, backend yenə message alır -->
+                                            <label>Comment</label>
+                                            <textarea class="form-control" rows="4" th:field="*{message}" placeholder="Rəyinizi yazın..."></textarea>
+                                            <small class="text-danger" th:if="${#fields.hasErrors('message')}" th:errors="*{message}"></small>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label>Rating</label>
+
+                                            <!-- Radio ulduz selector: 5..1 -->
+                                            <div class="rating-select">
+                                                <input type="radio" id="rate5" th:field="*{rating}" value="5">
+                                                <label for="rate5" class="ion-ios-star"></label>
+
+                                                <input type="radio" id="rate4" th:field="*{rating}" value="4">
+                                                <label for="rate4" class="ion-ios-star"></label>
+
+                                                <input type="radio" id="rate3" th:field="*{rating}" value="3">
+                                                <label for="rate3" class="ion-ios-star"></label>
+
+                                                <input type="radio" id="rate2" th:field="*{rating}" value="2">
+                                                <label for="rate2" class="ion-ios-star"></label>
+
+                                                <input type="radio" id="rate1" th:field="*{rating}" value="1">
+                                                <label for="rate1" class="ion-ios-star"></label>
+                                            </div>
+
+                                            <small class="text-danger" th:if="${#fields.hasErrors('rating')}" th:errors="*{rating}"></small>
+                                        </div>
+
+                                        <div class="text-center mt-3">
+                                            <button class="btn btn-primary px-4">Göndər</button>
+                                        </div>
+
+                                        <div class="text-danger mt-2" th:if="${#fields.hasGlobalErrors()}"
+                                             th:each="e : ${#fields.globalErrors()}" th:text="${e}"></div>
+
+                                    </form>
+                                </div>
+
+                                <!-- ✅ Review list -->
+                                <div th:if="${reviews == null or #lists.isEmpty(reviews)}" class="text-muted">
+                                    Review yoxdur.
+                                </div>
+
+                                <div th:if="${reviews != null and !#lists.isEmpty(reviews)}">
+                                    <div class="review-card" th:each="r : ${reviews}">
+                                        <div class="review-avatar"
+                                             th:style="|background-image:url('${r.photoUrl != null ? r.photoUrl : '/images/person_1.jpg'}')|">
+                                        </div>
+
+                                        <div style="flex:1;">
+                                            <div class="review-head">
+                                                <p class="review-name" th:text="${r.fullName}">User</p>
+                                                <span class="review-date"
+                                                      th:text="${r.createdAt != null ? #temporals.format(r.createdAt, 'yyyy-MM-dd') : ''}">
+              2026-02-01
+            </span>
+                                            </div>
+
+                                            <div class="stars">
+            <span th:each="i : ${#numbers.sequence(1,5)}"
+                  th:class="${(r.rating != null and i <= r.rating) ? 'ion-ios-star' : 'ion-ios-star-outline'}"></span>
+                                            </div>
+
+                                            <!-- burda da comment kimi görünür, amma field message-dır -->
+                                            <p class="review-msg" th:text="${r.message}">...</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+
+
+                    </div>
+                </div>
+            </div>
     </section>
 
     <!-- ✅ RELATED CARS -->
@@ -196,6 +613,8 @@
 
                             <div class="d-flex mb-3">
                                 <span class="cat" th:text="${rc.brand}">Brand</span>
+
+                                <!-- burada da displayPrice yoxdursa daily göstərmək normaldır -->
                                 <p class="price ml-auto">
                                     $<span th:text="${rc.dailyRate}">0</span> <span>/day</span>
                                 </p>
@@ -204,7 +623,13 @@
                             <div class="d-flex mb-0 d-block">
                                 <form th:action="@{/cart/add}" method="post" class="mr-1">
                                     <input type="hidden" name="carId" th:value="${rc.id}">
-                                    <input type="hidden" name="rate" value="DAILY">
+
+                                    <!-- ✅ ƏSAS: rateType -->
+                                    <input type="hidden" name="rateType"
+                                           th:value="${car.selectedRate != null ? car.selectedRate : 'DAILY'}">
+
+                                    <input type="hidden" name="unitCount" value="1">
+
                                     <button type="submit" class="btn btn-primary py-2">Book now</button>
                                 </form>
 

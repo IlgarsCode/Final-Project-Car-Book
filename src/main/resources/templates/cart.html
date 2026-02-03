@@ -27,40 +27,58 @@
     <section class="ftco-section">
         <div class="container">
 
-            <div th:if="${cart.items == null or #lists.isEmpty(cart.items)}" class="alert alert-info">
+            <!-- ✅ daha stabil empty check -->
+            <div th:if="${cart == null or cart.items == null or cart.items.empty}" class="alert alert-info">
                 Cart boşdur.
             </div>
 
-            <div th:if="${cart.items != null and !#lists.isEmpty(cart.items)}" class="row">
+            <div th:if="${cart != null and cart.items != null and !cart.items.empty}" class="row">
                 <div class="col-md-12 ftco-animate">
                     <div class="table-responsive">
                         <table class="table">
                             <thead class="thead-primary">
                             <tr class="text-center">
                                 <th>Car</th>
-                                <th>Daily</th>
+                                <th>Package</th>
+                                <th>Unit price</th>
+                                <th>Units</th>
                                 <th>Qty</th>
                                 <th>Remove</th>
                             </tr>
                             </thead>
+
                             <tbody>
                             <tr th:each="it : ${cart.items}" class="text-center">
                                 <td class="text-left">
                                     <div class="d-flex align-items-center">
-                                        <div class="img" style="width:90px;height:60px;background-size:cover;background-position:center;border-radius:6px;"
-                                             th:style="'background-image:url(' + (${it.car.imageUrl} != null ? ${it.car.imageUrl} : '/images/car-1.jpg') + ')'">
+                                        <div class="img"
+                                             style="width:90px;height:60px;background-size:cover;background-position:center;border-radius:6px;"
+                                             th:style="|background-image:url('${it.car != null and it.car.imageUrl != null ? it.car.imageUrl : '/images/car-1.jpg'}')|">
                                         </div>
+
                                         <div class="pl-3">
-                                            <div class="font-weight-bold" th:text="${it.car.title}">Car title</div>
-                                            <small class="text-muted" th:text="${it.car.brand}">Brand</small>
+                                            <div class="font-weight-bold" th:text="${it.car != null ? it.car.title : it.carTitleSnapshot}">Car title</div>
+                                            <small class="text-muted" th:text="${it.car != null ? it.car.brand : ''}">Brand</small>
                                         </div>
                                     </div>
                                 </td>
 
                                 <td>
-                                    <span>$</span><span th:text="${it.dailyRateSnapshot}">0</span>
+                                    <span class="badge badge-info" th:text="${it.rateType}">DAILY</span>
                                 </td>
 
+                                <td>
+                                    $<span th:text="${it.unitPriceSnapshot}">0</span>
+
+                                    <span th:if="${it.rateType != null and it.rateType.name() == 'HOURLY'
+                                                   and it.fuelSurchargePerHourSnapshot != null
+                                                   and it.fuelSurchargePerHourSnapshot.doubleValue() > 0}">
+                                        <br>
+                                        <small class="text-muted">+$<span th:text="${it.fuelSurchargePerHourSnapshot}">0</span>/hour</small>
+                                    </span>
+                                </td>
+
+                                <td th:text="${it.unitCount}">1</td>
                                 <td th:text="${it.quantity}">1</td>
 
                                 <td>
@@ -80,6 +98,10 @@
 
                         <a th:href="@{/checkout}" class="btn btn-primary">Proceed to Checkout</a>
                     </div>
+
+                    <p class="mt-3 text-muted">
+                        Qeyd: Gün/saat/ay hesabı checkout zamanı (pickup/dropoff seçiləndə) edilir.
+                    </p>
 
                 </div>
             </div>

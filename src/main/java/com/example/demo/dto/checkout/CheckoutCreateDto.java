@@ -24,5 +24,6 @@ public class CheckoutCreateDto {
     private LocalDate dropoffDate;
 
     // optional
-    private String pickupTime;
+    private String pickupTime;   // "09:00"
+    private String dropoffTime;  // ✅ əlavə et: "18:30"
 }
