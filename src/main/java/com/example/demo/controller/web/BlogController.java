@@ -48,32 +48,27 @@ public class BlogController {
         model.addAttribute("currentPage", blogsPage.getNumber() + 1);
         model.addAttribute("totalPages", blogsPage.getTotalPages());
 
-        // ✅ search-i view-da saxla (input boşalmasın)
         model.addAttribute("search", search);
 
         model.addAttribute("banner", bannerService.getBanner(BannerType.BLOGS));
         return "blog";
     }
 
-    // ✅ BLOG SINGLE PAGE: /blog/{id}
     @GetMapping("/blog/{id}")
     public String blogSingle(@PathVariable Long id, Model model) {
 
         model.addAttribute("blog", blogService.getBlogDetail(id));
         model.addAttribute("banner", bannerService.getBanner(BannerType.BLOG_SINGLE));
 
-        // ✅ SIDEBAR: car categories + say
         model.addAttribute("carCategories", carCategoryRepository.findAllWithActiveCarCount());
 
         model.addAttribute("recentBlogs", blogService.getRecentBlogs(id, 3));
 
-        // ✅ comment form
         model.addAttribute("commentForm", new BlogCommentCreateDto());
 
         return "blog-single";
     }
 
-    // ✅ ADD COMMENT: /blog/{id}/comment
     @PostMapping("/blog/{id}/comment")
     public String addComment(
             @PathVariable Long id,
@@ -82,11 +77,9 @@ public class BlogController {
             Model model
     ) {
         if (bindingResult.hasErrors()) {
-            // səhifəni error ilə yenidən göstər
             model.addAttribute("blog", blogService.getBlogDetail(id));
             model.addAttribute("banner", bannerService.getBanner(BannerType.BLOG_SINGLE));
 
-            // ✅ error olanda da sidebar gəlsin
             model.addAttribute("carCategories", carCategoryRepository.findAllWithActiveCarCount());
 
             return "blog-single";
@@ -110,7 +103,6 @@ public class BlogController {
 
         blogCommentRepository.save(comment);
 
-        // PRG: refresh edəndə təkrar post etməsin
         return "redirect:/blog/" + id + "#comments";
     }
 }

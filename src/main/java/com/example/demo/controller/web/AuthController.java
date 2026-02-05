@@ -41,7 +41,6 @@ public class AuthController {
 
         authService.register(form);
 
-        // qeydiyyatdan sonra loginə at
         return "redirect:/auth/login";
     }
 }

@@ -48,12 +48,6 @@ public class HomeController {
         return "index";
     }
 
-//    @GetMapping("/pricing")
-//    public String pricing() {
-//        return "pricing";
-//    }
-
-
     @GetMapping("/car-single")
     public String carSingle() {
         return "car-single";

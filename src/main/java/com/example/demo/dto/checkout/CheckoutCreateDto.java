@@ -23,7 +23,6 @@ public class CheckoutCreateDto {
     @NotNull
     private LocalDate dropoffDate;
 
-    // optional
-    private String pickupTime;   // "09:00"
-    private String dropoffTime;  // ✅ əlavə et: "18:30"
+    private String pickupTime;
+    private String dropoffTime;
 }

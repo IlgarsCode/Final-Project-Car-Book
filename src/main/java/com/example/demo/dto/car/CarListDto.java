@@ -15,7 +15,6 @@ public class CarListDto {
     private String imageUrl;
     private String slug;
 
-    // ✅ pricing-dən gələcək
     private BigDecimal hourlyRate;
     private BigDecimal dailyRate;
     private BigDecimal monthlyLeasingRate;

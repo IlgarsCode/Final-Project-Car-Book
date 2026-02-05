@@ -16,7 +16,6 @@ public class CarReview {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // hansı maşına aiddir
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "car_id", nullable = false)
     private Car car;
@@ -27,10 +26,8 @@ public class CarReview {
     @Column(columnDefinition = "TEXT")
     private String message;
 
-    // 1..5
     private Integer rating;
 
-    // optional (sən istəsən sonra doldurarsan)
     private String photoUrl;
 
     private LocalDateTime createdAt;

@@ -15,8 +15,8 @@ public class CarCategory {
     private Long id;
 
     @Column(nullable = false, unique = true)
-    private String name; // SUV, Sedan, Offroad və s.
+    private String name;
 
     @Column(nullable = false, unique = true)
-    private String slug; // suv, sedan, offroad (url üçün)
+    private String slug;
 }

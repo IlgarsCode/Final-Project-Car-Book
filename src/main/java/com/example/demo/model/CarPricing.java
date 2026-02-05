@@ -16,7 +16,7 @@ public class CarPricing {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // Hər maşının 1 pricing-i olsun
+
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "car_id", nullable = false, unique = true)
     private Car car;
@@ -30,7 +30,7 @@ public class CarPricing {
     @Column(nullable = false, precision = 12, scale = 2)
     private BigDecimal monthlyLeasingRate;
 
-    // Sənin HTML-də "$3/hour fuel surcharges" kimi
+
     @Column(precision = 12, scale = 2)
     private BigDecimal fuelSurchargePerHour;
 

@@ -33,19 +33,16 @@ public class CartItem {
     @Column(name = "rate_type", nullable = false, length = 16)
     private PricingRateType rateType;
 
-    // seçilən paketə görə unit price snapshot (hourly/daily/leasing)
     @Column(nullable = false, precision = 12, scale = 2)
     private BigDecimal unitPriceSnapshot;
 
-    // yalnız HOURLY üçün lazımdır (istəsən DAILY-də də istifadə edərsən)
     @Column(precision = 12, scale = 2)
     private BigDecimal fuelSurchargePerHourSnapshot;
 
-    // neçə vahid? (HOURLY -> neçə saat, DAILY -> neçə gün, LEASING -> neçə ay)
     @Column(nullable = false)
     private Integer unitCount = 1;
 
-    private Integer quantity = 1; // eyni paket+maşını neçə dəfə əlavə etmisən
+    private Integer quantity = 1;
 
     private LocalDateTime addedAt = LocalDateTime.now();
 }

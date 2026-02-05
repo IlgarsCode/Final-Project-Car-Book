@@ -9,9 +9,9 @@ import java.math.BigDecimal;
 @Setter
 public class CarPricingRowDto {
     private Long carId;
-    private String carTitle;     // "Cheverolet SUV Car"
-    private String carImageUrl;  // car.imageUrl
-    private String carSlug;      // details link üçün
+    private String carTitle;
+    private String carImageUrl;
+    private String carSlug;
 
     private BigDecimal hourlyRate;
     private BigDecimal dailyRate;

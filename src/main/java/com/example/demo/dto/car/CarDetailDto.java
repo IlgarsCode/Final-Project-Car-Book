@@ -14,8 +14,6 @@ public class CarDetailDto {
     private String title;
     private String brand;
 
-    // ⚠️ artıq UI üçün bunu istifadə etmə.
-    // İstəsən sonradan tam silərik, hələlik saxlayıram ki, mapping qırılmasın.
     private Double pricePerDay;
 
     private String imageUrl;
@@ -33,18 +31,15 @@ public class CarDetailDto {
     private String featuresCol2;
     private String featuresCol3;
 
-    // ✅ Pricing (DB: car_pricings)
     private BigDecimal hourlyRate;
     private BigDecimal dailyRate;
     private BigDecimal monthlyLeasingRate;
     private BigDecimal fuelSurchargePerHour;
 
-    // ✅ Car detaildə göstəriləcək seçilmiş qiymət
-    private BigDecimal displayPrice; // hourly/daily/leasing-ə görə
-    private String displayUnit;      // "/per hour" | "/per day" | "/per month"
-    private String selectedRate;     // "HOURLY" | "DAILY" | "LEASING"
+    private BigDecimal displayPrice;
+    private String displayUnit;
+    private String selectedRate;
 
-    // Reviews
     private List<CarReviewDto> reviews;
     private CarReviewStatsDto reviewStats;
 }

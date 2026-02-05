@@ -85,7 +85,6 @@ public class CarController {
 
         carReviewService.create(slug, form);
 
-        // yeni review yuxarı düşür, ona görə rpage=0 məntiqlidir
         return "redirect:/car/" + slug + "?rpage=0#pills-review";
     }
 }

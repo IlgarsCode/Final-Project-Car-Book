@@ -28,7 +28,6 @@ public class Order {
     @Column(nullable = false, length = 20)
     private OrderStatus status = OrderStatus.PENDING;
 
-    // Checkout məlumatları
     @Column(nullable = false)
     private String pickupLocation;
 
@@ -41,7 +40,6 @@ public class Order {
     @Column(nullable = false)
     private LocalDate dropoffDate;
 
-    // istəsən boş ola bilər
     private String pickupTime;
 
     @Column(nullable = false, precision = 12, scale = 2)

@@ -27,7 +27,6 @@ public class PricingController {
 
         model.addAttribute("rows", pricingService.getPricingRows(categorySlug));
 
-        // filter dropdown üçün
         model.addAttribute("carCategories", carCategoryRepository.findAllWithActiveCarCount());
         model.addAttribute("selectedCategory", categorySlug);
 

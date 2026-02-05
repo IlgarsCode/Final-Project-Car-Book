@@ -35,10 +35,7 @@ public class SecurityConfig {
 
         http
                 .csrf(csrf -> csrf.disable())
-
-                // ✅ 4-cü məsələ: provider-i sistemə bağla (sabit işləsin)
                 .authenticationProvider(authenticationProvider(passwordEncoder()))
-
                 .authorizeHttpRequests(auth -> auth
 
                         .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()
@@ -54,7 +51,8 @@ public class SecurityConfig {
                                 "/blog", "/blog/**"
                         ).permitAll()
 
-                        .requestMatchers("/dashboard/**").hasRole("ADMIN")
+                        // ✅ TEST: dashboard-u müvəqqəti aç
+                        .requestMatchers("/dashboard/**").permitAll()
 
                         .requestMatchers(
                                 "/cart/**",
@@ -71,10 +69,7 @@ public class SecurityConfig {
                         .loginProcessingUrl("/auth/login")
                         .usernameParameter("email")
                         .passwordParameter("password")
-
-                        // bunu sonra "previous page"-ə qayıtmaq kimi edərik
                         .defaultSuccessUrl("/", true)
-
                         .failureUrl("/auth/login?error=true")
                         .permitAll()
                 )

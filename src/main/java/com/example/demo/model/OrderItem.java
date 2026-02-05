@@ -25,7 +25,6 @@ public class OrderItem {
     @JoinColumn(name = "car_id", nullable = false)
     private Car car;
 
-    // snapshot
     @Column(nullable = false)
     private String carTitleSnapshot;
 

@@ -21,20 +21,18 @@ public class Car {
 
     @Column(unique = true)
     private String slug;
-
-    // ✅ Car-single üçün yeni field-lər
-    private Integer mileage;          // 40000
-    private String transmission;      // Manual / Automatic
-    private String seats;             // "5 Adults"
-    private String luggage;           // "4 Bags"
-    private String fuel;              // Petrol / Diesel / Hybrid
+    private Integer mileage;
+    private String transmission;
+    private String seats;
+    private String luggage;
+    private String fuel;
 
     @Column(columnDefinition = "TEXT")
-    private String description;       // tab Description
+    private String description;
 
-    // features (3 sütun)
+
     @Column(columnDefinition = "TEXT")
-    private String featuresCol1;      // "Airconditions\nChild Seat\nGPS"
+    private String featuresCol1;
     @Column(columnDefinition = "TEXT")
     private String featuresCol2;
     @Column(columnDefinition = "TEXT")
