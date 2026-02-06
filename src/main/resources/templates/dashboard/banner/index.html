@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Banner - Admin</title>
+
+    <link th:href="@{/admin/vendor/fontawesome-free/css/all.min.css}" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i" rel="stylesheet">
+    <link th:href="@{/admin/css/sb-admin-2.min.css}" rel="stylesheet">
+</head>
+
+<body id="page-top">
+<div id="wrapper">
+
+    <!-- Sidebar (səndə olan sidebarı burada olduğu kimi saxla) -->
+    <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
+        <a class="sidebar-brand d-flex align-items-center justify-content-center" th:href="@{/dashboard}">
+            <div class="sidebar-brand-icon rotate-n-15"><i class="fas fa-laugh-wink"></i></div>
+            <div class="sidebar-brand-text mx-3">Carbook Admin</div>
+        </a>
+
+        <hr class="sidebar-divider my-0">
+
+        <li class="nav-item">
+            <a class="nav-link" th:href="@{/dashboard}">
+                <i class="fas fa-fw fa-tachometer-alt"></i>
+                <span>Dashboard</span>
+            </a>
+        </li>
+
+        <hr class="sidebar-divider">
+        <div class="sidebar-heading">Content</div>
+
+        <li class="nav-item active">
+            <a class="nav-link" th:href="@{/dashboard/banner}">
+                <i class="fas fa-image"></i>
+                <span>Banner</span>
+            </a>
+        </li>
+
+        <hr class="sidebar-divider d-none d-md-block">
+        <div class="text-center d-none d-md-inline">
+            <button class="rounded-circle border-0" id="sidebarToggle"></button>
+        </div>
+    </ul>
+
+    <div id="content-wrapper" class="d-flex flex-column">
+        <div id="content">
+
+            <!-- Topbar -->
+            <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
+                <button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle mr-3">
+                    <i class="fa fa-bars"></i>
+                </button>
+            </nav>
+
+            <div class="container-fluid">
+
+                <div class="d-sm-flex align-items-center justify-content-between mb-4">
+                    <h1 class="h3 mb-0 text-gray-800">Banner</h1>
+                    <a class="btn btn-primary btn-sm shadow-sm" th:href="@{/dashboard/banner/create}">
+                        <i class="fas fa-plus fa-sm text-white-50"></i> Create
+                    </a>
+                </div>
+
+                <div class="card shadow mb-4">
+                    <div class="card-header py-3">
+                        <h6 class="m-0 font-weight-bold text-primary">Banner List</h6>
+                    </div>
+
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-bordered" width="100%" cellspacing="0">
+                                <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Type</th>
+                                    <th>Title</th>
+                                    <th>Photo</th>
+                                    <th>Active</th>
+                                    <th style="width:180px;">Actions</th>
+                                </tr>
+                                </thead>
+
+                                <tbody>
+                                <tr th:each="b : ${banners}">
+                                    <td th:text="${b.id}"></td>
+                                    <td th:text="${b.bannerType}"></td>
+                                    <td th:text="${b.title}"></td>
+                                    <td>
+                                        <img th:if="${b.photoUrl != null}" th:src="${b.photoUrl}" style="height:40px;border-radius:6px;">
+                                        <span th:if="${b.photoUrl == null}">-</span>
+                                    </td>
+                                    <td>
+                                        <span class="badge badge-success" th:if="${b.active}">Active</span>
+                                        <span class="badge badge-secondary" th:unless="${b.active}">Passive</span>
+                                    </td>
+                                    <td>
+                                        <a class="btn btn-sm btn-warning" th:href="@{/dashboard/banner/update/{id}(id=${b.id})}">
+                                            Update
+                                        </a>
+                                        <a class="btn btn-sm btn-danger" th:href="@{/dashboard/banner/delete/{id}(id=${b.id})}">
+                                            Delete
+                                        </a>
+                                    </td>
+                                </tr>
+                                </tbody>
+
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <footer class="sticky-footer bg-white">
+            <div class="container my-auto">
+                <div class="copyright text-center my-auto">
+                    <span>Copyright &copy; 2026</span>
+                </div>
+            </div>
+        </footer>
+    </div>
+</div>
+
+<script th:src="@{/admin/vendor/jquery/jquery.min.js}"></script>
+<script th:src="@{/admin/vendor/bootstrap/js/bootstrap.bundle.min.js}"></script>
+<script th:src="@{/admin/vendor/jquery-easing/jquery.easing.min.js}"></script>
+<script th:src="@{/admin/js/sb-admin-2.min.js}"></script>
+</body>
+</html>

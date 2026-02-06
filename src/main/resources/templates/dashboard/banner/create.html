@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Create Banner</title>
+
+    <link th:href="@{/admin/vendor/fontawesome-free/css/all.min.css}" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i" rel="stylesheet">
+    <link th:href="@{/admin/css/sb-admin-2.min.css}" rel="stylesheet">
+</head>
+<body id="page-top">
+<div id="wrapper">
+
+    <!-- Sidebar minimal -->
+    <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
+        <a class="sidebar-brand d-flex align-items-center justify-content-center" th:href="@{/dashboard}">
+            <div class="sidebar-brand-icon rotate-n-15"><i class="fas fa-laugh-wink"></i></div>
+            <div class="sidebar-brand-text mx-3">Carbook Admin</div>
+        </a>
+        <hr class="sidebar-divider my-0">
+        <li class="nav-item">
+            <a class="nav-link" th:href="@{/dashboard/banner}">
+                <i class="fas fa-image"></i>
+                <span>Banner</span>
+            </a>
+        </li>
+    </ul>
+
+    <div id="content-wrapper" class="d-flex flex-column">
+        <div id="content">
+            <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow"></nav>
+
+            <div class="container-fluid">
+                <h1 class="h3 mb-4 text-gray-800">Create Banner</h1>
+
+                <div class="card shadow mb-4">
+                    <div class="card-body">
+
+                        <form th:action="@{/dashboard/banner/create}" th:object="${banner}" method="post" enctype="multipart/form-data">
+                            <div class="form-group">
+                                <label>Banner Type</label>
+                                <select class="form-control" th:field="*{bannerType}" id="bannerType">
+                                    <option th:each="t : ${T(com.example.demo.dto.enums.BannerType).values()}"
+                                            th:value="${t}" th:text="${t}">
+                                    </option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label>Title</label>
+                                <input class="form-control" th:field="*{title}" />
+                            </div>
+
+                            <div class="form-group">
+                                <label>Description</label>
+                                <textarea class="form-control" rows="3" th:field="*{description}"></textarea>
+                            </div>
+
+                            <div class="form-group">
+                                <label>Photo (Upload)</label>
+                                <input type="file" name="photo" class="form-control-file">
+                                <small class="form-text text-muted">Şəkil seçməsən, photoUrl text ilə də saxlaya bilərsən.</small>
+                            </div>
+
+                            <div class="form-group">
+                                <label>Photo Url (optional)</label>
+                                <input class="form-control" th:field="*{photoUrl}" placeholder="/img/... və ya https://...">
+                            </div>
+
+                            <div class="form-group" id="videoWrap">
+                                <label>Video Url (yalnız HOME üçün)</label>
+                                <input class="form-control" th:field="*{videoUrl}">
+                            </div>
+
+                            <div class="form-group">
+                                <label>Button Text</label>
+                                <input class="form-control" th:field="*{buttonText}">
+                            </div>
+
+                            <div class="form-group">
+                                <label>Button Url</label>
+                                <input class="form-control" th:field="*{buttonUrl}">
+                            </div>
+
+                            <div class="form-group form-check">
+                                <input type="checkbox" class="form-check-input" th:field="*{active}">
+                                <label class="form-check-label">Active</label>
+                            </div>
+
+                            <button class="btn btn-primary" type="submit">Save</button>
+                            <a class="btn btn-secondary" th:href="@{/dashboard/banner}">Cancel</a>
+                        </form>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <footer class="sticky-footer bg-white">
+            <div class="container my-auto">
+                <div class="copyright text-center my-auto">
+                    <span>Copyright &copy; 2026</span>
+                </div>
+            </div>
+        </footer>
+    </div>
+</div>
+
+<script th:src="@{/admin/vendor/jquery/jquery.min.js}"></script>
+<script th:src="@{/admin/vendor/bootstrap/js/bootstrap.bundle.min.js}"></script>
+<script th:src="@{/admin/vendor/jquery-easing/jquery.easing.min.js}"></script>
+<script th:src="@{/admin/js/sb-admin-2.min.js}"></script>
+
+<script>
+    function toggleVideo() {
+        const type = document.getElementById('bannerType').value;
+        document.getElementById('videoWrap').style.display = (type === 'HOME') ? 'block' : 'none';
+    }
+    document.getElementById('bannerType').addEventListener('change', toggleVideo);
+    toggleVideo();
+</script>
+
+</body>
+</html>
