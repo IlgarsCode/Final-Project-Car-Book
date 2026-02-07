@@ -11,9 +11,10 @@
 
 <div layout:fragment="content">
 
-    <!-- ===== HERO / BANNER (DB-DƏN GƏLİR) ===== -->
+    <!-- ===== HERO / BANNER (BANNER TABLE-DAN) ===== -->
     <section class="hero-wrap hero-wrap-2 js-fullheight"
-             th:style="'background-image: url(' + ${about.bannerImageUrl} + ');'">
+             th:if="${banner != null}"
+             th:style="'background-image: url(' + ${banner.photoUrl} + ');'">
 
         <div class="overlay"></div>
 
@@ -22,17 +23,23 @@
                 <div class="col-md-9 ftco-animate pb-5">
 
                     <p class="breadcrumbs">
-                        <span class="mr-2">
-                            <a th:href="@{/}">
-                                Home <i class="ion-ios-arrow-forward"></i>
-                            </a>
-                        </span>
-                        <span th:text="${about.pageTitle}">About us</span>
+                    <span class="mr-2">
+                        <a th:href="@{/}">
+                            Home <i class="ion-ios-arrow-forward"></i>
+                        </a>
+                    </span>
+                        <span>About <i class="ion-ios-arrow-forward"></i></span>
                     </p>
 
-                    <h1 class="mb-3 bread" th:text="${about.pageTitle}">
-                        About Us
+                    <!-- Banner title göstər -->
+                    <h1 class="mb-3 bread"
+                        th:text="${banner.title != null ? banner.title : about.pageTitle}">
+                        About
                     </h1>
+
+                    <!-- İstəsən description da göstər -->
+                    <p th:if="${banner.description != null}"
+                       th:text="${banner.description}"></p>
 
                 </div>
             </div>

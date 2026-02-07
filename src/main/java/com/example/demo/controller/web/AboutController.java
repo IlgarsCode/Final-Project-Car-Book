@@ -24,11 +24,8 @@ public class AboutController {
             about = new About();
         }
 
-        model.addAttribute("banner",
-                bannerService.getBanner(BannerType.ABOUT));
-
+        model.addAttribute("banner", bannerService.getBanner(BannerType.ABOUT));
         model.addAttribute("about", about);
-
 
         return "about";
     }
