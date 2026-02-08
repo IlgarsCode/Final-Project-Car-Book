@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{dashboard/layout}">
+<head>
+  <meta charset="UTF-8">
+  <title>Contact Messages</title>
+</head>
+
+<body>
+<div layout:fragment="content">
+
+  <div class="d-sm-flex align-items-center justify-content-between mb-4">
+    <h1 class="h3 mb-0 text-gray-800">Contact Messages</h1>
+
+    <div class="d-flex align-items-center gap-2">
+      <span class="badge badge-danger" th:text="'Unread: ' + ${unreadCount}">Unread: 0</span>
+
+      <a class="btn btn-sm btn-primary ml-2"
+         th:href="@{/dashboard/contact-messages(unread=true)}">
+        Unread only
+      </a>
+      <a class="btn btn-sm btn-outline-secondary ml-2"
+         th:href="@{/dashboard/contact-messages}">
+        All
+      </a>
+    </div>
+  </div>
+
+  <div th:if="${param.deleted}" class="alert alert-success">Deleted ✔️</div>
+
+  <div class="card shadow mb-4">
+    <div class="card-header py-3 d-flex align-items-center justify-content-between">
+      <h6 class="m-0 font-weight-bold text-primary">Messages</h6>
+      <small class="text-muted" th:text="'Total: ' + ${messages.totalElements}">Total: 0</small>
+    </div>
+
+    <div class="card-body p-0">
+      <div class="table-responsive">
+        <table class="table table-bordered table-hover mb-0">
+          <thead class="thead-light">
+          <tr>
+            <th style="width:110px;">Status</th>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Subject</th>
+            <th style="width:170px;">Created</th>
+            <th style="width:120px;">Actions</th>
+          </tr>
+          </thead>
+
+          <tbody>
+          <tr th:each="it : ${messages.content}">
+            <td>
+              <span th:if="${!it.read}" class="badge badge-danger">Unread</span>
+              <span th:if="${it.read}" class="badge badge-secondary">Read</span>
+            </td>
+
+            <td th:text="${it.name}">Name</td>
+            <td>
+              <a th:href="'mailto:' + ${it.email}" th:text="${it.email}">email</a>
+            </td>
+            <td th:text="${it.subject}">Subject</td>
+            <td th:text="${it.createdAt}">2026-02-08</td>
+
+            <td class="text-nowrap">
+              <a class="btn btn-sm btn-info"
+                 th:href="@{/dashboard/contact-messages/{id}(id=${it.id})}">
+                View
+              </a>
+
+              <form th:action="@{/dashboard/contact-messages/{id}/delete(id=${it.id})}"
+                    method="post"
+                    style="display:inline;">
+                <button class="btn btn-sm btn-outline-danger"
+                        type="submit"
+                        onclick="return confirm('Delete this message?')">
+                  Delete
+                </button>
+              </form>
+            </td>
+          </tr>
+
+          <tr th:if="${#lists.isEmpty(messages.content)}">
+            <td colspan="6" class="text-center text-muted p-4">
+              No messages yet.
+            </td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Pagination -->
+    <div class="card-footer d-flex justify-content-between align-items-center">
+      <div class="text-muted"
+           th:text="'Page ' + ${messages.number + 1} + ' / ' + ${messages.totalPages}">
+        Page 1 / 1
+      </div>
+
+      <div class="btn-group">
+        <a class="btn btn-sm btn-outline-primary"
+           th:classappend="${messages.first} ? ' disabled' : ''"
+           th:href="@{/dashboard/contact-messages(page=${messages.number - 1}, size=${messages.size}, unread=${unread})}">
+          Prev
+        </a>
+
+        <a class="btn btn-sm btn-outline-primary"
+           th:classappend="${messages.last} ? ' disabled' : ''"
+           th:href="@{/dashboard/contact-messages(page=${messages.number + 1}, size=${messages.size}, unread=${unread})}">
+          Next
+        </a>
+      </div>
+    </div>
+
+  </div>
+
+</div>
+</body>
+</html>

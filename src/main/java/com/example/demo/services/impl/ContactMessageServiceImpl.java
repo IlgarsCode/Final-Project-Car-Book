@@ -2,11 +2,13 @@ package com.example.demo.services.impl;
 
 import com.example.demo.dto.contact.ContactDto;
 import com.example.demo.model.ContactMessage;
-import com.example.demo.repository.ContactRepository;
+import com.example.demo.repository.ContactMessageRepository;
 import com.example.demo.services.ContactMessageService;
-import com.example.demo.services.EmailService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 
@@ -14,28 +16,59 @@ import java.time.LocalDateTime;
 @RequiredArgsConstructor
 public class ContactMessageServiceImpl implements ContactMessageService {
 
-    private final ContactRepository contactRepository;
-    private final EmailService mailService;
+    private final ContactMessageRepository repository;
 
     @Override
-    public void saveAndSend(ContactDto dto) {
+    @Transactional
+    public void saveMessage(ContactDto dto) {
+        ContactMessage m = new ContactMessage();
+        m.setName(dto.getName());
+        m.setEmail(dto.getEmail());
+        m.setSubject(dto.getSubject());
+        m.setMessage(dto.getMessage());
+        m.setCreatedAt(LocalDateTime.now());
+        m.setRead(false);
 
-        // 1️⃣ DB-yə yaz
-        ContactMessage message = new ContactMessage();
-        message.setName(dto.getName());
-        message.setEmail(dto.getEmail());
-        message.setSubject(dto.getSubject());
-        message.setMessage(dto.getMessage());
-        message.setCreatedAt(LocalDateTime.now());
-
-        contactRepository.save(message);
-
-        // 2️⃣ Mail göndər
-        mailService.sendContactMail(dto);
+        repository.save(m);
     }
 
     @Override
-    public void save(ContactMessage message) {
+    @Transactional(readOnly = true)
+    public Page<ContactMessage> getPage(int page, int size, Boolean unreadOnly) {
+        PageRequest pr = PageRequest.of(Math.max(page, 0), Math.max(size, 1));
 
+        if (unreadOnly != null && unreadOnly) {
+            return repository.findByIsReadOrderByCreatedAtDesc(false, pr);
+        }
+        return repository.findAllByOrderByCreatedAtDesc(pr);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public ContactMessage getById(Long id) {
+        return repository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Mesaj tapılmadı: " + id));
+    }
+
+    @Override
+    @Transactional
+    public void markAsRead(Long id) {
+        ContactMessage m = getById(id);
+        if (!m.isRead()) {
+            m.setRead(true);
+            repository.save(m);
+        }
+    }
+
+    @Override
+    @Transactional
+    public void delete(Long id) {
+        repository.deleteById(id);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public long countUnread() {
+        return repository.countByIsReadFalse();
     }
 }

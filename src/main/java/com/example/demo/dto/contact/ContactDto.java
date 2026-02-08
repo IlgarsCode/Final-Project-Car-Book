@@ -12,7 +12,4 @@ public class ContactDto {
     private String address;
     private String phone;
 
-    // bannerPhotoUrl artıq lazım deyil, banneri BannerService-dən alırsan.
-    // Amma saxlayacaqsansa String olsun:
-    private String bannerPhotoUrl;
 }

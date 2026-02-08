@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{dashboard/layout}">
+<head>
+  <meta charset="UTF-8">
+  <title>Message Detail</title>
+</head>
+
+<body>
+<div layout:fragment="content">
+
+  <div class="d-sm-flex align-items-center justify-content-between mb-4">
+    <div>
+      <h1 class="h3 mb-0 text-gray-800">Message Detail</h1>
+      <small class="text-muted">Unread: <span th:text="${unreadCount}">0</span></small>
+    </div>
+
+    <div class="d-flex">
+      <a class="btn btn-sm btn-outline-secondary"
+         th:href="@{/dashboard/contact-messages}">
+        Back
+      </a>
+
+      <form class="ml-2"
+            th:action="@{/dashboard/contact-messages/{id}/delete(id=${m.id})}"
+            method="post">
+        <button class="btn btn-sm btn-danger"
+                type="submit"
+                onclick="return confirm('Delete this message?')">
+          Delete
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <div class="card shadow mb-4">
+    <div class="card-header py-3 d-flex justify-content-between align-items-center">
+      <h6 class="m-0 font-weight-bold text-primary" th:text="${m.subject}">Subject</h6>
+      <span class="badge badge-secondary" th:if="${m.read}">Read</span>
+      <span class="badge badge-danger" th:if="${!m.read}">Unread</span>
+    </div>
+
+    <div class="card-body">
+      <div class="row mb-3">
+        <div class="col-md-6">
+          <div class="text-muted small">Name</div>
+          <div class="font-weight-bold" th:text="${m.name}">Name</div>
+        </div>
+
+        <div class="col-md-6">
+          <div class="text-muted small">Email</div>
+          <div>
+            <a th:href="'mailto:' + ${m.email}" th:text="${m.email}">email</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="row mb-3">
+        <div class="col-md-6">
+          <div class="text-muted small">Created</div>
+          <div th:text="${m.createdAt}">date</div>
+        </div>
+
+        <div class="col-md-6">
+          <div class="text-muted small">ID</div>
+          <div th:text="${m.id}">1</div>
+        </div>
+      </div>
+
+      <hr>
+
+      <div class="text-muted small mb-2">Message</div>
+      <div class="p-3 bg-light rounded" style="white-space: pre-wrap;"
+           th:text="${m.message}">
+        Message text...
+      </div>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>

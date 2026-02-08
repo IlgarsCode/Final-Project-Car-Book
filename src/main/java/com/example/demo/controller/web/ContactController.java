@@ -5,25 +5,26 @@ import com.example.demo.dto.enums.BannerType;
 import com.example.demo.model.ContactInfo;
 import com.example.demo.services.BannerService;
 import com.example.demo.services.ContactInfoService;
-import com.example.demo.services.ContactService;
+import com.example.demo.services.ContactMessageService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-@Controller
 @RequiredArgsConstructor
+@Controller
 public class ContactController {
 
-    private final ContactService contactService;
+    private final ContactMessageService contactMessageService;
     private final ContactInfoService contactInfoService;
     private final BannerService bannerService;
 
+    // ✅ CONTACT PAGE (GET)
     @GetMapping("/contact")
     public String contactPage(Model model) {
 
         ContactInfo contactInfo = contactInfoService.getActiveForWeb();
-        if (contactInfo == null) { // ehtiyat, normalda null olmamalıdır
+        if (contactInfo == null) {
             contactInfo = contactInfoService.getOrCreateSingleton();
         }
 
@@ -36,9 +37,10 @@ public class ContactController {
         return "contact";
     }
 
+    // ✅ SEND MESSAGE (POST)
     @PostMapping("/contact")
     public String sendMessage(@ModelAttribute("contact") ContactDto dto) {
-        contactService.saveMessage(dto);
+        contactMessageService.saveMessage(dto);
         return "redirect:/contact?success";
     }
 }
