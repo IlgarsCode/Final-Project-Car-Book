@@ -8,4 +8,6 @@ import java.util.List;
 public interface ServiceRepository extends JpaRepository<ServiceEntity, Long> {
 
     List<ServiceEntity> findAllByIsActiveTrueOrderByIdDesc();
+
+    List<ServiceEntity> findAllByOrderByIdDesc();
 }

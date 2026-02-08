@@ -16,20 +16,33 @@
              th:style="'background-image: url(' + ${banner.photoUrl} + ');'">
 
         <div class="overlay"></div>
+
         <div class="container">
             <div class="row no-gutters slider-text js-fullheight align-items-end justify-content-start">
                 <div class="col-md-9 ftco-animate pb-5">
 
                     <p class="breadcrumbs">
-                        <span class="mr-2">
-                            <a th:href="@{/}">
-                                Home <i class="ion-ios-arrow-forward"></i>
-                            </a>
-                        </span>
+                    <span class="mr-2">
+                        <a th:href="@{/}">
+                            Home <i class="ion-ios-arrow-forward"></i>
+                        </a>
+                    </span>
                         <span>Services</span>
                     </p>
 
-                    <h1 class="mb-3 bread">Our Services</h1>
+                    <!-- 🔽 Banner Title -->
+                    <h1 class="mb-3 bread"
+                        th:text="${banner.title != null ? banner.title : 'Our Services'}">
+                        Our Services
+                    </h1>
+
+                    <!-- 🔽 Banner Description (istəyə bağlı) -->
+                    <p class="text-white"
+                       th:if="${banner.description != null}"
+                       th:text="${banner.description}">
+                        Banner description
+                    </p>
+
                 </div>
             </div>
         </div>
