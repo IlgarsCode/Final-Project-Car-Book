@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+<head>
+  <meta charset="UTF-8">
+  <title>Testimonials</title>
+</head>
+<body>
+
+<div layout:fragment="content">
+
+  <section class="hero-wrap hero-wrap-2 js-fullheight"
+           th:if="${banner != null}"
+           th:style="'background-image: url(' + ${banner.photoUrl} + ');'">
+
+    <div class="overlay"></div>
+    <div class="container">
+      <div class="row no-gutters slider-text js-fullheight align-items-end justify-content-start">
+        <div class="col-md-9 ftco-animate pb-5">
+
+          <p class="breadcrumbs">
+          <span class="mr-2">
+            <a th:href="@{/}">
+              Home <i class="ion-ios-arrow-forward"></i>
+            </a>
+          </span>
+            <span>Testimonials</span>
+          </p>
+
+          <h1 class="mb-3 bread"
+              th:text="${banner.title != null ? banner.title : 'Testimonials'}">
+            Testimonials
+          </h1>
+
+          <p class="text-white"
+             th:if="${banner.description != null}"
+             th:text="${banner.description}">
+            Banner description
+          </p>
+
+        </div>
+      </div>
+    </div>
+  </section>
+  <section class="ftco-section bg-light">
+    <div class="container">
+
+      <div class="row justify-content-center mb-5">
+        <div class="col-md-7 text-center heading-section ftco-animate">
+          <span class="subheading">Testimonial</span>
+          <h2 class="mb-3">Happy Clients</h2>
+        </div>
+      </div>
+
+      <!-- Əgər testimonial yoxdursa -->
+      <div class="row" th:if="${testimonials == null or #lists.isEmpty(testimonials)}">
+        <div class="col-md-12 text-center">
+          <p class="mb-0">Hələ testimonial əlavə edilməyib.</p>
+        </div>
+      </div>
+
+      <!-- GRID -->
+      <div class="row" th:if="${testimonials != null and !#lists.isEmpty(testimonials)}">
+
+        <div class="col-md-4 mb-4"
+             th:each="t : ${testimonials}">
+
+          <div class="testimony-wrap rounded text-center py-4 pb-5 ftco-animate h-100">
+
+            <div class="user-img mb-2"
+                 th:style="'background-image: url(' + ${t.photoUrl} + ')'">
+            </div>
+
+            <div class="text pt-4">
+              <p class="mb-4"
+                 th:text="${t.comment}">
+                Testimonial comment
+              </p>
+
+              <p class="name"
+                 th:text="${t.fullName}">
+                Full name
+              </p>
+
+              <span class="position"
+                    th:text="${t.position}">
+                                Position
+                            </span>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+</div>
+</body>
+</html>
