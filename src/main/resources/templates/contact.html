@@ -29,18 +29,31 @@
                 <div class="col-md-9 ftco-animate pb-5">
 
                     <p class="breadcrumbs">
-                        <span class="mr-2">
-                            <a th:href="@{/}">
-                                Home <i class="ion-ios-arrow-forward"></i>
-                            </a>
-                        </span>
-                        <span th:text="${contactInfo.pageTitle}">Contact</span>
+                    <span class="mr-2">
+                        <a th:href="@{/}">
+                            Home <i class="ion-ios-arrow-forward"></i>
+                        </a>
+                    </span>
+                        <span th:text="${banner.title != null ? banner.title : 'Contact'}">
+                        Contact
+                        <i class="ion-ios-arrow-forward"></i>
+                    </span>
                     </p>
 
                     <h1 class="mb-3 bread"
-                        th:text="${contactInfo.pageTitle}">
-                        Contact Us
+                        th:text="${banner.title != null ? banner.title : 'Contact'}">
+                        Contact
                     </h1>
+
+                    <p th:if="${banner.description != null}"
+                       th:text="${banner.description}">
+                    </p>
+
+                    <a th:if="${banner.buttonText != null and !#strings.isEmpty(banner.buttonText)}"
+                       th:href="${banner.buttonUrl}"
+                       class="btn btn-primary mt-3"
+                       th:text="${banner.buttonText}">
+                    </a>
 
                 </div>
             </div>

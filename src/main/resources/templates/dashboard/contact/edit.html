@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{dashboard/layout}">
+<head>
+    <meta charset="UTF-8">
+    <title>Contact - Edit</title>
+</head>
+<body>
+<div layout:fragment="content">
+
+    <h3 class="mb-4">Contact Info</h3>
+
+    <form th:action="@{/dashboard/contact-info}" method="post" th:object="${contactInfo}">
+        <input type="text" th:field="*{address}">
+        <input type="text" th:field="*{phone}">
+        <input type="email" th:field="*{email}">
+        <input type="checkbox" th:field="*{active}">
+        <button type="submit">Save</button>
+    </form>
+
+    <hr class="my-4">
+
+    <p class="text-muted mb-0">
+        Banner dəyişmək üçün Banner bölməsində <b>CONTACT</b> tipli banneri update et.
+    </p>
+
+</div>
+</body>
+</html>
