@@ -6,6 +6,7 @@ import com.example.demo.model.ContactInfo;
 import com.example.demo.services.BannerService;
 import com.example.demo.services.ContactInfoService;
 import com.example.demo.services.ContactMessageService;
+import com.example.demo.services.EmailService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -18,6 +19,7 @@ public class ContactController {
     private final ContactMessageService contactMessageService;
     private final ContactInfoService contactInfoService;
     private final BannerService bannerService;
+    private final EmailService emailService;
 
     // ✅ CONTACT PAGE (GET)
     @GetMapping("/contact")
@@ -37,10 +39,10 @@ public class ContactController {
         return "contact";
     }
 
-    // ✅ SEND MESSAGE (POST)
     @PostMapping("/contact")
     public String sendMessage(@ModelAttribute("contact") ContactDto dto) {
         contactMessageService.saveMessage(dto);
+        emailService.sendContactMail(dto);
         return "redirect:/contact?success";
     }
 }

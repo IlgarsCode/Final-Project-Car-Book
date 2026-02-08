@@ -15,9 +15,16 @@ public class EmailServiceImpl implements EmailService {
 
     private final JavaMailSender mailSender;
 
+    private static final String TO_EMAIL = "ilgartest77@gmail.com";
+
     @Override
     public void sendContactMail(String name, String email, String subject, String message) {
-
+        ContactDto dto = new ContactDto();
+        dto.setName(name);
+        dto.setEmail(email);
+        dto.setSubject(subject);
+        dto.setMessage(message);
+        sendContactMail(dto);
     }
 
     @Override
@@ -25,22 +32,25 @@ public class EmailServiceImpl implements EmailService {
         try {
             SimpleMailMessage mailMessage = new SimpleMailMessage();
 
-            mailMessage.setTo("winnifred.mitchell26@ethereal.email");
-            mailMessage.setFrom("winnifred.mitchell26@ethereal.email");
-            mailMessage.setSubject("Contact Form: " + dto.getSubject());
+            mailMessage.setTo(TO_EMAIL);
+            mailMessage.setFrom(TO_EMAIL);
+            mailMessage.setReplyTo(dto.getEmail());
+            mailMessage.setSubject("📩 Contact Form: " + dto.getSubject());
 
             mailMessage.setText(
                     "Name: " + dto.getName() + "\n" +
                             "Email: " + dto.getEmail() + "\n\n" +
-                            "Message:\n" + dto.getMessage()
+                            "Message:\n" +
+                            dto.getMessage()
             );
 
             mailSender.send(mailMessage);
 
-            log.info("✅ Mail uğurla göndərildi");
+            log.info("✅ Contact mail Gmail-ə göndərildi");
 
         } catch (Exception e) {
-            log.error("❌ Mail göndərilərkən xəta baş verdi", e);
+            log.error("❌ Mail göndərilmədi", e);
+            throw new RuntimeException("Mail göndərilmədi");
         }
     }
 }
