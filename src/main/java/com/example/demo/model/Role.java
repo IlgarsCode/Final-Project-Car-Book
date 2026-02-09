@@ -1,5 +1,6 @@
 package com.example.demo.model;
 
+import com.example.demo.model.enums.RoleName;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -14,7 +15,7 @@ public class Role {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // "ROLE_USER", "ROLE_ADMIN"
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false, unique = true)
-    private String name;
+    private RoleName name;
 }

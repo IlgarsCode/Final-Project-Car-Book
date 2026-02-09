@@ -2,7 +2,8 @@
 <html
         lang="en"
         xmlns:th="http://www.thymeleaf.org"
-        xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+        xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+        xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 
 <head>
     <meta charset="utf-8">
@@ -180,26 +181,23 @@
             </a>
         </li>
 
-        <li class="nav-item">
+        <!-- ✅ YALNIZ SUPER ADMIN -->
+        <li class="nav-item" sec:authorize="hasRole('ROLE_SUPER_ADMIN')">
             <a class="nav-link" th:href="@{/dashboard/users}">
                 <i class="fas fa-users"></i>
                 <span>Users</span>
             </a>
         </li>
 
-        <li class="nav-item">
+        <!-- ✅ YALNIZ SUPER ADMIN -->
+        <li class="nav-item" sec:authorize="hasRole('ROLE_SUPER_ADMIN')">
             <a class="nav-link" th:href="@{/dashboard/roles}">
                 <i class="fas fa-user-shield"></i>
                 <span>Roles</span>
             </a>
         </li>
 
-        <li class="nav-item">
-            <a class="nav-link" th:href="@{/dashboard/user-roles}">
-                <i class="fas fa-id-badge"></i>
-                <span>User Roles</span>
-            </a>
-        </li>
+        <!-- ✅ YALNIZ SUPER ADMIN -->
 
         <hr class="sidebar-divider d-none d-md-block">
 
@@ -236,7 +234,10 @@
                     <li class="nav-item dropdown no-arrow">
                         <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button"
                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            <span class="mr-2 d-none d-lg-inline text-gray-600 small">Admin</span>
+                           <span class="mr-2 d-none d-lg-inline text-gray-600 small"
+                                 th:text="${currentUserFullName != null ? currentUserFullName : 'Admin'}">
+                             Admin
+                           </span>
                             <img class="img-profile rounded-circle" th:src="@{/admin/img/undraw_profile.svg}" alt="profile">
                         </a>
                         <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in"
@@ -293,7 +294,8 @@
             <div class="modal-body">Select "Logout" below if you are ready to end your current session.</div>
             <div class="modal-footer">
                 <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
-                <a class="btn btn-primary" th:href="@{/logout}">Logout</a>
+                <!-- ✅ SƏNDƏ logoutUrl: /auth/logout -->
+                <a class="btn btn-primary" th:href="@{/auth/logout}">Logout</a>
             </div>
         </div>
     </div>

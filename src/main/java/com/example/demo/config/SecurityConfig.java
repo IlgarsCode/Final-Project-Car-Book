@@ -5,6 +5,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.access.hierarchicalroles.RoleHierarchy;
+import org.springframework.security.access.hierarchicalroles.RoleHierarchyImpl;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -30,6 +32,17 @@ public class SecurityConfig {
         return provider;
     }
 
+    // SUPER_ADMIN > ADMIN > USER
+    @Bean
+    public RoleHierarchy roleHierarchy() {
+        RoleHierarchyImpl hierarchy = new RoleHierarchyImpl();
+        hierarchy.setHierarchy("""
+            ROLE_SUPER_ADMIN > ROLE_ADMIN
+            ROLE_ADMIN > ROLE_USER
+        """);
+        return hierarchy;
+    }
+
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
@@ -38,31 +51,49 @@ public class SecurityConfig {
                 .authenticationProvider(authenticationProvider(passwordEncoder()))
                 .authorizeHttpRequests(auth -> auth
 
+                        // ✅ STATIC (login olmadan hər şey görünsün deyə geniş açırıq)
                         .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()
-                        .requestMatchers("/fonts/**").permitAll()
+                        .requestMatchers(
+                                "/fonts/**",
+                                "/css/**", "/js/**",
+                                "/images/**", "/img/**",
+                                "/scss/**", "/lib/**", "/plugins/**",
+                                "/webjars/**",
+                                "/uploads/**",
+                                "/admin/**" // admin panel template-lərin assetləri burdadırsa
+                        ).permitAll()
 
+                        // ✅ Auth pages
                         .requestMatchers("/auth/**").permitAll()
 
+                        // ✅ Public pages
                         .requestMatchers(
                                 "/", "/index",
                                 "/about", "/services", "/contact",
                                 "/pricing", "/pricing/**",
                                 "/car", "/car/**",
-                                "/blog", "/blog/**"
+                                "/blog", "/blog/**",
+                                "/testimonials"
                         ).permitAll()
 
-                        // ✅ TEST: dashboard-u müvəqqəti aç
-                        .requestMatchers("/dashboard/**").permitAll()
+                        // ✅ SUPER ADMIN (spesifik olanı yuxarıda saxla)
+                        .requestMatchers("/dashboard/users/**").hasRole("SUPER_ADMIN")
 
+                        // ✅ ADMIN PANEL
+                        .requestMatchers("/dashboard/**").hasRole("ADMIN")
+
+                        // ✅ USER (login required)
                         .requestMatchers(
                                 "/cart/**",
                                 "/booking/**",
                                 "/checkout/**",
                                 "/order/**",
-                                "/profile/**"
-                        ).authenticated()
+                                "/profile/**",
+                                "/testimonials/new"
+                        ).hasRole("USER")
 
-                        .anyRequest().permitAll()
+                        // ✅ Qalan hər şey login istəsin
+                        .anyRequest().authenticated()
                 )
                 .formLogin(form -> form
                         .loginPage("/auth/login")

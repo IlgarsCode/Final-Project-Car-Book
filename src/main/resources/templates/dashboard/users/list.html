@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{dashboard/layout}">
+<head>
+    <title>Users</title>
+</head>
+<body>
+<div layout:fragment="content">
+
+    <h1 class="h3 mb-4 text-gray-800">Users</h1>
+
+    <div class="card shadow mb-4">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered">
+                    <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Email</th>
+                        <th>Full name</th>
+                        <th>Active</th>
+                        <th>Roles</th>
+                        <th>Actions</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="u : ${users}">
+                        <td th:text="${u.id}">1</td>
+                        <td th:text="${u.email}">email</td>
+                        <td th:text="${u.fullName}">name</td>
+                        <td>
+                            <span th:text="${u.isActive} ? 'Yes' : 'No'"
+                                  th:classappend="${u.isActive} ? 'badge badge-success' : 'badge badge-secondary'">
+                            </span>
+                        </td>
+                        <td>
+                            <span th:each="r : ${u.roles}"
+                                  class="badge badge-info mr-1"
+                                  th:text="${r.name}">
+                            </span>
+                        </td>
+                        <td class="d-flex" style="gap:8px;">
+                            <form th:action="@{/dashboard/users/{id}/toggle(id=${u.id})}" method="post">
+                                <button class="btn btn-sm btn-warning" type="submit">
+                                    Toggle Active
+                                </button>
+                            </form>
+
+                            <a class="btn btn-sm btn-primary"
+                               th:href="@{/dashboard/users/{id}/roles(id=${u.id})}">
+                                Edit Roles
+                            </a>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+</div>
+</body>
+</html>

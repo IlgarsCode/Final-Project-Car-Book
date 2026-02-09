@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{dashboard/layout}">
+<head>
+    <title>Edit User Roles</title>
+</head>
+<body>
+<div layout:fragment="content">
+
+    <h1 class="h3 mb-4 text-gray-800">Edit Roles</h1>
+
+    <div class="card shadow mb-4">
+        <div class="card-body">
+            <p class="mb-2"><b>User:</b> <span th:text="${user.email}"></span></p>
+
+            <form th:action="@{/dashboard/users/{id}/roles(id=${user.id})}" method="post">
+                <div class="form-group">
+                    <div th:each="r : ${allRoles}" class="form-check">
+                        <input class="form-check-input"
+                               type="checkbox"
+                               name="roles"
+                               th:value="${r.name}"
+                               th:checked="${selectedRoles.contains(r.name)}"
+                               th:id="${'role_' + r.id}">
+                        <label class="form-check-label" th:for="${'role_' + r.id}"
+                               th:text="${r.name}">ROLE</label>
+                    </div>
+                </div>
+
+                <button class="btn btn-success" type="submit">Save</button>
+                <a class="btn btn-secondary" th:href="@{/dashboard/users}">Back</a>
+            </form>
+        </div>
+    </div>
+
+</div>
+</body>
+</html>

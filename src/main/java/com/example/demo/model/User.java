@@ -18,21 +18,13 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // Login üçün email istifadə edirik
     @Column(nullable = false, unique = true)
     private String email;
 
-    // UI-də ad soyad göstərmək üçün
-    @Column(nullable = false)
     private String fullName;
 
     @Column(nullable = false)
     private String passwordHash;
-
-    @Column(nullable = false)
-    private Boolean isActive = true;
-
-    private LocalDateTime createdAt = LocalDateTime.now();
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
@@ -41,4 +33,6 @@ public class User {
             inverseJoinColumns = @JoinColumn(name = "role_id")
     )
     private Set<Role> roles = new HashSet<>();
+
+    private Boolean isActive = true;
 }

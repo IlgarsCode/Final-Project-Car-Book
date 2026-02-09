@@ -3,6 +3,7 @@ package com.example.demo.services.impl;
 import com.example.demo.dto.auth.RegisterDto;
 import com.example.demo.model.Role;
 import com.example.demo.model.User;
+import com.example.demo.model.enums.RoleName;
 import com.example.demo.repository.RoleRepository;
 import com.example.demo.repository.UserRepository;
 import com.example.demo.services.AuthService;
@@ -32,10 +33,10 @@ public class AuthServiceImpl implements AuthService {
         }
 
         // ROLE_USER yoxdursa yarad
-        Role userRole = roleRepository.findByName("ROLE_USER")
+        Role userRole = roleRepository.findByName(RoleName.ROLE_USER)
                 .orElseGet(() -> {
                     Role r = new Role();
-                    r.setName("ROLE_USER");
+                    r.setName(RoleName.ROLE_USER);
                     return roleRepository.save(r);
                 });
 

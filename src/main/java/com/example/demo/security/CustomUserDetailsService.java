@@ -1,5 +1,6 @@
 package com.example.demo.security;
 
+import com.example.demo.model.User;              // ✅ BU vacibdir
 import com.example.demo.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.DisabledException;
@@ -14,10 +15,10 @@ public class CustomUserDetailsService implements UserDetailsService {
     private final UserRepository userRepository;
 
     @Override
-    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+    public UserDetails loadUserByUsername(String email) {
 
-        var user = userRepository.findByEmailIgnoreCase(email)
-                .orElseThrow(() -> new UsernameNotFoundException("User tapılmadı: " + email));
+        User user = userRepository.findByEmailIgnoreCase(email)
+                .orElseThrow(() -> new UsernameNotFoundException("User tapılmadı"));
 
         if (Boolean.FALSE.equals(user.getIsActive())) {
             throw new DisabledException("User deaktivdir");
@@ -25,15 +26,13 @@ public class CustomUserDetailsService implements UserDetailsService {
 
         var authorities = user.getRoles()
                 .stream()
-                .map(r -> new SimpleGrantedAuthority(r.getName()))
+                .map(r -> new SimpleGrantedAuthority(r.getName().name()))
                 .toList();
 
         return org.springframework.security.core.userdetails.User
                 .withUsername(user.getEmail())
                 .password(user.getPasswordHash())
                 .authorities(authorities)
-                .accountLocked(false)
-                .disabled(false)
                 .build();
     }
 }
