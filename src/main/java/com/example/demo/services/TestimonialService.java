@@ -1,5 +1,6 @@
 package com.example.demo.services;
 
+import com.example.demo.dto.testimonial.TestimonialCreateDto;
 import com.example.demo.dto.testimonial.TestimonialListDto;
 
 import java.util.List;
@@ -7,5 +8,7 @@ import java.util.List;
 public interface TestimonialService {
 
     List<TestimonialListDto> getActiveTestimonials();
+
+    void create(TestimonialCreateDto dto);
 }
 

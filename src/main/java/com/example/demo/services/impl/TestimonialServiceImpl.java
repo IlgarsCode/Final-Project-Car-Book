@@ -1,5 +1,6 @@
 package com.example.demo.services.impl;
 
+import com.example.demo.dto.testimonial.TestimonialCreateDto;
 import com.example.demo.dto.testimonial.TestimonialListDto;
 import com.example.demo.model.Testimonial;
 import com.example.demo.repository.TestimonialRepository;
@@ -31,6 +32,17 @@ public class TestimonialServiceImpl implements TestimonialService {
         dto.setComment(t.getComment());
         dto.setPhotoUrl(t.getPhotoUrl());
         return dto;
+    }
+
+    @Override
+    public void create(TestimonialCreateDto dto) {
+        Testimonial t = new Testimonial();
+        t.setFullName(dto.getFullName().trim());
+        t.setPosition(dto.getPosition() != null ? dto.getPosition().trim() : null);
+        t.setComment(dto.getComment().trim());
+        t.setPhotoUrl(dto.getPhotoUrl() != null ? dto.getPhotoUrl().trim() : null);
+        t.setIsActive(true); // dərhal görünsün
+        testimonialRepository.save(t);
     }
 }
 
