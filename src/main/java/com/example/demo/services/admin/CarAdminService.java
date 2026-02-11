@@ -1,7 +1,7 @@
 package com.example.demo.services.admin;
 
 import com.example.demo.dto.car.CarCreateDto;
-import com.example.demo.dto.dashboard.car.CarUpdateDto;
+import com.example.demo.dto.car.CarUpdateDto;
 import com.example.demo.model.Car;
 import org.springframework.web.multipart.MultipartFile;
 

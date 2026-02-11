@@ -1,4 +1,4 @@
-package com.example.demo.dto.dashboard.car;
+package com.example.demo.dto.car;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -15,9 +15,6 @@ public class CarUpdateDto {
     @NotBlank
     private String brand;
 
-    @NotNull
-    private Double pricePerDay;
-
     private Integer mileage;
     private String transmission;
     private String seats;
@@ -31,6 +28,8 @@ public class CarUpdateDto {
     private String featuresCol3;
 
     private Boolean isActive = true;
+
+    private Long categoryId;
 
     // şəkil ayrıca MultipartFile gələcək
 }

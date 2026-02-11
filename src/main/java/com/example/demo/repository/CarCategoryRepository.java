@@ -5,10 +5,11 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface CarCategoryRepository extends JpaRepository<CarCategory, Long> {
 
-    // Sidebar: bütün kateqoriyalar + aktiv maşın sayı
+    // Web sidebar: bütün kateqoriyalar + aktiv maşın sayı
     @Query("""
         select
             cc.id as id,
@@ -28,4 +29,11 @@ public interface CarCategoryRepository extends JpaRepository<CarCategory, Long> 
         String getSlug();
         long getCarCount();
     }
+
+    // ✅ Admin üçün
+    boolean existsBySlug(String slug);
+
+    Optional<CarCategory> findBySlug(String slug);
+
+    boolean existsByNameIgnoreCase(String name);
 }

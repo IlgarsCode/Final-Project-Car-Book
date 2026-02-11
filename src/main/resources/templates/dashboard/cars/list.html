@@ -23,6 +23,7 @@
                     <th>Image</th>
                     <th>Brand</th>
                     <th>Title</th>
+                    <th>Category</th>
                     <th>Slug</th>
                     <th>Active</th>
                     <th style="width: 160px;">Actions</th>
@@ -30,15 +31,24 @@
                 </thead>
 
                 <tbody>
+                <tr th:if="${cars == null || #lists.isEmpty(cars)}">
+                    <td colspan="8" class="text-center">No cars yet.</td>
+                </tr>
+
                 <tr th:each="c, i : ${cars}">
                     <td th:text="${i.count}">1</td>
+
                     <td>
                         <img th:if="${c.imageUrl != null}" th:src="@{${c.imageUrl}}"
                              style="width:70px;height:45px;object-fit:cover;border-radius:6px;">
                         <span th:if="${c.imageUrl == null}">-</span>
                     </td>
+
                     <td th:text="${c.brand}">Brand</td>
                     <td th:text="${c.title}">Title</td>
+
+                    <td th:text="${c.category != null ? c.category.name : '-'}">-</td>
+
                     <td th:text="${c.slug}">slug</td>
 
                     <td>

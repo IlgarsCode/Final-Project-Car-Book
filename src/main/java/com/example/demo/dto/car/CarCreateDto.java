@@ -29,5 +29,7 @@ public class CarCreateDto {
 
     private Boolean isActive = true;
 
+    private Long categoryId;
+
     // category hələ əlavə etmirik (sənin dediyin kimi)
 }

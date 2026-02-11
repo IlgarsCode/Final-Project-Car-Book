@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{dashboard/layout}">
+<head>
+  <title>Car Categories</title>
+</head>
+<body>
+
+<div layout:fragment="content">
+
+  <div class="d-sm-flex align-items-center justify-content-between mb-4">
+    <h1 class="h3 mb-0 text-gray-800">Car Categories</h1>
+  </div>
+
+  <!-- CREATE -->
+  <div class="card shadow mb-4">
+    <div class="card-header py-3">
+      <h6 class="m-0 font-weight-bold text-primary">Create Category</h6>
+    </div>
+    <div class="card-body">
+
+      <form th:action="@{/dashboard/car-categories/create}"
+            th:object="${createForm}"
+            method="post">
+
+        <div class="form-row align-items-end">
+
+          <div class="form-group col-md-6">
+            <label>Name</label>
+            <input class="form-control" th:field="*{name}" placeholder="SUV, Sedan..." />
+            <small class="text-danger"
+                   th:if="${#fields.hasErrors('name')}"
+                   th:errors="*{name}"></small>
+          </div>
+
+          <div class="form-group col-md-3">
+            <button class="btn btn-primary" type="submit">
+              <i class="fas fa-plus"></i> Create
+            </button>
+          </div>
+
+        </div>
+
+      </form>
+
+    </div>
+  </div>
+
+  <!-- LIST -->
+  <div class="card shadow mb-4">
+    <div class="card-header py-3 d-flex align-items-center justify-content-between">
+      <h6 class="m-0 font-weight-bold text-primary">Categories</h6>
+    </div>
+
+    <div class="card-body">
+      <div class="table-responsive">
+        <table class="table table-bordered" width="100%" cellspacing="0">
+          <thead>
+          <tr>
+            <th>#</th>
+            <th>Name</th>
+            <th>Slug</th>
+            <th>Active cars</th>
+            <th style="width: 180px;">Actions</th>
+          </tr>
+          </thead>
+
+          <tbody>
+          <tr th:if="${rows == null || #lists.isEmpty(rows)}">
+            <td colspan="5" class="text-center">No categories.</td>
+          </tr>
+
+          <tr th:each="r, i : ${rows}">
+            <td th:text="${i.count}">1</td>
+            <td th:text="${r.name}">SUV</td>
+            <td th:text="${r.slug}">suv</td>
+            <td>
+              <span class="badge badge-info" th:text="${r.activeCarCount}">0</span>
+            </td>
+            <td>
+              <a class="btn btn-sm btn-warning"
+                 th:href="@{/dashboard/car-categories/edit/{id}(id=${r.id})}">
+                <i class="fas fa-edit"></i> Edit
+              </a>
+
+              <form th:action="@{/dashboard/car-categories/delete/{id}(id=${r.id})}"
+                    method="post"
+                    class="d-inline"
+                    onsubmit="return confirm('Delete category? (Only possible if no cars are linked)');">
+                <button type="submit" class="btn btn-sm btn-danger">
+                  <i class="fas fa-trash"></i> Delete
+                </button>
+              </form>
+            </td>
+          </tr>
+          </tbody>
+
+        </table>
+      </div>
+    </div>
+
+  </div>
+
+</div>
+
+</body>
+</html>

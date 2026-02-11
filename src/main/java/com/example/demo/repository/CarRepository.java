@@ -12,4 +12,8 @@ public interface CarRepository extends JpaRepository<Car, Long> {
     List<Car> findAllByIsActiveTrueAndCategory_SlugOrderByIdDesc(String slug);
 
     boolean existsBySlug(String slug);
+
+    long countByCategory_IdAndIsActiveTrue(Long id);
+
+    long countByCategory_Id(Long id);
 }

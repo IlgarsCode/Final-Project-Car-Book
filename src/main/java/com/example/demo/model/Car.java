@@ -16,7 +16,6 @@ public class Car {
 
     private String title;        // Mercedes Grand Sedan
     private String brand;        // Chevrolet, Subaru və s.
-    private Double pricePerDay;
     private String imageUrl;
 
     @Column(unique = true)
