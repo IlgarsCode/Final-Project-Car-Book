@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html
+        lang="en"
+        xmlns:th="http://www.thymeleaf.org"
+        xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+        layout:decorate="~{dashboard/layout}">
+
+<head>
+  <title>Edit Pricing</title>
+</head>
+
+<body>
+<div layout:fragment="content">
+
+  <div class="d-sm-flex align-items-center justify-content-between mb-4">
+    <h1 class="h3 mb-0 text-gray-800">Edit Pricing</h1>
+    <a class="btn btn-secondary btn-sm" th:href="@{/dashboard/car-pricings}">
+      <i class="fas fa-arrow-left"></i> Back
+    </a>
+  </div>
+
+  <div class="card shadow">
+    <div class="card-body">
+
+      <form th:action="@{/dashboard/car-pricings/update}"
+            th:object="${editForm}"
+            method="post">
+
+        <input type="hidden" th:field="*{carId}">
+
+        <div class="form-row">
+          <div class="form-group col-md-3">
+            <label>Hourly</label>
+            <input type="number" step="0.01" min="0" class="form-control" th:field="*{hourlyRate}" required>
+          </div>
+          <div class="form-group col-md-3">
+            <label>Daily</label>
+            <input type="number" step="0.01" min="0" class="form-control" th:field="*{dailyRate}" required>
+          </div>
+          <div class="form-group col-md-3">
+            <label>Leasing</label>
+            <input type="number" step="0.01" min="0" class="form-control" th:field="*{monthlyLeasingRate}" required>
+          </div>
+          <div class="form-group col-md-3">
+            <label>Fuel surcharge</label>
+            <input type="number" step="0.01" min="0" class="form-control" th:field="*{fuelSurchargePerHour}">
+          </div>
+        </div>
+
+        <button class="btn btn-primary" type="submit">
+          <i class="fas fa-save"></i> Save
+        </button>
+
+      </form>
+
+    </div>
+  </div>
+
+</div>
+</body>
+</html>

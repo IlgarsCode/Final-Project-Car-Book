@@ -3,16 +3,21 @@ package com.example.demo.services.admin.impl;
 import com.example.demo.dto.dashboard.car.CarCreateDto;
 import com.example.demo.dto.dashboard.car.CarUpdateDto;
 import com.example.demo.model.Car;
+import com.example.demo.model.CarPricing;
+import com.example.demo.repository.CarPricingRepository;
 import com.example.demo.repository.CarRepository;
 import com.example.demo.services.admin.CarAdminService;
 import com.example.demo.services.storage.FileStorageService;
 import com.example.demo.util.SlugUtil;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.List;
 
 @Service
@@ -20,12 +25,13 @@ import java.util.List;
 public class CarAdminServiceImpl implements CarAdminService {
 
     private final CarRepository carRepository;
+    private final CarPricingRepository carPricingRepository;
     private final FileStorageService fileStorageService;
 
     @Override
     public List<Car> getAll() {
         return carRepository.findAll().stream()
-                .sorted((a,b) -> Long.compare(b.getId(), a.getId()))
+                .sorted((a, b) -> Long.compare(b.getId(), a.getId()))
                 .toList();
     }
 
@@ -35,7 +41,13 @@ public class CarAdminServiceImpl implements CarAdminService {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Car tapılmadı"));
     }
 
+    private static BigDecimal bd(Double v) {
+        if (v == null) return BigDecimal.ZERO.setScale(2, RoundingMode.HALF_UP);
+        return BigDecimal.valueOf(v).setScale(2, RoundingMode.HALF_UP);
+    }
+
     @Override
+    @Transactional
     public void create(CarCreateDto dto, MultipartFile image) {
 
         Car car = new Car();
@@ -66,17 +78,32 @@ public class CarAdminServiceImpl implements CarAdminService {
         car.setSlug(slug);
 
         // ✅ image upload (optional)
-        String path = fileStorageService.storeCarImage(image);
-        if (path != null) car.setImageUrl(path); // imageUrl field-ini müvəqqəti istifadə edirik
-        // sən sonra bunu imagePath-a dəyişəcəksən, indi tez işləsin deyə toxunmuram
+        if (image != null && !image.isEmpty()) {
+            String path = fileStorageService.storeCarImage(image);
+            if (path != null) car.setImageUrl(path);
+        }
 
         carRepository.save(car);
+
+        // ✅ Pricing auto create (daily = car.pricePerDay)
+        CarPricing cp = new CarPricing();
+        cp.setCar(car);
+        cp.setDailyRate(bd(car.getPricePerDay()));
+        cp.setHourlyRate(BigDecimal.ZERO.setScale(2, RoundingMode.HALF_UP));
+        cp.setMonthlyLeasingRate(BigDecimal.ZERO.setScale(2, RoundingMode.HALF_UP));
+        cp.setFuelSurchargePerHour(BigDecimal.ZERO.setScale(2, RoundingMode.HALF_UP));
+        cp.setIsActive(true);
+
+        carPricingRepository.save(cp);
     }
 
     @Override
+    @Transactional
     public void update(Long id, CarUpdateDto dto, MultipartFile image) {
 
         Car car = getById(id);
+
+        Double oldPrice = car.getPricePerDay();
 
         car.setTitle(dto.getTitle());
         car.setBrand(dto.getBrand());
@@ -95,7 +122,7 @@ public class CarAdminServiceImpl implements CarAdminService {
 
         car.setIsActive(dto.getIsActive() != null ? dto.getIsActive() : true);
 
-        // ✅ slug yenilə (brand/title dəyişibsə)
+        // ✅ slug yenilə
         String base = SlugUtil.slugify(dto.getBrand() + " " + dto.getTitle());
         String slug = base;
         int i = 2;
@@ -106,20 +133,46 @@ public class CarAdminServiceImpl implements CarAdminService {
 
         // ✅ image dəyişmək istəyirsə
         if (image != null && !image.isEmpty()) {
-            // köhnəni sil
             fileStorageService.deleteIfExists(car.getImageUrl());
-            // yenini yaz
             String path = fileStorageService.storeCarImage(image);
             if (path != null) car.setImageUrl(path);
         }
 
         carRepository.save(car);
+
+        // ✅ daily sync (car.pricePerDay -> pricing.dailyRate)
+        boolean priceChanged =
+                (oldPrice == null && car.getPricePerDay() != null)
+                        || (oldPrice != null && !oldPrice.equals(car.getPricePerDay()));
+
+        if (priceChanged) {
+            CarPricing cp = carPricingRepository.findByCar_Id(car.getId())
+                    .orElseGet(() -> {
+                        CarPricing x = new CarPricing();
+                        x.setCar(car);
+                        x.setHourlyRate(BigDecimal.ZERO.setScale(2, RoundingMode.HALF_UP));
+                        x.setMonthlyLeasingRate(BigDecimal.ZERO.setScale(2, RoundingMode.HALF_UP));
+                        x.setFuelSurchargePerHour(BigDecimal.ZERO.setScale(2, RoundingMode.HALF_UP));
+                        x.setIsActive(true);
+                        return x;
+                    });
+
+            cp.setDailyRate(bd(car.getPricePerDay()));
+            carPricingRepository.save(cp);
+        }
     }
 
     @Override
+    @Transactional
     public void delete(Long id) {
         Car car = getById(id);
-        car.setIsActive(false); // soft delete
+        car.setIsActive(false);
         carRepository.save(car);
+
+        // ✅ pricing də soft deactivate olsun (istəsən)
+        carPricingRepository.findByCar_Id(car.getId()).ifPresent(cp -> {
+            cp.setIsActive(false);
+            carPricingRepository.save(cp);
+        });
     }
 }

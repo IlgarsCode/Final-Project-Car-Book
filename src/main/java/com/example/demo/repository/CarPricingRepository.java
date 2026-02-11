@@ -10,6 +10,11 @@ import java.util.Optional;
 
 public interface CarPricingRepository extends JpaRepository<CarPricing, Long> {
 
+    // ✅ Admin sync üçün (isActive filter YOX)
+    Optional<CarPricing> findByCar_Id(Long carId);
+
+    boolean existsByCar_Id(Long carId);
+
     // Pricing page üçün (hamısı)
     @Query("""
         select cp
