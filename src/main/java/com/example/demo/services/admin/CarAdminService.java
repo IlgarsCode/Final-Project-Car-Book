@@ -13,5 +13,7 @@ public interface CarAdminService {
 
     void create(CarCreateDto dto, MultipartFile image);
     void update(Long id, CarUpdateDto dto, MultipartFile image);
-    void delete(Long id); // soft delete
+
+    void delete(Long id);      // soft delete (deactivate)
+    void hardDelete(Long id);  // ✅ tam silmə
 }

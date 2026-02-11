@@ -18,6 +18,11 @@ public interface CarReviewRepository extends JpaRepository<CarReview, Long> {
 
     long countByCar_IdAndRatingAndIsActiveTrue(Long carId, Integer rating);
 
+    boolean existsByCar_Id(Long carId);
+    void deleteByCar_Id(Long carId);
+
+
+
     // ✅ Pricing üçün: carId-lərə görə average rating (bulk, N+1 yox)
     @Query("""
         select r.car.id as carId, coalesce(avg(r.rating), 0) as avgRating

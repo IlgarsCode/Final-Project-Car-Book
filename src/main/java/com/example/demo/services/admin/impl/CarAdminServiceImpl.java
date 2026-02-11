@@ -4,7 +4,9 @@ import com.example.demo.dto.car.CarCreateDto;
 import com.example.demo.dto.car.CarUpdateDto;
 import com.example.demo.model.Car;
 import com.example.demo.repository.CarCategoryRepository;
+import com.example.demo.repository.CarPricingRepository;
 import com.example.demo.repository.CarRepository;
+import com.example.demo.repository.CarReviewRepository;
 import com.example.demo.services.admin.CarAdminService;
 import com.example.demo.services.storage.FileStorageService;
 import com.example.demo.util.SlugUtil;
@@ -22,7 +24,9 @@ import java.util.List;
 public class CarAdminServiceImpl implements CarAdminService {
 
     private final CarRepository carRepository;
-    private final CarCategoryRepository carCategoryRepository;
+    private final CarPricingRepository carPricingRepository;
+    private final CarReviewRepository carReviewRepository;
+    private final CarCategoryRepository carCategoryRepository;// varsa
     private final FileStorageService fileStorageService;
 
     @Override
@@ -138,9 +142,22 @@ public class CarAdminServiceImpl implements CarAdminService {
 
     @Override
     @Transactional
-    public void delete(Long id) {
+    public void delete(Long id) { // soft
         Car car = getById(id);
         car.setIsActive(false);
         carRepository.save(car);
+    }
+
+    @Override
+    @Transactional
+    public void hardDelete(Long id) {
+        Car car = getById(id);
+
+        // (opsional) şəkli sil
+        fileStorageService.deleteIfExists(car.getImageUrl());
+
+        // DB-də FK-lar ON DELETE CASCADE olduğu üçün bu bəs edir
+        carRepository.deleteById(id);
+
     }
 }

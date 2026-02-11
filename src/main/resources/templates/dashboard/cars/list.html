@@ -66,9 +66,17 @@
 
                         <form th:action="@{/dashboard/cars/delete/{id}(id=${c.id})}"
                               method="post" style="display:inline;">
-                            <button class="btn btn-sm btn-danger"
+                            <button class="btn btn-sm btn-warning"
                                     onclick="return confirm('Deactivate this car?')">
-                                Delete
+                                Deactivate
+                            </button>
+                        </form>
+
+                        <form th:action="@{/dashboard/cars/hard-delete/{id}(id=${c.id})}"
+                              method="post" style="display:inline;">
+                            <button class="btn btn-sm btn-danger"
+                                    onclick="return confirm('HARD DELETE? Bu geri qaytarılmır!')">
+                                Hard Delete
                             </button>
                         </form>
                     </td>

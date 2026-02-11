@@ -105,4 +105,9 @@ public class DashboardCarController {
         carAdminService.delete(id);
         return "redirect:/dashboard/cars";
     }
+    @PostMapping("/hard-delete/{id}")
+    public String hardDelete(@PathVariable Long id) {
+        carAdminService.hardDelete(id);
+        return "redirect:/dashboard/cars";
+    }
 }

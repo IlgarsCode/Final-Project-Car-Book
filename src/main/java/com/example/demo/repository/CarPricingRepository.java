@@ -14,6 +14,7 @@ public interface CarPricingRepository extends JpaRepository<CarPricing, Long> {
     Optional<CarPricing> findByCar_Id(Long carId);
 
     boolean existsByCar_Id(Long carId);
+    void deleteByCar_Id(Long carId);
 
     // Pricing page üçün (hamısı)
     @Query("""
