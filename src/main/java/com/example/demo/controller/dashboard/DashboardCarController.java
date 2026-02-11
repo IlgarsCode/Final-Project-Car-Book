@@ -1,6 +1,6 @@
 package com.example.demo.controller.dashboard;
 
-import com.example.demo.dto.dashboard.car.CarCreateDto;
+import com.example.demo.dto.car.CarCreateDto;
 import com.example.demo.dto.dashboard.car.CarUpdateDto;
 import com.example.demo.services.admin.CarAdminService;
 import jakarta.validation.Valid;

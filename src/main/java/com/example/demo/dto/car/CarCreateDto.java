@@ -1,4 +1,4 @@
-package com.example.demo.dto.dashboard.car;
+package com.example.demo.dto.car;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -14,9 +14,6 @@ public class CarCreateDto {
 
     @NotBlank
     private String brand;
-
-    @NotNull
-    private Double pricePerDay;
 
     private Integer mileage;
     private String transmission;

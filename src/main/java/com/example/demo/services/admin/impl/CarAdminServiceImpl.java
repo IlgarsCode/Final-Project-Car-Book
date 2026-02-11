@@ -1,6 +1,6 @@
 package com.example.demo.services.admin.impl;
 
-import com.example.demo.dto.dashboard.car.CarCreateDto;
+import com.example.demo.dto.car.CarCreateDto;
 import com.example.demo.dto.dashboard.car.CarUpdateDto;
 import com.example.demo.model.Car;
 import com.example.demo.model.CarPricing;
@@ -53,7 +53,6 @@ public class CarAdminServiceImpl implements CarAdminService {
         Car car = new Car();
         car.setTitle(dto.getTitle());
         car.setBrand(dto.getBrand());
-        car.setPricePerDay(dto.getPricePerDay());
 
         car.setMileage(dto.getMileage());
         car.setTransmission(dto.getTransmission());
