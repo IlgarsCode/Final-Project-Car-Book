@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{dashboard/layout}">
+<head>
+    <title>Cars</title>
+</head>
+<body>
+<div layout:fragment="content">
+
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h1 class="h3 mb-0 text-gray-800">Cars</h1>
+        <a class="btn btn-primary" th:href="@{/dashboard/cars/create}">+ Create</a>
+    </div>
+
+    <div class="card shadow mb-4">
+        <div class="card-body table-responsive">
+
+            <table class="table table-bordered table-hover">
+                <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Image</th>
+                    <th>Brand</th>
+                    <th>Title</th>
+                    <th>Price/Day</th>
+                    <th>Slug</th>
+                    <th>Active</th>
+                    <th style="width: 160px;">Actions</th>
+                </tr>
+                </thead>
+
+                <tbody>
+                <tr th:each="c, i : ${cars}">
+                    <td th:text="${i.count}">1</td>
+                    <td>
+                        <img th:if="${c.imageUrl != null}" th:src="@{${c.imageUrl}}"
+                             style="width:70px;height:45px;object-fit:cover;border-radius:6px;">
+                        <span th:if="${c.imageUrl == null}">-</span>
+                    </td>
+                    <td th:text="${c.brand}">Brand</td>
+                    <td th:text="${c.title}">Title</td>
+                    <td th:text="${c.pricePerDay}">0</td>
+                    <td th:text="${c.slug}">slug</td>
+
+                    <td>
+                        <span class="badge"
+                              th:classappend="${c.isActive} ? ' badge-success' : ' badge-secondary'"
+                              th:text="${c.isActive} ? 'ACTIVE' : 'INACTIVE'">
+                        </span>
+                    </td>
+
+                    <td>
+                        <a class="btn btn-sm btn-info"
+                           th:href="@{/dashboard/cars/edit/{id}(id=${c.id})}">
+                            Edit
+                        </a>
+
+                        <form th:action="@{/dashboard/cars/delete/{id}(id=${c.id})}"
+                              method="post" style="display:inline;">
+                            <button class="btn btn-sm btn-danger"
+                                    onclick="return confirm('Deactivate this car?')">
+                                Delete
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+                </tbody>
+
+            </table>
+
+        </div>
+    </div>
+
+</div>
+</body>
+</html>
