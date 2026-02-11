@@ -27,9 +27,15 @@ public class CarDetailDto {
 
     private String description;
 
+    // DB-də saxlanan raw text (məs: textarea-dan gələn)
     private String featuresCol1;
     private String featuresCol2;
     private String featuresCol3;
+
+    // UI üçün parçalanmış list
+    private List<String> features1;
+    private List<String> features2;
+    private List<String> features3;
 
     private BigDecimal hourlyRate;
     private BigDecimal dailyRate;
