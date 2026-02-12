@@ -9,64 +9,85 @@
 <div layout:fragment="content">
 
   <div class="d-flex justify-content-between align-items-center mb-3">
-    <h1 class="h3 mb-0 text-gray-800">Order Detail</h1>
+    <h1 class="h3 text-gray-800">Order Detail</h1>
     <a class="btn btn-secondary" th:href="@{/dashboard/orders}">Back</a>
   </div>
 
   <div class="card shadow mb-3">
     <div class="card-body">
-      <p><b>ID:</b> <span th:text="${order.id}">1</span></p>
-      <p><b>User:</b> <span th:text="${order.userEmail}">mail</span></p>
-      <p><b>Pickup:</b> <span th:text="${order.pickupLocation}">-</span></p>
-      <p><b>Dropoff:</b> <span th:text="${order.dropoffLocation}">-</span></p>
-      <p><b>Dates:</b>
-        <span th:text="${order.pickupDate}">-</span>
-        →
-        <span th:text="${order.dropoffDate}">-</span>
-      </p>
-      <p><b>Total:</b> <span th:text="${order.totalAmount}">0</span></p>
-      <p><b>Created:</b> <span th:text="${order.createdAt != null ? #temporals.format(order.createdAt,'yyyy-MM-dd HH:mm') : '-'}">-</span></p>
+      <div><b>Order ID:</b> <span th:text="${order.id}">1</span></div>
+      <div><b>User:</b> <span th:text="${order.userEmail}">mail</span></div>
+      <div><b>Status:</b> <span th:text="${order.status}">PENDING</span></div>
 
-      <hr>
+      <hr/>
 
-      <form th:action="@{/dashboard/orders/{id}/status(id=${order.id})}" method="post" class="form-inline">
-        <label class="mr-2"><b>Status</b></label>
-        <select class="form-control mr-2" name="status">
-          <option th:each="s : ${statuses}"
-                  th:value="${s}"
-                  th:selected="${order.status == s}"
-                  th:text="${s}">
-          </option>
-        </select>
+      <div><b>Pickup:</b> <span th:text="${order.pickupLocation}">pickup</span></div>
+      <div><b>Dropoff:</b> <span th:text="${order.dropoffLocation}">drop</span></div>
+      <div><b>Pickup Date:</b> <span th:text="${order.pickupDate}">-</span></div>
+      <div><b>Dropoff Date:</b> <span th:text="${order.dropoffDate}">-</span></div>
+      <div><b>Pickup Time:</b> <span th:text="${order.pickupTime != null ? order.pickupTime : '-'}">-</span></div>
+      <div><b>Rental Days:</b> <span th:text="${order.rentalDays}">1</span></div>
+
+      <hr/>
+
+      <div><b>Total:</b> <span th:text="${order.totalAmount}">0</span></div>
+      <div><b>Created:</b> <span th:text="${order.createdAt != null ? #temporals.format(order.createdAt,'yyyy-MM-dd HH:mm') : '-'}">-</span></div>
+
+      <hr/>
+
+      <form class="d-flex gap-2 align-items-end" th:action="@{/dashboard/orders/{id}/status(id=${order.id})}" method="post">
+        <div class="form-group mb-0">
+          <label>Status dəyiş</label>
+          <select class="form-control" name="status">
+            <option th:each="s : ${statuses}"
+                    th:value="${s}"
+                    th:text="${s}"
+                    th:selected="${order.status != null and order.status.name() == s.name()}">
+            </option>
+          </select>
+        </div>
         <button class="btn btn-primary" type="submit">Update</button>
       </form>
 
-      <form th:action="@{/dashboard/orders/{id}/delete(id=${order.id})}" method="post" class="mt-2">
-        <button class="btn btn-danger" onclick="return confirm('Delete order permanently?')">Delete</button>
+      <form class="mt-3" th:action="@{/dashboard/orders/{id}/delete(id=${order.id})}" method="post">
+        <button class="btn btn-danger" type="submit" onclick="return confirm('Order silinsin?');">
+          Hard Delete
+        </button>
       </form>
+
     </div>
   </div>
 
   <div class="card shadow">
     <div class="card-body table-responsive">
-      <h5 class="mb-3">Items</h5>
 
-      <table class="table table-bordered table-hover">
+      <div class="text-muted" th:if="${order.items == null or #lists.isEmpty(order.items)}">
+        Order items yoxdur.
+      </div>
+
+      <table class="table table-bordered table-hover" th:if="${order.items != null and !#lists.isEmpty(order.items)}">
         <thead>
         <tr>
-          <th>#</th>
+          <th>ID</th>
           <th>Car</th>
           <th>Rate</th>
-          <th>Unit</th>
+          <th>Unit Price</th>
+          <th>Surcharge/hr</th>
+          <th>Units</th>
           <th>Qty</th>
           <th>Line Total</th>
         </tr>
         </thead>
         <tbody>
-        <tr th:each="it, i : ${order.items}">
-          <td th:text="${i.count}">1</td>
-          <td th:text="${it.carTitleSnapshot}">Car</td>
+        <tr th:each="it : ${order.items}">
+          <td th:text="${it.id}">1</td>
+          <td>
+            <div><b th:text="${it.carTitleSnapshot}">Car</b></div>
+            <div class="text-muted" th:text="${it.carImageUrlSnapshot}">img</div>
+          </td>
           <td th:text="${it.rateType}">DAILY</td>
+          <td th:text="${it.unitPriceSnapshot}">0</td>
+          <td th:text="${it.fuelSurchargePerHourSnapshot}">0</td>
           <td th:text="${it.unitCountSnapshot}">1</td>
           <td th:text="${it.quantity}">1</td>
           <td th:text="${it.lineTotal}">0</td>

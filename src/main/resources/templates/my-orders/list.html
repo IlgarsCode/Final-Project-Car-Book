@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+<head>
+    <meta charset="UTF-8">
+    <title>My Orders</title>
+</head>
+<body>
+<div layout:fragment="content">
+
+    <section class="hero-wrap hero-wrap-2 js-fullheight" style="background-image: url('/images/bg_3.jpg');" data-stellar-background-ratio="0.5">
+        <div class="overlay"></div>
+        <div class="container">
+            <div class="row no-gutters slider-text js-fullheight align-items-end justify-content-start">
+                <div class="col-md-9 ftco-animate pb-5">
+                    <p class="breadcrumbs">
+                        <span class="mr-2"><a th:href="@{/}">Home <i class="ion-ios-arrow-forward"></i></a></span>
+                        <span>My Orders <i class="ion-ios-arrow-forward"></i></span>
+                    </p>
+                    <h1 class="mb-3 bread">My Orders</h1>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="ftco-section">
+        <div class="container">
+
+            <div class="alert alert-info" th:if="${orders == null or orders.empty}">
+                Hələ sifariş yoxdur.
+            </div>
+
+            <div class="table-responsive" th:if="${orders != null and !orders.empty}">
+                <table class="table table-bordered table-hover">
+                    <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Order ID</th>
+                        <th>Status</th>
+                        <th>Pickup</th>
+                        <th>Dropoff</th>
+                        <th>Dates</th>
+                        <th>Total</th>
+                        <th></th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="o, i : ${orders}">
+                        <td th:text="${i.count}">1</td>
+                        <td th:text="${o.id}">1</td>
+                        <td th:text="${o.status}">PENDING</td>
+                        <td th:text="${o.pickupLocation}">pickup</td>
+                        <td th:text="${o.dropoffLocation}">dropoff</td>
+                        <td>
+                            <span th:text="${o.pickupDate}">2026-01-01</span>
+                            -
+                            <span th:text="${o.dropoffDate}">2026-01-02</span>
+                        </td>
+                        <td>$<span th:text="${o.totalAmount}">0</span></td>
+                        <td>
+                            <a class="btn btn-sm btn-primary" th:href="@{/my-orders/{id}(id=${o.id})}">Detail</a>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+    </section>
+
+</div>
+</body>
+</html>

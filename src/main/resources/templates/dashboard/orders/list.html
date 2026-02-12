@@ -12,36 +12,33 @@
 
   <form class="card shadow p-3 mb-4" th:action="@{/dashboard/orders}" method="get">
     <div class="form-row">
-
       <div class="form-group col-md-3">
         <label>Status</label>
         <select class="form-control" name="status">
           <option value="">All</option>
           <option th:each="s : ${statuses}"
                   th:value="${s}"
-                  th:selected="${filter != null and filter.status == s}"
-                  th:text="${s}">
+                  th:text="${s}"
+                  th:selected="${filter != null and filter.status != null and filter.status.name() == s.name()}">
           </option>
         </select>
       </div>
 
       <div class="form-group col-md-3">
-        <label>From (created)</label>
+        <label>From (date)</label>
         <input type="date" class="form-control" name="from"
                th:value="${filter != null ? filter.from : ''}">
       </div>
 
       <div class="form-group col-md-3">
-        <label>To (created)</label>
+        <label>To (date)</label>
         <input type="date" class="form-control" name="to"
                th:value="${filter != null ? filter.to : ''}">
       </div>
 
       <div class="form-group col-md-3">
-        <label>Search</label>
-        <input class="form-control" name="q"
-               placeholder="email/pickup/dropoff"
-               th:value="${filter != null ? filter.q : ''}">
+        <label>Search (email / pickup / dropoff)</label>
+        <input class="form-control" name="q" th:value="${filter != null ? filter.q : ''}">
       </div>
     </div>
 
@@ -63,10 +60,12 @@
         <tr>
           <th>#</th>
           <th>ID</th>
-          <th>User</th>
           <th>Status</th>
-          <th>Total</th>
+          <th>User</th>
+          <th>Pickup</th>
+          <th>Dropoff</th>
           <th>Items</th>
+          <th>Total</th>
           <th>Created</th>
           <th>Actions</th>
         </tr>
@@ -75,10 +74,12 @@
         <tr th:each="o, i : ${page.content}">
           <td th:text="${i.count}">1</td>
           <td th:text="${o.id}">1</td>
+          <td th:text="${o.status}">PENDING</td>
           <td th:text="${o.userEmail}">mail</td>
-          <td><span class="badge badge-info" th:text="${o.status}">PENDING</span></td>
-          <td th:text="${o.totalAmount}">0</td>
+          <td th:text="${o.pickupLocation}">pickup</td>
+          <td th:text="${o.dropoffLocation}">drop</td>
           <td th:text="${o.itemCount}">0</td>
+          <td th:text="${o.totalAmount}">0</td>
           <td th:text="${o.createdAt != null ? #temporals.format(o.createdAt,'yyyy-MM-dd HH:mm') : '-'}">-</td>
           <td>
             <a class="btn btn-sm btn-info" th:href="@{/dashboard/orders/{id}(id=${o.id})}">Detail</a>
@@ -87,7 +88,8 @@
         </tbody>
       </table>
 
-      <div class="d-flex justify-content-between align-items-center mt-3" th:if="${page != null and page.totalPages > 1}">
+      <div class="d-flex justify-content-between align-items-center mt-3"
+           th:if="${page != null and page.totalPages > 1}">
         <div class="text-muted">Total: <span th:text="${page.totalElements}">0</span></div>
         <div class="d-flex gap-2">
           <a class="btn btn-sm btn-outline-primary"

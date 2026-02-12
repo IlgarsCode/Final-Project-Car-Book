@@ -9,55 +9,67 @@
 <div layout:fragment="content">
 
   <div class="d-flex justify-content-between align-items-center mb-3">
-    <h1 class="h3 mb-0 text-gray-800">Cart Detail</h1>
+    <h1 class="h3 text-gray-800">Cart Detail</h1>
     <a class="btn btn-secondary" th:href="@{/dashboard/carts}">Back</a>
   </div>
 
   <div class="card shadow mb-3">
     <div class="card-body">
-      <p><b>ID:</b> <span th:text="${cart.id}">1</span></p>
-      <p><b>User:</b> <span th:text="${cart.userEmail}">mail</span></p>
-      <p><b>Updated:</b> <span th:text="${cart.updatedAt != null ? #temporals.format(cart.updatedAt,'yyyy-MM-dd HH:mm') : '-'}">-</span></p>
+      <div><b>Cart ID:</b> <span th:text="${cart.id}">1</span></div>
+      <div><b>User:</b> <span th:text="${cart.userEmail}">mail</span></div>
+      <div><b>Created:</b> <span th:text="${cart.createdAt != null ? #temporals.format(cart.createdAt,'yyyy-MM-dd HH:mm') : '-'}">-</span></div>
+      <div><b>Updated:</b> <span th:text="${cart.updatedAt != null ? #temporals.format(cart.updatedAt,'yyyy-MM-dd HH:mm') : '-'}">-</span></div>
 
-      <form th:action="@{/dashboard/carts/{id}/clear(id=${cart.id})}" method="post">
-        <button class="btn btn-danger" onclick="return confirm('Clear cart?')">Clear Cart</button>
+      <form class="mt-3" th:action="@{/dashboard/carts/{id}/clear(id=${cart.id})}" method="post">
+        <button class="btn btn-danger" type="submit"
+                onclick="return confirm('Cart tam təmizlənsin?');">
+          Clear Cart
+        </button>
       </form>
     </div>
   </div>
 
   <div class="card shadow">
     <div class="card-body table-responsive">
-      <h5 class="mb-3">Items</h5>
 
-      <div class="text-muted" th:if="${cart.items == null or #lists.isEmpty(cart.items)}">Boşdur.</div>
+      <div class="text-muted" th:if="${cart.items == null or #lists.isEmpty(cart.items)}">
+        Cart items yoxdur.
+      </div>
 
       <table class="table table-bordered table-hover" th:if="${cart.items != null and !#lists.isEmpty(cart.items)}">
         <thead>
         <tr>
-          <th>#</th>
+          <th>ID</th>
           <th>Car</th>
           <th>Rate</th>
-          <th>Unit</th>
+          <th>Unit Price</th>
+          <th>Surcharge/hr</th>
+          <th>Unit Count</th>
           <th>Qty</th>
           <th>Added</th>
-          <th>Actions</th>
+          <th>Action</th>
         </tr>
         </thead>
         <tbody>
-        <tr th:each="it, i : ${cart.items}">
-          <td th:text="${i.count}">1</td>
+        <tr th:each="it : ${cart.items}">
+          <td th:text="${it.id}">1</td>
           <td>
-            <div th:text="${it.carTitle}">Car</div>
-            <small class="text-muted" th:text="${it.carSlug}">slug</small>
+            <div><b th:text="${it.carTitle}">Car</b></div>
+            <div class="text-muted" th:text="${it.carSlug}">slug</div>
           </td>
           <td th:text="${it.rateType}">DAILY</td>
+          <td th:text="${it.unitPriceSnapshot}">0</td>
+          <td th:text="${it.fuelSurchargePerHourSnapshot}">0</td>
           <td th:text="${it.unitCount}">1</td>
           <td th:text="${it.quantity}">1</td>
           <td th:text="${it.addedAt != null ? #temporals.format(it.addedAt,'yyyy-MM-dd HH:mm') : '-'}">-</td>
           <td>
-            <form th:action="@{/dashboard/carts/items/{itemId}/delete(itemId=${it.id})}" method="post" style="display:inline;">
-              <input type="hidden" name="cartId" th:value="${cart.id}">
-              <button class="btn btn-sm btn-danger" onclick="return confirm('Delete item?')">Delete</button>
+            <form th:action="@{/dashboard/carts/{cartId}/items/{itemId}/delete(cartId=${cart.id},itemId=${it.id})}"
+                  method="post">
+              <button class="btn btn-sm btn-outline-danger" type="submit"
+                      onclick="return confirm('Item silinsin?');">
+                Delete
+              </button>
             </form>
           </td>
         </tr>

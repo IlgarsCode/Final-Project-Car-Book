@@ -55,7 +55,8 @@
         </tbody>
       </table>
 
-      <div class="d-flex justify-content-between align-items-center mt-3" th:if="${page != null and page.totalPages > 1}">
+      <div class="d-flex justify-content-between align-items-center mt-3"
+           th:if="${page != null and page.totalPages > 1}">
         <div class="text-muted">Total: <span th:text="${page.totalElements}">0</span></div>
         <div class="d-flex gap-2">
           <a class="btn btn-sm btn-outline-primary"
