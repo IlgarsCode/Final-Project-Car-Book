@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{dashboard/layout}">
+<head>
+  <title>Order Detail</title>
+</head>
+<body>
+<div layout:fragment="content">
+
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h1 class="h3 mb-0 text-gray-800">Order Detail</h1>
+    <a class="btn btn-secondary" th:href="@{/dashboard/orders}">Back</a>
+  </div>
+
+  <div class="card shadow mb-3">
+    <div class="card-body">
+      <p><b>ID:</b> <span th:text="${order.id}">1</span></p>
+      <p><b>User:</b> <span th:text="${order.userEmail}">mail</span></p>
+      <p><b>Pickup:</b> <span th:text="${order.pickupLocation}">-</span></p>
+      <p><b>Dropoff:</b> <span th:text="${order.dropoffLocation}">-</span></p>
+      <p><b>Dates:</b>
+        <span th:text="${order.pickupDate}">-</span>
+        →
+        <span th:text="${order.dropoffDate}">-</span>
+      </p>
+      <p><b>Total:</b> <span th:text="${order.totalAmount}">0</span></p>
+      <p><b>Created:</b> <span th:text="${order.createdAt != null ? #temporals.format(order.createdAt,'yyyy-MM-dd HH:mm') : '-'}">-</span></p>
+
+      <hr>
+
+      <form th:action="@{/dashboard/orders/{id}/status(id=${order.id})}" method="post" class="form-inline">
+        <label class="mr-2"><b>Status</b></label>
+        <select class="form-control mr-2" name="status">
+          <option th:each="s : ${statuses}"
+                  th:value="${s}"
+                  th:selected="${order.status == s}"
+                  th:text="${s}">
+          </option>
+        </select>
+        <button class="btn btn-primary" type="submit">Update</button>
+      </form>
+
+      <form th:action="@{/dashboard/orders/{id}/delete(id=${order.id})}" method="post" class="mt-2">
+        <button class="btn btn-danger" onclick="return confirm('Delete order permanently?')">Delete</button>
+      </form>
+    </div>
+  </div>
+
+  <div class="card shadow">
+    <div class="card-body table-responsive">
+      <h5 class="mb-3">Items</h5>
+
+      <table class="table table-bordered table-hover">
+        <thead>
+        <tr>
+          <th>#</th>
+          <th>Car</th>
+          <th>Rate</th>
+          <th>Unit</th>
+          <th>Qty</th>
+          <th>Line Total</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="it, i : ${order.items}">
+          <td th:text="${i.count}">1</td>
+          <td th:text="${it.carTitleSnapshot}">Car</td>
+          <td th:text="${it.rateType}">DAILY</td>
+          <td th:text="${it.unitCountSnapshot}">1</td>
+          <td th:text="${it.quantity}">1</td>
+          <td th:text="${it.lineTotal}">0</td>
+        </tr>
+        </tbody>
+      </table>
+
+    </div>
+  </div>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{dashboard/layout}">
+<head>
+  <title>Orders</title>
+</head>
+<body>
+<div layout:fragment="content">
+
+  <h1 class="h3 mb-3 text-gray-800">Orders</h1>
+
+  <form class="card shadow p-3 mb-4" th:action="@{/dashboard/orders}" method="get">
+    <div class="form-row">
+
+      <div class="form-group col-md-3">
+        <label>Status</label>
+        <select class="form-control" name="status">
+          <option value="">All</option>
+          <option th:each="s : ${statuses}"
+                  th:value="${s}"
+                  th:selected="${filter != null and filter.status == s}"
+                  th:text="${s}">
+          </option>
+        </select>
+      </div>
+
+      <div class="form-group col-md-3">
+        <label>From (created)</label>
+        <input type="date" class="form-control" name="from"
+               th:value="${filter != null ? filter.from : ''}">
+      </div>
+
+      <div class="form-group col-md-3">
+        <label>To (created)</label>
+        <input type="date" class="form-control" name="to"
+               th:value="${filter != null ? filter.to : ''}">
+      </div>
+
+      <div class="form-group col-md-3">
+        <label>Search</label>
+        <input class="form-control" name="q"
+               placeholder="email/pickup/dropoff"
+               th:value="${filter != null ? filter.q : ''}">
+      </div>
+    </div>
+
+    <div class="d-flex gap-2">
+      <button class="btn btn-primary" type="submit">Filter</button>
+      <a class="btn btn-secondary" th:href="@{/dashboard/orders}">Reset</a>
+    </div>
+  </form>
+
+  <div class="card shadow">
+    <div class="card-body table-responsive">
+
+      <div class="text-muted" th:if="${page == null or page.totalElements == 0}">
+        Order yoxdur.
+      </div>
+
+      <table class="table table-bordered table-hover" th:if="${page != null and page.totalElements > 0}">
+        <thead>
+        <tr>
+          <th>#</th>
+          <th>ID</th>
+          <th>User</th>
+          <th>Status</th>
+          <th>Total</th>
+          <th>Items</th>
+          <th>Created</th>
+          <th>Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="o, i : ${page.content}">
+          <td th:text="${i.count}">1</td>
+          <td th:text="${o.id}">1</td>
+          <td th:text="${o.userEmail}">mail</td>
+          <td><span class="badge badge-info" th:text="${o.status}">PENDING</span></td>
+          <td th:text="${o.totalAmount}">0</td>
+          <td th:text="${o.itemCount}">0</td>
+          <td th:text="${o.createdAt != null ? #temporals.format(o.createdAt,'yyyy-MM-dd HH:mm') : '-'}">-</td>
+          <td>
+            <a class="btn btn-sm btn-info" th:href="@{/dashboard/orders/{id}(id=${o.id})}">Detail</a>
+          </td>
+        </tr>
+        </tbody>
+      </table>
+
+      <div class="d-flex justify-content-between align-items-center mt-3" th:if="${page != null and page.totalPages > 1}">
+        <div class="text-muted">Total: <span th:text="${page.totalElements}">0</span></div>
+        <div class="d-flex gap-2">
+          <a class="btn btn-sm btn-outline-primary"
+             th:if="${page.hasPrevious()}"
+             th:href="@{/dashboard/orders(page=${page.number-1},size=${pageSize},status=${filter.status},from=${filter.from},to=${filter.to},q=${filter.q})}">
+            Prev
+          </a>
+          <span class="text-muted">
+            Page <span th:text="${page.number + 1}">1</span> / <span th:text="${page.totalPages}">1</span>
+          </span>
+          <a class="btn btn-sm btn-outline-primary"
+             th:if="${page.hasNext()}"
+             th:href="@{/dashboard/orders(page=${page.number+1},size=${pageSize},status=${filter.status},from=${filter.from},to=${filter.to},q=${filter.q})}">
+            Next
+          </a>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+</body>
+</html>

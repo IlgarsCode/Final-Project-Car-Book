@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{dashboard/layout}">
+<head>
+  <title>Cart Detail</title>
+</head>
+<body>
+<div layout:fragment="content">
+
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h1 class="h3 mb-0 text-gray-800">Cart Detail</h1>
+    <a class="btn btn-secondary" th:href="@{/dashboard/carts}">Back</a>
+  </div>
+
+  <div class="card shadow mb-3">
+    <div class="card-body">
+      <p><b>ID:</b> <span th:text="${cart.id}">1</span></p>
+      <p><b>User:</b> <span th:text="${cart.userEmail}">mail</span></p>
+      <p><b>Updated:</b> <span th:text="${cart.updatedAt != null ? #temporals.format(cart.updatedAt,'yyyy-MM-dd HH:mm') : '-'}">-</span></p>
+
+      <form th:action="@{/dashboard/carts/{id}/clear(id=${cart.id})}" method="post">
+        <button class="btn btn-danger" onclick="return confirm('Clear cart?')">Clear Cart</button>
+      </form>
+    </div>
+  </div>
+
+  <div class="card shadow">
+    <div class="card-body table-responsive">
+      <h5 class="mb-3">Items</h5>
+
+      <div class="text-muted" th:if="${cart.items == null or #lists.isEmpty(cart.items)}">Boşdur.</div>
+
+      <table class="table table-bordered table-hover" th:if="${cart.items != null and !#lists.isEmpty(cart.items)}">
+        <thead>
+        <tr>
+          <th>#</th>
+          <th>Car</th>
+          <th>Rate</th>
+          <th>Unit</th>
+          <th>Qty</th>
+          <th>Added</th>
+          <th>Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="it, i : ${cart.items}">
+          <td th:text="${i.count}">1</td>
+          <td>
+            <div th:text="${it.carTitle}">Car</div>
+            <small class="text-muted" th:text="${it.carSlug}">slug</small>
+          </td>
+          <td th:text="${it.rateType}">DAILY</td>
+          <td th:text="${it.unitCount}">1</td>
+          <td th:text="${it.quantity}">1</td>
+          <td th:text="${it.addedAt != null ? #temporals.format(it.addedAt,'yyyy-MM-dd HH:mm') : '-'}">-</td>
+          <td>
+            <form th:action="@{/dashboard/carts/items/{itemId}/delete(itemId=${it.id})}" method="post" style="display:inline;">
+              <input type="hidden" name="cartId" th:value="${cart.id}">
+              <button class="btn btn-sm btn-danger" onclick="return confirm('Delete item?')">Delete</button>
+            </form>
+          </td>
+        </tr>
+        </tbody>
+      </table>
+
+    </div>
+  </div>
+
+</div>
+</body>
+</html>
