@@ -5,6 +5,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 
@@ -19,9 +20,31 @@ public interface CarReviewRepository extends JpaRepository<CarReview, Long> {
     long countByCar_IdAndRatingAndIsActiveTrue(Long carId, Integer rating);
 
     boolean existsByCar_Id(Long carId);
+
     void deleteByCar_Id(Long carId);
 
-
+    // ✅ Admin filter + pagination
+    @Query("""
+        select r
+        from CarReview r
+        join r.car c
+        where (:carId is null or c.id = :carId)
+          and (:active is null or r.isActive = :active)
+          and (:rating is null or r.rating = :rating)
+          and (:q is null or :q = '' 
+               or lower(r.fullName) like lower(concat('%', :q, '%'))
+               or lower(r.message) like lower(concat('%', :q, '%'))
+               or lower(coalesce(r.email,'')) like lower(concat('%', :q, '%'))
+          )
+        order by r.createdAt desc
+    """)
+    Page<CarReview> adminSearch(
+            @Param("carId") Long carId,
+            @Param("active") Boolean active,
+            @Param("rating") Integer rating,
+            @Param("q") String q,
+            Pageable pageable
+    );
 
     // ✅ Pricing üçün: carId-lərə görə average rating (bulk, N+1 yox)
     @Query("""
@@ -30,7 +53,7 @@ public interface CarReviewRepository extends JpaRepository<CarReview, Long> {
         where r.isActive = true and r.car.id in :carIds
         group by r.car.id
     """)
-    List<CarAvgView> findAverageRatingsByCarIds(List<Long> carIds);
+    List<CarAvgView> findAverageRatingsByCarIds(@Param("carIds") List<Long> carIds);
 
     interface CarAvgView {
         Long getCarId();
@@ -44,7 +67,7 @@ public interface CarReviewRepository extends JpaRepository<CarReview, Long> {
         where r.isActive = true and r.car.id in :carIds
         group by r.car.id
     """)
-    List<CarCountView> countActiveReviewsByCarIds(List<Long> carIds);
+    List<CarCountView> countActiveReviewsByCarIds(@Param("carIds") List<Long> carIds);
 
     interface CarCountView {
         Long getCarId();

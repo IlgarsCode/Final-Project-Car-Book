@@ -7,12 +7,18 @@ import java.time.LocalDateTime;
 
 @Getter
 @Setter
-public class CarReviewDto {
+public class CarReviewDashboardDto {
     private Long id;
+
+    private Long carId;
+    private String carTitle;
+    private String carBrand;
+    private String carSlug;
+
     private String fullName;
-    private String email;       // ✅ əlavə et
+    private String email;
     private String message;
     private Integer rating;
-    private String photoUrl;
+    private Boolean isActive;
     private LocalDateTime createdAt;
 }
