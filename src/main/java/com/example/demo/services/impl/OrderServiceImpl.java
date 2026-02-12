@@ -47,19 +47,19 @@ public class OrderServiceImpl implements OrderService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Drop-off date pick-up date-dən əvvəl ola bilməz");
         }
 
-        // ✅ DAILY üçün gün sayı
         long daysBetween = ChronoUnit.DAYS.between(dto.getPickupDate(), dto.getDropoffDate());
-        int rentalDays = (int) Math.max(1, daysBetween); // eyni gün -> 1 gün
+        int rentalDays = (int) Math.max(1, daysBetween);
 
-        // ✅ HOURLY üçün saat sayı (pickupTime + dropoffTime varsa dəqiq)
         int rentalHours = calculateRentalHours(dto);
-
-        // ✅ LEASING üçün ay sayı (sadə variant: ceil(days/30))
         int rentalMonths = calculateRentalMonths(dto);
 
         Order order = new Order();
         order.setUser(user);
         order.setStatus(OrderStatus.PENDING);
+
+        // ✅ per-user sıra nömrəsi
+        long nextUserNo = orderRepository.findMaxUserOrderNo(user.getId()) + 1;
+        order.setUserOrderNo(nextUserNo);
 
         order.setPickupLocation(dto.getPickupLocation());
         order.setDropoffLocation(dto.getDropoffLocation());
@@ -71,16 +71,13 @@ public class OrderServiceImpl implements OrderService {
         BigDecimal total = BigDecimal.ZERO;
 
         for (var ci : cart.getItems()) {
-
             var car = ci.getCar();
 
-            PricingRateType rateType = ci.getRateType(); // cart-dan gəlir
+            PricingRateType rateType = ci.getRateType();
             BigDecimal unitPrice = nz(ci.getUnitPriceSnapshot());
             BigDecimal surcharge = nz(ci.getFuelSurchargePerHourSnapshot());
             int qty = (ci.getQuantity() == null || ci.getQuantity() < 1) ? 1 : ci.getQuantity();
 
-            // ✅ ƏSAS DÜZƏLİŞ:
-            // cart.unitCount-u burada override ETMİRİK (çünki default 1 idi və sənin problemi yaradırdı).
             int units;
             BigDecimal line;
 
@@ -89,14 +86,12 @@ public class OrderServiceImpl implements OrderService {
                 line = unitPrice.add(surcharge)
                         .multiply(BigDecimal.valueOf(units))
                         .multiply(BigDecimal.valueOf(qty));
-
             } else if (rateType == PricingRateType.LEASING) {
                 units = rentalMonths;
                 line = unitPrice
                         .multiply(BigDecimal.valueOf(units))
                         .multiply(BigDecimal.valueOf(qty));
-
-            } else { // DAILY
+            } else {
                 units = rentalDays;
                 line = unitPrice
                         .multiply(BigDecimal.valueOf(units))
@@ -126,7 +121,6 @@ public class OrderServiceImpl implements OrderService {
 
         Order saved = orderRepository.save(order);
 
-        // cart clear
         cart.getItems().clear();
         cartRepository.save(cart);
 
@@ -150,13 +144,9 @@ public class OrderServiceImpl implements OrderService {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Order tapılmadı"));
     }
 
-    // ----------------- helpers -----------------
-
     private int calculateRentalHours(CheckoutCreateDto dto) {
         LocalTime pickup = parseTimeOrNull(dto.getPickupTime());
         LocalTime dropoff = parseTimeOrNull(dto.getDropoffTime());
-
-        // Vaxt verilməyibsə: HOURLY üçün minimum 1 saat
         if (pickup == null || dropoff == null) return 1;
 
         LocalDateTime start = LocalDateTime.of(dto.getPickupDate(), pickup);

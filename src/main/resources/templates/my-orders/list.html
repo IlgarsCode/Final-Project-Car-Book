@@ -35,8 +35,7 @@
                 <table class="table table-bordered table-hover">
                     <thead>
                     <tr>
-                        <th>#</th>
-                        <th>Order ID</th>
+                        <th>Order No</th>
                         <th>Status</th>
                         <th>Pickup</th>
                         <th>Dropoff</th>
@@ -47,8 +46,7 @@
                     </thead>
                     <tbody>
                     <tr th:each="o, i : ${orders}">
-                        <td th:text="${i.count}">1</td>
-                        <td th:text="${o.id}">1</td>
+                        <td th:text="${o.userOrderNo}">1</td>
                         <td th:text="${o.status}">PENDING</td>
                         <td th:text="${o.pickupLocation}">pickup</td>
                         <td th:text="${o.dropoffLocation}">dropoff</td>
@@ -60,6 +58,7 @@
                         <td>$<span th:text="${o.totalAmount}">0</span></td>
                         <td>
                             <a class="btn btn-sm btn-primary" th:href="@{/my-orders/{id}(id=${o.id})}">Detail</a>
+
                         </td>
                     </tr>
                     </tbody>

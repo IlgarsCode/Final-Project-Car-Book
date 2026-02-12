@@ -18,7 +18,11 @@
                         <span class="mr-2"><a th:href="@{/}">Home <i class="ion-ios-arrow-forward"></i></a></span>
                         <span>Order <i class="ion-ios-arrow-forward"></i></span>
                     </p>
-                    <h1 class="mb-3 bread">Order #<span th:text="${order.id}">0</span></h1>
+
+                    <!-- ✅ DÜZƏLİŞ: user üçün Order # -->
+                    <h1 class="mb-2 bread">
+                        Order #<span th:text="${order.userOrderNo}">1</span>
+                    </h1>
                 </div>
             </div>
         </div>
