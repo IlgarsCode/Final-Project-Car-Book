@@ -18,43 +18,23 @@ public class HomeController {
     private final TestimonialService testimonialService;
     private final BlogService blogService;
 
+    private final HomeStatsService homeStatsService; // ✅ əlavə et
+
     @GetMapping("/")
     public String index(Model model) {
 
-        model.addAttribute(
-                "banner",
-                bannerService.getBanner(BannerType.HOME)
-        );
+        model.addAttribute("banner", bannerService.getBanner(BannerType.HOME));
 
         About about = aboutService.getActiveAbout();
-        if (about == null) {
-            about = new About();
-        }
+        if (about == null) about = new About();
         model.addAttribute("about", about);
 
-        model.addAttribute(
-                "services",
-                servicePageService.getActiveServices()
-        );
-        model.addAttribute(
-                "testimonials",
-                testimonialService.getActiveTestimonials()
-        );
-        model.addAttribute(
-                "blogs",
-                blogService.getActiveBlogs()
-        );
+        model.addAttribute("services", servicePageService.getActiveServices());
+        model.addAttribute("testimonials", testimonialService.getActiveTestimonials());
+        model.addAttribute("blogs", blogService.getActiveBlogs());
+
+        model.addAttribute("stats", homeStatsService.getHomeStats()); // ✅ əlavə et
 
         return "index";
-    }
-
-    @GetMapping("/car-single")
-    public String carSingle() {
-        return "car-single";
-    }
-
-    @GetMapping("/blog-single")
-    public String blogSingle() {
-        return "blog-single";
     }
 }

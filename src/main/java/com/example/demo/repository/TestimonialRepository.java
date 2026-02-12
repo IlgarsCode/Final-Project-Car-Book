@@ -8,5 +8,6 @@ import java.util.List;
 public interface TestimonialRepository extends JpaRepository<Testimonial, Long> {
 
     List<Testimonial> findAllByIsActiveTrue();
-}
 
+    long countByIsActiveTrue();
+}

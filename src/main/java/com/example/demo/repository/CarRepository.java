@@ -16,5 +16,7 @@ public interface CarRepository extends JpaRepository<Car, Long> {
     long countByCategory_IdAndIsActiveTrue(Long id);
 
     long countByCategory_Id(Long id);
+    long countByIsActiveTrue();
+
 
 }
