@@ -9,8 +9,6 @@ public interface CartAdminService {
     Page<CartDashboardDto> getPage(CartAdminFilterDto filter, int page, int size);
     CartDetailDashboardDto getDetail(Long cartId);
 
-    void removeItem(Long cartItemId);
-    void clearCart(Long cartId);
-
     void removeItem(Long cartId, Long itemId);
+    void clearCart(Long cartId);
 }

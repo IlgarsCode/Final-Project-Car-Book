@@ -4,6 +4,7 @@ import com.example.demo.dto.order.*;
 import com.example.demo.model.Order;
 import com.example.demo.model.OrderStatus;
 import com.example.demo.model.User;
+import com.example.demo.repository.OrderItemRepository;
 import com.example.demo.repository.OrderRepository;
 import com.example.demo.services.admin.OrderAdminService;
 import jakarta.transaction.Transactional;
@@ -18,13 +19,15 @@ import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.Predicate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.ArrayList;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class OrderAdminServiceImpl implements OrderAdminService {
 
     private final OrderRepository orderRepository;
+    private final OrderItemRepository orderItemRepository;
 
     @Override
     public Page<OrderDashboardDto> getPage(OrderAdminFilterDto filter, int page, int size) {
@@ -64,19 +67,25 @@ public class OrderAdminServiceImpl implements OrderAdminService {
                 );
             }
 
-            query.orderBy(cb.desc(root.get("createdAt")));
             return cb.and(predicates.toArray(new Predicate[0]));
         };
 
         var pageable = PageRequest.of(p, s, Sort.by(Sort.Direction.DESC, "createdAt"));
+        Page<Order> orderPage = orderRepository.findAll(spec, pageable);
 
-        return orderRepository.findAll(spec, pageable)
-                .map(this::toDashboardDto);
+        // ✅ itemCount bulk
+        List<Long> orderIds = orderPage.getContent().stream().map(Order::getId).toList();
+        Map<Long, Long> countMap = orderIds.isEmpty()
+                ? Map.of()
+                : orderItemRepository.countItemsByOrderIds(orderIds).stream()
+                .collect(Collectors.toMap(OrderItemRepository.OrderCountView::getOrderId, OrderItemRepository.OrderCountView::getCnt));
+
+        return orderPage.map(o -> toDashboardDto(o, countMap.getOrDefault(o.getId(), 0L)));
     }
 
     @Override
     public OrderDetailDashboardDto getDetail(Long orderId) {
-        Order o = orderRepository.findById(orderId)
+        Order o = orderRepository.findWithItemsById(orderId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Order tapılmadı"));
 
         OrderDetailDashboardDto dto = new OrderDetailDashboardDto();
@@ -132,10 +141,10 @@ public class OrderAdminServiceImpl implements OrderAdminService {
         if (!orderRepository.existsById(orderId)) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Order tapılmadı");
         }
-        orderRepository.deleteById(orderId); // OrderItem-lar orphanRemoval + cascade ALL -> silinəcək
+        orderRepository.deleteById(orderId);
     }
 
-    private OrderDashboardDto toDashboardDto(Order o) {
+    private OrderDashboardDto toDashboardDto(Order o, long itemCount) {
         OrderDashboardDto dto = new OrderDashboardDto();
         dto.setId(o.getId());
         dto.setStatus(o.getStatus());
@@ -147,7 +156,7 @@ public class OrderAdminServiceImpl implements OrderAdminService {
         dto.setRentalDays(o.getRentalDays());
         dto.setTotalAmount(o.getTotalAmount());
         dto.setCreatedAt(o.getCreatedAt());
-        dto.setItemCount(o.getItems() == null ? 0 : o.getItems().size());
+        dto.setItemCount(itemCount);
         return dto;
     }
 }

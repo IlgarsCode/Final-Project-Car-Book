@@ -9,6 +9,7 @@ import com.example.demo.repository.CartItemRepository;
 import com.example.demo.repository.CartRepository;
 import com.example.demo.repository.UserRepository;
 import com.example.demo.services.CartService;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -28,6 +29,7 @@ public class CartServiceImpl implements CartService {
     private final CarPricingRepository carPricingRepository;
 
     @Override
+    @Transactional
     public Cart getOrCreateCartForUser(String email) {
         var user = userRepository.findByEmailIgnoreCase(email)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User tapılmadı"));
@@ -36,17 +38,25 @@ public class CartServiceImpl implements CartService {
                 .orElseGet(() -> {
                     Cart c = new Cart();
                     c.setUser(user);
+                    c.setCreatedAt(LocalDateTime.now());
+                    c.setUpdatedAt(LocalDateTime.now());
                     return cartRepository.save(c);
                 });
     }
 
     @Override
+    @Transactional
     public Cart getCartForUser(String email) {
+        // Əgər cart yoxdursa, yaradırıq
         return getOrCreateCartForUser(email);
     }
 
     @Override
+    @Transactional
     public void addToCart(String email, Long carId, PricingRateType rateType, Integer unitCount) {
+        if (rateType == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "rateType boş ola bilməz");
+        }
         if (unitCount == null || unitCount < 1) unitCount = 1;
 
         var cart = getOrCreateCartForUser(email);
@@ -58,7 +68,6 @@ public class CartServiceImpl implements CartService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Car aktiv deyil");
         }
 
-        // ✅ pricing mütləq pricing cədvəlindən gəlməlidir
         var pricing = carPricingRepository.findActiveByCarId(carId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Bu car üçün pricing tapılmadı"));
 
@@ -68,16 +77,19 @@ public class CartServiceImpl implements CartService {
             default -> nz(pricing.getDailyRate());
         };
 
-        BigDecimal surcharge = nz(pricing.getFuelSurchargePerHour()); // yalnız hourly üçün real təsiri var
+        BigDecimal surcharge = nz(pricing.getFuelSurchargePerHour());
 
         var existing = cartItemRepository.findByCart_IdAndCar_IdAndRateType(cart.getId(), carId, rateType);
 
         if (existing.isPresent()) {
             CartItem item = existing.get();
-            item.setQuantity(item.getQuantity() + 1);
+            int q = item.getQuantity() == null ? 0 : item.getQuantity();
+            item.setQuantity(q + 1);
 
-            // istəsən unitCount-u da artıra bilərsən, amma bu məntiqli deyil.
-            // Mən saxlayıram: unitCount dəyişmir.
+            // unitCount-u “paket vahidi” kimi saxlayırsansa, dəyişməsin (səndə əvvəlki məntiq)
+            // amma boşdursa set et:
+            if (item.getUnitCount() == null || item.getUnitCount() < 1) item.setUnitCount(unitCount);
+
             cartItemRepository.save(item);
         } else {
             CartItem item = new CartItem();
@@ -90,6 +102,7 @@ public class CartServiceImpl implements CartService {
 
             item.setUnitCount(unitCount);
             item.setQuantity(1);
+            item.setAddedAt(LocalDateTime.now());
 
             cartItemRepository.save(item);
         }
@@ -99,25 +112,35 @@ public class CartServiceImpl implements CartService {
     }
 
     @Override
+    @Transactional
     public void removeItem(String email, Long itemId) {
-        var cart = getCartForUser(email);
+        var user = userRepository.findByEmailIgnoreCase(email)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User tapılmadı"));
 
-        var item = cartItemRepository.findById(itemId)
+        var cart = cartRepository.findByUser_Id(user.getId())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Cart tapılmadı"));
+
+        var item = cartItemRepository.findByIdAndCart_Id(itemId, cart.getId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Cart item tapılmadı"));
 
-        if (!item.getCart().getId().equals(cart.getId())) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Bu item sənə aid deyil");
-        }
-
         cartItemRepository.delete(item);
+
         cart.setUpdatedAt(LocalDateTime.now());
         cartRepository.save(cart);
     }
 
     @Override
+    @Transactional
     public void clearCart(String email) {
-        var cart = getCartForUser(email);
-        cart.getItems().clear();
+        var user = userRepository.findByEmailIgnoreCase(email)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User tapılmadı"));
+
+        var cart = cartRepository.findByUser_Id(user.getId())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Cart tapılmadı"));
+
+        // ✅ ən stabil yol: DB-dən birbaşa sil
+        cartItemRepository.deleteByCart_Id(cart.getId());
+
         cart.setUpdatedAt(LocalDateTime.now());
         cartRepository.save(cart);
     }
