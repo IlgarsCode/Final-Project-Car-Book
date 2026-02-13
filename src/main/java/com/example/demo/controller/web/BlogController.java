@@ -76,12 +76,18 @@ public class BlogController {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Blog aktiv deyil");
         }
 
-        // sadə anti-spam: eyni email + eyni blog üçün 5 saniyədə bir comment atmasın (istəsən sonra repository ilə sərtləşdirərik)
+        Long parentId = form.getParentId();
+        BlogComment parent = null;
+        if (parentId != null) {
+            parent = blogCommentRepository.findByIdAndBlog_IdAndIsActiveTrue(parentId, id)
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Reply üçün parent comment tapılmadı"));
+        }
+
         BlogComment comment = new BlogComment();
         comment.setBlog(blog);
+        comment.setParent(parent);
         comment.setFullName(form.getFullName().trim());
         comment.setEmail(form.getEmail().trim());
-        comment.setWebsite(form.getWebsite() != null ? form.getWebsite().trim() : null);
         comment.setMessage(form.getMessage().trim());
         comment.setCreatedAt(LocalDateTime.now());
         comment.setIsActive(true);

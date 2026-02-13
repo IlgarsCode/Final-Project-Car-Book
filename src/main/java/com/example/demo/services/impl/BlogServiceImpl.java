@@ -106,21 +106,38 @@ public class BlogServiceImpl implements BlogService {
         dto.setAuthorPhotoUrl(blog.getAuthorPhotoUrl());
         dto.setAuthorBio(blog.getAuthorBio());
 
-        var comments = blogCommentRepository
-                .findAllByBlog_IdAndIsActiveTrueOrderByCreatedAtDesc(id)
-                .stream()
-                .map(c -> {
-                    BlogCommentDto cdto = new BlogCommentDto();
-                    cdto.setId(c.getId());
-                    cdto.setFullName(c.getFullName());
-                    cdto.setMessage(c.getMessage());
-                    cdto.setCreatedAt(c.getCreatedAt());
-                    return cdto;
-                })
-                .toList();
+        var all = blogCommentRepository.findAllByBlog_IdAndIsActiveTrueOrderByCreatedAtAsc(id);
 
-        dto.setComments(comments);
-        dto.setCommentCount(blogCommentRepository.countByBlog_IdAndIsActiveTrue(id));
+        // 1) entity -> dto map
+        var map = new java.util.LinkedHashMap<Long, BlogCommentDto>();
+        for (var c : all) {
+            BlogCommentDto cd = new BlogCommentDto();
+            cd.setId(c.getId());
+            cd.setFullName(c.getFullName());
+            cd.setMessage(c.getMessage());
+            cd.setCreatedAt(c.getCreatedAt());
+            cd.setReplies(new java.util.ArrayList<>());
+            map.put(c.getId(), cd);
+        }
+
+        // 2) parent-child bağla
+        var roots = new java.util.ArrayList<BlogCommentDto>();
+        for (var c : all) {
+            var current = map.get(c.getId());
+            if (c.getParent() == null) {
+                roots.add(current);
+            } else {
+                var parentDto = map.get(c.getParent().getId());
+                if (parentDto != null) parentDto.getReplies().add(current);
+                else roots.add(current); // ehtiyat (DB-də parent silinibsə)
+            }
+        }
+
+        // 3) root-ları DESC göstərmək istəyirsən: createdAt DESC
+        roots.sort((a, b) -> b.getCreatedAt().compareTo(a.getCreatedAt()));
+
+        dto.setComments(roots);
+        dto.setCommentCount(all.size());
 
         return dto;
     }

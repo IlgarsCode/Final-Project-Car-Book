@@ -10,6 +10,9 @@ import lombok.Setter;
 @Setter
 public class BlogCommentCreateDto {
 
+    // ✅ reply üçün
+    private Long parentId;
+
     @NotBlank(message = "Ad boş ola bilməz")
     @Size(max = 80, message = "Ad çox uzundur")
     private String fullName;
@@ -18,9 +21,6 @@ public class BlogCommentCreateDto {
     @Email(message = "Email formatı yanlışdır")
     @Size(max = 120, message = "Email çox uzundur")
     private String email;
-
-    @Size(max = 200, message = "Website çox uzundur")
-    private String website;
 
     @NotBlank(message = "Mesaj boş ola bilməz")
     @Size(max = 2000, message = "Mesaj çox uzundur")

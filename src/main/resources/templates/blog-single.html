@@ -30,11 +30,7 @@
                         <span>Blog Single <i class="ion-ios-arrow-forward"></i></span>
                     </p>
 
-                    <h1 class="mb-3 bread"
-                        th:text="${banner.title}">
-                        Read our blog
-                    </h1>
-
+                    <h1 class="mb-3 bread" th:text="${banner.title}">Read our blog</h1>
                     <p th:text="${banner.description}"></p>
 
                 </div>
@@ -51,11 +47,9 @@
                 <div class="col-md-8 ftco-animate">
 
                     <!-- TITLE -->
-                    <h2 class="mb-3" th:text="${blog.title}">
-                        Blog title
-                    </h2>
+                    <h2 class="mb-3" th:text="${blog.title}">Blog title</h2>
 
-                    <!-- META (DATE + AUTHOR) -->
+                    <!-- META -->
                     <div class="mb-4" style="color:#6c757d; font-size:14px;">
                         <span class="mr-3">
                             <i class="icon-calendar"></i>
@@ -74,16 +68,13 @@
                     </p>
 
                     <!-- CONTENT -->
-                    <p th:if="${blog.content != null}"
-                       th:text="${blog.content}">
-                        Blog content
-                    </p>
+                    <p th:if="${blog.content != null}" th:text="${blog.content}">Blog content</p>
 
                     <p th:if="${blog.content == null}" style="color:#6c757d;">
                         Bu bloq üçün məzmun əlavə edilməyib.
                     </p>
 
-                    <!-- ===== (HƏLƏLİK STATİK) TAGS ===== -->
+                    <!-- TAGS (hələlik statik) -->
                     <div class="tag-widget post-tag-container mb-5 mt-5">
                         <div class="tagcloud">
                             <a href="#" class="tag-cloud-link">Life</a>
@@ -93,10 +84,8 @@
                         </div>
                     </div>
 
-                    <!-- ===== AUTHOR (DYNAMIC) ===== -->
-                    <div class="about-author d-flex p-4 bg-light"
-                         th:if="${blog.author != null}">
-
+                    <!-- AUTHOR -->
+                    <div class="about-author d-flex p-4 bg-light" th:if="${blog.author != null}">
                         <div class="bio mr-5">
                             <img th:if="${blog.authorPhotoUrl != null}"
                                  th:src="${blog.authorPhotoUrl}"
@@ -129,6 +118,7 @@
                                 Hələ şərh yazılmayıb.
                             </li>
 
+                            <!-- ===== ROOT COMMENTS ===== -->
                             <li class="comment" th:each="c : ${blog.comments}">
                                 <div class="vcard bio">
                                     <img src="/images/person_1.jpg" alt="Image placeholder">
@@ -143,20 +133,61 @@
                                     </div>
 
                                     <p th:text="${c.message}">Mesaj</p>
+
+                                    <!-- ✅ REPLY BUTTON -->
+                                    <p>
+                                        <a href="#comment-form"
+                                           class="reply"
+                                           th:attr="data-parent-id=${c.id},data-parent-name=${c.fullName}">
+                                            Reply
+                                        </a>
+                                    </p>
                                 </div>
+
+                                <!-- ===== REPLIES (1 level) ===== -->
+                                <ul class="children" th:if="${c.replies != null and !c.replies.empty}">
+                                    <li class="comment" th:each="r : ${c.replies}">
+                                        <div class="vcard bio">
+                                            <img src="/images/person_1.jpg" alt="Image placeholder">
+                                        </div>
+
+                                        <div class="comment-body">
+                                            <h3 th:text="${r.fullName}">Name</h3>
+
+                                            <div class="meta"
+                                                 th:text="${#temporals.format(r.createdAt, 'dd MMMM, yyyy HH:mm')}">
+                                                29 oktyabr, 2019 13:21
+                                            </div>
+
+                                            <p th:text="${r.message}">Reply message</p>
+
+                                            <!-- istəsən 2-ci səviyyə reply sonradan -->
+                                        </div>
+                                    </li>
+                                </ul>
+
                             </li>
 
                         </ul>
                         <!-- END comment-list -->
 
-                        <!-- comment form -->
-                        <div class="comment-form-wrap pt-5">
-                            <h3 class="mb-5">Leave a comment</h3>
+                        <!-- ===== COMMENT FORM ===== -->
+                        <div class="comment-form-wrap pt-5" id="comment-form">
+                            <h3 class="mb-3">Leave a comment</h3>
+
+                            <!-- ✅ Reply info -->
+                            <div id="reply-info" class="mb-3" style="display:none;">
+                                Reply to: <b id="reply-name"></b>
+                                <a href="#" id="cancel-reply" style="margin-left:10px;">Cancel</a>
+                            </div>
 
                             <form th:action="@{'/blog/' + ${blog.id} + '/comment'}"
                                   th:object="${commentForm}"
                                   method="post"
                                   class="p-5 bg-light">
+
+                                <!-- ✅ parentId hidden -->
+                                <input type="hidden" th:field="*{parentId}" id="parentId">
 
                                 <div class="form-group">
                                     <label for="name">Name *</label>
@@ -172,11 +203,6 @@
                                     <small class="text-danger"
                                            th:if="${#fields.hasErrors('email')}"
                                            th:errors="*{email}"></small>
-                                </div>
-
-                                <div class="form-group">
-                                    <label for="website">Website</label>
-                                    <input type="url" class="form-control" id="website" th:field="*{website}">
                                 </div>
 
                                 <div class="form-group">
@@ -199,10 +225,10 @@
 
                 </div>
 
-                <!-- RIGHT SIDEBAR (STATİK) -->
+                <!-- RIGHT SIDEBAR -->
                 <div class="col-lg-4 sidebar ftco-animate">
 
-                    <!-- SEARCH (indiki kimi qalsın, amma action real olsun) -->
+                    <!-- SEARCH -->
                     <div class="sidebar-box">
                         <form th:action="@{/blog}" method="get" class="search-form">
                             <div class="form-group">
@@ -214,10 +240,10 @@
                         </form>
                     </div>
 
+                    <!-- CATEGORIES -->
                     <div class="sidebar-box ftco-animate">
                         <div class="categories">
                             <h3>Car Categories</h3>
-
                             <ul class="category-list">
                                 <li th:each="cc : ${carCategories}">
                                     <a th:href="@{/car(category=${cc.slug})}" class="cat-row">
@@ -229,6 +255,7 @@
                         </div>
                     </div>
 
+                    <!-- RECENT BLOG -->
                     <div class="sidebar-box ftco-animate">
                         <h3>Recent Blog</h3>
 
@@ -239,8 +266,7 @@
                         <div class="block-21 mb-4 d-flex" th:each="rb : ${recentBlogs}">
                             <a class="blog-img mr-4"
                                th:href="@{'/blog/' + ${rb.id}}"
-                               th:style="'background-image: url(' + (rb.imageUrl != null ? rb.imageUrl : '/images/image_1.jpg') + ');'"
->
+                               th:style="'background-image: url(' + (rb.imageUrl != null ? rb.imageUrl : '/images/image_1.jpg') + ');'">
                             </a>
 
                             <div class="text">
@@ -270,12 +296,41 @@
                         </div>
                     </div>
 
-
                 </div>
 
             </div>
         </div>
     </section>
+
+    <!-- ✅ Reply JS -->
+    <script>
+        (function () {
+            const parentIdInput = document.getElementById('parentId');
+            const replyInfo = document.getElementById('reply-info');
+            const replyName = document.getElementById('reply-name');
+            const cancel = document.getElementById('cancel-reply');
+
+            document.querySelectorAll('a.reply[data-parent-id]').forEach(a => {
+                a.addEventListener('click', function () {
+                    const pid = this.getAttribute('data-parent-id');
+                    const pname = this.getAttribute('data-parent-name');
+
+                    if (parentIdInput) parentIdInput.value = pid || '';
+                    if (replyName) replyName.textContent = pname || '';
+                    if (replyInfo) replyInfo.style.display = 'block';
+                });
+            });
+
+            if (cancel) {
+                cancel.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    if (parentIdInput) parentIdInput.value = '';
+                    if (replyInfo) replyInfo.style.display = 'none';
+                    if (replyName) replyName.textContent = '';
+                });
+            }
+        })();
+    </script>
 
 </div>
 </body>
