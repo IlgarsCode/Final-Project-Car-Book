@@ -52,6 +52,35 @@ public class FileStorageServiceImpl implements FileStorageService {
     }
 
     @Override
+    public String storeBlogImage(MultipartFile file) {
+        if (file == null || file.isEmpty()) return null;
+
+        String original = file.getOriginalFilename() == null ? "" : file.getOriginalFilename();
+        String ext = StringUtils.getFilenameExtension(original);
+        ext = (ext == null) ? "" : ext.toLowerCase();
+
+        if (!ALLOWED_EXT.contains(ext)) {
+            throw new IllegalArgumentException("Yalnız şəkil formatları: jpg, jpeg, png, webp");
+        }
+
+        String filename = UUID.randomUUID() + "." + ext;
+
+        Path dir = Paths.get(uploadDir, "blogs");
+        try {
+            Files.createDirectories(dir);
+
+            Path target = dir.resolve(filename);
+            file.transferTo(target);
+
+            return "/uploads/blogs/" + filename;
+
+        } catch (IOException e) {
+            log.error("Blog şəkli saxlanılmadı", e);
+            throw new RuntimeException("Şəkil saxlanılmadı");
+        }
+    }
+
+    @Override
     public void deleteIfExists(String relativePath) {
         if (relativePath == null || relativePath.isBlank()) return;
         if (!relativePath.startsWith("/uploads/")) return; // təhlükəsizlik

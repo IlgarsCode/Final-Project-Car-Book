@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+<head>
+    <meta charset="UTF-8">
+    <title>My Blogs</title>
+</head>
+<body>
+<div layout:fragment="content">
+
+    <section class="hero-wrap hero-wrap-2 js-fullheight" style="background-image: url('/images/bg_3.jpg');" data-stellar-background-ratio="0.5">
+        <div class="overlay"></div>
+        <div class="container">
+            <div class="row no-gutters slider-text js-fullheight align-items-end justify-content-start">
+                <div class="col-md-9 ftco-animate pb-5">
+                    <p class="breadcrumbs">
+                        <span class="mr-2"><a th:href="@{/}">Home <i class="ion-ios-arrow-forward"></i></a></span>
+                        <span>My Blogs <i class="ion-ios-arrow-forward"></i></span>
+                    </p>
+                    <h1 class="mb-3 bread">My Blogs</h1>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="ftco-section">
+        <div class="container">
+
+            <div class="mb-3">
+                <a class="btn btn-primary" th:href="@{/my-blogs/create}">Create new blog</a>
+            </div>
+
+            <div class="alert alert-info" th:if="${blogs == null or blogs.empty}">
+                Hələ blog yaratmamısan.
+            </div>
+
+            <div class="table-responsive" th:if="${blogs != null and !blogs.empty}">
+                <table class="table table-bordered table-hover">
+                    <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Title</th>
+                        <th>Date</th>
+                        <th>Status</th>
+                        <th></th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="b, i : ${blogs}">
+                        <td th:text="${i.count}">1</td>
+                        <td th:text="${b.title}">Title</td>
+                        <td th:text="${b.createdAt}">2026-02-13</td>
+                        <td>
+                            <!-- isActive list dto-da yoxdur, ona görə hələlik sadə yazırıq -->
+                            <span class="badge badge-secondary">PENDING</span>
+                        </td>
+                        <td>
+                            <a class="btn btn-sm btn-outline-primary" th:href="@{'/blog/' + ${b.id}}">Open</a>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- pagination -->
+            <div class="row mt-4" th:if="${totalPages != null and totalPages > 1}">
+                <div class="col text-center">
+                    <div class="block-27">
+                        <ul>
+                            <li th:classappend="${currentPage == 1} ? 'disabled'">
+                                <a th:if="${currentPage > 1}" th:href="@{/my-blogs(page=${currentPage - 1})}">&lt;</a>
+                                <span th:if="${currentPage == 1}">&lt;</span>
+                            </li>
+
+                            <li th:each="p : ${#numbers.sequence(1, totalPages)}"
+                                th:classappend="${p == currentPage} ? 'active'">
+                                <a th:if="${p != currentPage}" th:href="@{/my-blogs(page=${p})}" th:text="${p}">1</a>
+                                <span th:if="${p == currentPage}" th:text="${p}">1</span>
+                            </li>
+
+                            <li th:classappend="${currentPage == totalPages} ? 'disabled'">
+                                <a th:if="${currentPage < totalPages}" th:href="@{/my-blogs(page=${currentPage + 1})}">&gt;</a>
+                                <span th:if="${currentPage == totalPages}">&gt;</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+</div>
+</body>
+</html>

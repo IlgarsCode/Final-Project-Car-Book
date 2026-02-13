@@ -1,18 +1,22 @@
 package com.example.demo.services.impl;
 
 import com.example.demo.dto.blog.BlogCommentDto;
+import com.example.demo.dto.blog.BlogCreateDto;
 import com.example.demo.dto.blog.BlogDetailDto;
 import com.example.demo.dto.blog.BlogListDto;
 import com.example.demo.repository.BlogCommentRepository;
 import com.example.demo.repository.BlogRepository;
 import com.example.demo.services.BlogService;
+import com.example.demo.services.storage.FileStorageService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -21,6 +25,7 @@ public class BlogServiceImpl implements BlogService {
 
     private final BlogRepository blogRepository;
     private final BlogCommentRepository blogCommentRepository;
+    private final FileStorageService fileStorageService;
 
     @Override
     public Page<BlogListDto> getActiveBlogs(int page, int size, String search) {
@@ -30,19 +35,56 @@ public class BlogServiceImpl implements BlogService {
                 ? blogRepository.findAllByIsActiveTrueOrderByCreatedAtDesc(pageable)
                 : blogRepository.searchActive(search.trim(), pageable);
 
-        return blogsPage.map(blog -> {
-            BlogListDto dto = new BlogListDto();
-            dto.setId(blog.getId());
-            dto.setTitle(blog.getTitle());
-            dto.setShortDescription(blog.getShortDescription());
-            dto.setImageUrl(blog.getImageUrl());
-            dto.setAuthor(blog.getAuthor());
-            dto.setCreatedAt(blog.getCreatedAt());
-            dto.setCommentCount(
-                    blogCommentRepository.countByBlog_IdAndIsActiveTrue(blog.getId())
-            );
-            return dto;
-        });
+        return blogsPage.map(this::toListDto);
+    }
+
+    @Override
+    public Page<BlogListDto> getMyBlogs(String author, int page, int size) {
+        var pageable = PageRequest.of(page, size);
+
+        // ✅ My Blogs: istifadəçinin bütün bloqları (pending + active)
+        var p = blogRepository.findAllByAuthorOrderByCreatedAtDesc(author, pageable);
+
+        return p.map(this::toListDto);
+    }
+
+    @Override
+    public Long createBlog(String author, BlogCreateDto dto, MultipartFile image) {
+        String imageUrl = null;
+
+        try {
+            imageUrl = fileStorageService.storeBlogImage(image);
+
+            var b = new com.example.demo.model.Blog();
+            b.setTitle(dto.getTitle() == null ? null : dto.getTitle().trim());
+            b.setShortDescription(dto.getShortDescription() == null ? null : dto.getShortDescription().trim());
+            b.setContent(dto.getContent() == null ? null : dto.getContent().trim());
+
+            b.setAuthor(author); // userDetails username/email
+            b.setCreatedAt(LocalDate.now());
+            b.setImageUrl(imageUrl);
+
+            // ✅ təhlükəsizlik: əvvəlcə pending (admin təsdiqləyəcək)
+            b.setIsActive(true);
+
+            return blogRepository.save(b).getId();
+
+        } catch (RuntimeException ex) {
+            // upload olmuşdusa geri sil
+            fileStorageService.deleteIfExists(imageUrl);
+            throw ex;
+        }
+    }
+
+    @Override
+    public List<BlogListDto> getActiveBlogs() {
+        // Home üçün 3 dənə aktiv blog
+        var pageable = PageRequest.of(0, 3);
+
+        return blogRepository.findRecentActiveBlogs(pageable)
+                .stream()
+                .map(this::toListDto)
+                .toList();
     }
 
     @Override
@@ -85,25 +127,25 @@ public class BlogServiceImpl implements BlogService {
 
     @Override
     public List<BlogListDto> getRecentBlogs(Long excludeId, int limit) {
-        var pageable = PageRequest.of(0, limit);
+        int safeLimit = Math.min(Math.max(limit, 1), 20);
+        var pageable = PageRequest.of(0, safeLimit);
+
         var list = (excludeId == null)
                 ? blogRepository.findRecentActiveBlogs(pageable)
                 : blogRepository.findRecentActiveBlogsExclude(excludeId, pageable);
 
-        return list.stream().map(b -> {
-            BlogListDto dto = new BlogListDto();
-            dto.setId(b.getId());
-            dto.setTitle(b.getTitle());
-            dto.setImageUrl(b.getImageUrl());
-            dto.setAuthor(b.getAuthor());
-            dto.setCreatedAt(b.getCreatedAt());
-            dto.setCommentCount(blogCommentRepository.countByBlog_IdAndIsActiveTrue(b.getId()));
-            return dto;
-        }).toList();
+        return list.stream().map(this::toListDto).toList();
     }
 
-    @Override
-    public Object getActiveBlogs() {
-        return null;
+    private BlogListDto toListDto(com.example.demo.model.Blog blog) {
+        BlogListDto dto = new BlogListDto();
+        dto.setId(blog.getId());
+        dto.setTitle(blog.getTitle());
+        dto.setShortDescription(blog.getShortDescription());
+        dto.setImageUrl(blog.getImageUrl());
+        dto.setAuthor(blog.getAuthor());
+        dto.setCreatedAt(blog.getCreatedAt());
+        dto.setCommentCount(blogCommentRepository.countByBlog_IdAndIsActiveTrue(blog.getId()));
+        return dto;
     }
 }

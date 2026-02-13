@@ -13,6 +13,7 @@ public interface BlogRepository extends JpaRepository<Blog, Long> {
 
     // Blog list page
     Page<Blog> findAllByIsActiveTrueOrderByCreatedAtDesc(Pageable pageable);
+    Page<Blog> findAllByAuthorOrderByCreatedAtDesc(String author, Pageable pageable);
 
     // ✅ SEARCH (blog listdə)
     @Query("""

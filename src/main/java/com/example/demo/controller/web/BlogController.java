@@ -29,10 +29,8 @@ public class BlogController {
     private final BlogRepository blogRepository;
     private final BlogCommentRepository blogCommentRepository;
 
-    // sidebar: car categories + say
     private final CarCategoryRepository carCategoryRepository;
 
-    // ✅ BLOG LIST PAGE: /blog
     @GetMapping("/blog")
     public String blogPage(
             @RequestParam(name = "page", defaultValue = "1") int page,
@@ -47,7 +45,6 @@ public class BlogController {
         model.addAttribute("blogs", blogsPage.getContent());
         model.addAttribute("currentPage", blogsPage.getNumber() + 1);
         model.addAttribute("totalPages", blogsPage.getTotalPages());
-
         model.addAttribute("search", search);
 
         model.addAttribute("banner", bannerService.getBanner(BannerType.BLOGS));
@@ -56,16 +53,7 @@ public class BlogController {
 
     @GetMapping("/blog/{id}")
     public String blogSingle(@PathVariable Long id, Model model) {
-
-        model.addAttribute("blog", blogService.getBlogDetail(id));
-        model.addAttribute("banner", bannerService.getBanner(BannerType.BLOG_SINGLE));
-
-        model.addAttribute("carCategories", carCategoryRepository.findAllWithActiveCarCount());
-
-        model.addAttribute("recentBlogs", blogService.getRecentBlogs(id, 3));
-
-        model.addAttribute("commentForm", new BlogCommentCreateDto());
-
+        fillBlogSingleModel(id, model, new BlogCommentCreateDto());
         return "blog-single";
     }
 
@@ -77,11 +65,7 @@ public class BlogController {
             Model model
     ) {
         if (bindingResult.hasErrors()) {
-            model.addAttribute("blog", blogService.getBlogDetail(id));
-            model.addAttribute("banner", bannerService.getBanner(BannerType.BLOG_SINGLE));
-
-            model.addAttribute("carCategories", carCategoryRepository.findAllWithActiveCarCount());
-
+            fillBlogSingleModel(id, model, form);
             return "blog-single";
         }
 
@@ -92,17 +76,26 @@ public class BlogController {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Blog aktiv deyil");
         }
 
+        // sadə anti-spam: eyni email + eyni blog üçün 5 saniyədə bir comment atmasın (istəsən sonra repository ilə sərtləşdirərik)
         BlogComment comment = new BlogComment();
         comment.setBlog(blog);
-        comment.setFullName(form.getFullName());
-        comment.setEmail(form.getEmail());
-        comment.setWebsite(form.getWebsite());
-        comment.setMessage(form.getMessage());
+        comment.setFullName(form.getFullName().trim());
+        comment.setEmail(form.getEmail().trim());
+        comment.setWebsite(form.getWebsite() != null ? form.getWebsite().trim() : null);
+        comment.setMessage(form.getMessage().trim());
         comment.setCreatedAt(LocalDateTime.now());
         comment.setIsActive(true);
 
         blogCommentRepository.save(comment);
 
         return "redirect:/blog/" + id + "#comments";
+    }
+
+    private void fillBlogSingleModel(Long id, Model model, BlogCommentCreateDto form) {
+        model.addAttribute("blog", blogService.getBlogDetail(id));
+        model.addAttribute("banner", bannerService.getBanner(BannerType.BLOG_SINGLE));
+        model.addAttribute("carCategories", carCategoryRepository.findAllWithActiveCarCount());
+        model.addAttribute("recentBlogs", blogService.getRecentBlogs(id, 3));
+        model.addAttribute("commentForm", form);
     }
 }

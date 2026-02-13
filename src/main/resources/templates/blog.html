@@ -112,7 +112,8 @@
                             <!-- Prev -->
                             <li th:classappend="${currentPage == 1} ? 'disabled'">
                                 <a th:if="${currentPage > 1}"
-                                   th:href="@{/blog(page=${currentPage - 1})}">&lt;</a>
+                                   th:href="@{/blog(page=${currentPage - 1}, search=${search})}">&lt;</a>
+
 
                                 <span th:if="${currentPage == 1}">&lt;</span>
                             </li>
@@ -121,7 +122,7 @@
                             <li th:each="i : ${#numbers.sequence(1, totalPages)}"
                                 th:classappend="${i == currentPage} ? 'active'">
                                 <a th:if="${i != currentPage}"
-                                   th:href="@{/blog(page=${i})}"
+                                   th:href="@{/blog(page=${i}, search=${search})}"
                                    th:text="${i}">1</a>
 
                                 <span th:if="${i == currentPage}"
@@ -130,8 +131,8 @@
 
                             <!-- Next -->
                             <li th:classappend="${currentPage == totalPages} ? 'disabled'">
-                                <a th:if="${currentPage < totalPages}"
-                                   th:href="@{/blog(page=${currentPage + 1})}">&gt;</a>
+                                <<a th:if="${currentPage < totalPages}"
+                                    th:href="@{/blog(page=${currentPage + 1}, search=${search})}">&gt;</a>
 
                                 <span th:if="${currentPage == totalPages}">&gt;</span>
                             </li>
