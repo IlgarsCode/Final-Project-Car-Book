@@ -6,6 +6,42 @@
 <head>
     <meta charset="UTF-8">
     <title>Blog</title>
+
+    <!-- ✅ Page-specific fixes (square images + less whitespace + sidebar top) -->
+    <style>
+        /* azalt boşluqları (çox “ağ” görünməsin) */
+        .ftco-section {
+            padding-top: 40px !important;
+            padding-bottom: 40px !important;
+        }
+
+        /* blog kartlarının şəkli KVADRAT olsun */
+        .blog-grid .block-20 {
+            height: auto !important;      /* temanın height-ını söndürür */
+            padding-top: 100% !important; /* 1:1 ratio */
+            background-size: cover !important;
+            background-position: center center !important;
+            border-radius: 6px; /* istəyirsənsə sil */
+        }
+
+        /* kartın içi tam en tutsun, ortalanma effekti olmasın */
+        .blog-grid .blog-entry {
+            width: 100%;
+            margin: 0;
+        }
+
+        /* sağ sidebar yuxarıda dursun */
+        .blog-sidebar {
+            position: sticky;
+            top: 20px;
+        }
+
+        /* search box yuxarıdan boşluq yığmasın */
+        .blog-sidebar .sidebar-box {
+            margin-top: 0 !important;
+            padding-top: 0 !important;
+        }
+    </style>
 </head>
 
 <body>
@@ -31,10 +67,7 @@
                         </span>
                     </p>
 
-                    <h1 class="mb-3 bread"
-                        th:text="${banner.title}">
-                        Blog
-                    </h1>
+                    <h1 class="mb-3 bread" th:text="${banner.title}">Blog</h1>
                 </div>
             </div>
         </div>
@@ -42,104 +75,133 @@
 
     <section class="ftco-section">
         <div class="container">
-            <div class="row d-flex justify-content-center">
 
-                <div class="col-md-12 text-center d-flex ftco-animate"
-                     th:each="blog : ${blogs}">
+            <!-- ✅ İKİ SÜTUN: solda bloglar, sağda search -->
+            <div class="row align-items-start">
 
-                    <div class="blog-entry justify-content-end mb-md-5">
+                <!-- ✅ LEFT: BLOG GRID -->
+                <div class="col-lg-9">
 
-                        <a th:href="@{'/blog/' + ${blog.id}}"
-                           class="block-20 img"
-                           th:style="'background-image: url(' + ${blog.imageUrl} + ');'">
-                        </a>
+                    <!-- boş nəticə -->
+                    <div class="alert alert-info" th:if="${blogs == null or blogs.empty}">
+                        Heç bir blog tapılmadı.
+                    </div>
 
-                        <div class="text px-md-5 pt-4">
+                    <!-- ✅ 1 sətirdə 3 blog -->
+                    <div class="row blog-grid" th:if="${blogs != null and !blogs.empty}">
 
-                            <div class="meta mb-3">
+                        <div class="col-md-4 d-flex ftco-animate mb-4"
+                             th:each="blog : ${blogs}">
 
-                                <div style="color:#007bff;"
-                                     th:text="${#temporals.format(blog.createdAt, 'dd MMMM yyyy')}">
-                                    29 Yanvar 2026
+                            <div class="blog-entry justify-content-end w-100">
+
+                                <a th:href="@{'/blog/' + ${blog.id}}"
+                                   class="block-20 img"
+                                   th:style="'background-image: url(' + ${blog.imageUrl} + ');'">
+                                </a>
+
+                                <div class="text px-md-3 pt-4">
+
+                                    <div class="meta mb-2">
+
+                                        <div style="color:#007bff;"
+                                             th:text="${#temporals.format(blog.createdAt, 'dd MMMM yyyy')}">
+                                            29 Yanvar 2026
+                                        </div>
+
+                                        <div style="color:#007bff;" th:text="${blog.author}">
+                                            Author
+                                        </div>
+
+                                        <div>
+                                            <a th:href="@{'/blog/' + ${blog.id} + '#comments'}" class="meta-chat">
+                                                <span class="icon-chat"></span>
+                                                <span th:text="${blog.commentCount}">0</span>
+                                            </a>
+                                        </div>
+
+                                    </div>
+
+                                    <h3 class="heading mt-2">
+                                        <a th:href="@{'/blog/' + ${blog.id}}"
+                                           th:text="${blog.title}">
+                                            Blog title
+                                        </a>
+                                    </h3>
+
+                                    <p th:text="${blog.shortDescription}">
+                                        Blog short description
+                                    </p>
+
+                                    <p class="mb-0">
+                                        <a th:href="@{'/blog/' + ${blog.id}}"
+                                           class="btn btn-primary">
+                                            Continue <span class="icon-long-arrow-right"></span>
+                                        </a>
+                                    </p>
+
                                 </div>
-
-                                <div style="color:#007bff;"
-                                     th:text="${blog.author}">
-                                    Ilgar Oruc
-                                </div>
-
-                                <div>
-                                    <a th:href="@{'/blog/' + ${blog.id} + '#comments'}" class="meta-chat">
-                                        <span class="icon-chat"></span>
-                                        <span th:text="${blog.commentCount}">0</span>
-                                    </a>
-                                </div>
-
                             </div>
+                        </div>
 
+                    </div>
 
-                            <h3 class="heading mt-2">
-                                <a th:href="@{'/blog/' + ${blog.id}}"
-                                   th:text="${blog.title}">
-                                    Blog title
-                                </a>
-                            </h3>
+                    <!-- ===== PAGINATION (DYNAMIC) ===== -->
+                    <div class="row mt-4" th:if="${totalPages != null and totalPages > 1}">
+                        <div class="col text-center">
+                            <div class="block-27">
+                                <ul>
 
-                            <p th:text="${blog.shortDescription}">
-                                Blog short description
-                            </p>
+                                    <!-- Prev -->
+                                    <li th:classappend="${currentPage == 1} ? 'disabled'">
+                                        <a th:if="${currentPage > 1}"
+                                           th:href="@{/blog(page=${currentPage - 1}, search=${search}, tag=${tag})}">&lt;</a>
+                                        <span th:if="${currentPage == 1}">&lt;</span>
+                                    </li>
 
-                            <p>
-                                <a th:href="@{'/blog/' + ${blog.id}}"
-                                   class="btn btn-primary">
-                                    Continue
-                                    <span class="icon-long-arrow-right"></span>
-                                </a>
-                            </p>
+                                    <!-- Page numbers -->
+                                    <li th:each="i : ${#numbers.sequence(1, totalPages)}"
+                                        th:classappend="${i == currentPage} ? 'active'">
+                                        <a th:if="${i != currentPage}"
+                                           th:href="@{/blog(page=${i}, search=${search}, tag=${tag})}"
+                                           th:text="${i}">1</a>
+                                        <span th:if="${i == currentPage}" th:text="${i}">1</span>
+                                    </li>
 
+                                    <!-- Next -->
+                                    <li th:classappend="${currentPage == totalPages} ? 'disabled'">
+                                        <a th:if="${currentPage < totalPages}"
+                                           th:href="@{/blog(page=${currentPage + 1}, search=${search}, tag=${tag})}">&gt;</a>
+                                        <span th:if="${currentPage == totalPages}">&gt;</span>
+                                    </li>
+
+                                </ul>
+                            </div>
                         </div>
                     </div>
+
                 </div>
 
-            </div>
+                <!-- ✅ RIGHT: SEARCH (yuxarıda, boşluqsuz) -->
+                <div class="col-lg-3 sidebar ftco-animate blog-sidebar">
 
-            <!-- ===== PAGINATION (DYNAMIC) ===== -->
-            <div class="row mt-5" th:if="${totalPages != null and totalPages > 1}">
-                <div class="col text-center">
-                    <div class="block-27">
-                        <ul>
+                    <div class="sidebar-box">
+                        <form th:action="@{/blog}" method="get" class="search-form">
+                            <div class="form-group">
+                                <span class="icon icon-search"></span>
 
-                            <!-- Prev -->
-                            <li th:classappend="${currentPage == 1} ? 'disabled'">
-                                <a th:if="${currentPage > 1}"
-                                   th:href="@{/blog(page=${currentPage - 1}, search=${search}, tag=${tag})}">&lt;</a>
+                                <input type="text" name="search" class="form-control"
+                                       th:value="${search}"
+                                       placeholder="Type a keyword and hit enter">
 
-
-                                <span th:if="${currentPage == 1}">&lt;</span>
-                            </li>
-
-                            <!-- Page numbers -->
-                            <li th:each="i : ${#numbers.sequence(1, totalPages)}"
-                                th:classappend="${i == currentPage} ? 'active'">
-                                <a th:if="${i != currentPage}"
-                                   th:href="@{/blog(page=${i}, search=${search}, tag=${tag})}"
-                                   th:text="${i}">1</a>
-
-                                <span th:if="${i == currentPage}"
-                                      th:text="${i}">1</span>
-                            </li>
-
-                            <!-- Next -->
-                            <li th:classappend="${currentPage == totalPages} ? 'disabled'">
-                                <a th:if="${currentPage < totalPages}"
-                                   th:href="@{/blog(page=${currentPage + 1}, search=${search}, tag=${tag})}">&gt;</a>
-
-                                <span th:if="${currentPage == totalPages}">&gt;</span>
-                            </li>
-
-                        </ul>
+                                <!-- ✅ tag filter itirməsin -->
+                                <input type="hidden" name="tag" th:value="${tag}">
+                            </div>
+                        </form>
                     </div>
+
                 </div>
+
             </div>
 
         </div>

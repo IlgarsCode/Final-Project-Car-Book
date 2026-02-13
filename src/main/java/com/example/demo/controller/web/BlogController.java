@@ -43,7 +43,7 @@ public class BlogController {
             @RequestParam(name = "tag", required = false) String tag,
             Model model
     ) {
-        int size = 5;
+        int size = 9;
         int pageIndex = Math.max(page - 1, 0);
 
         var blogsPage = blogService.getActiveBlogs(pageIndex, size, search, tag);
