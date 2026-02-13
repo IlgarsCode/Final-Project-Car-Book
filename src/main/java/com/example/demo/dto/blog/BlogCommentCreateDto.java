@@ -10,9 +10,6 @@ import lombok.Setter;
 @Setter
 public class BlogCommentCreateDto {
 
-    // ✅ reply üçün
-    private Long parentId;
-
     @NotBlank(message = "Ad boş ola bilməz")
     @Size(max = 80, message = "Ad çox uzundur")
     private String fullName;

@@ -46,10 +46,8 @@
                 <!-- LEFT -->
                 <div class="col-md-8 ftco-animate">
 
-                    <!-- TITLE -->
                     <h2 class="mb-3" th:text="${blog.title}">Blog title</h2>
 
-                    <!-- META -->
                     <div class="mb-4" style="color:#6c757d; font-size:14px;">
                         <span class="mr-3">
                             <i class="icon-calendar"></i>
@@ -62,12 +60,10 @@
                         </span>
                     </div>
 
-                    <!-- IMAGE -->
                     <p th:if="${blog.imageUrl != null}">
                         <img th:src="${blog.imageUrl}" alt="" class="img-fluid">
                     </p>
 
-                    <!-- CONTENT -->
                     <p th:if="${blog.content != null}" th:text="${blog.content}">Blog content</p>
 
                     <p th:if="${blog.content == null}" style="color:#6c757d;">
@@ -111,7 +107,6 @@
                             <span th:text="${blog.commentCount}">0</span> Comments
                         </h3>
 
-                        <!-- comment list -->
                         <ul class="comment-list">
 
                             <li th:if="${#lists.isEmpty(blog.comments)}" style="color:#6c757d;">
@@ -134,9 +129,8 @@
 
                                     <p th:text="${c.message}">Mesaj</p>
 
-                                    <!-- Reply button -->
                                     <p>
-                                        <a href="#commentForm"
+                                        <a href="#replyFormBlock"
                                            class="reply"
                                            th:attr="data-parent=${c.id},data-name=${c.fullName}">
                                             Reply
@@ -161,9 +155,8 @@
 
                                             <p th:text="${r.message}">Mesaj</p>
 
-                                            <!-- Reply to reply (level 2) - istəsən açıq saxla -->
                                             <p>
-                                                <a href="#commentForm"
+                                                <a href="#replyFormBlock"
                                                    class="reply"
                                                    th:attr="data-parent=${r.id},data-name=${r.fullName}">
                                                     Reply
@@ -171,7 +164,7 @@
                                             </p>
                                         </div>
 
-                                        <!-- level 2 replies (əgər istəyirsənsə) -->
+                                        <!-- level 2 replies -->
                                         <ul class="children" th:if="${r.replies != null and !r.replies.empty}">
                                             <li class="comment" th:each="r2 : ${r.replies}">
                                                 <div class="vcard bio">
@@ -185,7 +178,7 @@
                                                     <p th:text="${r2.message}"></p>
 
                                                     <p>
-                                                        <a href="#commentForm"
+                                                        <a href="#replyFormBlock"
                                                            class="reply"
                                                            th:attr="data-parent=${r2.id},data-name=${r2.fullName}">
                                                             Reply
@@ -202,23 +195,56 @@
                         </ul>
                         <!-- END comment-list -->
 
-                        <!-- comment form -->
-                        <div class="comment-form-wrap pt-5" id="commentForm">
-                            <h3 class="mb-4">Leave a comment</h3>
+                        <!-- ===== REPLY FORM (yalnız message) ===== -->
+                        <div class="comment-form-wrap pt-5" id="replyFormBlock">
+                            <h3 class="mb-4">Reply</h3>
 
-                            <!-- Reply info -->
                             <div class="alert alert-info py-2" id="replyInfo" style="display:none;">
                                 <span id="replyText"></span>
                                 <a href="javascript:void(0)" class="ml-2" id="cancelReply">Cancel</a>
                             </div>
 
+                            <form th:action="@{'/blog/' + ${blog.id} + '/reply'}"
+                                  th:object="${replyForm}"
+                                  method="post"
+                                  class="p-5 bg-light">
+
+                                <input type="hidden" th:field="*{parentId}" id="replyParentId"/>
+
+                                <div class="form-group">
+                                    <label for="replyMessage">Message *</label>
+                                    <textarea id="replyMessage" cols="30" rows="6"
+                                              class="form-control"
+                                              th:field="*{message}"></textarea>
+
+                                    <small class="text-danger"
+                                           th:if="${#fields.hasErrors('parentId')}"
+                                           th:errors="*{parentId}"></small>
+
+                                    <small class="text-danger"
+                                           th:if="${#fields.hasErrors('message')}"
+                                           th:errors="*{message}"></small>
+                                </div>
+
+                                <div class="form-group">
+                                    <input type="submit" value="Post Reply" class="btn py-3 px-4 btn-primary">
+                                    <a class="btn btn-outline-secondary py-3 px-4" href="#comments">Back to comments</a>
+                                </div>
+
+                                <div class="text-muted" style="font-size:13px;">
+                                    Reply üçün giriş etməlisən. (Login olmadan submit etsən 401 alacaqsan)
+                                </div>
+                            </form>
+                        </div>
+
+                        <!-- ===== COMMENT FORM (ad + email + message) ===== -->
+                        <div class="comment-form-wrap pt-5" id="commentForm">
+                            <h3 class="mb-4">Leave a comment</h3>
+
                             <form th:action="@{'/blog/' + ${blog.id} + '/comment'}"
                                   th:object="${commentForm}"
                                   method="post"
                                   class="p-5 bg-light">
-
-                                <!-- ✅ hidden parentId -->
-                                <input type="hidden" th:field="*{parentId}" id="parentIdField"/>
 
                                 <div class="form-group">
                                     <label for="name">Name *</label>
@@ -259,7 +285,6 @@
                 <!-- RIGHT SIDEBAR -->
                 <div class="col-lg-4 sidebar ftco-animate">
 
-                    <!-- SEARCH -->
                     <div class="sidebar-box">
                         <form th:action="@{/blog}" method="get" class="search-form">
                             <div class="form-group">
@@ -271,7 +296,6 @@
                         </form>
                     </div>
 
-                    <!-- CATEGORIES -->
                     <div class="sidebar-box ftco-animate">
                         <div class="categories">
                             <h3>Car Categories</h3>
@@ -286,7 +310,6 @@
                         </div>
                     </div>
 
-                    <!-- RECENT BLOG -->
                     <div class="sidebar-box ftco-animate">
                         <h3>Recent Blog</h3>
 
@@ -336,7 +359,7 @@
     <!-- ✅ Reply JS -->
     <script>
         (function () {
-            const parentIdField = document.getElementById('parentIdField');
+            const parentField = document.getElementById('replyParentId');
             const replyInfo = document.getElementById('replyInfo');
             const replyText = document.getElementById('replyText');
             const cancelReply = document.getElementById('cancelReply');
@@ -346,10 +369,10 @@
                     const parentId = this.getAttribute('data-parent');
                     const name = this.getAttribute('data-name') || '';
 
-                    if (parentIdField) parentIdField.value = parentId;
+                    if (parentField) parentField.value = parentId;
 
                     if (replyInfo && replyText) {
-                        replyText.textContent = 'Replying to: ' + name + ' (ID: ' + parentId + ')';
+                        replyText.textContent = 'Replying to: ' + name;
                         replyInfo.style.display = 'block';
                     }
                 });
@@ -357,7 +380,7 @@
 
             if (cancelReply) {
                 cancelReply.addEventListener('click', function () {
-                    if (parentIdField) parentIdField.value = '';
+                    if (parentField) parentField.value = '';
                     if (replyInfo) replyInfo.style.display = 'none';
                     if (replyText) replyText.textContent = '';
                 });
