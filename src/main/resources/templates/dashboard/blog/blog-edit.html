@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{dashboard/layout}">
+<head>
+    <meta charset="UTF-8">
+    <title>Edit Blog</title>
+</head>
+<body>
+<div layout:fragment="content">
+
+    <h3 class="mb-3">Edit Blog</h3>
+
+    <form th:action="@{'/dashboard/blogs/' + ${id} + '/edit'}"
+          th:object="${form}"
+          method="post"
+          enctype="multipart/form-data"
+          class="card p-3">
+
+        <div class="mb-3">
+            <label class="form-label">Title *</label>
+            <input class="form-control" th:field="*{title}">
+            <small class="text-danger" th:if="${#fields.hasErrors('title')}" th:errors="*{title}"></small>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Short description *</label>
+            <textarea class="form-control" rows="3" th:field="*{shortDescription}"></textarea>
+            <small class="text-danger" th:if="${#fields.hasErrors('shortDescription')}" th:errors="*{shortDescription}"></small>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Content *</label>
+            <textarea class="form-control" rows="10" th:field="*{content}"></textarea>
+            <small class="text-danger" th:if="${#fields.hasErrors('content')}" th:errors="*{content}"></small>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Tags (comma separated)</label>
+            <input class="form-control" th:field="*{tags}" placeholder="java, spring, travel">
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Active</label>
+            <select class="form-control" th:field="*{isActive}">
+                <option th:value="true">true</option>
+                <option th:value="false">false</option>
+            </select>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Change Image (optional)</label>
+            <input type="file" name="image" class="form-control">
+        </div>
+
+        <div class="d-flex gap-2">
+            <button class="btn btn-primary">Save</button>
+            <a class="btn btn-outline-secondary" th:href="@{/dashboard/blogs}">Back</a>
+        </div>
+
+    </form>
+
+</div>
+</body>
+</html>

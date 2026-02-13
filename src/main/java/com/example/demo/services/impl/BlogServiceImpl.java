@@ -1,18 +1,18 @@
 package com.example.demo.services.impl;
 
 import com.example.demo.dto.blog.*;
+import com.example.demo.model.Blog;
 import com.example.demo.repository.BlogCommentRepository;
 import com.example.demo.repository.BlogRepository;
 import com.example.demo.repository.TagRepository;
 import com.example.demo.services.BlogService;
 import com.example.demo.services.storage.FileStorageService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDate;
 import java.util.*;
@@ -26,11 +26,19 @@ public class BlogServiceImpl implements BlogService {
     private final FileStorageService fileStorageService;
     private final TagRepository tagRepository;
 
+    // ========= PUBLIC =========
+
+    @Override
+    public Page<BlogListDto> getActiveBlogs(int page, int size, String search) {
+        // ✅ səndə null idi -> düzəliş
+        return getActiveBlogs(page, size, search, null);
+    }
+
     @Override
     public Page<BlogListDto> getActiveBlogs(int page, int size, String search, String tag) {
         var pageable = PageRequest.of(page, size);
 
-        Page<com.example.demo.model.Blog> blogsPage;
+        Page<Blog> blogsPage;
 
         if (tag != null && !tag.isBlank()) {
             blogsPage = blogRepository.findActiveByTagSlug(tag.trim(), pageable);
@@ -44,56 +52,9 @@ public class BlogServiceImpl implements BlogService {
     }
 
     @Override
-    public Page<BlogListDto> getMyBlogs(String author, int page, int size) {
-        var pageable = PageRequest.of(page, size);
-        var p = blogRepository.findAllByAuthorOrderByCreatedAtDesc(author, pageable);
-        return p.map(this::toListDto);
-    }
-
-    @Override
-    public Long createBlog(String author, BlogCreateDto dto, MultipartFile image) {
-        String imageUrl = null;
-
-        try {
-            imageUrl = fileStorageService.storeBlogImage(image);
-
-            var b = new com.example.demo.model.Blog();
-            b.setTitle(dto.getTitle() == null ? null : dto.getTitle().trim());
-            b.setShortDescription(dto.getShortDescription() == null ? null : dto.getShortDescription().trim());
-            b.setContent(dto.getContent() == null ? null : dto.getContent().trim());
-
-            b.setAuthor(author);
-            b.setCreatedAt(LocalDate.now());
-            b.setImageUrl(imageUrl);
-
-            // ✅ auto publish (sən istədin)
-            b.setIsActive(true);
-
-            // ✅ TAGS: dto.getTags() -> DB-də tap/yarat -> blog-a bağla
-            var tags = resolveTags(dto.getTags());
-            b.setTags(tags);
-
-            return blogRepository.save(b).getId();
-
-        } catch (RuntimeException ex) {
-            fileStorageService.deleteIfExists(imageUrl);
-            throw ex;
-        }
-    }
-
-    @Override
-    public Page<BlogListDto> getActiveBlogs(int page, int size, String search) {
-        return null;
-    }
-
-    @Override
     public List<BlogListDto> getActiveBlogs() {
         var pageable = PageRequest.of(0, 3);
-
-        return blogRepository.findRecentActiveBlogs(pageable)
-                .stream()
-                .map(this::toListDto)
-                .toList();
+        return blogRepository.findRecentActiveBlogs(pageable).stream().map(this::toListDto).toList();
     }
 
     @Override
@@ -115,7 +76,7 @@ public class BlogServiceImpl implements BlogService {
         dto.setAuthorPhotoUrl(blog.getAuthorPhotoUrl());
         dto.setAuthorBio(blog.getAuthorBio());
 
-        // ✅ TAGS dto-ya yüklə (blog-single üçün)
+        // tags
         var tags = (blog.getTags() == null) ? List.<TagDto>of()
                 : blog.getTags().stream()
                 .filter(t -> Boolean.TRUE.equals(t.getIsActive()))
@@ -128,7 +89,7 @@ public class BlogServiceImpl implements BlogService {
                 .toList();
         dto.setTags(tags);
 
-        // ✅ COMMENTS TREE
+        // comments tree
         var all = blogCommentRepository.findAllByBlog_IdAndIsActiveTrueOrderByCreatedAtAsc(id);
 
         var map = new LinkedHashMap<Long, BlogCommentDto>();
@@ -145,9 +106,8 @@ public class BlogServiceImpl implements BlogService {
         var roots = new ArrayList<BlogCommentDto>();
         for (var c : all) {
             var current = map.get(c.getId());
-            if (c.getParent() == null) {
-                roots.add(current);
-            } else {
+            if (c.getParent() == null) roots.add(current);
+            else {
                 var parentDto = map.get(c.getParent().getId());
                 if (parentDto != null) parentDto.getReplies().add(current);
                 else roots.add(current);
@@ -155,7 +115,6 @@ public class BlogServiceImpl implements BlogService {
         }
 
         roots.sort((a, b) -> b.getCreatedAt().compareTo(a.getCreatedAt()));
-
         dto.setComments(roots);
         dto.setCommentCount(all.size());
 
@@ -174,7 +133,155 @@ public class BlogServiceImpl implements BlogService {
         return list.stream().map(this::toListDto).toList();
     }
 
-    private BlogListDto toListDto(com.example.demo.model.Blog blog) {
+    @Override
+    public Page<BlogListDto> getMyBlogs(String author, int page, int size) {
+        var pageable = PageRequest.of(page, size);
+        return blogRepository.findAllByAuthorOrderByCreatedAtDesc(author, pageable).map(this::toListDto);
+    }
+
+    @Override
+    public Long createBlog(String author, BlogCreateDto dto, MultipartFile image) {
+        String imageUrl = null;
+
+        try {
+            imageUrl = fileStorageService.storeBlogImage(image);
+
+            var b = new Blog();
+            b.setTitle(dto.getTitle() == null ? null : dto.getTitle().trim());
+            b.setShortDescription(dto.getShortDescription() == null ? null : dto.getShortDescription().trim());
+            b.setContent(dto.getContent() == null ? null : dto.getContent().trim());
+            b.setAuthor(author);
+            b.setCreatedAt(LocalDate.now());
+            b.setImageUrl(imageUrl);
+
+            // səndə auto publish yazılıb
+            b.setIsActive(true);
+
+            var tags = resolveTags(dto.getTags());
+            b.setTags(tags);
+
+            return blogRepository.save(b).getId();
+
+        } catch (RuntimeException ex) {
+            fileStorageService.deleteIfExists(imageUrl);
+            throw ex;
+        }
+    }
+
+    // ========= ADMIN =========
+
+    @Override
+    public Page<BlogAdminListDto> adminGetBlogs(int page, int size, String search, String tag, Boolean isActive) {
+        var pageable = PageRequest.of(page, size);
+
+        Page<Blog> p;
+
+        boolean hasSearch = search != null && !search.isBlank();
+        boolean hasTag = tag != null && !tag.isBlank();
+
+        if (hasTag) {
+            if (isActive == null) p = blogRepository.findAllByTagSlug(tag.trim(), pageable);
+            else p = blogRepository.findAllByTagSlugAndActive(tag.trim(), isActive, pageable);
+        } else if (hasSearch) {
+            if (isActive == null) p = blogRepository.searchAll(search.trim(), pageable);
+            else p = blogRepository.searchAllByActive(search.trim(), isActive, pageable);
+        } else {
+            if (isActive == null) p = blogRepository.findAllByOrderByCreatedAtDesc(pageable);
+            else p = blogRepository.findAllByIsActiveOrderByCreatedAtDesc(isActive, pageable);
+        }
+
+        return p.map(b -> {
+            BlogAdminListDto d = new BlogAdminListDto();
+            d.setId(b.getId());
+            d.setTitle(b.getTitle());
+            d.setAuthor(b.getAuthor());
+            d.setCreatedAt(b.getCreatedAt());
+            d.setIsActive(b.getIsActive());
+            d.setImageUrl(b.getImageUrl());
+            return d;
+        });
+    }
+
+    @Override
+    public BlogAdminUpdateDto adminGetEditForm(Long id) {
+        var blog = blogRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Blog tapılmadı"));
+
+        BlogAdminUpdateDto dto = new BlogAdminUpdateDto();
+        dto.setTitle(blog.getTitle());
+        dto.setShortDescription(blog.getShortDescription());
+        dto.setContent(blog.getContent());
+        dto.setIsActive(Boolean.TRUE.equals(blog.getIsActive()));
+
+        // tags -> "java, spring"
+        String tags = (blog.getTags() == null) ? ""
+                : blog.getTags().stream()
+                .filter(t -> Boolean.TRUE.equals(t.getIsActive()))
+                .map(t -> t.getName())
+                .sorted(String.CASE_INSENSITIVE_ORDER)
+                .reduce((a, b) -> a + ", " + b)
+                .orElse("");
+        dto.setTags(tags);
+
+        return dto;
+    }
+
+    @Override
+    public void adminUpdateBlog(Long id, BlogAdminUpdateDto dto, MultipartFile image) {
+        var blog = blogRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Blog tapılmadı"));
+
+        String oldImage = blog.getImageUrl();
+        String newImage = null;
+
+        try {
+            blog.setTitle(dto.getTitle() == null ? null : dto.getTitle().trim());
+            blog.setShortDescription(dto.getShortDescription() == null ? null : dto.getShortDescription().trim());
+            blog.setContent(dto.getContent() == null ? null : dto.getContent().trim());
+            blog.setIsActive(dto.getIsActive() != null ? dto.getIsActive() : blog.getIsActive());
+
+            blog.setTags(resolveTags(dto.getTags()));
+
+            if (image != null && !image.isEmpty()) {
+                newImage = fileStorageService.storeBlogImage(image);
+                blog.setImageUrl(newImage);
+            }
+
+            blogRepository.save(blog);
+
+            // yeni şəkil yüklənibsə, köhnəni sil
+            if (newImage != null) {
+                fileStorageService.deleteIfExists(oldImage);
+            }
+
+        } catch (RuntimeException ex) {
+            // yolda problem olduysa yüklənən yeni şəkli sil
+            fileStorageService.deleteIfExists(newImage);
+            throw ex;
+        }
+    }
+
+    @Override
+    public void adminSetActive(Long id, boolean active) {
+        var blog = blogRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Blog tapılmadı"));
+        blog.setIsActive(active);
+        blogRepository.save(blog);
+    }
+
+    @Override
+    public void adminDeleteBlog(Long id) {
+        var blog = blogRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Blog tapılmadı"));
+
+        String img = blog.getImageUrl();
+        blogRepository.delete(blog);
+        fileStorageService.deleteIfExists(img);
+    }
+
+    // ========= helpers =========
+
+    private BlogListDto toListDto(Blog blog) {
         BlogListDto dto = new BlogListDto();
         dto.setId(blog.getId());
         dto.setTitle(blog.getTitle());
@@ -185,8 +292,6 @@ public class BlogServiceImpl implements BlogService {
         dto.setCommentCount(blogCommentRepository.countByBlog_IdAndIsActiveTrue(blog.getId()));
         return dto;
     }
-
-    // ================= TAG HELPERS =================
 
     private static String slugify(String s) {
         if (s == null) return null;

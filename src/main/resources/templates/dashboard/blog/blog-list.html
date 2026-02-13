@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{dashboard/layout}">
+<head>
+    <meta charset="UTF-8">
+    <title>Blogs</title>
+</head>
+<body>
+<div layout:fragment="content">
+
+    <h3 class="mb-3">Blogs</h3>
+
+    <!-- Filters -->
+    <form th:action="@{/dashboard/blogs}" method="get" class="row g-2 mb-3">
+        <div class="col-md-4">
+            <input class="form-control" name="search" placeholder="Search..."
+                   th:value="${search}">
+        </div>
+
+        <div class="col-md-4">
+            <input class="form-control" name="tag" placeholder="Tag slug (məs: java)"
+                   th:value="${tag}">
+        </div>
+
+        <div class="col-md-4">
+            <select class="form-control" name="active">
+                <option value="" th:selected="${active == null}">All</option>
+                <option value="true" th:selected="${active != null and active}">Active</option>
+                <option value="false" th:selected="${active != null and !active}">Inactive</option>
+            </select>
+        </div>
+
+        <div class="col-12 mt-2">
+            <button class="btn btn-primary">Filter</button>
+            <a class="btn btn-outline-secondary" th:href="@{/dashboard/blogs}">Reset</a>
+        </div>
+    </form>
+
+    <!-- Empty -->
+    <div class="alert alert-info" th:if="${#lists.isEmpty(blogs)}">
+        Nəticə yoxdur.
+    </div>
+
+    <!-- Table -->
+    <div class="table-responsive" th:if="${!#lists.isEmpty(blogs)}">
+        <table class="table table-bordered table-hover align-middle">
+            <thead>
+            <tr>
+                <th style="width:60px">#</th>
+                <th>Title</th>
+                <th style="width:180px">Author</th>
+                <th style="width:140px">Date</th>
+                <th style="width:120px">Active</th>
+                <th style="width:260px"></th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="b, i : ${blogs}">
+                <td th:text="${i.count}">1</td>
+
+                <td>
+                    <div class="d-flex align-items-center" style="gap:10px;">
+                        <img th:if="${b.imageUrl != null}"
+                             th:src="${b.imageUrl}"
+                             style="width:48px;height:48px;object-fit:cover;border-radius:6px;">
+                        <span th:text="${b.title}">Title</span>
+                    </div>
+                </td>
+
+                <td th:text="${b.author}">author</td>
+                <td th:text="${b.createdAt}">2026-02-13</td>
+
+                <td>
+                    <span class="badge bg-success" th:if="${b.isActive}">YES</span>
+                    <span class="badge bg-secondary" th:if="${!b.isActive}">NO</span>
+                </td>
+
+                <td class="text-end">
+                    <a class="btn btn-sm btn-outline-primary"
+                       th:href="@{'/blog/' + ${b.id}}"
+                       target="_blank">Open</a>
+
+                    <a class="btn btn-sm btn-outline-warning"
+                       th:href="@{'/dashboard/blogs/' + ${b.id} + '/edit'}">Edit</a>
+
+                    <form th:if="${!b.isActive}"
+                          th:action="@{'/dashboard/blogs/' + ${b.id} + '/activate'}"
+                          method="post"
+                          style="display:inline;">
+                        <button class="btn btn-sm btn-success" type="submit">Activate</button>
+                    </form>
+
+                    <form th:if="${b.isActive}"
+                          th:action="@{'/dashboard/blogs/' + ${b.id} + '/deactivate'}"
+                          method="post"
+                          style="display:inline;">
+                        <button class="btn btn-sm btn-secondary" type="submit">Deactivate</button>
+                    </form>
+
+                    <form th:action="@{'/dashboard/blogs/' + ${b.id} + '/delete'}"
+                          method="post"
+                          style="display:inline;"
+                          onsubmit="return confirm('Silinsin?');">
+                        <button class="btn btn-sm btn-danger" type="submit">Delete</button>
+                    </form>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Pagination -->
+    <div class="mt-3" th:if="${totalPages != null and totalPages > 1}">
+        <ul class="pagination">
+
+            <li class="page-item" th:classappend="${currentPage == 1} ? 'disabled'">
+                <a class="page-link"
+                   th:href="@{/dashboard/blogs(page=${currentPage-1},search=${search},tag=${tag},active=${active})}">Prev</a>
+            </li>
+
+            <li class="page-item"
+                th:each="p : ${#numbers.sequence(1, totalPages)}"
+                th:classappend="${p == currentPage} ? 'active'">
+                <a class="page-link"
+                   th:href="@{/dashboard/blogs(page=${p},search=${search},tag=${tag},active=${active})}"
+                   th:text="${p}">1</a>
+            </li>
+
+            <li class="page-item" th:classappend="${currentPage == totalPages} ? 'disabled'">
+                <a class="page-link"
+                   th:href="@{/dashboard/blogs(page=${currentPage+1},search=${search},tag=${tag},active=${active})}">Next</a>
+            </li>
+
+        </ul>
+    </div>
+
+</div>
+</body>
+</html>
