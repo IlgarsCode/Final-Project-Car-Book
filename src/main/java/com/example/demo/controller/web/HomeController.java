@@ -17,6 +17,7 @@ public class HomeController {
     private final ServicePageService servicePageService;
     private final TestimonialService testimonialService;
     private final BlogService blogService;
+    private final CarService carService;
 
     private final HomeStatsService homeStatsService; // ✅ əlavə et
 
@@ -33,7 +34,8 @@ public class HomeController {
         model.addAttribute("testimonials", testimonialService.getActiveTestimonials());
         model.addAttribute("blogs", blogService.getActiveBlogs());
 
-        model.addAttribute("stats", homeStatsService.getHomeStats()); // ✅ əlavə et
+        model.addAttribute("stats", homeStatsService.getHomeStats());
+        model.addAttribute("relatedCars", carService.getActiveCars(null).stream().limit(8).toList());
 
         return "index";
     }
