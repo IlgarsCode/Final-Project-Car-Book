@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{dashboard/layout}">
+<head>
+  <title>Blog Comments</title>
+</head>
+<body>
+<div layout:fragment="content">
+
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h1 class="h3 mb-0 text-gray-800">Blog Comments</h1>
+    <div class="text-muted" th:text="'Total: ' + (${totalItems} != null ? ${totalItems} : 0)">Total: 0</div>
+  </div>
+
+  <div class="card shadow mb-4">
+    <div class="card-body">
+      <form th:action="@{/dashboard/blog-comments}" method="get">
+        <div class="form-row">
+
+          <div class="form-group col-md-6">
+            <label>Search</label>
+            <input class="form-control" name="q" th:value="${q}" placeholder="name, email, message, blog title...">
+          </div>
+
+          <div class="form-group col-md-6">
+            <label>Blog</label>
+            <select class="form-control" name="blogId">
+              <option value="" th:selected="${blogId == null}">All blogs</option>
+              <option th:each="b : ${blogs}"
+                      th:value="${b.id}"
+                      th:selected="${blogId != null and b.id.toString() == blogId.toString()}"
+                      th:text="${b.title}">
+                Blog
+              </option>
+            </select>
+          </div>
+
+          <div class="form-group col-md-3">
+            <label>Status</label>
+            <select class="form-control" name="active">
+              <option value="" th:selected="${active == null}">All</option>
+              <option value="true" th:selected="${active != null and active == true}">Active</option>
+              <option value="false" th:selected="${active != null and active == false}">Inactive</option>
+            </select>
+          </div>
+
+          <div class="form-group col-md-3">
+            <label>Root only</label>
+            <select class="form-control" name="rootOnly">
+              <option value="false" th:selected="${rootOnly == false}">All</option>
+              <option value="true" th:selected="${rootOnly == true}">Only root comments</option>
+            </select>
+          </div>
+
+          <div class="form-group col-md-3">
+            <label>Page size</label>
+            <select class="form-control" name="size">
+              <option value="10" th:selected="${size == 10}">10</option>
+              <option value="20" th:selected="${size == 20}">20</option>
+              <option value="50" th:selected="${size == 50}">50</option>
+              <option value="100" th:selected="${size == 100}">100</option>
+            </select>
+          </div>
+
+          <div class="form-group col-md-3 d-flex align-items-end">
+            <button class="btn btn-primary w-100" type="submit">Filter</button>
+          </div>
+
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="card shadow mb-4">
+    <div class="card-body table-responsive">
+
+      <table class="table table-bordered table-hover">
+        <thead>
+        <tr>
+          <th style="width:70px;">#</th>
+          <th>Blog</th>
+          <th>User</th>
+          <th>Message</th>
+          <th style="width:170px;">Created</th>
+          <th style="width:110px;">Type</th>
+          <th style="width:110px;">Active</th>
+          <th style="width:220px;">Actions</th>
+        </tr>
+        </thead>
+
+        <tbody>
+        <tr th:if="${rows == null or #lists.isEmpty(rows)}">
+          <td colspan="8" class="text-center">No comments found.</td>
+        </tr>
+
+        <tr th:each="r, i : ${rows}">
+          <td th:text="${i.count}">1</td>
+
+          <td>
+            <div th:text="${r.blogTitle}">Blog title</div>
+            <small class="text-muted" th:text="'BlogId: ' + ${r.blogId}">BlogId: 1</small>
+          </td>
+
+          <td>
+            <div th:text="${r.fullName}">Name</div>
+            <small class="text-muted" th:text="${r.email}">email</small>
+          </td>
+
+          <td th:text="${r.messagePreview}">Preview</td>
+
+          <td th:text="${r.createdAt != null ? #temporals.format(r.createdAt, 'dd MMM yyyy HH:mm') : '-'}">-</td>
+
+          <td>
+            <span class="badge badge-info" th:if="${r.parentId == null}">ROOT</span>
+            <span class="badge badge-secondary" th:if="${r.parentId != null}">REPLY</span>
+          </td>
+
+          <td>
+            <span class="badge"
+                  th:classappend="${r.isActive == true} ? ' badge-success' : ' badge-secondary'"
+                  th:text="${r.isActive == true} ? 'ACTIVE' : 'INACTIVE'">ACTIVE</span>
+          </td>
+
+          <td>
+            <form th:if="${r.isActive == true}"
+                  th:action="@{/dashboard/blog-comments/deactivate/{id}(id=${r.id})}"
+                  method="post" style="display:inline;">
+              <input type="hidden" name="redirect"
+                     th:value="@{/dashboard/blog-comments(page=${currentPage},size=${size},q=${q},blogId=${blogId},active=${active},rootOnly=${rootOnly})}"/>
+              <button class="btn btn-sm btn-warning"
+                      onclick="return confirm('Deactivate this comment?')">Deactivate</button>
+            </form>
+
+            <form th:if="${r.isActive != true}"
+                  th:action="@{/dashboard/blog-comments/activate/{id}(id=${r.id})}"
+                  method="post" style="display:inline;">
+              <input type="hidden" name="redirect"
+                     th:value="@{/dashboard/blog-comments(page=${currentPage},size=${size},q=${q},blogId=${blogId},active=${active},rootOnly=${rootOnly})}"/>
+              <button class="btn btn-sm btn-success"
+                      onclick="return confirm('Activate this comment?')">Activate</button>
+            </form>
+
+            <form th:action="@{/dashboard/blog-comments/hard-delete/{id}(id=${r.id})}"
+                  method="post" style="display:inline;">
+              <input type="hidden" name="redirect"
+                     th:value="@{/dashboard/blog-comments(page=${currentPage},size=${size},q=${q},blogId=${blogId},active=${active},rootOnly=${rootOnly})}"/>
+              <button class="btn btn-sm btn-danger"
+                      onclick="return confirm('HARD DELETE? Geri qaytarılmır!')">Hard Delete</button>
+            </form>
+          </td>
+        </tr>
+        </tbody>
+      </table>
+
+      <div class="row mt-3" th:if="${totalPages != null and totalPages > 1}">
+        <div class="col text-center">
+          <div class="block-27">
+            <ul>
+              <li th:classappend="${currentPage == 1} ? 'disabled'">
+                <a th:if="${currentPage > 1}"
+                   th:href="@{/dashboard/blog-comments(page=${currentPage - 1},size=${size},q=${q},blogId=${blogId},active=${active},rootOnly=${rootOnly})}">&lt;</a>
+                <span th:if="${currentPage == 1}">&lt;</span>
+              </li>
+
+              <li th:each="p : ${#numbers.sequence(1, totalPages)}"
+                  th:classappend="${p == currentPage} ? 'active'">
+                <a th:if="${p != currentPage}"
+                   th:href="@{/dashboard/blog-comments(page=${p},size=${size},q=${q},blogId=${blogId},active=${active},rootOnly=${rootOnly})}"
+                   th:text="${p}">1</a>
+                <span th:if="${p == currentPage}" th:text="${p}">1</span>
+              </li>
+
+              <li th:classappend="${currentPage == totalPages} ? 'disabled'">
+                <a th:if="${currentPage < totalPages}"
+                   th:href="@{/dashboard/blog-comments(page=${currentPage + 1},size=${size},q=${q},blogId=${blogId},active=${active},rootOnly=${rootOnly})}">&gt;</a>
+                <span th:if="${currentPage == totalPages}">&gt;</span>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+</body>
+</html>

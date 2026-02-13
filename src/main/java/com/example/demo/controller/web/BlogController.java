@@ -135,7 +135,7 @@ public class BlogController {
 
         BlogComment reply = new BlogComment();
         reply.setBlog(blog);
-        reply.setParent(parent);
+        reply.setParent(parent); // ✅ MÜTLƏQ
         reply.setFullName(fullName);
         reply.setEmail(u.getEmail());
         reply.setMessage(form.getMessage().trim());
@@ -145,6 +145,7 @@ public class BlogController {
         blogCommentRepository.save(reply);
 
         return "redirect:/blog/" + id + "#comments";
+
     }
 
     private void fillBlogSingleModel(
