@@ -16,4 +16,6 @@ public class BlogCreateDto {
 
     @NotBlank(message = "Content boş ola bilməz")
     private String content;
+
+    private String tags;
 }

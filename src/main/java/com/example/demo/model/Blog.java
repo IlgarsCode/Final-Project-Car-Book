@@ -35,5 +35,13 @@ public class Blog {
 
     private LocalDate createdAt;
 
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+            name = "blog_tags",
+            joinColumns = @JoinColumn(name = "blog_id"),
+            inverseJoinColumns = @JoinColumn(name = "tag_id")
+    )
+    private java.util.Set<Tag> tags = new java.util.HashSet<>();
+
     private Boolean isActive;
 }

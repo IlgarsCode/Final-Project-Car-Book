@@ -23,4 +23,5 @@ public class BlogDetailDto {
     private String authorBio;
     private List<BlogCommentDto> comments;
     private long commentCount;
+    private List<TagDto> tags;
 }

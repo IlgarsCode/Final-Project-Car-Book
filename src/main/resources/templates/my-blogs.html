@@ -42,7 +42,6 @@
                         <th>#</th>
                         <th>Title</th>
                         <th>Date</th>
-                        <th>Status</th>
                         <th></th>
                     </tr>
                     </thead>
@@ -51,10 +50,6 @@
                         <td th:text="${i.count}">1</td>
                         <td th:text="${b.title}">Title</td>
                         <td th:text="${b.createdAt}">2026-02-13</td>
-                        <td>
-                            <!-- isActive list dto-da yoxdur, ona görə hələlik sadə yazırıq -->
-                            <span class="badge badge-secondary">PENDING</span>
-                        </td>
                         <td>
                             <a class="btn btn-sm btn-outline-primary" th:href="@{'/blog/' + ${b.id}}">Open</a>
                         </td>

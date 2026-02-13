@@ -47,4 +47,14 @@ public interface BlogRepository extends JpaRepository<Blog, Long> {
         order by b.createdAt desc
     """)
     List<Blog> findRecentActiveBlogs(Pageable pageable);
+
+    @Query("""
+    select distinct b
+    from Blog b
+    join b.tags t
+    where b.isActive = true
+      and lower(t.slug) = lower(:slug)
+    order by b.createdAt desc
+""")
+    Page<Blog> findActiveByTagSlug(@Param("slug") String slug, Pageable pageable);
 }

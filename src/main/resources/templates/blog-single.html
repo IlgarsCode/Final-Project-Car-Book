@@ -70,13 +70,16 @@
                         Bu bloq üçün məzmun əlavə edilməyib.
                     </p>
 
-                    <!-- TAGS (hələlik statik) -->
-                    <div class="tag-widget post-tag-container mb-5 mt-5">
+                    <!-- TAGS (dynamic) -->
+                    <div class="tag-widget post-tag-container mb-5 mt-5"
+                         th:if="${blog.tags != null and !blog.tags.empty}">
                         <div class="tagcloud">
-                            <a href="#" class="tag-cloud-link">Life</a>
-                            <a href="#" class="tag-cloud-link">Sport</a>
-                            <a href="#" class="tag-cloud-link">Tech</a>
-                            <a href="#" class="tag-cloud-link">Travel</a>
+                            <a th:each="t : ${blog.tags}"
+                               th:href="@{/blog(tag=${t.slug})}"
+                               class="tag-cloud-link"
+                               th:text="${t.name}">
+                                Tag
+                            </a>
                         </div>
                     </div>
 

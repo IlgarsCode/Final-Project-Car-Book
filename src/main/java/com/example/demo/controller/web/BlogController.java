@@ -34,24 +34,25 @@ public class BlogController {
     private final BlogCommentRepository blogCommentRepository;
     private final CarCategoryRepository carCategoryRepository;
 
-    // ✅ reply üçün login user-in fullName/email-ni DB-dən götürəcəyik
     private final UserRepository userRepository;
 
     @GetMapping("/blog")
     public String blogPage(
             @RequestParam(name = "page", defaultValue = "1") int page,
             @RequestParam(name = "search", required = false) String search,
+            @RequestParam(name = "tag", required = false) String tag,
             Model model
     ) {
         int size = 5;
         int pageIndex = Math.max(page - 1, 0);
 
-        var blogsPage = blogService.getActiveBlogs(pageIndex, size, search);
+        var blogsPage = blogService.getActiveBlogs(pageIndex, size, search, tag);
 
         model.addAttribute("blogs", blogsPage.getContent());
         model.addAttribute("currentPage", blogsPage.getNumber() + 1);
         model.addAttribute("totalPages", blogsPage.getTotalPages());
         model.addAttribute("search", search);
+        model.addAttribute("tag", tag);
 
         model.addAttribute("banner", bannerService.getBanner(BannerType.BLOGS));
         return "blog";
@@ -59,7 +60,7 @@ public class BlogController {
 
     @GetMapping("/blog/{id}")
     public String blogSingle(@PathVariable Long id, Model model) {
-        fillBlogSingleModel(id, model, new BlogCommentCreateDto(), new BlogReplyCreateDto());
+        fillBlogSingleModel(id, model, new BlogCommentCreateDto(), new BlogReplyCreateDto(), null, null);
         return "blog-single";
     }
 
@@ -72,7 +73,7 @@ public class BlogController {
             Model model
     ) {
         if (br.hasErrors()) {
-            fillBlogSingleModel(id, model, form, new BlogReplyCreateDto());
+            fillBlogSingleModel(id, model, form, new BlogReplyCreateDto(), null, null);
             return "blog-single";
         }
 
@@ -85,7 +86,7 @@ public class BlogController {
 
         BlogComment comment = new BlogComment();
         comment.setBlog(blog);
-        comment.setParent(null); // ✅ burası comment-dir, reply deyil
+        comment.setParent(null);
         comment.setFullName(form.getFullName().trim());
         comment.setEmail(form.getEmail().trim());
         comment.setMessage(form.getMessage().trim());
@@ -111,7 +112,7 @@ public class BlogController {
         }
 
         if (br.hasErrors()) {
-            fillBlogSingleModel(id, model, new BlogCommentCreateDto(), form);
+            fillBlogSingleModel(id, model, new BlogCommentCreateDto(), form, null, null);
             return "blog-single";
         }
 
@@ -122,11 +123,9 @@ public class BlogController {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Blog aktiv deyil");
         }
 
-        // ✅ parent comment mütləq həmin blog-a aid olmalıdır
         var parent = blogCommentRepository.findByIdAndBlog_IdAndIsActiveTrue(form.getParentId(), id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Reply üçün parent comment tapılmadı"));
 
-        // ✅ login user info
         var u = userRepository.findByEmailIgnoreCase(user.getUsername())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User tapılmadı"));
 
@@ -148,12 +147,23 @@ public class BlogController {
         return "redirect:/blog/" + id + "#comments";
     }
 
-    private void fillBlogSingleModel(Long id, Model model, BlogCommentCreateDto commentForm, BlogReplyCreateDto replyForm) {
+    private void fillBlogSingleModel(
+            Long id,
+            Model model,
+            BlogCommentCreateDto commentForm,
+            BlogReplyCreateDto replyForm,
+            String search,
+            String tag
+    ) {
         model.addAttribute("blog", blogService.getBlogDetail(id));
         model.addAttribute("banner", bannerService.getBanner(BannerType.BLOG_SINGLE));
         model.addAttribute("carCategories", carCategoryRepository.findAllWithActiveCarCount());
         model.addAttribute("recentBlogs", blogService.getRecentBlogs(id, 3));
         model.addAttribute("commentForm", commentForm);
         model.addAttribute("replyForm", replyForm);
+
+        // blog-single sidebar search input üçün (opsional)
+        model.addAttribute("search", search);
+        model.addAttribute("tag", tag);
     }
 }

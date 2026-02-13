@@ -31,24 +31,45 @@
                 <div class="col-md-8">
 
                     <div class="p-4 bg-light">
-                        <form th:action="@{/my-blogs/create}" th:object="${form}" method="post" enctype="multipart/form-data">
+                        <form th:action="@{/my-blogs/create}"
+                              th:object="${form}"
+                              method="post"
+                              enctype="multipart/form-data">
 
                             <div class="form-group">
                                 <label>Title *</label>
                                 <input class="form-control" th:field="*{title}">
-                                <small class="text-danger" th:if="${#fields.hasErrors('title')}" th:errors="*{title}"></small>
+                                <small class="text-danger"
+                                       th:if="${#fields.hasErrors('title')}"
+                                       th:errors="*{title}"></small>
                             </div>
 
                             <div class="form-group">
                                 <label>Short description *</label>
                                 <textarea class="form-control" rows="3" th:field="*{shortDescription}"></textarea>
-                                <small class="text-danger" th:if="${#fields.hasErrors('shortDescription')}" th:errors="*{shortDescription}"></small>
+                                <small class="text-danger"
+                                       th:if="${#fields.hasErrors('shortDescription')}"
+                                       th:errors="*{shortDescription}"></small>
                             </div>
 
                             <div class="form-group">
                                 <label>Content *</label>
                                 <textarea class="form-control" rows="8" th:field="*{content}"></textarea>
-                                <small class="text-danger" th:if="${#fields.hasErrors('content')}" th:errors="*{content}"></small>
+                                <small class="text-danger"
+                                       th:if="${#fields.hasErrors('content')}"
+                                       th:errors="*{content}"></small>
+                            </div>
+
+                            <!-- ✅ TAGS -->
+                            <div class="form-group">
+                                <label>Tags (optional)</label>
+                                <input class="form-control"
+                                       placeholder="məs: java, spring, backend"
+                                       th:field="*{tags}">
+                                <small class="text-muted">Vergül ilə ayır (max ~15 tag).</small>
+                                <small class="text-danger"
+                                       th:if="${#fields.hasErrors('tags')}"
+                                       th:errors="*{tags}"></small>
                             </div>
 
                             <div class="form-group">
@@ -56,20 +77,18 @@
                                 <input type="file" name="image" class="form-control">
                             </div>
 
-                            <div class="text-danger" th:if="${#fields.hasGlobalErrors()}"
-                                 th:each="e : ${#fields.globalErrors()}" th:text="${e}"></div>
+                            <div class="text-danger"
+                                 th:if="${#fields.hasGlobalErrors()}"
+                                 th:each="e : ${#fields.globalErrors()}"
+                                 th:text="${e}"></div>
 
                             <div class="form-group mt-3">
-                                <button class="btn btn-primary">Submit for review</button>
+                                <button class="btn btn-primary">Create</button>
                                 <a th:href="@{/my-blogs}" class="btn btn-outline-secondary">Back</a>
                             </div>
 
                         </form>
                     </div>
-
-                    <p class="text-muted mt-3">
-                        Qeyd: Bloq dərhal yayınlanmır, admin təsdiq edəndən sonra /blog səhifəsində görünəcək.
-                    </p>
 
                 </div>
             </div>

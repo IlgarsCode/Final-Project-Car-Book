@@ -1,11 +1,9 @@
 package com.example.demo.services.impl;
 
-import com.example.demo.dto.blog.BlogCommentDto;
-import com.example.demo.dto.blog.BlogCreateDto;
-import com.example.demo.dto.blog.BlogDetailDto;
-import com.example.demo.dto.blog.BlogListDto;
+import com.example.demo.dto.blog.*;
 import com.example.demo.repository.BlogCommentRepository;
 import com.example.demo.repository.BlogRepository;
+import com.example.demo.repository.TagRepository;
 import com.example.demo.services.BlogService;
 import com.example.demo.services.storage.FileStorageService;
 import lombok.RequiredArgsConstructor;
@@ -17,7 +15,7 @@ import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
-import java.util.List;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -26,14 +24,21 @@ public class BlogServiceImpl implements BlogService {
     private final BlogRepository blogRepository;
     private final BlogCommentRepository blogCommentRepository;
     private final FileStorageService fileStorageService;
+    private final TagRepository tagRepository;
 
     @Override
-    public Page<BlogListDto> getActiveBlogs(int page, int size, String search) {
+    public Page<BlogListDto> getActiveBlogs(int page, int size, String search, String tag) {
         var pageable = PageRequest.of(page, size);
 
-        var blogsPage = (search == null || search.isBlank())
-                ? blogRepository.findAllByIsActiveTrueOrderByCreatedAtDesc(pageable)
-                : blogRepository.searchActive(search.trim(), pageable);
+        Page<com.example.demo.model.Blog> blogsPage;
+
+        if (tag != null && !tag.isBlank()) {
+            blogsPage = blogRepository.findActiveByTagSlug(tag.trim(), pageable);
+        } else if (search == null || search.isBlank()) {
+            blogsPage = blogRepository.findAllByIsActiveTrueOrderByCreatedAtDesc(pageable);
+        } else {
+            blogsPage = blogRepository.searchActive(search.trim(), pageable);
+        }
 
         return blogsPage.map(this::toListDto);
     }
@@ -41,10 +46,7 @@ public class BlogServiceImpl implements BlogService {
     @Override
     public Page<BlogListDto> getMyBlogs(String author, int page, int size) {
         var pageable = PageRequest.of(page, size);
-
-        // ✅ My Blogs: istifadəçinin bütün bloqları (pending + active)
         var p = blogRepository.findAllByAuthorOrderByCreatedAtDesc(author, pageable);
-
         return p.map(this::toListDto);
     }
 
@@ -60,25 +62,32 @@ public class BlogServiceImpl implements BlogService {
             b.setShortDescription(dto.getShortDescription() == null ? null : dto.getShortDescription().trim());
             b.setContent(dto.getContent() == null ? null : dto.getContent().trim());
 
-            b.setAuthor(author); // userDetails username/email
+            b.setAuthor(author);
             b.setCreatedAt(LocalDate.now());
             b.setImageUrl(imageUrl);
 
-            // ✅ təhlükəsizlik: əvvəlcə pending (admin təsdiqləyəcək)
+            // ✅ auto publish (sən istədin)
             b.setIsActive(true);
+
+            // ✅ TAGS: dto.getTags() -> DB-də tap/yarat -> blog-a bağla
+            var tags = resolveTags(dto.getTags());
+            b.setTags(tags);
 
             return blogRepository.save(b).getId();
 
         } catch (RuntimeException ex) {
-            // upload olmuşdusa geri sil
             fileStorageService.deleteIfExists(imageUrl);
             throw ex;
         }
     }
 
     @Override
+    public Page<BlogListDto> getActiveBlogs(int page, int size, String search) {
+        return null;
+    }
+
+    @Override
     public List<BlogListDto> getActiveBlogs() {
-        // Home üçün 3 dənə aktiv blog
         var pageable = PageRequest.of(0, 3);
 
         return blogRepository.findRecentActiveBlogs(pageable)
@@ -106,22 +115,34 @@ public class BlogServiceImpl implements BlogService {
         dto.setAuthorPhotoUrl(blog.getAuthorPhotoUrl());
         dto.setAuthorBio(blog.getAuthorBio());
 
+        // ✅ TAGS dto-ya yüklə (blog-single üçün)
+        var tags = (blog.getTags() == null) ? List.<TagDto>of()
+                : blog.getTags().stream()
+                .filter(t -> Boolean.TRUE.equals(t.getIsActive()))
+                .map(t -> {
+                    TagDto td = new TagDto();
+                    td.setName(t.getName());
+                    td.setSlug(t.getSlug());
+                    return td;
+                })
+                .toList();
+        dto.setTags(tags);
+
+        // ✅ COMMENTS TREE
         var all = blogCommentRepository.findAllByBlog_IdAndIsActiveTrueOrderByCreatedAtAsc(id);
 
-        // 1) entity -> dto map
-        var map = new java.util.LinkedHashMap<Long, BlogCommentDto>();
+        var map = new LinkedHashMap<Long, BlogCommentDto>();
         for (var c : all) {
             BlogCommentDto cd = new BlogCommentDto();
             cd.setId(c.getId());
             cd.setFullName(c.getFullName());
             cd.setMessage(c.getMessage());
             cd.setCreatedAt(c.getCreatedAt());
-            cd.setReplies(new java.util.ArrayList<>());
+            cd.setReplies(new ArrayList<>());
             map.put(c.getId(), cd);
         }
 
-        // 2) parent-child bağla
-        var roots = new java.util.ArrayList<BlogCommentDto>();
+        var roots = new ArrayList<BlogCommentDto>();
         for (var c : all) {
             var current = map.get(c.getId());
             if (c.getParent() == null) {
@@ -129,11 +150,10 @@ public class BlogServiceImpl implements BlogService {
             } else {
                 var parentDto = map.get(c.getParent().getId());
                 if (parentDto != null) parentDto.getReplies().add(current);
-                else roots.add(current); // ehtiyat (DB-də parent silinibsə)
+                else roots.add(current);
             }
         }
 
-        // 3) root-ları DESC göstərmək istəyirsən: createdAt DESC
         roots.sort((a, b) -> b.getCreatedAt().compareTo(a.getCreatedAt()));
 
         dto.setComments(roots);
@@ -164,5 +184,45 @@ public class BlogServiceImpl implements BlogService {
         dto.setCreatedAt(blog.getCreatedAt());
         dto.setCommentCount(blogCommentRepository.countByBlog_IdAndIsActiveTrue(blog.getId()));
         return dto;
+    }
+
+    // ================= TAG HELPERS =================
+
+    private static String slugify(String s) {
+        if (s == null) return null;
+        String x = s.trim().toLowerCase();
+        x = x.replaceAll("[^a-z0-9\\s-]", "");
+        x = x.replaceAll("\\s+", "-");
+        x = x.replaceAll("-{2,}", "-");
+        return x;
+    }
+
+    private Set<com.example.demo.model.Tag> resolveTags(String tagsRaw) {
+        if (tagsRaw == null || tagsRaw.isBlank()) return new HashSet<>();
+
+        var parts = Arrays.stream(tagsRaw.split(","))
+                .map(String::trim)
+                .filter(p -> !p.isBlank())
+                .limit(15)
+                .toList();
+
+        var result = new HashSet<com.example.demo.model.Tag>();
+
+        for (String name : parts) {
+            String slug = slugify(name);
+            if (slug == null || slug.isBlank()) continue;
+
+            var tag = tagRepository.findBySlugIgnoreCase(slug).orElseGet(() -> {
+                var t = new com.example.demo.model.Tag();
+                t.setSlug(slug);
+                t.setName(name.length() > 60 ? name.substring(0, 60) : name);
+                t.setIsActive(true);
+                return tagRepository.save(t);
+            });
+
+            result.add(tag);
+        }
+
+        return result;
     }
 }

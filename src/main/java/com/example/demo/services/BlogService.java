@@ -18,6 +18,9 @@ public interface BlogService {
 
     List<BlogListDto> getRecentBlogs(Long excludeId, int limit);
 
+    Page<BlogListDto> getActiveBlogs(int page, int size, String search, String tag);
+
     Page<BlogListDto> getMyBlogs(String author, int page, int size);
+
     Long createBlog(String author, BlogCreateDto dto, org.springframework.web.multipart.MultipartFile image);
 }
