@@ -118,7 +118,7 @@
                                 Hələ şərh yazılmayıb.
                             </li>
 
-                            <!-- ===== ROOT COMMENTS ===== -->
+                            <!-- ROOT comments -->
                             <li class="comment" th:each="c : ${blog.comments}">
                                 <div class="vcard bio">
                                     <img src="/images/person_1.jpg" alt="Image placeholder">
@@ -134,17 +134,17 @@
 
                                     <p th:text="${c.message}">Mesaj</p>
 
-                                    <!-- ✅ REPLY BUTTON -->
+                                    <!-- Reply button -->
                                     <p>
-                                        <a href="#comment-form"
+                                        <a href="#commentForm"
                                            class="reply"
-                                           th:attr="data-parent-id=${c.id},data-parent-name=${c.fullName}">
+                                           th:attr="data-parent=${c.id},data-name=${c.fullName}">
                                             Reply
                                         </a>
                                     </p>
                                 </div>
 
-                                <!-- ===== REPLIES (1 level) ===== -->
+                                <!-- REPLIES (level 1) -->
                                 <ul class="children" th:if="${c.replies != null and !c.replies.empty}">
                                     <li class="comment" th:each="r : ${c.replies}">
                                         <div class="vcard bio">
@@ -152,33 +152,64 @@
                                         </div>
 
                                         <div class="comment-body">
-                                            <h3 th:text="${r.fullName}">Name</h3>
+                                            <h3 th:text="${r.fullName}">Ad</h3>
 
                                             <div class="meta"
                                                  th:text="${#temporals.format(r.createdAt, 'dd MMMM, yyyy HH:mm')}">
                                                 29 oktyabr, 2019 13:21
                                             </div>
 
-                                            <p th:text="${r.message}">Reply message</p>
+                                            <p th:text="${r.message}">Mesaj</p>
 
-                                            <!-- istəsən 2-ci səviyyə reply sonradan -->
+                                            <!-- Reply to reply (level 2) - istəsən açıq saxla -->
+                                            <p>
+                                                <a href="#commentForm"
+                                                   class="reply"
+                                                   th:attr="data-parent=${r.id},data-name=${r.fullName}">
+                                                    Reply
+                                                </a>
+                                            </p>
                                         </div>
+
+                                        <!-- level 2 replies (əgər istəyirsənsə) -->
+                                        <ul class="children" th:if="${r.replies != null and !r.replies.empty}">
+                                            <li class="comment" th:each="r2 : ${r.replies}">
+                                                <div class="vcard bio">
+                                                    <img src="/images/person_1.jpg" alt="Image placeholder">
+                                                </div>
+
+                                                <div class="comment-body">
+                                                    <h3 th:text="${r2.fullName}">Ad</h3>
+                                                    <div class="meta"
+                                                         th:text="${#temporals.format(r2.createdAt, 'dd MMMM, yyyy HH:mm')}"></div>
+                                                    <p th:text="${r2.message}"></p>
+
+                                                    <p>
+                                                        <a href="#commentForm"
+                                                           class="reply"
+                                                           th:attr="data-parent=${r2.id},data-name=${r2.fullName}">
+                                                            Reply
+                                                        </a>
+                                                    </p>
+                                                </div>
+                                            </li>
+                                        </ul>
+
                                     </li>
                                 </ul>
 
                             </li>
-
                         </ul>
                         <!-- END comment-list -->
 
-                        <!-- ===== COMMENT FORM ===== -->
-                        <div class="comment-form-wrap pt-5" id="comment-form">
-                            <h3 class="mb-3">Leave a comment</h3>
+                        <!-- comment form -->
+                        <div class="comment-form-wrap pt-5" id="commentForm">
+                            <h3 class="mb-4">Leave a comment</h3>
 
-                            <!-- ✅ Reply info -->
-                            <div id="reply-info" class="mb-3" style="display:none;">
-                                Reply to: <b id="reply-name"></b>
-                                <a href="#" id="cancel-reply" style="margin-left:10px;">Cancel</a>
+                            <!-- Reply info -->
+                            <div class="alert alert-info py-2" id="replyInfo" style="display:none;">
+                                <span id="replyText"></span>
+                                <a href="javascript:void(0)" class="ml-2" id="cancelReply">Cancel</a>
                             </div>
 
                             <form th:action="@{'/blog/' + ${blog.id} + '/comment'}"
@@ -186,8 +217,8 @@
                                   method="post"
                                   class="p-5 bg-light">
 
-                                <!-- ✅ parentId hidden -->
-                                <input type="hidden" th:field="*{parentId}" id="parentId">
+                                <!-- ✅ hidden parentId -->
+                                <input type="hidden" th:field="*{parentId}" id="parentIdField"/>
 
                                 <div class="form-group">
                                     <label for="name">Name *</label>
@@ -207,7 +238,7 @@
 
                                 <div class="form-group">
                                     <label for="message">Message</label>
-                                    <textarea id="message" cols="30" rows="10" class="form-control"
+                                    <textarea id="message" cols="30" rows="8" class="form-control"
                                               th:field="*{message}"></textarea>
                                     <small class="text-danger"
                                            th:if="${#fields.hasErrors('message')}"
@@ -305,28 +336,30 @@
     <!-- ✅ Reply JS -->
     <script>
         (function () {
-            const parentIdInput = document.getElementById('parentId');
-            const replyInfo = document.getElementById('reply-info');
-            const replyName = document.getElementById('reply-name');
-            const cancel = document.getElementById('cancel-reply');
+            const parentIdField = document.getElementById('parentIdField');
+            const replyInfo = document.getElementById('replyInfo');
+            const replyText = document.getElementById('replyText');
+            const cancelReply = document.getElementById('cancelReply');
 
-            document.querySelectorAll('a.reply[data-parent-id]').forEach(a => {
+            document.querySelectorAll('a.reply').forEach(a => {
                 a.addEventListener('click', function () {
-                    const pid = this.getAttribute('data-parent-id');
-                    const pname = this.getAttribute('data-parent-name');
+                    const parentId = this.getAttribute('data-parent');
+                    const name = this.getAttribute('data-name') || '';
 
-                    if (parentIdInput) parentIdInput.value = pid || '';
-                    if (replyName) replyName.textContent = pname || '';
-                    if (replyInfo) replyInfo.style.display = 'block';
+                    if (parentIdField) parentIdField.value = parentId;
+
+                    if (replyInfo && replyText) {
+                        replyText.textContent = 'Replying to: ' + name + ' (ID: ' + parentId + ')';
+                        replyInfo.style.display = 'block';
+                    }
                 });
             });
 
-            if (cancel) {
-                cancel.addEventListener('click', function (e) {
-                    e.preventDefault();
-                    if (parentIdInput) parentIdInput.value = '';
+            if (cancelReply) {
+                cancelReply.addEventListener('click', function () {
+                    if (parentIdField) parentIdField.value = '';
                     if (replyInfo) replyInfo.style.display = 'none';
-                    if (replyName) replyName.textContent = '';
+                    if (replyText) replyText.textContent = '';
                 });
             }
         })();
