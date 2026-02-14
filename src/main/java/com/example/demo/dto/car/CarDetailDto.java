@@ -14,6 +14,9 @@ public class CarDetailDto {
     private String title;
     private String brand;
 
+    private Integer year;
+    private BigDecimal engineVolume;
+
     private Double pricePerDay;
 
     private String imageUrl;

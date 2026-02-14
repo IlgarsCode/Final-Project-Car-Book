@@ -49,6 +49,8 @@ public class CarAdminServiceImpl implements CarAdminService {
         Car car = new Car();
         car.setTitle(dto.getTitle());
         car.setBrand(dto.getBrand());
+        car.setYear(dto.getYear());
+        car.setEngineVolume(dto.getEngineVolume());
 
         car.setMileage(dto.getMileage());
         car.setTransmission(dto.getTransmission());
@@ -98,6 +100,8 @@ public class CarAdminServiceImpl implements CarAdminService {
 
         car.setTitle(dto.getTitle());
         car.setBrand(dto.getBrand());
+        car.setYear(dto.getYear());
+        car.setEngineVolume(dto.getEngineVolume());
 
         car.setMileage(dto.getMileage());
         car.setTransmission(dto.getTransmission());

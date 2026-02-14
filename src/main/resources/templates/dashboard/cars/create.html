@@ -54,11 +54,17 @@
         </div>
 
         <div class="form-row">
-            <div class="form-group col-md-3"><label>Mileage</label><input class="form-control" th:field="*{mileage}"></div>
-            <div class="form-group col-md-3"><label>Transmission</label><input class="form-control" th:field="*{transmission}"></div>
+            <div class="form-group col-md-2"><label>Year</label><input class="form-control" th:field="*{year}"></div>
+            <div class="form-group col-md-2"><label>Engine volume</label><input class="form-control" th:field="*{engineVolume}" placeholder="2.0"></div>
+
+            <div class="form-group col-md-2"><label>Mileage</label><input class="form-control" th:field="*{mileage}"></div>
+            <div class="form-group col-md-2"><label>Transmission</label><input class="form-control" th:field="*{transmission}"></div>
             <div class="form-group col-md-2"><label>Seats</label><input class="form-control" th:field="*{seats}"></div>
-            <div class="form-group col-md-2"><label>Luggage</label><input class="form-control" th:field="*{luggage}"></div>
             <div class="form-group col-md-2"><label>Fuel</label><input class="form-control" th:field="*{fuel}"></div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group col-md-2"><label>Luggage</label><input class="form-control" th:field="*{luggage}"></div>
         </div>
 
         <div class="form-row">

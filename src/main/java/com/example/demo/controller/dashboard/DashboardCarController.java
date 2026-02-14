@@ -55,6 +55,8 @@ public class DashboardCarController {
         CarUpdateDto dto = new CarUpdateDto();
         dto.setTitle(car.getTitle());
         dto.setBrand(car.getBrand());
+        dto.setYear(car.getYear());
+        dto.setEngineVolume(car.getEngineVolume());
 
         dto.setMileage(car.getMileage());
         dto.setTransmission(car.getTransmission());

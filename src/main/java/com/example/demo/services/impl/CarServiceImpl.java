@@ -56,6 +56,8 @@ public class CarServiceImpl implements CarService {
                     dto.setId(car.getId());
                     dto.setTitle(car.getTitle());
                     dto.setBrand(car.getBrand());
+                    dto.setYear(car.getYear());
+                    dto.setEngineVolume(car.getEngineVolume());
                     dto.setImageUrl(car.getImageUrl());
                     dto.setSlug(car.getSlug());
                     dto.setDailyRate(dailyMap.getOrDefault(car.getId(), BigDecimal.ZERO));
@@ -191,6 +193,8 @@ public class CarServiceImpl implements CarService {
             dto.setId(car.getId());
             dto.setTitle(car.getTitle());
             dto.setBrand(car.getBrand());
+            dto.setYear(car.getYear());
+            dto.setEngineVolume(car.getEngineVolume());
             dto.setImageUrl(car.getImageUrl());
             dto.setSlug(car.getSlug());
             dto.setDailyRate(dailyMap.getOrDefault(car.getId(), BigDecimal.ZERO));

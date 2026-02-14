@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.math.BigDecimal;
+
 @Entity
 @Table(name = "cars")
 @Getter
@@ -15,7 +17,13 @@ public class Car {
     private Long id;
 
     private String title;        // Mercedes Grand Sedan
-    private String brand;        // Chevrolet, Subaru və s.
+    private String brand;
+
+    private Integer year;
+
+    @Column(name = "engine_volume", precision = 3, scale = 1)
+    private BigDecimal engineVolume;
+
     private String imageUrl;
 
     @Column(unique = true)

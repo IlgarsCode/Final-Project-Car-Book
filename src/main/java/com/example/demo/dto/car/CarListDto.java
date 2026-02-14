@@ -12,6 +12,8 @@ public class CarListDto {
     private Long id;
     private String title;
     private String brand;
+    private Integer year;
+    private BigDecimal engineVolume;
     private String imageUrl;
     private String slug;
 
