@@ -14,6 +14,7 @@ import com.example.demo.services.BlogService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
@@ -98,15 +99,9 @@ public class BlogController {
             return "blog-create";
         }
 
-        // author kimi fullName saxla (yoxdursa email)
-        var u = userRepository.findByEmailIgnoreCase(user.getUsername())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User tapılmadı"));
-
-        String author = (u.getFullName() != null && !u.getFullName().isBlank())
-                ? u.getFullName().trim()
-                : u.getEmail();
-
-        Long id = blogService.createBlog(author, form, image);
+        // ✅ burda EMAIL göndər
+        String authorEmail = user.getUsername(); // səndə login usernameParameter=email
+        Long id = blogService.createBlog(authorEmail, form, image);
 
         return "redirect:/blog/" + id;
     }
@@ -120,21 +115,14 @@ public class BlogController {
             @RequestParam(name = "page", defaultValue = "1") int page,
             Model model
     ) {
-        if (user == null) {
-            return "redirect:/auth/login";
-        }
-
-        var u = userRepository.findByEmailIgnoreCase(user.getUsername())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User tapılmadı"));
-
-        String author = (u.getFullName() != null && !u.getFullName().isBlank())
-                ? u.getFullName().trim()
-                : u.getEmail();
+        if (user == null) return "redirect:/auth/login";
 
         int size = 9;
         int pageIndex = Math.max(page - 1, 0);
 
-        var blogsPage = blogService.getMyBlogs(author, pageIndex, size);
+        String myEmail = user.getUsername();
+
+        var blogsPage = blogService.getMyBlogs(myEmail, pageIndex, size);
 
         model.addAttribute("banner", bannerService.getBanner(BannerType.BLOGS));
         model.addAttribute("blogs", blogsPage.getContent());
@@ -143,6 +131,16 @@ public class BlogController {
 
         return "my-blogs";
     }
+
+    @PostMapping("/my-blogs/{id}/delete")
+    public String deleteMyBlog(@PathVariable Long id, Authentication auth) {
+        if (auth == null || auth.getName() == null) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Giriş et");
+        }
+        blogService.deleteMyBlog(auth.getName(), id);
+        return "redirect:/my-blogs?deleted=1";
+    }
+
 
     // =========================
     // BLOG DETAIL

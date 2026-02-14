@@ -28,6 +28,9 @@ public class Blog {
 
     private String author;
 
+    private Long authorId;
+
+
     private String authorPhotoUrl;
 
     @Column(columnDefinition = "TEXT")

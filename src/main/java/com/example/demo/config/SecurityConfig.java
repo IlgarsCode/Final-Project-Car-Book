@@ -87,6 +87,7 @@ public class SecurityConfig {
                                 .requestMatchers(
                                         "/blog/new",
                                         "/my-blogs",
+                                        "/my-blogs/**",
                                         "/profile/**",
                                         "/cart/**",
                                         "/booking/**",

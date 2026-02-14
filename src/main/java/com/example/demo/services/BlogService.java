@@ -25,4 +25,6 @@ public interface BlogService {
     void adminUpdateBlog(Long id, BlogAdminUpdateDto dto, MultipartFile image);
     void adminSetActive(Long id, boolean active);
     void adminDeleteBlog(Long id);
+
+    void deleteMyBlog(String authorEmail, Long blogId);
 }

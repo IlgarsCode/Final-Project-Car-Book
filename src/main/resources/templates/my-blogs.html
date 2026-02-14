@@ -65,6 +65,12 @@
                 <a th:href="@{'/blog/' + ${b.id}}" class="btn btn-primary">
                   Read <span class="icon-long-arrow-right"></span>
                 </a>
+              <form th:action="@{'/my-blogs/' + ${b.id} + '/delete'}"
+                    method="post"
+                    style="display:inline;"
+                    onsubmit="return confirm('Bu blog silinsin?');">
+                <button class="btn btn-sm btn-danger" type="submit">Delete</button>
+              </form>
               </p>
             </div>
           </div>

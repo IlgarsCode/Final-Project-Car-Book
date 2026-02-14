@@ -75,44 +75,26 @@ public class BlogServiceImpl implements BlogService {
         dto.setImageUrl(blog.getImageUrl());
         dto.setContent(blog.getContent());
 
-        // ✅ Blog.author sahəsində EMAIL saxlanılır (createBlog-da auth.getName() göndər)
-        String authorEmail = blog.getAuthor();
+        // ✅ user tap: əvvəl authorId, sonra email
+        var uOpt = Optional.<com.example.demo.model.User>empty();
 
-        if (authorEmail != null && !authorEmail.isBlank()) {
-            var uOpt = userRepository.findByEmailIgnoreCase(authorEmail.trim());
-            if (uOpt.isPresent()) {
-                var u = uOpt.get();
+        if (blog.getAuthorId() != null) {
+            uOpt = userRepository.findById(blog.getAuthorId());
+        } else if (blog.getAuthor() != null && !blog.getAuthor().isBlank()) {
+            uOpt = userRepository.findByEmailIgnoreCase(blog.getAuthor().trim());
+        }
 
-                // author name
-                String name = (u.getFullName() != null && !u.getFullName().isBlank())
-                        ? u.getFullName().trim()
-                        : u.getEmail();
-
-                // author avatar
-                String avatar = (u.getPhotoUrl() != null && !u.getPhotoUrl().isBlank())
-                        ? u.getPhotoUrl()
-                        : "/images/person_1.jpg";
-
-                // author bio
-                String bio = (u.getBio() != null && !u.getBio().isBlank())
-                        ? u.getBio().trim()
-                        : "CarBook istifadəçisi";
-
-                dto.setAuthorName(name);
-                dto.setAuthorAvatarUrl(avatar);
-                dto.setAuthorBio(bio);
-
-            } else {
-                // user tapılmadısa fallback
-                dto.setAuthorName(authorEmail.trim());
-                dto.setAuthorAvatarUrl("/images/person_1.jpg");
-                dto.setAuthorBio("CarBook istifadəçisi");
-            }
+        if (uOpt.isPresent()) {
+            var u = uOpt.get();
+            dto.setAuthorName((u.getFullName() != null && !u.getFullName().isBlank()) ? u.getFullName().trim() : u.getEmail());
+            dto.setAuthorAvatarUrl((u.getPhotoUrl() != null && !u.getPhotoUrl().isBlank()) ? u.getPhotoUrl() : "/images/person_1.jpg");
+            dto.setAuthorBio((u.getBio() != null && !u.getBio().isBlank()) ? u.getBio().trim() : "CarBook istifadəçisi");
+            dto.setAuthor(u.getEmail()); // üst meta-da göstərəcəksənsə
         } else {
-            // blog.author boşdursa fallback
-            dto.setAuthor("Author");
-            dto.setAuthorPhotoUrl("/images/person_1.jpg");
+            dto.setAuthorName("CarBook istifadəçisi");
+            dto.setAuthorAvatarUrl("/images/person_1.jpg");
             dto.setAuthorBio("CarBook istifadəçisi");
+            dto.setAuthor(blog.getAuthor());
         }
 
         // tags
@@ -124,13 +106,11 @@ public class BlogServiceImpl implements BlogService {
                     td.setName(t.getName());
                     td.setSlug(t.getSlug());
                     return td;
-                })
-                .toList();
+                }).toList();
         dto.setTags(tags);
 
-        // comments tree
+        // comments tree ... (səndəki kimi saxla)
         var all = blogCommentRepository.findAllByBlog_IdAndIsActiveTrueOrderByCreatedAtAsc(id);
-
         var map = new LinkedHashMap<Long, BlogCommentDto>();
         for (var c : all) {
             BlogCommentDto cd = new BlogCommentDto();
@@ -141,7 +121,6 @@ public class BlogServiceImpl implements BlogService {
             cd.setReplies(new ArrayList<>());
             map.put(c.getId(), cd);
         }
-
         var roots = new ArrayList<BlogCommentDto>();
         for (var c : all) {
             var current = map.get(c.getId());
@@ -152,7 +131,6 @@ public class BlogServiceImpl implements BlogService {
                 else roots.add(current);
             }
         }
-
         roots.sort((a, b) -> b.getCreatedAt().compareTo(a.getCreatedAt()));
         dto.setComments(roots);
         dto.setCommentCount(all.size());
@@ -173,31 +151,36 @@ public class BlogServiceImpl implements BlogService {
     }
 
     @Override
-    public Page<BlogListDto> getMyBlogs(String author, int page, int size) {
+    public Page<BlogListDto> getMyBlogs(String authorEmail, int page, int size) {
         var pageable = PageRequest.of(page, size);
-        return blogRepository.findAllByAuthorOrderByCreatedAtDesc(author, pageable).map(this::toListDto);
+        return blogRepository.findAllByAuthorOrderByCreatedAtDesc(authorEmail.trim(), pageable)
+                .map(this::toListDto);
     }
 
     @Override
-    public Long createBlog(String author, BlogCreateDto dto, MultipartFile image) {
+    public Long createBlog(String authorEmail, BlogCreateDto dto, MultipartFile image) {
         String imageUrl = null;
 
         try {
             imageUrl = fileStorageService.storeBlogImage(image);
 
+            var me = userRepository.findByEmailIgnoreCase(authorEmail.trim())
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User tapılmadı"));
+
             var b = new Blog();
-            b.setTitle(dto.getTitle() == null ? null : dto.getTitle().trim());
-            b.setShortDescription(dto.getShortDescription() == null ? null : dto.getShortDescription().trim());
-            b.setContent(dto.getContent() == null ? null : dto.getContent().trim());
-            b.setAuthor(author);
+            b.setTitle(dto.getTitle().trim());
+            b.setShortDescription(dto.getShortDescription().trim());
+            b.setContent(dto.getContent().trim());
+
+            // ✅ owner data
+            b.setAuthor(authorEmail.trim().toLowerCase()); // email saxla
+            b.setAuthorId(me.getId());                      // id saxla
+
             b.setCreatedAt(LocalDate.now());
             b.setImageUrl(imageUrl);
-
-            // səndə auto publish yazılıb
             b.setIsActive(true);
 
-            var tags = resolveTags(dto.getTags());
-            b.setTags(tags);
+            b.setTags(resolveTags(dto.getTags()));
 
             return blogRepository.save(b).getId();
 
@@ -312,6 +295,25 @@ public class BlogServiceImpl implements BlogService {
     public void adminDeleteBlog(Long id) {
         var blog = blogRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Blog tapılmadı"));
+
+        String img = blog.getImageUrl();
+        blogRepository.delete(blog);
+        fileStorageService.deleteIfExists(img);
+    }
+
+    @Override
+    public void deleteMyBlog(String authorEmail, Long blogId) {
+
+        Blog blog = blogRepository.findById(blogId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Blog tapılmadı"));
+
+        var me = userRepository.findByEmailIgnoreCase(authorEmail.trim())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User tapılmadı"));
+
+        // ✅ ownership
+        if (blog.getAuthorId() == null || !blog.getAuthorId().equals(me.getId())) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Bu blogu silməyə icazən yoxdur");
+        }
 
         String img = blog.getImageUrl();
         blogRepository.delete(blog);
