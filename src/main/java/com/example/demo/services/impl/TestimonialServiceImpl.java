@@ -4,9 +4,12 @@ import com.example.demo.dto.testimonial.TestimonialCreateDto;
 import com.example.demo.dto.testimonial.TestimonialListDto;
 import com.example.demo.model.Testimonial;
 import com.example.demo.repository.TestimonialRepository;
+import com.example.demo.repository.UserRepository;
 import com.example.demo.services.TestimonialService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
@@ -15,6 +18,7 @@ import java.util.List;
 public class TestimonialServiceImpl implements TestimonialService {
 
     private final TestimonialRepository testimonialRepository;
+    private final UserRepository userRepository;
 
     @Override
     public List<TestimonialListDto> getActiveTestimonials() {
@@ -30,17 +34,28 @@ public class TestimonialServiceImpl implements TestimonialService {
         dto.setFullName(t.getFullName());
         dto.setPosition(t.getPosition());
         dto.setComment(t.getComment());
+        dto.setPhotoUrl(t.getPhotoUrl());
         return dto;
     }
 
     @Override
-    public void create(TestimonialCreateDto dto) {
+    public void create(String userEmail, TestimonialCreateDto dto) {
+
+        var user = userRepository.findByEmailIgnoreCase(userEmail)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User tapılmadı"));
+
         Testimonial t = new Testimonial();
-        t.setFullName(dto.getFullName().trim());
+
+        // ✅ Fullname artıq formdan gəlmir
+        t.setFullName(user.getFullName() != null ? user.getFullName().trim() : user.getEmail());
+
+        // ✅ Avatar da user-dan
+        t.setPhotoUrl(user.getPhotoUrl());
+
         t.setPosition(dto.getPosition() != null ? dto.getPosition().trim() : null);
         t.setComment(dto.getComment().trim());
-        t.setIsActive(true); // dərhal görünsün
+        t.setIsActive(true);
+
         testimonialRepository.save(t);
     }
 }
-

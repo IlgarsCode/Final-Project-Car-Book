@@ -20,5 +20,8 @@ public class Testimonial {
     @Column(columnDefinition = "TEXT")
     private String comment;
 
+    // ✅ profile avatarı buraya yazılacaq
+    private String photoUrl;
+
     private Boolean isActive = true;
 }

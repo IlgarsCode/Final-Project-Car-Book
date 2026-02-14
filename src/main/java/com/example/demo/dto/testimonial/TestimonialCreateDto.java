@@ -9,10 +9,6 @@ import lombok.Setter;
 @Setter
 public class TestimonialCreateDto {
 
-    @NotBlank
-    @Size(min = 3, max = 60)
-    private String fullName;
-
     @Size(max = 60)
     private String position;
 

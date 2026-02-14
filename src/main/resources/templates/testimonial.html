@@ -81,27 +81,19 @@
              th:each="t : ${testimonials}">
 
           <div class="testimony-wrap rounded text-center py-4 pb-5 ftco-animate h-100">
-            
 
-            <div class="text pt-4">
-              <p class="mb-4"
-                 th:text="${t.comment}">
-                Testimonial comment
-              </p>
-
-              <p class="name"
-                 th:text="${t.fullName}">
-                Full name
-              </p>
-
-              <span class="position"
-                    th:text="${t.position}">
-                                Position
-                            </span>
+            <!-- ✅ AVATAR -->
+            <div class="user-img mb-4"
+                 th:style="|background-image:url('${t.photoUrl != null ? t.photoUrl : '/images/person_1.jpg'}')|">
             </div>
 
-          </div>
-        </div>
+            <div class="text pt-4">
+              <p class="name" th:text="${t.fullName}">Full name</p>
+              <span class="position" th:text="${t.position}">Position</span>
+              <p class="mb-4" th:text="${t.comment}">Testimonial comment</p>
+            </div>
+
+          </div>        </div>
 
       </div>
       <!-- /GRID -->

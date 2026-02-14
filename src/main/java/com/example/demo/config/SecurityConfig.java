@@ -66,15 +66,15 @@ public class SecurityConfig {
                         // ✅ Auth pages
                         .requestMatchers("/auth/**").permitAll()
 
-                        // ✅ Public pages
-                        .requestMatchers(
-                                "/", "/index",
-                                "/about", "/services", "/contact",
-                                "/pricing", "/pricing/**",
-                                "/car", "/car/**",
-                                "/blog", "/blog/**",
-                                "/testimonials"
-                        ).permitAll()
+// ✅ Public pages
+                                .requestMatchers(
+                                        "/", "/index",
+                                        "/about", "/services", "/contact",
+                                        "/pricing", "/pricing/**",
+                                        "/car", "/car/**",
+                                        "/blog", "/blog/**",
+                                        "/testimonial"          // ✅ yalnız bu public olsun
+                                ).permitAll()
 
                         // ✅ SUPER ADMIN (spesifik olanı yuxarıda saxla)
                         .requestMatchers("/dashboard/users/**").hasRole("SUPER_ADMIN")
@@ -82,15 +82,15 @@ public class SecurityConfig {
                         // ✅ ADMIN PANEL
                         .requestMatchers("/dashboard/**").hasRole("ADMIN")
 
-                        // ✅ USER (login required)
-                        .requestMatchers(
-                                "/cart/**",
-                                "/booking/**",
-                                "/checkout/**",
-                                "/order/**",
-                                "/profile/**",
-                                "/testimonials/new"
-                        ).hasRole("USER")
+
+                                .requestMatchers(
+                                        "/cart/**",
+                                        "/booking/**",
+                                        "/checkout/**",
+                                        "/order/**",
+                                        "/profile/**",
+                                        "/testimonial/new"                 // ✅ bunu düz yaz
+                                ).hasRole("USER")
 
                         // ✅ Qalan hər şey login istəsin
                         .anyRequest().authenticated()

@@ -11,5 +11,7 @@ public class TestimonialListDto {
     private String fullName;
     private String position;
     private String comment;
-}
 
+    // ✅ user avatarı burada göstəriləcək
+    private String photoUrl;
+}

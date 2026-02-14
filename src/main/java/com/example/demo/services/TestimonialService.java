@@ -9,6 +9,6 @@ public interface TestimonialService {
 
     List<TestimonialListDto> getActiveTestimonials();
 
-    void create(TestimonialCreateDto dto);
+    // ✅ fullname və avatarı logged-in user-dan götürəcəyik
+    void create(String userEmail, TestimonialCreateDto dto);
 }
-

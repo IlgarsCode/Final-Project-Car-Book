@@ -6,13 +6,13 @@ import com.example.demo.services.BannerService;
 import com.example.demo.services.TestimonialService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
-
 
 @Controller
 @RequiredArgsConstructor
@@ -37,11 +37,12 @@ public class TestimonialController {
     @PostMapping("/testimonial/new")
     public String createTestimonial(
             @Valid @ModelAttribute("form") TestimonialCreateDto form,
-            BindingResult br
+            BindingResult br,
+            Authentication auth
     ) {
         if (br.hasErrors()) return "testimonial-create";
 
-        testimonialService.create(form);
+        testimonialService.create(auth.getName(), form);
         return "redirect:/testimonial";
     }
 }
