@@ -5,6 +5,7 @@ import com.example.demo.model.Blog;
 import com.example.demo.repository.BlogCommentRepository;
 import com.example.demo.repository.BlogRepository;
 import com.example.demo.repository.TagRepository;
+import com.example.demo.repository.UserRepository;
 import com.example.demo.services.BlogService;
 import com.example.demo.services.storage.FileStorageService;
 import lombok.RequiredArgsConstructor;
@@ -25,6 +26,7 @@ public class BlogServiceImpl implements BlogService {
     private final BlogCommentRepository blogCommentRepository;
     private final FileStorageService fileStorageService;
     private final TagRepository tagRepository;
+    private final UserRepository userRepository;
 
     // ========= PUBLIC =========
 
@@ -69,12 +71,49 @@ public class BlogServiceImpl implements BlogService {
         BlogDetailDto dto = new BlogDetailDto();
         dto.setId(blog.getId());
         dto.setTitle(blog.getTitle());
-        dto.setAuthor(blog.getAuthor());
         dto.setCreatedAt(blog.getCreatedAt());
         dto.setImageUrl(blog.getImageUrl());
         dto.setContent(blog.getContent());
-        dto.setAuthorPhotoUrl(blog.getAuthorPhotoUrl());
-        dto.setAuthorBio(blog.getAuthorBio());
+
+        // ✅ Blog.author sahəsində EMAIL saxlanılır (createBlog-da auth.getName() göndər)
+        String authorEmail = blog.getAuthor();
+
+        if (authorEmail != null && !authorEmail.isBlank()) {
+            var uOpt = userRepository.findByEmailIgnoreCase(authorEmail.trim());
+            if (uOpt.isPresent()) {
+                var u = uOpt.get();
+
+                // author name
+                String name = (u.getFullName() != null && !u.getFullName().isBlank())
+                        ? u.getFullName().trim()
+                        : u.getEmail();
+
+                // author avatar
+                String avatar = (u.getPhotoUrl() != null && !u.getPhotoUrl().isBlank())
+                        ? u.getPhotoUrl()
+                        : "/images/person_1.jpg";
+
+                // author bio
+                String bio = (u.getBio() != null && !u.getBio().isBlank())
+                        ? u.getBio().trim()
+                        : "CarBook istifadəçisi";
+
+                dto.setAuthorName(name);
+                dto.setAuthorAvatarUrl(avatar);
+                dto.setAuthorBio(bio);
+
+            } else {
+                // user tapılmadısa fallback
+                dto.setAuthorName(authorEmail.trim());
+                dto.setAuthorAvatarUrl("/images/person_1.jpg");
+                dto.setAuthorBio("CarBook istifadəçisi");
+            }
+        } else {
+            // blog.author boşdursa fallback
+            dto.setAuthor("Author");
+            dto.setAuthorPhotoUrl("/images/person_1.jpg");
+            dto.setAuthorBio("CarBook istifadəçisi");
+        }
 
         // tags
         var tags = (blog.getTags() == null) ? List.<TagDto>of()

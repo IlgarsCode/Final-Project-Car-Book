@@ -58,6 +58,18 @@
                                         <small class="text-danger" th:if="${#fields.hasErrors('phone')}" th:errors="*{phone}"></small>
                                     </div>
 
+                                    <div class="form-group">
+                                        <label>Bio</label>
+                                        <textarea class="form-control" th:field="*{bio}" rows="4"
+                                                  placeholder="Özünüz haqqında qısa məlumat..."></textarea>
+                                        <small class="text-danger"
+                                               th:if="${#fields.hasErrors('bio')}"
+                                               th:errors="*{bio}"></small>
+                                        <small class="text-muted" style="font-size:12px;">
+                                            Bu məlumat blog və rəylərdə “author bio” kimi görünəcək.
+                                        </small>
+                                    </div>
+
                                     <button class="btn btn-primary" type="submit">Save Changes</button>
                                 </form>
                             </div>

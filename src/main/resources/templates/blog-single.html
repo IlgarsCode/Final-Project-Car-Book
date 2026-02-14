@@ -83,25 +83,32 @@
                         </div>
                     </div>
 
-                    <!-- AUTHOR -->
-                    <div class="about-author d-flex p-4 bg-light" th:if="${blog.author != null}">
-                        <div class="bio mr-5">
-                            <img th:if="${blog.authorPhotoUrl != null}"
-                                 th:src="${blog.authorPhotoUrl}"
-                                 alt="Author"
-                                 class="img-fluid mb-4">
+                    <!-- AUTHOR (profil məlumatı ilə) -->
+                    <style>
+                        .about-author .bio img.author-avatar{
+                            width: 110px;
+                            height: 110px;
+                            object-fit: cover;
+                            border-radius: 6px;
+                        }
+                    </style>
 
-                            <img th:if="${blog.authorPhotoUrl == null}"
-                                 src="/images/person_1.jpg"
-                                 alt="Author"
-                                 class="img-fluid mb-4">
+                    <div class="about-author d-flex p-4 bg-light"
+                         th:if="${blog.authorName != null}">
+                        <div class="bio mr-4">
+                            <img class="author-avatar"
+                                 th:src="${blog.authorAvatarUrl != null ? blog.authorAvatarUrl : '/images/person_1.jpg'}"
+                                 alt="Author">
                         </div>
 
                         <div class="desc">
-                            <h3 th:text="${blog.author}">Author Name</h3>
-                            <p th:text="${blog.authorBio}">Author Bio</p>
+                            <h3 class="mb-1" th:text="${blog.authorName}">Author Name</h3>
+                            <p class="mb-0" th:text="${blog.authorBio != null ? blog.authorBio : 'CarBook istifadəçisi'}">
+                                Bio
+                            </p>
                         </div>
                     </div>
+
 
                     <!-- ===== COMMENTS ===== -->
                     <div class="pt-5 mt-5">

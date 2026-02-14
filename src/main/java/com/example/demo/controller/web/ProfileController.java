@@ -36,6 +36,7 @@ public class ProfileController {
         form.setEmail(me.getEmail());
         form.setFullName(me.getFullName());
         form.setPhone(me.getPhone());
+        form.setBio(me.getBio());
 
         model.addAttribute("me", me);
         model.addAttribute("form", form);

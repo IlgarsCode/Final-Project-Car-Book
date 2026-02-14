@@ -18,9 +18,10 @@ public class BlogDetailDto {
     private String imageUrl;
 
     private String content;
-
-    private String authorPhotoUrl;
+    private String authorName;
+    private String authorAvatarUrl;
     private String authorBio;
+    private String authorPhotoUrl;
     private List<BlogCommentDto> comments;
     private long commentCount;
     private List<TagDto> tags;

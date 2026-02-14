@@ -34,6 +34,9 @@ public class ProfileServiceImpl implements ProfileService {
         String newEmail = dto.getEmail().trim().toLowerCase();
         String newName = dto.getFullName().trim();
         String newPhone = (dto.getPhone() == null) ? null : dto.getPhone().trim();
+        String newBio = (dto.getBio() == null) ? null : dto.getBio().trim();
+
+
 
         if (userRepository.existsByEmailIgnoreCaseAndIdNot(newEmail, user.getId())) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Bu email artıq istifadə olunur");
@@ -42,7 +45,7 @@ public class ProfileServiceImpl implements ProfileService {
         user.setEmail(newEmail);
         user.setFullName(newName);
         user.setPhone((newPhone != null && newPhone.isBlank()) ? null : newPhone);
-
+        user.setBio((newBio != null && newBio.isBlank()) ? null : newBio);
         userRepository.save(user);
     }
 
