@@ -19,7 +19,4 @@ public class TestimonialCreateDto {
     @NotBlank
     @Size(min = 10, max = 500)
     private String comment;
-
-    @Size(max = 500)
-    private String photoUrl; // optional
 }

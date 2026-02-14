@@ -11,6 +11,5 @@ public class TestimonialListDto {
     private String fullName;
     private String position;
     private String comment;
-    private String photoUrl;
 }
 

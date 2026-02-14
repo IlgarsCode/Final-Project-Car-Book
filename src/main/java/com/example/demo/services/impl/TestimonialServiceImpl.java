@@ -30,7 +30,6 @@ public class TestimonialServiceImpl implements TestimonialService {
         dto.setFullName(t.getFullName());
         dto.setPosition(t.getPosition());
         dto.setComment(t.getComment());
-        dto.setPhotoUrl(t.getPhotoUrl());
         return dto;
     }
 
@@ -40,7 +39,6 @@ public class TestimonialServiceImpl implements TestimonialService {
         t.setFullName(dto.getFullName().trim());
         t.setPosition(dto.getPosition() != null ? dto.getPosition().trim() : null);
         t.setComment(dto.getComment().trim());
-        t.setPhotoUrl(dto.getPhotoUrl() != null ? dto.getPhotoUrl().trim() : null);
         t.setIsActive(true); // dərhal görünsün
         testimonialRepository.save(t);
     }

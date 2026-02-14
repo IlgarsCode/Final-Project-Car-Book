@@ -20,7 +20,5 @@ public class Testimonial {
     @Column(columnDefinition = "TEXT")
     private String comment;
 
-    private String photoUrl;
-
     private Boolean isActive = true;
 }

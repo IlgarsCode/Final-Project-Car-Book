@@ -4,7 +4,6 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -22,6 +21,12 @@ public class User {
     private String email;
 
     private String fullName;
+
+    // ✅ yeni
+    private String phone;
+
+    // ✅ yeni (məs: /uploads/avatars/xxx.png)
+    private String photoUrl;
 
     @Column(nullable = false)
     private String passwordHash;

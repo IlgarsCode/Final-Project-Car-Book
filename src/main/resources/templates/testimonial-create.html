@@ -41,11 +41,6 @@
                             <small class="text-danger" th:if="${#fields.hasErrors('comment')}" th:errors="*{comment}"></small>
                         </div>
 
-                        <div class="form-group">
-                            <label>Photo URL (optional)</label>
-                            <input type="text" class="form-control" th:field="*{photoUrl}" placeholder="https://...">
-                            <small class="text-danger" th:if="${#fields.hasErrors('photoUrl')}" th:errors="*{photoUrl}"></small>
-                        </div>
 
                         <div class="d-flex justify-content-between">
                             <a th:href="@{/testimonial}" class="btn btn-secondary">Back</a>
