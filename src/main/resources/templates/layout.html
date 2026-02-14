@@ -85,6 +85,11 @@
                             My Orders
                         </a>
 
+                        <!-- My Blogs: yalnız USER -->
+                        <a class="dropdown-item" th:href="@{/my-blogs}" sec:authorize="hasRole('USER')">
+                            My Blogs
+                        </a>
+
                         <!-- Dashboard: yalnız ADMIN -->
                         <a class="dropdown-item" th:href="@{/dashboard}" sec:authorize="hasRole('ADMIN')">
                             Dashboard

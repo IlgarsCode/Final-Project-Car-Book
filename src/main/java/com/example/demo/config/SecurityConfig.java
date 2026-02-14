@@ -72,8 +72,8 @@ public class SecurityConfig {
                                         "/about", "/services", "/contact",
                                         "/pricing", "/pricing/**",
                                         "/car", "/car/**",
-                                        "/blog", "/blog/**",
-                                        "/testimonial"          // ✅ yalnız bu public olsun
+                                        "/blog", "/blog/**",      // ✅ qalır, amma artıq /blog/new yuxarıda bağlandı
+                                        "/testimonial"
                                 ).permitAll()
 
                         // ✅ SUPER ADMIN (spesifik olanı yuxarıda saxla)
@@ -83,13 +83,16 @@ public class SecurityConfig {
                         .requestMatchers("/dashboard/**").hasRole("ADMIN")
 
 
+// ✅ USER (login required) — bunlar permitAll-dan YUXARIDA olmalıdır
                                 .requestMatchers(
+                                        "/blog/new",
+                                        "/my-blogs",
+                                        "/profile/**",
                                         "/cart/**",
                                         "/booking/**",
                                         "/checkout/**",
                                         "/order/**",
-                                        "/profile/**",
-                                        "/testimonial/new"                 // ✅ bunu düz yaz
+                                        "/testimonial/new"
                                 ).hasRole("USER")
 
                         // ✅ Qalan hər şey login istəsin

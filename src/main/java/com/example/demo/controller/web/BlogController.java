@@ -1,6 +1,7 @@
 package com.example.demo.controller.web;
 
 import com.example.demo.dto.blog.BlogCommentCreateDto;
+import com.example.demo.dto.blog.BlogCreateDto;
 import com.example.demo.dto.blog.BlogReplyCreateDto;
 import com.example.demo.dto.enums.BannerType;
 import com.example.demo.model.BlogComment;
@@ -19,6 +20,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
@@ -36,6 +38,9 @@ public class BlogController {
 
     private final UserRepository userRepository;
 
+    // =========================
+    // PUBLIC LIST
+    // =========================
     @GetMapping("/blog")
     public String blogPage(
             @RequestParam(name = "page", defaultValue = "1") int page,
@@ -58,6 +63,90 @@ public class BlogController {
         return "blog";
     }
 
+    // =========================
+    // BLOG CREATE (USER)
+    // =========================
+    @GetMapping("/blog/new")
+    public String newBlogPage(
+            @AuthenticationPrincipal UserDetails user,
+            Model model
+    ) {
+        if (user == null) {
+            // normalda security redirect edəcək, bu sadəcə safety
+            return "redirect:/auth/login";
+        }
+
+        model.addAttribute("banner", bannerService.getBanner(BannerType.BLOGS));
+        model.addAttribute("form", new BlogCreateDto());
+        return "blog-create";
+    }
+
+    @PostMapping("/blog/new")
+    public String createBlog(
+            @AuthenticationPrincipal UserDetails user,
+            @Valid @ModelAttribute("form") BlogCreateDto form,
+            BindingResult br,
+            @RequestParam(value = "image", required = false) MultipartFile image,
+            Model model
+    ) {
+        if (user == null) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Blog yaratmaq üçün giriş etməlisən");
+        }
+
+        if (br.hasErrors()) {
+            model.addAttribute("banner", bannerService.getBanner(BannerType.BLOGS));
+            return "blog-create";
+        }
+
+        // author kimi fullName saxla (yoxdursa email)
+        var u = userRepository.findByEmailIgnoreCase(user.getUsername())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User tapılmadı"));
+
+        String author = (u.getFullName() != null && !u.getFullName().isBlank())
+                ? u.getFullName().trim()
+                : u.getEmail();
+
+        Long id = blogService.createBlog(author, form, image);
+
+        return "redirect:/blog/" + id;
+    }
+
+    // =========================
+    // MY BLOGS (USER)
+    // =========================
+    @GetMapping("/my-blogs")
+    public String myBlogs(
+            @AuthenticationPrincipal UserDetails user,
+            @RequestParam(name = "page", defaultValue = "1") int page,
+            Model model
+    ) {
+        if (user == null) {
+            return "redirect:/auth/login";
+        }
+
+        var u = userRepository.findByEmailIgnoreCase(user.getUsername())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User tapılmadı"));
+
+        String author = (u.getFullName() != null && !u.getFullName().isBlank())
+                ? u.getFullName().trim()
+                : u.getEmail();
+
+        int size = 9;
+        int pageIndex = Math.max(page - 1, 0);
+
+        var blogsPage = blogService.getMyBlogs(author, pageIndex, size);
+
+        model.addAttribute("banner", bannerService.getBanner(BannerType.BLOGS));
+        model.addAttribute("blogs", blogsPage.getContent());
+        model.addAttribute("currentPage", blogsPage.getNumber() + 1);
+        model.addAttribute("totalPages", blogsPage.getTotalPages());
+
+        return "my-blogs";
+    }
+
+    // =========================
+    // BLOG DETAIL
+    // =========================
     @GetMapping("/blog/{id}")
     public String blogSingle(@PathVariable Long id, Model model) {
         fillBlogSingleModel(id, model, new BlogCommentCreateDto(), new BlogReplyCreateDto(), null, null);
@@ -98,7 +187,7 @@ public class BlogController {
         return "redirect:/blog/" + id + "#comments";
     }
 
-    // ✅ Reply (login required) - yalnız message gəlir
+    // ✅ Reply (login required)
     @PostMapping("/blog/{id}/reply")
     public String addReply(
             @PathVariable Long id,
@@ -135,7 +224,7 @@ public class BlogController {
 
         BlogComment reply = new BlogComment();
         reply.setBlog(blog);
-        reply.setParent(parent); // ✅ MÜTLƏQ
+        reply.setParent(parent);
         reply.setFullName(fullName);
         reply.setEmail(u.getEmail());
         reply.setMessage(form.getMessage().trim());
@@ -145,7 +234,6 @@ public class BlogController {
         blogCommentRepository.save(reply);
 
         return "redirect:/blog/" + id + "#comments";
-
     }
 
     private void fillBlogSingleModel(
@@ -163,7 +251,6 @@ public class BlogController {
         model.addAttribute("commentForm", commentForm);
         model.addAttribute("replyForm", replyForm);
 
-        // blog-single sidebar search input üçün (opsional)
         model.addAttribute("search", search);
         model.addAttribute("tag", tag);
     }
