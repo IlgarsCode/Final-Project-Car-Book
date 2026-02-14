@@ -42,25 +42,23 @@
 
         <div class="collapse navbar-collapse" id="ftco-nav">
             <ul class="navbar-nav ml-auto">
+
                 <li class="nav-item"><a th:href="@{/}" class="nav-link">Home</a></li>
                 <li class="nav-item"><a th:href="@{/about}" class="nav-link">About</a></li>
                 <li class="nav-item"><a th:href="@{/services}" class="nav-link">Services</a></li>
                 <li class="nav-item"><a th:href="@{/pricing}" class="nav-link">Pricing</a></li>
                 <li class="nav-item"><a th:href="@{/car}" class="nav-link">Cars</a></li>
-                <li class="nav-item"><a th:href="@{/my-orders}" class="nav-link">My Orders</a></li>
-                <li class="nav-item" sec:authorize="isAuthenticated()">
-                    <a th:href="@{/profile}" class="nav-link">Profile</a>
-                </li>
+
                 <li class="nav-item"><a th:href="@{/blog}" class="nav-link">Blog</a></li>
                 <li class="nav-item"><a th:href="@{/testimonial}" class="nav-link">Testimonials</a></li>
                 <li class="nav-item"><a th:href="@{/contact}" class="nav-link">Contact</a></li>
 
-                <!-- ✅ Admin görsün -->
-                <li class="nav-item" sec:authorize="hasRole('ADMIN')">
-                    <a th:href="@{/dashboard}" class="nav-link">Dashboard</a>
+                <!-- ✅ Profile yalnız logged-in -->
+                <li class="nav-item" sec:authorize="isAuthenticated()">
+                    <a th:href="@{/profile}" class="nav-link">Profile</a>
                 </li>
 
-                <!-- ✅ Login/Register (yalnız anonymous) -->
+                <!-- ✅ Login/Register yalnız anonymous -->
                 <li class="nav-item" sec:authorize="isAnonymous()">
                     <a th:href="@{/auth/login}" class="nav-link">Login</a>
                 </li>
@@ -68,19 +66,38 @@
                     <a th:href="@{/auth/register}" class="nav-link">Register</a>
                 </li>
 
-                <!-- ✅ User info + Logout (yalnız authenticated) -->
-                <li class="nav-item" sec:authorize="isAuthenticated()">
-                    <a href="#" class="nav-link" style="cursor:default;">
-                        <span class="icon-user"></span>
-                        <span th:text="${#authentication.name}">user@email.com</span>
+                <!-- ✅ OTHERS dropdown (Logout-dan əvvəl) -->
+                <li class="nav-item dropdown" sec:authorize="isAuthenticated()">
+                    <a class="nav-link dropdown-toggle"
+                       href="#"
+                       id="othersDropdown"
+                       role="button"
+                       data-toggle="dropdown"
+                       aria-haspopup="true"
+                       aria-expanded="false">
+                        Others
                     </a>
+
+                    <div class="dropdown-menu dropdown-menu-right" aria-labelledby="othersDropdown">
+
+                        <!-- My Orders: yalnız USER -->
+                        <a class="dropdown-item" th:href="@{/my-orders}" sec:authorize="hasRole('USER')">
+                            My Orders
+                        </a>
+
+                        <!-- Dashboard: yalnız ADMIN -->
+                        <a class="dropdown-item" th:href="@{/dashboard}" sec:authorize="hasRole('ADMIN')">
+                            Dashboard
+                        </a>
+
+                    </div>
                 </li>
 
-                <!-- Logout GET olmaz; Security-də logoutUrl POST-dur. Ona görə form ilə edirik -->
+                <!-- ✅ Logout (POST) -->
                 <li class="nav-item" sec:authorize="isAuthenticated()">
                     <form th:action="@{/auth/logout}" method="post" style="margin:0;">
                         <button type="submit" class="nav-link btn btn-link"
-                                style="padding-top: .9rem; padding-bottom: .9rem; color: rgba(255,255,255,.7); text-decoration:none;">
+                                style="padding-top:.9rem; padding-bottom:.9rem; color: rgba(255,255,255,.7); text-decoration:none;">
                             Logout
                         </button>
                     </form>
