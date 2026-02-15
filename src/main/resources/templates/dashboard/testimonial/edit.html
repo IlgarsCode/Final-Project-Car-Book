@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{dashboard/layout}">
+<head>
+    <meta charset="UTF-8">
+    <title>Edit Testimonial</title>
+</head>
+<body>
+<div layout:fragment="content">
+
+    <h3 class="mb-3">Edit Testimonial</h3>
+
+    <form th:action="@{'/dashboard/testimonial/' + ${id} + '/edit'}"
+          th:object="${form}" method="post" class="card p-3">
+
+        <div class="form-group">
+            <label>Full name</label>
+            <input class="form-control" th:field="*{fullName}" />
+            <small class="text-danger" th:if="${#fields.hasErrors('fullName')}" th:errors="*{fullName}"></small>
+        </div>
+
+        <div class="form-group">
+            <label>Position</label>
+            <input class="form-control" th:field="*{position}" />
+            <small class="text-danger" th:if="${#fields.hasErrors('position')}" th:errors="*{position}"></small>
+        </div>
+
+        <div class="form-group">
+            <label>Comment</label>
+            <textarea class="form-control" rows="5" th:field="*{comment}"></textarea>
+            <small class="text-danger" th:if="${#fields.hasErrors('comment')}" th:errors="*{comment}"></small>
+        </div>
+
+        <div class="form-group">
+            <label>Photo URL (optional)</label>
+            <input class="form-control" th:field="*{photoUrl}" />
+            <small class="text-muted">Boş buraxsan köhnə qalacaq.</small>
+        </div>
+
+        <div class="form-group">
+            <label>Active</label>
+            <select class="form-control" th:field="*{isActive}">
+                <option th:value="true">true</option>
+                <option th:value="false">false</option>
+            </select>
+        </div>
+
+        <div class="mt-3">
+            <button class="btn btn-primary" type="submit">Save</button>
+            <a class="btn btn-outline-secondary" th:href="@{/dashboard/testimonial}">Back</a>
+        </div>
+    </form>
+
+</div>
+</body>
+</html>
