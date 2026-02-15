@@ -9,7 +9,6 @@
 </head>
 
 <body>
-
 <div layout:fragment="content">
 
     <!-- BANNER -->
@@ -49,7 +48,6 @@
             <div class="row">
 
                 <div class="col-md-4" th:each="car : ${cars}">
-
                     <div class="car-wrap rounded ftco-animate">
 
                         <div class="img rounded d-flex align-items-end"
@@ -62,33 +60,36 @@
                             <span class="d-block mb-1"
                                   style="font-weight:700; color:#000;"
                                   th:text="${car.brand}">
-        Brand
-    </span>
+                                Brand
+                            </span>
 
                             <!-- Model + Price -->
                             <div class="d-flex justify-content-between align-items-center mb-2">
 
-        <span style="color:#000; font-weight:400;"
-              th:text="${car.title}">
-            Model
-        </span>
+                                <span style="color:#000; font-weight:400;"
+                                      th:text="${car.title}">
+                                    Model
+                                </span>
 
                                 <span>
-            <span style="color:#4f86f7; font-weight:600;">
-                $<span th:text="${car.dailyRate}">0</span>
-            </span>
-            <span style="color:#000; font-weight:400;">
-                /day
-            </span>
-        </span>
+                                    <span style="color:#4f86f7; font-weight:600;">
+                                        $<span th:text="${car.dailyRate}">0</span>
+                                    </span>
+                                    <span style="color:#000; font-weight:400;">
+                                        /day
+                                    </span>
+                                </span>
 
                             </div>
 
                             <!-- Buttons -->
                             <div class="d-flex align-items-center" style="gap:10px;">
 
+                                <!-- Default: DAILY -->
                                 <form th:action="@{/cart/add}" method="post" style="margin:0;">
                                     <input type="hidden" name="carId" th:value="${car.id}">
+                                    <input type="hidden" name="rateType" value="DAILY">
+                                    <input type="hidden" name="unitCount" value="1">
                                     <button type="submit" class="btn btn-primary py-2 px-3">Book now</button>
                                 </form>
 
@@ -101,10 +102,14 @@
                     </div>
                 </div>
 
+                <div class="col-12" th:if="${cars == null or #lists.isEmpty(cars)}">
+                    <div class="alert alert-info">Hazırda maşın yoxdur.</div>
+                </div>
+
             </div>
         </div>
     </section>
-</div>
 
+</div>
 </body>
 </html>

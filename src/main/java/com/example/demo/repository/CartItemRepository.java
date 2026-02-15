@@ -11,6 +11,8 @@ import java.util.Optional;
 
 public interface CartItemRepository extends JpaRepository<CartItem, Long> {
 
+    List<CartItem> findAllByCart_IdOrderByIdDesc(Long cartId);  // ✅ əlavə olundu
+
     Optional<CartItem> findByCart_IdAndCar_IdAndRateType(Long cartId, Long carId, PricingRateType rateType);
 
     Optional<CartItem> findByIdAndCart_Id(Long id, Long cartId);
@@ -19,13 +21,11 @@ public interface CartItemRepository extends JpaRepository<CartItem, Long> {
 
     void deleteByCart_Id(Long cartId);
 
-    // ✅ projection (nested interface)
     interface CartCountView {
         Long getCartId();
         Long getCnt();
     }
 
-    // ✅ bulk count: N+1 olmasın
     @Query("""
         select ci.cart.id as cartId, coalesce(sum(ci.quantity),0) as cnt
         from CartItem ci

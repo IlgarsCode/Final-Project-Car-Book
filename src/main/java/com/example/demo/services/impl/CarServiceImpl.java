@@ -79,12 +79,10 @@ public class CarServiceImpl implements CarService {
 
         CarDetailDto dto = modelMapper.map(car, CarDetailDto.class);
 
-        // ✅ Features: DB-də text, UI üçün List
         dto.setFeatures1(splitFeatures(car.getFeaturesCol1()));
         dto.setFeatures2(splitFeatures(car.getFeaturesCol2()));
         dto.setFeatures3(splitFeatures(car.getFeaturesCol3()));
 
-        // ✅ pricing (car_pricings)
         var pricingOpt = carPricingRepository.findActiveByCarSlug(slug);
 
         BigDecimal hourly = BigDecimal.ZERO;
@@ -105,7 +103,6 @@ public class CarServiceImpl implements CarService {
         dto.setMonthlyLeasingRate(leasing);
         dto.setFuelSurchargePerHour(surcharge);
 
-        // ✅ UI üçün display
         dto.setSelectedRate(rateType.name());
 
         switch (rateType) {
@@ -123,7 +120,6 @@ public class CarServiceImpl implements CarService {
             }
         }
 
-        // ✅ Reviews
         var reviews = carReviewRepository
                 .findAllByCar_IdAndIsActiveTrueOrderByCreatedAtDesc(car.getId())
                 .stream()
@@ -202,25 +198,13 @@ public class CarServiceImpl implements CarService {
         }).toList();
     }
 
-    @Override
-    public Object getCarDetail(String slug) {
-        return null;
-    }
-
-    // ✅ FEATURES helper
     private static List<String> splitFeatures(String s) {
         if (s == null) return List.of();
-
         String normalized = s.replace("\r\n", "\n").trim();
         if (normalized.isBlank()) return List.of();
 
-        // newline / comma / semicolon dəstəyi
         String[] parts = normalized.split("\\n|,|;");
-
-        // əgər delimiter yoxdur və 1 hissə çıxırsa → 1 item qaytar
-        if (parts.length == 1) {
-            return List.of(normalized);
-        }
+        if (parts.length == 1) return List.of(normalized);
 
         return Arrays.stream(parts)
                 .map(String::trim)

@@ -27,7 +27,6 @@
     <section class="ftco-section">
         <div class="container">
 
-            <!-- ✅ daha stabil empty check -->
             <div th:if="${cart == null or cart.items == null or cart.items.empty}" class="alert alert-info">
                 Cart boşdur.
             </div>
@@ -57,7 +56,7 @@
                                         </div>
 
                                         <div class="pl-3">
-                                            <div class="font-weight-bold" th:text="${it.car != null ? it.car.title : it.carTitleSnapshot}">Car title</div>
+                                            <div class="font-weight-bold" th:text="${it.car != null ? it.car.title : 'Car'}">Car title</div>
                                             <small class="text-muted" th:text="${it.car != null ? it.car.brand : ''}">Brand</small>
                                         </div>
                                     </div>
@@ -91,7 +90,7 @@
                         </table>
                     </div>
 
-                    <div class="d-flex justify-content-between">
+                    <div class="d-flex justify-content-between" style="gap:10px; flex-wrap:wrap;">
                         <form th:action="@{/cart/clear}" method="post">
                             <button class="btn btn-outline-danger">Clear Cart</button>
                         </form>

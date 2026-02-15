@@ -12,11 +12,7 @@ public interface CarService {
     List<CarListDto> getActiveCars(String categorySlug);
 
     CarDetailDto getCarDetailBySlug(String slug);
-
-    // ✅ yeni: rate-ə görə seçilmiş qiymətlə detail
     CarDetailDto getCarDetailBySlug(String slug, PricingRateType rateType);
 
     List<CarListDto> getRelatedCars(Long currentCarId, int limit);
-
-    Object getCarDetail(String slug);
 }

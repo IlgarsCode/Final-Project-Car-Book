@@ -5,11 +5,37 @@
         layout:decorate="~{layout}">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>Home</title>
+
+    <!-- ✅ FIX: Select option text görünmürdü (ağ rəng / ağ fon problemi) -->
+    <style>
+        .request-form .form-control {
+            color: rgba(255,255,255,.9) !important;
+        }
+
+        /* ✅ Select bağlı olanda (mavi fonda) yazı ağ qalsın */
+        .request-form select.form-control {
+            color: rgba(255,255,255,.95) !important;
+            background-color: rgba(255,255,255,.08) !important;
+            border: 1px solid rgba(255,255,255,.25) !important;
+        }
+
+        /* ✅ Dropdown açılan hissədə option-lar ağ fonda qara görünsün */
+        .request-form select.form-control option {
+            color: #111 !important;
+            background: #fff !important;
+        }
+
+        /* Placeholder option (Select location...) */
+        .request-form select.form-control option[disabled] {
+            color: #777 !important;
+        }
+    </style>
 </head>
 <body>
 <div layout:fragment="content">
 
+    <!-- HERO -->
     <div class="hero-wrap ftco-degree-bg"
          th:style="'background-image: url(' + ${banner.photoUrl} + ')'"
          data-stellar-background-ratio="0.5">
@@ -21,14 +47,9 @@
                 <div class="col-lg-8 ftco-animate">
                     <div class="text w-100 text-center mb-md-5 pb-md-5">
 
-                        <h1 class="mb-4" th:text="${banner.title}">
-                            Banner title
-                        </h1>
+                        <h1 class="mb-4" th:text="${banner.title}">Banner title</h1>
 
-                        <p style="font-size: 18px;"
-                           th:text="${banner.description}">
-                            Banner description
-                        </p>
+                        <p style="font-size: 18px;" th:text="${banner.description}">Banner description</p>
 
                         <a th:if="${banner.videoUrl != null}"
                            th:href="${banner.videoUrl}"
@@ -39,9 +60,7 @@
                             </div>
 
                             <div class="heading-title ml-5">
-                            <span th:text="${banner.buttonText}">
-                                Button text
-                            </span>
+                                <span th:text="${banner.buttonText}">Button text</span>
                             </div>
                         </a>
 
@@ -51,80 +70,183 @@
         </div>
     </div>
 
+    <!-- FORM + INFO -->
     <section class="ftco-section ftco-no-pt bg-light">
         <div class="container">
             <div class="row no-gutters">
                 <div class="col-md-12 featured-top">
                     <div class="row no-gutters">
 
-                        <!-- ✅ TAM GENİŞLİK – SOL FORM SİLİNDİ -->
-                        <div class="col-md-12 d-flex align-items-center">
-                            <div class="services-wrap rounded w-100 text-center">
+                        <!-- LEFT: SEARCH FORM -->
+                        <div class="col-md-4 d-flex align-items-center">
+                            <form th:action="@{/search}"
+                                  th:object="${bookingForm}"
+                                  method="post"
+                                  class="request-form ftco-animate bg-primary">
 
-                                <h3 class="heading-section mb-4">
-                                    Better Way to Rent Your Perfect Cars
-                                </h3>
+                                <h2>Make your trip</h2>
 
-                                <div class="row d-flex mb-4 justify-content-center">
+                                <!-- Pick-up location -->
+                                <div class="form-group">
+                                    <label class="label">Pick-up location</label>
+                                    <select class="form-control" th:field="*{pickupLocationId}">
+                                        <option value="" disabled selected hidden>Select location...</option>
+                                        <option th:each="l : ${locations}"
+                                                th:value="${l.id}"
+                                                th:text="${l.name}">
+                                        </option>
+                                    </select>
+                                    <small class="text-warning"
+                                           th:if="${#fields.hasErrors('pickupLocationId')}"
+                                           th:errors="*{pickupLocationId}"></small>
+                                </div>
 
-                                    <div class="col-md-3 d-flex align-self-stretch ftco-animate">
+                                <!-- Drop-off location -->
+                                <div class="form-group">
+                                    <label class="label">Drop-off location</label>
+                                    <select class="form-control" th:field="*{dropoffLocationId}">
+                                        <option value="" disabled selected hidden>Select location...</option>
+                                        <option th:each="l : ${locations}"
+                                                th:value="${l.id}"
+                                                th:text="${l.name}">
+                                        </option>
+                                    </select>
+                                    <small class="text-warning"
+                                           th:if="${#fields.hasErrors('dropoffLocationId')}"
+                                           th:errors="*{dropoffLocationId}"></small>
+                                </div>
+
+                                <!-- Dates -->
+                                <div class="d-flex">
+                                    <div class="form-group mr-2" style="flex:1;">
+                                        <label class="label">Pick-up date</label>
+                                        <input type="date"
+                                               id="pickupDate"
+                                               class="form-control"
+                                               th:field="*{pickupDate}"
+                                               th:attr="min=${#temporals.format(#temporals.createNow(), 'yyyy-MM-dd')}">
+                                        <small class="text-warning"
+                                               th:if="${#fields.hasErrors('pickupDate')}"
+                                               th:errors="*{pickupDate}"></small>
+                                    </div>
+
+                                    <div class="form-group ml-2" style="flex:1;">
+                                        <label class="label">Drop-off date</label>
+                                        <input type="date"
+                                               id="dropoffDate"
+                                               class="form-control"
+                                               th:field="*{dropoffDate}"
+                                               th:attr="min=${#temporals.format(#temporals.createNow(), 'yyyy-MM-dd')}">
+                                        <small class="text-warning"
+                                               th:if="${#fields.hasErrors('dropoffDate')}"
+                                               th:errors="*{dropoffDate}"></small>
+                                    </div>
+                                </div>
+
+                                <!-- time (optional) -->
+                                <div class="form-group">
+                                    <label class="label">Pick-up time (optional)</label>
+                                    <input type="time" class="form-control" name="pickupTime" placeholder="Time">
+                                </div>
+
+                                <!-- Submit -->
+                                <div class="form-group">
+                                    <input type="submit" value="Rent A Car Now" class="btn btn-secondary py-3 px-4">
+                                </div>
+
+                                <!-- global errors -->
+                                <div class="text-warning" th:if="${#fields.hasGlobalErrors()}">
+                                    <div th:each="e : ${#fields.globalErrors()}" th:text="${e}"></div>
+                                </div>
+
+                            </form>
+                        </div>
+
+                        <!-- RIGHT: INFO -->
+                        <div class="col-md-8 d-flex align-items-center">
+                            <div class="services-wrap rounded-right w-100">
+                                <h3 class="heading-section mb-4">Better Way to Rent Your Perfect Cars</h3>
+
+                                <div class="row d-flex mb-4">
+                                    <div class="col-md-4 d-flex align-self-stretch ftco-animate">
                                         <div class="services w-100 text-center">
                                             <div class="icon d-flex align-items-center justify-content-center">
                                                 <span class="flaticon-route"></span>
                                             </div>
                                             <div class="text w-100">
-                                                <h3 class="heading mb-2">
-                                                    Choose Your Pickup Date
-                                                </h3>
+                                                <h3 class="heading mb-2">Choose Your Pickup Location</h3>
                                             </div>
                                         </div>
                                     </div>
 
-                                    <div class="col-md-3 d-flex align-self-stretch ftco-animate">
+                                    <div class="col-md-4 d-flex align-self-stretch ftco-animate">
                                         <div class="services w-100 text-center">
                                             <div class="icon d-flex align-items-center justify-content-center">
                                                 <span class="flaticon-handshake"></span>
                                             </div>
                                             <div class="text w-100">
-                                                <h3 class="heading mb-2">
-                                                    Select the Best Deal
-                                                </h3>
+                                                <h3 class="heading mb-2">Select the Best Deal</h3>
                                             </div>
                                         </div>
                                     </div>
 
-                                    <div class="col-md-3 d-flex align-self-stretch ftco-animate">
+                                    <div class="col-md-4 d-flex align-self-stretch ftco-animate">
                                         <div class="services w-100 text-center">
                                             <div class="icon d-flex align-items-center justify-content-center">
                                                 <span class="flaticon-rent"></span>
                                             </div>
                                             <div class="text w-100">
-                                                <h3 class="heading mb-2">
-                                                    Reserve Your Rental Car
-                                                </h3>
+                                                <h3 class="heading mb-2">Reserve Your Rental Car</h3>
                                             </div>
                                         </div>
                                     </div>
-
                                 </div>
 
-                                <!-- ✅ DÜYMƏ CAR PAGE-Ə YÖNLƏNSİN -->
                                 <p>
                                     <a th:href="@{/car}" class="btn btn-primary py-3 px-4">
-                                        Browse Cars
+                                        Reserve Your Perfect Car
                                     </a>
                                 </p>
-
                             </div>
                         </div>
 
-                    </div>
-                </div>
-            </div>
-        </div>
+                    </div><!-- /row no-gutters -->
+                </div><!-- /featured-top -->
+            </div><!-- /row -->
+        </div><!-- /container -->
     </section>
 
+    <script>
+        (function () {
+            const pickup = document.getElementById('pickupDate');
+            const dropoff = document.getElementById('dropoffDate');
+            if (!pickup || !dropoff) return;
 
+            const pad = (n) => String(n).padStart(2, '0');
+            const now = new Date();
+            const todayStr = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}`;
+
+            // əlavə təhlükəsizlik: min atributunu JS ilə də basırıq
+            pickup.min = todayStr;
+            dropoff.min = todayStr;
+
+            function syncDropoffMin() {
+                if (pickup.value) {
+                    dropoff.min = pickup.value;
+
+                    // dropoff pick-updan kiçikdirsə -> düzəlt
+                    if (dropoff.value && dropoff.value < pickup.value) {
+                        dropoff.value = pickup.value;
+                    }
+                } else {
+                    dropoff.min = todayStr;
+                }
+            }
+
+            pickup.addEventListener('change', syncDropoffMin);
+            syncDropoffMin();
+        })();
+    </script>
 
     <section class="ftco-section ftco-no-pt bg-light">
         <div class="container">

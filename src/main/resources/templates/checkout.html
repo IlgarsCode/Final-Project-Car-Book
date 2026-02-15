@@ -33,7 +33,9 @@
                     <div class="p-4 bg-light">
                         <h3 class="mb-4">Trip details</h3>
 
-                        <form th:action="@{/checkout}" th:object="${form}" method="post">
+                        <div id="checkoutMsg" class="alert" style="display:none;"></div>
+
+                        <form id="checkoutForm" th:action="@{/checkout}" th:object="${form}" method="post">
 
                             <div class="form-group">
                                 <label>Pick-up location</label>
@@ -49,13 +51,13 @@
 
                             <div class="form-group">
                                 <label>Pick-up date</label>
-                                <input type="date" class="form-control" th:field="*{pickupDate}">
+                                <input id="pickupDate" type="date" class="form-control" th:field="*{pickupDate}">
                                 <small class="text-danger" th:if="${#fields.hasErrors('pickupDate')}" th:errors="*{pickupDate}"></small>
                             </div>
 
                             <div class="form-group">
                                 <label>Drop-off date</label>
-                                <input type="date" class="form-control" th:field="*{dropoffDate}">
+                                <input id="dropoffDate" type="date" class="form-control" th:field="*{dropoffDate}">
                                 <small class="text-danger" th:if="${#fields.hasErrors('dropoffDate')}" th:errors="*{dropoffDate}"></small>
                             </div>
 
@@ -64,14 +66,13 @@
                                 <input class="form-control" placeholder="09:00" th:field="*{pickupTime}">
                             </div>
 
-                            <!-- ✅ HOURLY üçün lazım ola bilər -->
                             <div class="form-group">
                                 <label>Drop-off time (optional)</label>
                                 <input class="form-control" placeholder="18:00" th:field="*{dropoffTime}">
                             </div>
 
-                            <div class="form-group">
-                                <button class="btn btn-primary">Place Order</button>
+                            <div class="form-group" style="gap:10px; display:flex; flex-wrap:wrap;">
+                                <button id="placeOrderBtn" class="btn btn-primary" type="submit">Place Order</button>
                                 <a th:href="@{/cart}" class="btn btn-outline-secondary">Back to cart</a>
                             </div>
 
@@ -125,6 +126,108 @@
             </div>
         </div>
     </section>
+
+    <script th:inline="javascript">
+        (function(){
+            const form = document.getElementById('checkoutForm');
+            const btn = document.getElementById('placeOrderBtn');
+            const msg = document.getElementById('checkoutMsg');
+
+            const pickup = document.getElementById('pickupDate');
+            const dropoff = document.getElementById('dropoffDate');
+
+            // cart carIds JS-ə
+            const carIds = /*[[${cart != null && cart.items != null ? cart.items.![car.id] : {}}]]*/ [];
+
+            function todayISO(){
+                const d = new Date();
+                const yyyy = d.getFullYear();
+                const mm = String(d.getMonth()+1).padStart(2,'0');
+                const dd = String(d.getDate()).padStart(2,'0');
+                return `${yyyy}-${mm}-${dd}`;
+            }
+
+            function show(type, text){
+                msg.style.display = 'block';
+                msg.className = 'alert ' + type;
+                msg.textContent = text;
+            }
+
+            // UI min dates
+            const t = todayISO();
+            pickup.min = t;
+            dropoff.min = t;
+
+            pickup.addEventListener('change', function(){
+                if (pickup.value){
+                    dropoff.min = pickup.value;
+                    if (dropoff.value && dropoff.value < pickup.value){
+                        dropoff.value = pickup.value;
+                    }
+                } else {
+                    dropoff.min = t;
+                }
+            });
+
+            async function checkAllCarsAvailable(pickupDate, dropoffDate){
+                if (!Array.isArray(carIds) || carIds.length === 0) return { ok: true };
+
+                for (const id of carIds){
+                    if (!id) continue;
+                    const url = `/api/availability/car/${id}?pickupDate=${encodeURIComponent(pickupDate)}&dropoffDate=${encodeURIComponent(dropoffDate)}`;
+                    const res = await fetch(url, { headers: { 'Accept': 'application/json' } });
+                    const data = await res.json().catch(() => null);
+
+                    if (!res.ok){
+                        return { ok:false, message: (data && data.message) ? data.message : 'Availability yoxlanmadı.' };
+                    }
+                    if (!(data && data.available)){
+                        return { ok:false, message: 'Səbətdə olan maşınlardan biri seçilən tarixdə icarədədir.' };
+                    }
+                }
+                return { ok:true };
+            }
+
+            form.addEventListener('submit', async function(e){
+                // front validation + availability check
+                msg.style.display = 'none';
+
+                const p = pickup.value;
+                const d = dropoff.value;
+
+                if (!p || !d){
+                    e.preventDefault();
+                    show('alert-warning', 'Pickup və dropoff tarixlərini seç.');
+                    return;
+                }
+                if (d < p){
+                    e.preventDefault();
+                    show('alert-warning', 'Drop-off pickup-dan əvvəl ola bilməz.');
+                    return;
+                }
+
+                btn.disabled = true;
+                btn.textContent = 'Checking...';
+
+                try{
+                    const result = await checkAllCarsAvailable(p, d);
+                    if (!result.ok){
+                        e.preventDefault();
+                        show('alert-danger', result.message || 'Seçilən tarixdə uyğun deyil.');
+                        return;
+                    }
+                    // ok -> submit davam edir
+                } catch(err){
+                    e.preventDefault();
+                    show('alert-danger', 'Serverə qoşulmaq olmadı.');
+                } finally{
+                    btn.disabled = false;
+                    btn.textContent = 'Place Order';
+                }
+            });
+
+        })();
+    </script>
 
 </div>
 </body>
