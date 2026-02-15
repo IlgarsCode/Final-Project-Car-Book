@@ -1,7 +1,10 @@
 package com.example.demo.controller.web;
 
+import com.example.demo.dto.checkout.TripContext;
 import com.example.demo.dto.enums.PricingRateType;
+import com.example.demo.repository.LocationRepository;
 import com.example.demo.services.CartService;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -9,17 +12,44 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
+
 @Controller
 @RequiredArgsConstructor
 @RequestMapping("/cart")
 public class CartController {
 
     private final CartService cartService;
+    private final LocationRepository locationRepository;
 
     @GetMapping
-    public String cartPage(@AuthenticationPrincipal UserDetails user, Model model) {
+    public String cartPage(@AuthenticationPrincipal UserDetails user,
+                           HttpSession session,
+                           Model model) {
+
         var cart = cartService.getCartForUser(user.getUsername());
         model.addAttribute("cart", cart);
+
+        TripContext ctx = (TripContext) session.getAttribute("TRIP_CTX");
+        model.addAttribute("trip", ctx);
+
+        if (ctx != null) {
+            String pickupName = null;
+            String dropoffName = null;
+
+            if (ctx.getPickupLoc() != null) {
+                pickupName = locationRepository.findById(ctx.getPickupLoc())
+                        .map(l -> l.getName()).orElse(null);
+            }
+            if (ctx.getDropoffLoc() != null) {
+                dropoffName = locationRepository.findById(ctx.getDropoffLoc())
+                        .map(l -> l.getName()).orElse(null);
+            }
+
+            model.addAttribute("pickupName", pickupName);
+            model.addAttribute("dropoffName", dropoffName);
+        }
+
         return "cart";
     }
 
@@ -28,9 +58,28 @@ public class CartController {
                             @RequestParam Long carId,
                             @RequestParam(name = "rateType", defaultValue = "DAILY") PricingRateType rateType,
                             @RequestParam(name = "unitCount", defaultValue = "1") Integer unitCount,
+
+                            // ✅ trip context (optional) - LocalDate elədik ki parse problemi olmasın
+                            @RequestParam(name = "pickupLoc", required = false) Long pickupLoc,
+                            @RequestParam(name = "dropoffLoc", required = false) Long dropoffLoc,
+                            @RequestParam(name = "pickupDate", required = false) LocalDate pickupDate,
+                            @RequestParam(name = "dropoffDate", required = false) LocalDate dropoffDate,
+
+                            HttpSession session,
                             @RequestHeader(value = "Referer", required = false) String referer) {
 
         cartService.addToCart(user.getUsername(), carId, rateType, unitCount);
+
+        // ✅ HƏR YERDƏ 1 ADET SESSION KEY: TRIP_CTX
+        TripContext ctx = (TripContext) session.getAttribute("TRIP_CTX");
+        if (ctx == null) ctx = new TripContext();
+
+        if (pickupLoc != null) ctx.setPickupLoc(pickupLoc);
+        if (dropoffLoc != null) ctx.setDropoffLoc(dropoffLoc);
+        if (pickupDate != null) ctx.setPickupDate(pickupDate);
+        if (dropoffDate != null) ctx.setDropoffDate(dropoffDate);
+
+        session.setAttribute("TRIP_CTX", ctx);
 
         return "redirect:" + (referer != null ? referer : "/cart");
     }
@@ -43,8 +92,10 @@ public class CartController {
     }
 
     @PostMapping("/clear")
-    public String clear(@AuthenticationPrincipal UserDetails user) {
+    public String clear(@AuthenticationPrincipal UserDetails user,
+                        HttpSession session) {
         cartService.clearCart(user.getUsername());
+        session.removeAttribute("TRIP_CTX"); // ✅
         return "redirect:/cart";
     }
 }

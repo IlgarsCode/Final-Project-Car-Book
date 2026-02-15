@@ -1,6 +1,7 @@
 package com.example.demo.controller.web;
 
 import com.example.demo.dto.car.CarReviewCreateDto;
+import com.example.demo.dto.checkout.TripContext;
 import com.example.demo.dto.enums.BannerType;
 import com.example.demo.dto.enums.PricingRateType;
 import com.example.demo.services.BannerService;
@@ -12,6 +13,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+
+import java.time.LocalDate;
 
 @Controller
 @RequiredArgsConstructor
@@ -34,26 +37,46 @@ public class CarController {
     @GetMapping("/car/{slug}")
     public String carSingle(@PathVariable String slug,
                             @RequestParam(name = "rate", required = false) PricingRateType rate,
+
                             @RequestParam(name = "pickupLoc", required = false) Long pickupLoc,
                             @RequestParam(name = "dropoffLoc", required = false) Long dropoffLoc,
                             @RequestParam(name = "pickupDate", required = false) String pickupDate,
                             @RequestParam(name = "dropoffDate", required = false) String dropoffDate,
+
                             @RequestParam(name = "rpage", defaultValue = "0") int rpage,
+                            jakarta.servlet.http.HttpSession session,
                             Model model) {
 
         PricingRateType selected = (rate == null) ? PricingRateType.DAILY : rate;
-
         var car = carService.getCarDetailBySlug(slug, selected);
 
         model.addAttribute("banner", bannerService.getBanner(BannerType.CAR_SINGLE));
         model.addAttribute("car", car);
         model.addAttribute("relatedCars", carService.getRelatedCars(car.getId(), 3));
 
-        // ✅ context-i view-ə ver
-        model.addAttribute("pickupLoc", pickupLoc);
-        model.addAttribute("dropoffLoc", dropoffLoc);
-        model.addAttribute("pickupDate", pickupDate);
-        model.addAttribute("dropoffDate", dropoffDate);
+        // ✅ TRIP_CTX session
+        TripContext ctx = (TripContext) session.getAttribute("TRIP_CTX");
+        if (ctx == null) ctx = new TripContext();
+
+        if (pickupLoc != null) ctx.setPickupLoc(pickupLoc);
+        if (dropoffLoc != null) ctx.setDropoffLoc(dropoffLoc);
+
+        // String gəlir -> LocalDate parse elə (yyyy-MM-dd)
+        try {
+            if (pickupDate != null && !pickupDate.isBlank()) ctx.setPickupDate(LocalDate.parse(pickupDate));
+        } catch (Exception ignored) {}
+        try {
+            if (dropoffDate != null && !dropoffDate.isBlank()) ctx.setDropoffDate(LocalDate.parse(dropoffDate));
+        } catch (Exception ignored) {}
+
+        session.setAttribute("TRIP_CTX", ctx);
+
+        // ✅ HƏM trip ver, HƏM də template-də qalan köhnə dəyişənlər üçün ayrıca ver
+        model.addAttribute("trip", ctx);
+        model.addAttribute("pickupLoc", ctx.getPickupLoc());
+        model.addAttribute("dropoffLoc", ctx.getDropoffLoc());
+        model.addAttribute("pickupDate", ctx.getPickupDate());
+        model.addAttribute("dropoffDate", ctx.getDropoffDate());
 
         var reviewsPage = carReviewService.getActiveReviewsByCarSlug(slug, rpage, 5);
         model.addAttribute("reviewsPage", reviewsPage);

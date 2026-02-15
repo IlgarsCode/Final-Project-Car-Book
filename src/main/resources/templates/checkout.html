@@ -9,7 +9,9 @@
 <body>
 <div layout:fragment="content">
 
-    <section class="hero-wrap hero-wrap-2 js-fullheight" style="background-image: url('/images/bg_3.jpg');" data-stellar-background-ratio="0.5">
+    <section class="hero-wrap hero-wrap-2 js-fullheight"
+             style="background-image: url('/images/bg_3.jpg');"
+             data-stellar-background-ratio="0.5">
         <div class="overlay"></div>
         <div class="container">
             <div class="row no-gutters slider-text js-fullheight align-items-end justify-content-start">
@@ -136,7 +138,6 @@
             const pickup = document.getElementById('pickupDate');
             const dropoff = document.getElementById('dropoffDate');
 
-            // cart carIds JS-ə
             const carIds = /*[[${cart != null && cart.items != null ? cart.items.![car.id] : {}}]]*/ [];
 
             function todayISO(){
@@ -153,7 +154,6 @@
                 msg.textContent = text;
             }
 
-            // UI min dates
             const t = todayISO();
             pickup.min = t;
             dropoff.min = t;
@@ -189,7 +189,6 @@
             }
 
             form.addEventListener('submit', async function(e){
-                // front validation + availability check
                 msg.style.display = 'none';
 
                 const p = pickup.value;
@@ -216,7 +215,6 @@
                         show('alert-danger', result.message || 'Seçilən tarixdə uyğun deyil.');
                         return;
                     }
-                    // ok -> submit davam edir
                 } catch(err){
                     e.preventDefault();
                     show('alert-danger', 'Serverə qoşulmaq olmadı.');

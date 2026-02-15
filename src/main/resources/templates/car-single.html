@@ -90,7 +90,7 @@
 
                             <!-- ✅ Availability block (yalnız context yoxdursa göstər) -->
                             <div class="mt-4"
-                                 th:if="${pickupLoc == null or dropoffLoc == null or pickupDate == null or dropoffDate == null}">
+                                 th:if="${trip == null or trip.pickupLoc == null or trip.dropoffLoc == null or trip.pickupDate == null or trip.dropoffDate == null}">
                                 <div class="availability-card mx-auto" style="max-width:760px;">
                                     <div class="row align-items-end">
                                         <div class="col-md-4">
@@ -118,7 +118,6 @@
                             </div>
 
                         </div>
-
                         <!-- ✅ MAIN BOOK NOW (context post et) -->
                         <div class="d-flex justify-content-center mt-4" style="gap:10px; flex-wrap:wrap;">
                             <form th:action="@{/cart/add}" method="post">

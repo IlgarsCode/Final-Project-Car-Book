@@ -9,7 +9,9 @@
 <body>
 <div layout:fragment="content">
 
-    <section class="hero-wrap hero-wrap-2 js-fullheight" style="background-image: url('/images/bg_3.jpg');" data-stellar-background-ratio="0.5">
+    <section class="hero-wrap hero-wrap-2 js-fullheight"
+             style="background-image: url('/images/bg_3.jpg');"
+             data-stellar-background-ratio="0.5">
         <div class="overlay"></div>
         <div class="container">
             <div class="row no-gutters slider-text js-fullheight align-items-end justify-content-start">
@@ -26,6 +28,28 @@
 
     <section class="ftco-section">
         <div class="container">
+
+            <!-- ✅ Trip summary (SESSION-dan) -->
+            <div th:if="${trip != null}" class="alert alert-secondary" style="border-radius:10px;">
+                <div class="row" style="row-gap:6px;">
+                    <div class="col-md-6">
+                        <strong>Pick-up:</strong>
+                        <span th:text="${pickupName != null ? pickupName : (trip.pickupLoc != null ? trip.pickupLoc : '-') }">-</span>
+                    </div>
+                    <div class="col-md-6">
+                        <strong>Drop-off:</strong>
+                        <span th:text="${dropoffName != null ? dropoffName : (trip.dropoffLoc != null ? trip.dropoffLoc : '-') }">-</span>
+                    </div>
+                    <div class="col-md-6">
+                        <strong>Pick-up date:</strong>
+                        <span th:text="${trip.pickupDate != null ? trip.pickupDate : '-'}">-</span>
+                    </div>
+                    <div class="col-md-6">
+                        <strong>Drop-off date:</strong>
+                        <span th:text="${trip.dropoffDate != null ? trip.dropoffDate : '-'}">-</span>
+                    </div>
+                </div>
+            </div>
 
             <div th:if="${cart == null or cart.items == null or cart.items.empty}" class="alert alert-info">
                 Cart boşdur.
@@ -56,8 +80,10 @@
                                         </div>
 
                                         <div class="pl-3">
-                                            <div class="font-weight-bold" th:text="${it.car != null ? it.car.title : 'Car'}">Car title</div>
-                                            <small class="text-muted" th:text="${it.car != null ? it.car.brand : ''}">Brand</small>
+                                            <div class="font-weight-bold"
+                                                 th:text="${it.car != null ? it.car.title : 'Car'}">Car title</div>
+                                            <small class="text-muted"
+                                                   th:text="${it.car != null ? it.car.brand : ''}">Brand</small>
                                         </div>
                                     </div>
                                 </td>

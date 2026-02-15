@@ -28,4 +28,5 @@ public class CheckoutCreateDto {
 
     private String pickupTime;   // "HH:mm"
     private String dropoffTime;  // "HH:mm"
+
 }
