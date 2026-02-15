@@ -6,6 +6,25 @@
 <head>
     <meta charset="UTF-8">
     <title>Blog Single</title>
+
+    <style>
+        .about-author .bio img.author-avatar{
+            width: 110px;
+            height: 110px;
+            object-fit: cover;
+            border-radius: 6px;
+        }
+
+        /* ✅ testimonial kimi avatar */
+        .comment-list .user-img{
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+    </style>
 </head>
 <body>
 <div layout:fragment="content">
@@ -56,7 +75,7 @@
 
                         <span>
                             <i class="icon-person"></i>
-                            <span th:text="${blog.author}">Admin</span>
+                            <span th:text="${blog.authorName != null ? blog.authorName : blog.author}">Author</span>
                         </span>
                     </div>
 
@@ -70,7 +89,7 @@
                         Bu bloq üçün məzmun əlavə edilməyib.
                     </p>
 
-                    <!-- TAGS (dynamic) -->
+                    <!-- TAGS -->
                     <div class="tag-widget post-tag-container mb-5 mt-5"
                          th:if="${blog.tags != null and !blog.tags.empty}">
                         <div class="tagcloud">
@@ -83,16 +102,7 @@
                         </div>
                     </div>
 
-                    <!-- AUTHOR (profil məlumatı ilə) -->
-                    <style>
-                        .about-author .bio img.author-avatar{
-                            width: 110px;
-                            height: 110px;
-                            object-fit: cover;
-                            border-radius: 6px;
-                        }
-                    </style>
-
+                    <!-- AUTHOR -->
                     <div class="about-author d-flex p-4 bg-light"
                          th:if="${blog.authorName != null}">
                         <div class="bio mr-4">
@@ -109,7 +119,6 @@
                         </div>
                     </div>
 
-
                     <!-- ===== COMMENTS ===== -->
                     <div class="pt-5 mt-5">
 
@@ -119,14 +128,17 @@
 
                         <ul class="comment-list">
 
-                            <li th:if="${#lists.isEmpty(blog.comments)}" style="color:#6c757d;">
+                            <li th:if="${blog.comments == null or #lists.isEmpty(blog.comments)}" style="color:#6c757d;">
                                 Hələ şərh yazılmayıb.
                             </li>
 
-                            <!-- ROOT comments -->
+                            <!-- ✅ ROOT comments -->
                             <li class="comment" th:each="c : ${blog.comments}">
+
                                 <div class="vcard bio">
-                                    <img src="/images/person_1.jpg" alt="Image placeholder">
+                                    <div class="user-img"
+                                         th:style="|background-image:url('${c != null && c.avatarUrl != null ? c.avatarUrl : '/images/person_1.jpg'}')|">
+                                    </div>
                                 </div>
 
                                 <div class="comment-body">
@@ -140,7 +152,7 @@
                                     <p th:text="${c.message}">Mesaj</p>
 
                                     <p>
-                                        <a href="#replyFormBlock"
+                                        <a href="javascript:void(0)"
                                            class="reply"
                                            th:attr="data-parent=${c.id},data-name=${c.fullName}">
                                             Reply
@@ -148,11 +160,14 @@
                                     </p>
                                 </div>
 
-                                <!-- REPLIES (level 1) -->
+                                <!-- ✅ REPLIES level 1 -->
                                 <ul class="children" th:if="${c.replies != null and !c.replies.empty}">
                                     <li class="comment" th:each="r : ${c.replies}">
+
                                         <div class="vcard bio">
-                                            <img src="/images/person_1.jpg" alt="Image placeholder">
+                                            <div class="user-img"
+                                                 th:style="|background-image:url('${r != null && r.avatarUrl != null ? r.avatarUrl : '/images/person_1.jpg'}')|">
+                                            </div>
                                         </div>
 
                                         <div class="comment-body">
@@ -166,7 +181,7 @@
                                             <p th:text="${r.message}">Mesaj</p>
 
                                             <p>
-                                                <a href="#replyFormBlock"
+                                                <a href="javascript:void(0)"
                                                    class="reply"
                                                    th:attr="data-parent=${r.id},data-name=${r.fullName}">
                                                     Reply
@@ -174,27 +189,34 @@
                                             </p>
                                         </div>
 
-                                        <!-- level 2 replies -->
+                                        <!-- ✅ level 2 -->
                                         <ul class="children" th:if="${r.replies != null and !r.replies.empty}">
                                             <li class="comment" th:each="r2 : ${r.replies}">
+
                                                 <div class="vcard bio">
-                                                    <img src="/images/person_1.jpg" alt="Image placeholder">
+                                                    <div class="user-img"
+                                                         th:style="|background-image:url('${r2 != null && r2.avatarUrl != null ? r2.avatarUrl : '/images/person_1.jpg'}')|">
+                                                    </div>
                                                 </div>
 
                                                 <div class="comment-body">
                                                     <h3 th:text="${r2.fullName}">Ad</h3>
+
                                                     <div class="meta"
-                                                         th:text="${#temporals.format(r2.createdAt, 'dd MMMM, yyyy HH:mm')}"></div>
+                                                         th:text="${#temporals.format(r2.createdAt, 'dd MMMM, yyyy HH:mm')}">
+                                                    </div>
+
                                                     <p th:text="${r2.message}"></p>
 
                                                     <p>
-                                                        <a href="#replyFormBlock"
+                                                        <a href="javascript:void(0)"
                                                            class="reply"
                                                            th:attr="data-parent=${r2.id},data-name=${r2.fullName}">
                                                             Reply
                                                         </a>
                                                     </p>
                                                 </div>
+
                                             </li>
                                         </ul>
 
@@ -205,8 +227,8 @@
                         </ul>
                         <!-- END comment-list -->
 
-                        <!-- ===== REPLY FORM (yalnız message) ===== -->
-                        <div class="comment-form-wrap pt-5" id="replyFormBlock">
+                        <!-- ===== REPLY FORM (gizli) ===== -->
+                        <div class="comment-form-wrap pt-5" id="replyFormBlock" style="display:none;" th:if="${isLoggedIn}">
                             <h3 class="mb-4">Reply</h3>
 
                             <div class="alert alert-info py-2" id="replyInfo" style="display:none;">
@@ -240,42 +262,37 @@
                                     <input type="submit" value="Post Reply" class="btn py-3 px-4 btn-primary">
                                     <a class="btn btn-outline-secondary py-3 px-4" href="#comments">Back to comments</a>
                                 </div>
-
-                                <div class="text-muted" style="font-size:13px;">
-                                    Reply üçün giriş etməlisən. (Login olmadan submit etsən 401 alacaqsan)
-                                </div>
                             </form>
                         </div>
 
-                        <!-- ===== COMMENT FORM (ad + email + message) ===== -->
+                        <!-- Reply üçün login deyilsə -->
+                        <div class="comment-form-wrap pt-5" th:if="${!isLoggedIn}">
+                            <div class="alert alert-warning">
+                                Reply yazmaq üçün giriş etməlisən.
+                                <a th:href="@{/auth/login}">Login</a>
+                            </div>
+                        </div>
+
+                        <!-- ===== COMMENT FORM (yalnız message) ===== -->
                         <div class="comment-form-wrap pt-5" id="commentForm">
                             <h3 class="mb-4">Leave a comment</h3>
 
-                            <form th:action="@{'/blog/' + ${blog.id} + '/comment'}"
+                            <div class="alert alert-warning" th:if="${!isLoggedIn}">
+                                Şərh yazmaq üçün giriş etməlisən.
+                                <a th:href="@{/auth/login}">Login</a>
+                            </div>
+
+                            <form th:if="${isLoggedIn}"
+                                  th:action="@{'/blog/' + ${blog.id} + '/comment'}"
                                   th:object="${commentForm}"
                                   method="post"
                                   class="p-5 bg-light">
 
                                 <div class="form-group">
-                                    <label for="name">Name *</label>
-                                    <input type="text" class="form-control" id="name" th:field="*{fullName}">
-                                    <small class="text-danger"
-                                           th:if="${#fields.hasErrors('fullName')}"
-                                           th:errors="*{fullName}"></small>
-                                </div>
-
-                                <div class="form-group">
-                                    <label for="email">Email *</label>
-                                    <input type="email" class="form-control" id="email" th:field="*{email}">
-                                    <small class="text-danger"
-                                           th:if="${#fields.hasErrors('email')}"
-                                           th:errors="*{email}"></small>
-                                </div>
-
-                                <div class="form-group">
-                                    <label for="message">Message</label>
+                                    <label for="message">Message *</label>
                                     <textarea id="message" cols="30" rows="8" class="form-control"
                                               th:field="*{message}"></textarea>
+
                                     <small class="text-danger"
                                            th:if="${#fields.hasErrors('message')}"
                                            th:errors="*{message}"></small>
@@ -285,6 +302,9 @@
                                     <input type="submit" value="Post Comment" class="btn py-3 px-4 btn-primary">
                                 </div>
 
+                                <div class="text-muted" style="font-size:13px;">
+                                    Ad və email profilindən avtomatik götürülür.
+                                </div>
                             </form>
                         </div>
 
@@ -323,7 +343,7 @@
                     <div class="sidebar-box ftco-animate">
                         <h3>Recent Blog</h3>
 
-                        <div th:if="${#lists.isEmpty(recentBlogs)}" style="color:#6c757d;">
+                        <div th:if="${recentBlogs == null or #lists.isEmpty(recentBlogs)}" style="color:#6c757d;">
                             Hələ başqa blog yoxdur.
                         </div>
 
@@ -369,13 +389,16 @@
     <!-- ✅ Reply JS -->
     <script>
         (function () {
+            const replyBlock = document.getElementById('replyFormBlock');
             const parentField = document.getElementById('replyParentId');
             const replyInfo = document.getElementById('replyInfo');
             const replyText = document.getElementById('replyText');
             const cancelReply = document.getElementById('cancelReply');
 
             document.querySelectorAll('a.reply').forEach(a => {
-                a.addEventListener('click', function () {
+                a.addEventListener('click', function (e) {
+                    e.preventDefault();
+
                     const parentId = this.getAttribute('data-parent');
                     const name = this.getAttribute('data-name') || '';
 
@@ -385,6 +408,11 @@
                         replyText.textContent = 'Replying to: ' + name;
                         replyInfo.style.display = 'block';
                     }
+
+                    if (replyBlock) {
+                        replyBlock.style.display = 'block';
+                        replyBlock.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    }
                 });
             });
 
@@ -393,6 +421,7 @@
                     if (parentField) parentField.value = '';
                     if (replyInfo) replyInfo.style.display = 'none';
                     if (replyText) replyText.textContent = '';
+                    if (replyBlock) replyBlock.style.display = 'none';
                 });
             }
         })();

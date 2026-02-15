@@ -14,6 +14,8 @@ public class BlogCommentDto {
     private String message;
     private LocalDateTime createdAt;
 
+    private String avatarUrl;
+
     // ✅ reply-lar
     private List<BlogCommentDto> replies;
 }

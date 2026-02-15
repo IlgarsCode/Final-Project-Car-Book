@@ -75,7 +75,7 @@ public class BlogServiceImpl implements BlogService {
         dto.setImageUrl(blog.getImageUrl());
         dto.setContent(blog.getContent());
 
-        // ✅ user tap: əvvəl authorId, sonra email
+        // ✅ author məlumatları
         var uOpt = Optional.<com.example.demo.model.User>empty();
 
         if (blog.getAuthorId() != null) {
@@ -89,7 +89,7 @@ public class BlogServiceImpl implements BlogService {
             dto.setAuthorName((u.getFullName() != null && !u.getFullName().isBlank()) ? u.getFullName().trim() : u.getEmail());
             dto.setAuthorAvatarUrl((u.getPhotoUrl() != null && !u.getPhotoUrl().isBlank()) ? u.getPhotoUrl() : "/images/person_1.jpg");
             dto.setAuthorBio((u.getBio() != null && !u.getBio().isBlank()) ? u.getBio().trim() : "CarBook istifadəçisi");
-            dto.setAuthor(u.getEmail()); // üst meta-da göstərəcəksənsə
+            dto.setAuthor(u.getEmail());
         } else {
             dto.setAuthorName("CarBook istifadəçisi");
             dto.setAuthorAvatarUrl("/images/person_1.jpg");
@@ -97,7 +97,7 @@ public class BlogServiceImpl implements BlogService {
             dto.setAuthor(blog.getAuthor());
         }
 
-        // tags
+        // ✅ tags
         var tags = (blog.getTags() == null) ? List.<TagDto>of()
                 : blog.getTags().stream()
                 .filter(t -> Boolean.TRUE.equals(t.getIsActive()))
@@ -109,28 +109,77 @@ public class BlogServiceImpl implements BlogService {
                 }).toList();
         dto.setTags(tags);
 
-        // comments tree ... (səndəki kimi saxla)
         var all = blogCommentRepository.findAllByBlog_IdAndIsActiveTrueOrderByCreatedAtAsc(id);
-        var map = new LinkedHashMap<Long, BlogCommentDto>();
+
+// 1) comment-lər üçün email set
+        Set<String> emails = new HashSet<>();
         for (var c : all) {
+            if (c.getEmail() != null && !c.getEmail().isBlank()) {
+                emails.add(c.getEmail().trim().toLowerCase());
+            }
+        }
+
+// 2) email -> avatar xəritəsi (batch)
+        Map<String, String> avatarByEmail = new HashMap<>();
+        if (!emails.isEmpty()) {
+            List<com.example.demo.model.User> users = userRepository.findAllByEmailLowerIn(emails);
+            for (com.example.demo.model.User u : users) {
+                if (u.getEmail() == null) continue;
+
+                String em = u.getEmail().trim().toLowerCase();
+                String avatar = (u.getPhotoUrl() != null && !u.getPhotoUrl().isBlank())
+                        ? u.getPhotoUrl()
+                        : "/images/person_1.jpg";
+
+                avatarByEmail.put(em, avatar);
+            }
+        }
+
+// 3) id -> dto map (NULL element YOX)
+        Map<Long, BlogCommentDto> map = new LinkedHashMap<>();
+        for (var c : all) {
+            if (c == null || c.getId() == null) continue;
+
             BlogCommentDto cd = new BlogCommentDto();
             cd.setId(c.getId());
             cd.setFullName(c.getFullName());
             cd.setMessage(c.getMessage());
             cd.setCreatedAt(c.getCreatedAt());
             cd.setReplies(new ArrayList<>());
+
+            String em = (c.getEmail() == null) ? null : c.getEmail().trim().toLowerCase();
+            String avatar = (em != null && avatarByEmail.containsKey(em))
+                    ? avatarByEmail.get(em)
+                    : "/images/person_1.jpg";
+            cd.setAvatarUrl(avatar);
+
             map.put(c.getId(), cd);
         }
-        var roots = new ArrayList<BlogCommentDto>();
+
+// 4) tree yığ (NULL salma)
+        List<BlogCommentDto> roots = new ArrayList<>();
         for (var c : all) {
-            var current = map.get(c.getId());
-            if (c.getParent() == null) roots.add(current);
-            else {
-                var parentDto = map.get(c.getParent().getId());
-                if (parentDto != null) parentDto.getReplies().add(current);
-                else roots.add(current);
+            if (c == null || c.getId() == null) continue;
+
+            BlogCommentDto current = map.get(c.getId());
+            if (current == null) continue;
+
+            if (c.getParent() == null) {
+                roots.add(current);
+            } else {
+                Long parentId = c.getParent().getId();
+                BlogCommentDto parentDto = (parentId == null) ? null : map.get(parentId);
+
+                if (parentDto != null) {
+                    parentDto.getReplies().add(current);
+                } else {
+                    // parent tapılmadısa, root kimi atırıq (amma NULL yox)
+                    roots.add(current);
+                }
             }
         }
+
+// sort
         roots.sort((a, b) -> b.getCreatedAt().compareTo(a.getCreatedAt()));
         dto.setComments(roots);
         dto.setCommentCount(all.size());

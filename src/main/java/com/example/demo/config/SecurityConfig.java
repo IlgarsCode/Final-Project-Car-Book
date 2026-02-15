@@ -83,11 +83,12 @@ public class SecurityConfig {
                         .requestMatchers("/dashboard/**").hasRole("ADMIN")
 
 
-// ✅ USER (login required) — bunlar permitAll-dan YUXARIDA olmalıdır
                                 .requestMatchers(
                                         "/blog/new",
                                         "/my-blogs",
                                         "/my-blogs/**",
+                                        "/blog/*/comment",
+                                        "/blog/*/reply",
                                         "/profile/**",
                                         "/cart/**",
                                         "/booking/**",

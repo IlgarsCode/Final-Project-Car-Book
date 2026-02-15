@@ -23,6 +23,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
 
 import java.time.LocalDateTime;
 
@@ -146,8 +147,12 @@ public class BlogController {
     // BLOG DETAIL
     // =========================
     @GetMapping("/blog/{id}")
-    public String blogSingle(@PathVariable Long id, Model model) {
-        fillBlogSingleModel(id, model, new BlogCommentCreateDto(), new BlogReplyCreateDto(), null, null);
+    public String blogSingle(@PathVariable Long id, Model model, Authentication auth) {
+        boolean isLoggedIn = auth != null
+                && auth.isAuthenticated()
+                && !(auth instanceof AnonymousAuthenticationToken);
+
+        fillBlogSingleModel(id, model, new BlogCommentCreateDto(), new BlogReplyCreateDto(), null, null, isLoggedIn);
         return "blog-single";
     }
 
@@ -155,12 +160,22 @@ public class BlogController {
     @PostMapping("/blog/{id}/comment")
     public String addComment(
             @PathVariable Long id,
+            @AuthenticationPrincipal UserDetails user,
             @Valid @ModelAttribute("commentForm") BlogCommentCreateDto form,
             BindingResult br,
-            Model model
+            Model model,
+            Authentication auth
     ) {
+        if (user == null) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Şərh üçün giriş etməlisən");
+        }
+
         if (br.hasErrors()) {
-            fillBlogSingleModel(id, model, form, new BlogReplyCreateDto(), null, null);
+            boolean isLoggedIn = auth != null
+                    && auth.isAuthenticated()
+                    && !(auth instanceof AnonymousAuthenticationToken);
+
+            fillBlogSingleModel(id, model, form, new BlogReplyCreateDto(), null, null, isLoggedIn);
             return "blog-single";
         }
 
@@ -171,11 +186,21 @@ public class BlogController {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Blog aktiv deyil");
         }
 
+        var u = userRepository.findByEmailIgnoreCase(user.getUsername())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User tapılmadı"));
+
+        String fullName = (u.getFullName() != null && !u.getFullName().isBlank())
+                ? u.getFullName().trim()
+                : u.getEmail();
+
         BlogComment comment = new BlogComment();
         comment.setBlog(blog);
         comment.setParent(null);
-        comment.setFullName(form.getFullName().trim());
-        comment.setEmail(form.getEmail().trim());
+
+        // ✅ profildən avtomatik
+        comment.setFullName(fullName);
+        comment.setEmail(u.getEmail());
+
         comment.setMessage(form.getMessage().trim());
         comment.setCreatedAt(LocalDateTime.now());
         comment.setIsActive(true);
@@ -192,14 +217,19 @@ public class BlogController {
             @AuthenticationPrincipal UserDetails user,
             @Valid @ModelAttribute("replyForm") BlogReplyCreateDto form,
             BindingResult br,
-            Model model
+            Model model,
+            Authentication auth
     ) {
         if (user == null) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Reply üçün giriş etməlisən");
         }
 
+        boolean isLoggedIn = auth != null
+                && auth.isAuthenticated()
+                && !(auth instanceof AnonymousAuthenticationToken);
+
         if (br.hasErrors()) {
-            fillBlogSingleModel(id, model, new BlogCommentCreateDto(), form, null, null);
+            fillBlogSingleModel(id, model, new BlogCommentCreateDto(), form, null, null, isLoggedIn);
             return "blog-single";
         }
 
@@ -240,7 +270,8 @@ public class BlogController {
             BlogCommentCreateDto commentForm,
             BlogReplyCreateDto replyForm,
             String search,
-            String tag
+            String tag,
+            boolean isLoggedIn
     ) {
         model.addAttribute("blog", blogService.getBlogDetail(id));
         model.addAttribute("banner", bannerService.getBanner(BannerType.BLOG_SINGLE));
@@ -251,5 +282,8 @@ public class BlogController {
 
         model.addAttribute("search", search);
         model.addAttribute("tag", tag);
+
+        // ✅ UI üçün
+        model.addAttribute("isLoggedIn", isLoggedIn);
     }
 }
