@@ -58,17 +58,39 @@
                                 </span>
                             </div>
 
+                            <!-- ✅ RATE SWITCH (context itmesin) -->
                             <div class="d-flex justify-content-center mt-3" style="gap:10px; flex-wrap:wrap;">
                                 <a class="btn btn-outline-primary btn-sm"
-                                   th:href="@{'/car/' + ${car.slug} + '?rate=HOURLY'}">Hourly</a>
+                                   th:href="@{'/car/' + ${car.slug}(
+                                        rate='HOURLY',
+                                        pickupLoc=${pickupLoc},
+                                        dropoffLoc=${dropoffLoc},
+                                        pickupDate=${pickupDate},
+                                        dropoffDate=${dropoffDate}
+                                   )}">Hourly</a>
+
                                 <a class="btn btn-outline-primary btn-sm"
-                                   th:href="@{'/car/' + ${car.slug} + '?rate=DAILY'}">Daily</a>
+                                   th:href="@{'/car/' + ${car.slug}(
+                                        rate='DAILY',
+                                        pickupLoc=${pickupLoc},
+                                        dropoffLoc=${dropoffLoc},
+                                        pickupDate=${pickupDate},
+                                        dropoffDate=${dropoffDate}
+                                   )}">Daily</a>
+
                                 <a class="btn btn-outline-primary btn-sm"
-                                   th:href="@{'/car/' + ${car.slug} + '?rate=LEASING'}">Leasing</a>
+                                   th:href="@{'/car/' + ${car.slug}(
+                                        rate='LEASING',
+                                        pickupLoc=${pickupLoc},
+                                        dropoffLoc=${dropoffLoc},
+                                        pickupDate=${pickupDate},
+                                        dropoffDate=${dropoffDate}
+                                   )}">Leasing</a>
                             </div>
 
-                            <!-- Availability block -->
-                            <div class="mt-4">
+                            <!-- ✅ Availability block (yalnız context yoxdursa göstər) -->
+                            <div class="mt-4"
+                                 th:if="${pickupLoc == null or dropoffLoc == null or pickupDate == null or dropoffDate == null}">
                                 <div class="availability-card mx-auto" style="max-width:760px;">
                                     <div class="row align-items-end">
                                         <div class="col-md-4">
@@ -97,12 +119,20 @@
 
                         </div>
 
+                        <!-- ✅ MAIN BOOK NOW (context post et) -->
                         <div class="d-flex justify-content-center mt-4" style="gap:10px; flex-wrap:wrap;">
                             <form th:action="@{/cart/add}" method="post">
                                 <input type="hidden" name="carId" th:value="${car.id}">
                                 <input type="hidden" name="rateType"
                                        th:value="${car.selectedRate != null ? car.selectedRate : 'DAILY'}">
                                 <input type="hidden" name="unitCount" value="1">
+
+                                <!-- booking context -->
+                                <input type="hidden" name="pickupLoc" th:value="${pickupLoc}">
+                                <input type="hidden" name="dropoffLoc" th:value="${dropoffLoc}">
+                                <input type="hidden" name="pickupDate" th:value="${pickupDate}">
+                                <input type="hidden" name="dropoffDate" th:value="${dropoffDate}">
+
                                 <button type="submit" class="btn btn-primary py-2 px-4">Book now</button>
                             </form>
 
@@ -644,7 +674,13 @@
 
                         <div class="text">
                             <h2 class="mb-0">
-                                <a th:href="@{'/car/' + ${rc.slug}}"
+                                <a th:href="@{'/car/' + ${rc.slug}(
+                                       rate=${car.selectedRate != null ? car.selectedRate : 'DAILY'},
+                                       pickupLoc=${pickupLoc},
+                                       dropoffLoc=${dropoffLoc},
+                                       pickupDate=${pickupDate},
+                                       dropoffDate=${dropoffDate}
+                                )}"
                                    th:text="${rc.title}">Car</a>
                             </h2>
 
@@ -662,10 +698,23 @@
                                     <input type="hidden" name="rateType"
                                            th:value="${car.selectedRate != null ? car.selectedRate : 'DAILY'}">
                                     <input type="hidden" name="unitCount" value="1">
+
+                                    <!-- booking context -->
+                                    <input type="hidden" name="pickupLoc" th:value="${pickupLoc}">
+                                    <input type="hidden" name="dropoffLoc" th:value="${dropoffLoc}">
+                                    <input type="hidden" name="pickupDate" th:value="${pickupDate}">
+                                    <input type="hidden" name="dropoffDate" th:value="${dropoffDate}">
+
                                     <button type="submit" class="btn btn-primary py-2">Book now</button>
                                 </form>
 
-                                <a th:href="@{'/car/' + ${rc.slug}}"
+                                <a th:href="@{'/car/' + ${rc.slug}(
+                                       rate=${car.selectedRate != null ? car.selectedRate : 'DAILY'},
+                                       pickupLoc=${pickupLoc},
+                                       dropoffLoc=${dropoffLoc},
+                                       pickupDate=${pickupDate},
+                                       dropoffDate=${dropoffDate}
+                                )}"
                                    class="btn btn-secondary py-2 ml-1">Details</a>
                             </div>
                         </div>
@@ -687,6 +736,10 @@
             const btnEl = document.getElementById('avBtn');
             const msgEl = document.getElementById('avMsg');
 
+            if (!pickupEl || !dropoffEl || !btnEl || !msgEl) {
+                return; // availability block gizlidirsə elementlər yoxdur
+            }
+
             function todayISO(){
                 const d = new Date();
                 const yyyy = d.getFullYear();
@@ -701,7 +754,6 @@
                 msgEl.textContent = text;
             }
 
-            // set min dates
             const t = todayISO();
             pickupEl.min = t;
             dropoffEl.min = t;

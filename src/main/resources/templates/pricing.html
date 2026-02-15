@@ -54,23 +54,21 @@
                           class="d-flex align-items-center flex-wrap"
                           style="gap:10px;">
 
-                        <select name="category" class="form-control" style="max-width:260px;">
-                            <option value=""
-                                    th:selected="${selectedCategory == null or selectedCategory == ''}">
-                                All Categories
-                            </option>
+                        <!-- ✅ booking context itmesin -->
+                        <input type="hidden" name="pickupLoc" th:value="${pickupLoc}">
+                        <input type="hidden" name="dropoffLoc" th:value="${dropoffLoc}">
+                        <input type="hidden" name="pickupDate" th:value="${pickupDate}">
+                        <input type="hidden" name="dropoffDate" th:value="${dropoffDate}">
 
-                            <option th:each="cc : ${carCategories}"
-                                    th:value="${cc.slug}"
-                                    th:text="${cc.name + ' (' + cc.carCount + ')'}"
-                                    th:selected="${selectedCategory == cc.slug}">
-                            </option>
+                        <select name="category" class="form-control" style="max-width:260px;">
+                            ...
                         </select>
 
                         <button class="btn btn-primary" type="submit">Filter</button>
 
+                        <!-- ✅ Reset də context itirməsin -->
                         <a class="btn btn-outline-secondary"
-                           th:href="@{/pricing}"
+                           th:href="@{/pricing(pickupLoc=${pickupLoc}, dropoffLoc=${dropoffLoc}, pickupDate=${pickupDate}, dropoffDate=${dropoffDate})}"
                            th:if="${selectedCategory != null and selectedCategory != ''}">
                             Reset
                         </a>
@@ -127,15 +125,26 @@
                                 <!-- PER HOUR -->
                                 <td class="price">
                                     <p class="btn-custom">
-                                        <a th:href="@{'/car/' + ${row.carSlug} + '?rate=HOURLY'}">Details</a>
+                                        <a th:href="@{'/car/' + ${row.carSlug}(
+        rate='HOURLY',
+        pickupLoc=${pickupLoc},
+        dropoffLoc=${dropoffLoc},
+        pickupDate=${pickupDate},
+        dropoffDate=${dropoffDate}
+  )}">Details</a>
                                     </p>
 
-                                    <!-- ✅ Book now (HOURLY) -->
                                     <form th:action="@{/cart/add}" method="post" style="margin:0 0 10px 0;">
                                         <input type="hidden" name="carId" th:value="${row.carId}">
                                         <input type="hidden" name="rateType" value="HOURLY">
-                                        <!-- unitCount: burada default 1 saxlayırıq -->
                                         <input type="hidden" name="unitCount" value="1">
+
+                                        <!-- ✅ booking context -->
+                                        <input type="hidden" name="pickupLoc" th:value="${pickupLoc}">
+                                        <input type="hidden" name="dropoffLoc" th:value="${dropoffLoc}">
+                                        <input type="hidden" name="pickupDate" th:value="${pickupDate}">
+                                        <input type="hidden" name="dropoffDate" th:value="${dropoffDate}">
+
                                         <button type="submit" class="btn btn-primary btn-sm">Book now</button>
                                     </form>
 
@@ -158,14 +167,25 @@
                                 <!-- PER DAY -->
                                 <td class="price">
                                     <p class="btn-custom">
-                                        <a th:href="@{'/car/' + ${row.carSlug} + '?rate=DAILY'}">Details</a>
+                                        <a th:href="@{'/car/' + ${row.carSlug}(
+        rate='DAILY',
+        pickupLoc=${pickupLoc},
+        dropoffLoc=${dropoffLoc},
+        pickupDate=${pickupDate},
+        dropoffDate=${dropoffDate}
+  )}">Details</a>
                                     </p>
 
-                                    <!-- ✅ Book now (DAILY) -->
                                     <form th:action="@{/cart/add}" method="post" style="margin:0 0 10px 0;">
                                         <input type="hidden" name="carId" th:value="${row.carId}">
                                         <input type="hidden" name="rateType" value="DAILY">
                                         <input type="hidden" name="unitCount" value="1">
+
+                                        <input type="hidden" name="pickupLoc" th:value="${pickupLoc}">
+                                        <input type="hidden" name="dropoffLoc" th:value="${dropoffLoc}">
+                                        <input type="hidden" name="pickupDate" th:value="${pickupDate}">
+                                        <input type="hidden" name="dropoffDate" th:value="${dropoffDate}">
+
                                         <button type="submit" class="btn btn-primary btn-sm">Book now</button>
                                     </form>
 
@@ -183,14 +203,25 @@
                                 <!-- LEASING -->
                                 <td class="price">
                                     <p class="btn-custom">
-                                        <a th:href="@{'/car/' + ${row.carSlug} + '?rate=LEASING'}">Details</a>
+                                        <a th:href="@{'/car/' + ${row.carSlug}(
+        rate='LEASING',
+        pickupLoc=${pickupLoc},
+        dropoffLoc=${dropoffLoc},
+        pickupDate=${pickupDate},
+        dropoffDate=${dropoffDate}
+  )}">Details</a>
                                     </p>
 
-                                    <!-- ✅ Book now (LEASING) -->
                                     <form th:action="@{/cart/add}" method="post" style="margin:0 0 10px 0;">
                                         <input type="hidden" name="carId" th:value="${row.carId}">
                                         <input type="hidden" name="rateType" value="LEASING">
                                         <input type="hidden" name="unitCount" value="1">
+
+                                        <input type="hidden" name="pickupLoc" th:value="${pickupLoc}">
+                                        <input type="hidden" name="dropoffLoc" th:value="${dropoffLoc}">
+                                        <input type="hidden" name="pickupDate" th:value="${pickupDate}">
+                                        <input type="hidden" name="dropoffDate" th:value="${dropoffDate}">
+
                                         <button type="submit" class="btn btn-primary btn-sm">Book now</button>
                                     </form>
 

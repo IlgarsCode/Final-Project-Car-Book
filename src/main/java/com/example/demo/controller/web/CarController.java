@@ -34,6 +34,10 @@ public class CarController {
     @GetMapping("/car/{slug}")
     public String carSingle(@PathVariable String slug,
                             @RequestParam(name = "rate", required = false) PricingRateType rate,
+                            @RequestParam(name = "pickupLoc", required = false) Long pickupLoc,
+                            @RequestParam(name = "dropoffLoc", required = false) Long dropoffLoc,
+                            @RequestParam(name = "pickupDate", required = false) String pickupDate,
+                            @RequestParam(name = "dropoffDate", required = false) String dropoffDate,
                             @RequestParam(name = "rpage", defaultValue = "0") int rpage,
                             Model model) {
 
@@ -44,6 +48,12 @@ public class CarController {
         model.addAttribute("banner", bannerService.getBanner(BannerType.CAR_SINGLE));
         model.addAttribute("car", car);
         model.addAttribute("relatedCars", carService.getRelatedCars(car.getId(), 3));
+
+        // ✅ context-i view-ə ver
+        model.addAttribute("pickupLoc", pickupLoc);
+        model.addAttribute("dropoffLoc", dropoffLoc);
+        model.addAttribute("pickupDate", pickupDate);
+        model.addAttribute("dropoffDate", dropoffDate);
 
         var reviewsPage = carReviewService.getActiveReviewsByCarSlug(slug, rpage, 5);
         model.addAttribute("reviewsPage", reviewsPage);
