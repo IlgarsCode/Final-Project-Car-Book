@@ -15,7 +15,7 @@
 
   <div class="card shadow mb-4">
     <div class="card-body">
-      <form th:action="@{/dashboard/blog-comments}" method="get">
+      <form th:action="@{/dashboard/blog-comment}" method="get">
         <div class="form-row">
 
           <div class="form-group col-md-6">
@@ -124,27 +124,27 @@
 
           <td>
             <form th:if="${r.isActive == true}"
-                  th:action="@{/dashboard/blog-comments/deactivate/{id}(id=${r.id})}"
+                  th:action="@{/dashboard/blog-comment/deactivate/{id}(id=${r.id})}"
                   method="post" style="display:inline;">
               <input type="hidden" name="redirect"
-                     th:value="@{/dashboard/blog-comments(page=${currentPage},size=${size},q=${q},blogId=${blogId},active=${active},rootOnly=${rootOnly})}"/>
+                     th:value="@{/dashboard/blog-comment(page=${currentPage},size=${size},q=${q},blogId=${blogId},active=${active},rootOnly=${rootOnly})}"/>
               <button class="btn btn-sm btn-warning"
                       onclick="return confirm('Deactivate this comment?')">Deactivate</button>
             </form>
 
             <form th:if="${r.isActive != true}"
-                  th:action="@{/dashboard/blog-comments/activate/{id}(id=${r.id})}"
+                  th:action="@{/dashboard/blog-comment/activate/{id}(id=${r.id})}"
                   method="post" style="display:inline;">
               <input type="hidden" name="redirect"
-                     th:value="@{/dashboard/blog-comments(page=${currentPage},size=${size},q=${q},blogId=${blogId},active=${active},rootOnly=${rootOnly})}"/>
+                     th:value="@{/dashboard/blog-comment(page=${currentPage},size=${size},q=${q},blogId=${blogId},active=${active},rootOnly=${rootOnly})}"/>
               <button class="btn btn-sm btn-success"
                       onclick="return confirm('Activate this comment?')">Activate</button>
             </form>
 
-            <form th:action="@{/dashboard/blog-comments/hard-delete/{id}(id=${r.id})}"
+            <form th:action="@{/dashboard/blog-comment/hard-delete/{id}(id=${r.id})}"
                   method="post" style="display:inline;">
               <input type="hidden" name="redirect"
-                     th:value="@{/dashboard/blog-comments(page=${currentPage},size=${size},q=${q},blogId=${blogId},active=${active},rootOnly=${rootOnly})}"/>
+                     th:value="@{/dashboard/blog-comment(page=${currentPage},size=${size},q=${q},blogId=${blogId},active=${active},rootOnly=${rootOnly})}"/>
               <button class="btn btn-sm btn-danger"
                       onclick="return confirm('HARD DELETE? Geri qaytarılmır!')">Hard Delete</button>
             </form>
@@ -159,21 +159,21 @@
             <ul>
               <li th:classappend="${currentPage == 1} ? 'disabled'">
                 <a th:if="${currentPage > 1}"
-                   th:href="@{/dashboard/blog-comments(page=${currentPage - 1},size=${size},q=${q},blogId=${blogId},active=${active},rootOnly=${rootOnly})}">&lt;</a>
+                   th:href="@{/dashboard/blog-comment(page=${currentPage - 1},size=${size},q=${q},blogId=${blogId},active=${active},rootOnly=${rootOnly})}">&lt;</a>
                 <span th:if="${currentPage == 1}">&lt;</span>
               </li>
 
               <li th:each="p : ${#numbers.sequence(1, totalPages)}"
                   th:classappend="${p == currentPage} ? 'active'">
                 <a th:if="${p != currentPage}"
-                   th:href="@{/dashboard/blog-comments(page=${p},size=${size},q=${q},blogId=${blogId},active=${active},rootOnly=${rootOnly})}"
+                   th:href="@{/dashboard/blog-comment(page=${p},size=${size},q=${q},blogId=${blogId},active=${active},rootOnly=${rootOnly})}"
                    th:text="${p}">1</a>
                 <span th:if="${p == currentPage}" th:text="${p}">1</span>
               </li>
 
               <li th:classappend="${currentPage == totalPages} ? 'disabled'">
                 <a th:if="${currentPage < totalPages}"
-                   th:href="@{/dashboard/blog-comments(page=${currentPage + 1},size=${size},q=${q},blogId=${blogId},active=${active},rootOnly=${rootOnly})}">&gt;</a>
+                   th:href="@{/dashboard/blog-comment(page=${currentPage + 1},size=${size},q=${q},blogId=${blogId},active=${active},rootOnly=${rootOnly})}">&gt;</a>
                 <span th:if="${currentPage == totalPages}">&gt;</span>
               </li>
             </ul>

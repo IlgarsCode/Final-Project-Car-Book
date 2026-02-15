@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 
 @Controller
 @RequiredArgsConstructor
-@RequestMapping("/dashboard/blog-comments")
+@RequestMapping("/dashboard/blog-comment")
 public class DashboardBlogCommentController {
 
     private final BlogCommentAdminService blogCommentAdminService;
@@ -48,21 +48,21 @@ public class DashboardBlogCommentController {
 
     @PostMapping("/deactivate/{id}")
     public String deactivate(@PathVariable Long id,
-                             @RequestParam(name = "redirect", required = false, defaultValue = "/dashboard/blog-comments") String redirect) {
+                             @RequestParam(name = "redirect", required = false, defaultValue = "/dashboard/blog-comment") String redirect) {
         blogCommentAdminService.setActive(id, false);
         return "redirect:" + redirect;
     }
 
     @PostMapping("/activate/{id}")
     public String activate(@PathVariable Long id,
-                           @RequestParam(name = "redirect", required = false, defaultValue = "/dashboard/blog-comments") String redirect) {
+                           @RequestParam(name = "redirect", required = false, defaultValue = "/dashboard/blog-comment") String redirect) {
         blogCommentAdminService.setActive(id, true);
         return "redirect:" + redirect;
     }
 
     @PostMapping("/hard-delete/{id}")
     public String hardDelete(@PathVariable Long id,
-                             @RequestParam(name = "redirect", required = false, defaultValue = "/dashboard/blog-comments") String redirect) {
+                             @RequestParam(name = "redirect", required = false, defaultValue = "/dashboard/blog-comment") String redirect) {
         blogCommentAdminService.hardDelete(id);
         return "redirect:" + redirect;
     }
