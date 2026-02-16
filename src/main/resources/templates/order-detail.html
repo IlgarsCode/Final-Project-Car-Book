@@ -19,7 +19,6 @@
                         <span>Order <i class="ion-ios-arrow-forward"></i></span>
                     </p>
 
-                    <!-- ✅ DÜZƏLİŞ: user üçün Order # -->
                     <h1 class="mb-2 bread">
                         Order #<span th:text="${order.userOrderNo}">1</span>
                     </h1>
@@ -70,8 +69,23 @@
                             <span class="badge badge-info" th:text="${it.rateType}">DAILY</span>
                         </td>
 
-                        <td>
-                            $<span th:text="${it.unitPriceSnapshot}">0</span>
+                        <!-- ✅ Unit price (discount support) -->
+                        <td style="line-height:1.3;">
+                            <div style="display:flex; gap:8px; justify-content:center; align-items:baseline; flex-wrap:wrap;">
+                                <span th:if="${it.baseUnitPriceSnapshot != null and it.unitPriceSnapshot != null and it.baseUnitPriceSnapshot.compareTo(it.unitPriceSnapshot) > 0}"
+                                      style="color:#6c757d;">
+                                    <del>$<span th:text="${it.baseUnitPriceSnapshot}">0</span></del>
+                                </span>
+
+                                <span style="font-weight:800;">
+                                    $<span th:text="${it.unitPriceSnapshot}">0</span>
+                                </span>
+
+                                <span class="badge badge-success"
+                                      th:if="${it.discountPercentSnapshot != null and it.discountPercentSnapshot > 0}"
+                                      th:text="${'-' + it.discountPercentSnapshot + '%'}">-10%</span>
+                            </div>
+
                             <span th:if="${it.rateType != null and it.rateType.name() == 'HOURLY'
                                            and it.fuelSurchargePerHourSnapshot != null
                                            and it.fuelSurchargePerHourSnapshot.doubleValue() > 0}">

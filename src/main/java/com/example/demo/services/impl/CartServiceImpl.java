@@ -47,15 +47,20 @@ public class CartServiceImpl implements CartService {
     @Override
     @Transactional
     public Cart getCartForUser(String email) {
-        // Əgər cart yoxdursa, yaradırıq
+        // Səndəki məntiq: yoxdursa yaradırıq
         return getOrCreateCartForUser(email);
     }
 
     @Override
     @Transactional
     public void addToCart(String email, Long carId, PricingRateType rateType, Integer unitCount) {
+
+        if (carId == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "carId boş ola bilməz");
+        }
         if (rateType == null) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "rateType boş ola bilməz");
+            // əvvəl səndə error atırdı, amma UI rahatlığı üçün default edək
+            rateType = PricingRateType.DAILY;
         }
         if (unitCount == null || unitCount < 1) unitCount = 1;
 
@@ -71,24 +76,41 @@ public class CartServiceImpl implements CartService {
         var pricing = carPricingRepository.findActiveByCarId(carId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Bu car üçün pricing tapılmadı"));
 
-        BigDecimal unitPrice = switch (rateType) {
+        // ✅ base qiymət (endirimdən əvvəl)
+        BigDecimal baseUnitPrice = switch (rateType) {
             case HOURLY -> nz(pricing.getHourlyRate());
             case LEASING -> nz(pricing.getMonthlyLeasingRate());
             default -> nz(pricing.getDailyRate());
         };
 
+        // ✅ effective qiymət (endirim tətbiq olunmuş)
+        BigDecimal effectiveUnitPrice = switch (rateType) {
+            case HOURLY -> nz(pricing.getEffectiveHourlyRate());
+            case LEASING -> nz(pricing.getEffectiveMonthlyLeasingRate());
+            default -> nz(pricing.getEffectiveDailyRate());
+        };
+
+        // hourly üçün ayrıca surcharge var (endirimə düşmür)
         BigDecimal surcharge = nz(pricing.getFuelSurchargePerHour());
 
-        var existing = cartItemRepository.findByCart_IdAndCar_IdAndRateType(cart.getId(), carId, rateType);
+        var existingOpt = cartItemRepository.findByCart_IdAndCar_IdAndRateType(cart.getId(), carId, rateType);
 
-        if (existing.isPresent()) {
-            CartItem item = existing.get();
-            int q = item.getQuantity() == null ? 0 : item.getQuantity();
+        if (existingOpt.isPresent()) {
+            CartItem item = existingOpt.get();
+
+            int q = item.getQuantity() == null ? 1 : item.getQuantity();
             item.setQuantity(q + 1);
 
-            // unitCount-u “paket vahidi” kimi saxlayırsansa, dəyişməsin (səndə əvvəlki məntiq)
-            // amma boşdursa set et:
-            if (item.getUnitCount() == null || item.getUnitCount() < 1) item.setUnitCount(unitCount);
+            // unitCount paket kimi saxlanılırsa: boşdursa set et, əks halda toxunma
+            if (item.getUnitCount() == null || item.getUnitCount() < 1) {
+                item.setUnitCount(unitCount);
+            }
+
+            // ✅ snapshot-ları yenilə (endirim dəyişibsə cart-da dərhal görünsün)
+            item.setBaseUnitPriceSnapshot(baseUnitPrice);
+            item.setUnitPriceSnapshot(effectiveUnitPrice);
+            item.setDiscountPercentSnapshot(pricing.getDiscountPercent());
+            item.setFuelSurchargePerHourSnapshot(surcharge);
 
             cartItemRepository.save(item);
         } else {
@@ -97,7 +119,11 @@ public class CartServiceImpl implements CartService {
             item.setCar(car);
             item.setRateType(rateType);
 
-            item.setUnitPriceSnapshot(unitPrice);
+            // ✅ snapshots
+            item.setBaseUnitPriceSnapshot(baseUnitPrice);
+            item.setUnitPriceSnapshot(effectiveUnitPrice);
+            item.setDiscountPercentSnapshot(pricing.getDiscountPercent());
+
             item.setFuelSurchargePerHourSnapshot(surcharge);
 
             item.setUnitCount(unitCount);
@@ -138,7 +164,6 @@ public class CartServiceImpl implements CartService {
         var cart = cartRepository.findByUser_Id(user.getId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Cart tapılmadı"));
 
-        // ✅ ən stabil yol: DB-dən birbaşa sil
         cartItemRepository.deleteByCart_Id(cart.getId());
 
         cart.setUpdatedAt(LocalDateTime.now());

@@ -32,16 +32,23 @@ public class OrderItem {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 16)
-    private PricingRateType rateType; // HOURLY/DAILY/LEASING
+    private PricingRateType rateType;
 
+    // ✅ FINAL price (endirim tətbiq olunmuş)
     @Column(nullable = false, precision = 12, scale = 2)
-    private BigDecimal unitPriceSnapshot; // seçilmiş paketə görə: hourly/daily/leasing
+    private BigDecimal unitPriceSnapshot;
 
-    // hourly üçün lazım olur (istəsən digərlərində 0 saxla)
+    // ✅ NEW: base price
+    @Column(precision = 12, scale = 2)
+    private BigDecimal baseUnitPriceSnapshot;
+
+    // ✅ NEW: discount percent
+    @Column(precision = 5, scale = 2)
+    private BigDecimal discountPercentSnapshot;
+
     @Column(precision = 12, scale = 2)
     private BigDecimal fuelSurchargePerHourSnapshot;
 
-    // neçə vahid: hourly-> neçə saat, daily-> neçə gün, leasing-> neçə ay
     @Column(nullable = false)
     private Integer unitCountSnapshot;
 

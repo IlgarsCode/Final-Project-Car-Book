@@ -12,7 +12,6 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -24,7 +23,6 @@ public class PricingServiceImpl implements PricingService {
 
     @Override
     public List<CarPricingRowDto> getPricingRows(String categorySlug) {
-        // tarixsiz: əvvəlki davranış
         return getPricingRows(categorySlug, null, null);
     }
 
@@ -38,13 +36,9 @@ public class PricingServiceImpl implements PricingService {
 
         if (rows == null || rows.isEmpty()) return List.of();
 
-        // ✅ ƏGƏR tarixlər verilibsə → busy car-ları çıxart
+        // ✅ availability filter
         if (pickupDate != null && dropoffDate != null) {
-
-            // səhv interval gəlibsə filtr eləmək risklidir -> hamısını göstərməyək, sadəcə boş qaytar
-            if (dropoffDate.isBefore(pickupDate)) {
-                return List.of();
-            }
+            if (dropoffDate.isBefore(pickupDate)) return List.of();
 
             List<Long> carIds = rows.stream()
                     .map(cp -> cp.getCar().getId())
@@ -53,24 +47,20 @@ public class PricingServiceImpl implements PricingService {
 
             List<OrderStatus> blocking = List.of(OrderStatus.PENDING, OrderStatus.APPROVED);
 
-            List<Long> busyIds = orderRepository.findBusyCarIdsInRange(
-                    carIds, pickupDate, dropoffDate, blocking
-            );
-
-            Set<Long> busySet = new HashSet<>(busyIds == null ? List.of() : busyIds);
+            List<Long> busyIds = orderRepository.findBusyCarIdsInRange(carIds, pickupDate, dropoffDate, blocking);
+            Set<Long> busy = new HashSet<>(busyIds == null ? List.of() : busyIds);
 
             rows = rows.stream()
-                    .filter(cp -> cp.getCar() != null && !busySet.contains(cp.getCar().getId()))
+                    .filter(cp -> cp.getCar() != null && !busy.contains(cp.getCar().getId()))
                     .toList();
         }
 
-        // rating stats (qalsın)
+        // rating stats
         Map<Long, Long> countMap = new HashMap<>();
         Map<Long, Double> avgMap = new HashMap<>();
 
         for (CarPricing cp : rows) {
-            var car = cp.getCar();
-            Long carId = car.getId();
+            Long carId = cp.getCar().getId();
 
             long total = carReviewRepository.countByCar_IdAndIsActiveTrue(carId);
             countMap.put(carId, total);
@@ -90,28 +80,35 @@ public class PricingServiceImpl implements PricingService {
             avgMap.put(carId, avg);
         }
 
-        return rows.stream()
-                .map(cp -> {
-                    var car = cp.getCar();
-                    Long carId = car.getId();
+        return rows.stream().map(cp -> {
+            var car = cp.getCar();
+            Long carId = car.getId();
 
-                    CarPricingRowDto dto = new CarPricingRowDto();
-                    dto.setCarId(carId);
-                    dto.setCarTitle(car.getTitle());
-                    dto.setCarImageUrl(car.getImageUrl());
-                    dto.setCarSlug(car.getSlug());
+            CarPricingRowDto dto = new CarPricingRowDto();
+            dto.setCarId(carId);
+            dto.setCarTitle(car.getTitle());
+            dto.setCarImageUrl(car.getImageUrl());
+            dto.setCarSlug(car.getSlug());
 
-                    dto.setHourlyRate(cp.getHourlyRate());
-                    dto.setDailyRate(cp.getDailyRate());
-                    dto.setMonthlyLeasingRate(cp.getMonthlyLeasingRate());
+            // ✅ DTO-ya endirimli qiymətləri yaz
+            dto.setHourlyRate(cp.getEffectiveHourlyRate());
+            dto.setDailyRate(cp.getEffectiveDailyRate());
+            dto.setMonthlyLeasingRate(cp.getEffectiveMonthlyLeasingRate());
 
-                    dto.setFuelSurchargePerHour(cp.getFuelSurchargePerHour());
+            dto.setFuelSurchargePerHour(cp.getFuelSurchargePerHour());
 
-                    dto.setAverageRating(avgMap.getOrDefault(carId, 0.0));
-                    dto.setReviewCount(countMap.getOrDefault(carId, 0L));
+            // ✅ UI üçün endirim flag-ları
+            dto.setHasDiscount(cp.hasDiscount());
+            dto.setDiscountPercent(cp.getDiscountPercent());
 
-                    return dto;
-                })
-                .toList();
+            // istəsən “was price” də qoy (UI-də üstündən xətt)
+            dto.setBaseHourlyRate(cp.getHourlyRate());
+            dto.setBaseDailyRate(cp.getDailyRate());
+            dto.setBaseMonthlyLeasingRate(cp.getMonthlyLeasingRate());
+
+            dto.setAverageRating(avgMap.getOrDefault(carId, 0.0));
+            dto.setReviewCount(countMap.getOrDefault(carId, 0L));
+            return dto;
+        }).toList();
     }
 }

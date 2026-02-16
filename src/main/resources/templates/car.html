@@ -71,13 +71,24 @@
                                     Model
                                 </span>
 
-                                <span>
+                                <!-- ✅ price (discount support) -->
+                                <span style="display:flex; align-items:baseline; gap:8px; flex-wrap:wrap; justify-content:flex-end;">
+                                    <span th:if="${car.baseDailyRate != null and car.dailyRate != null and car.baseDailyRate.compareTo(car.dailyRate) > 0}"
+                                          style="color:#6c757d;">
+                                        <del>$<span th:text="${car.baseDailyRate}">0</span></del>
+                                    </span>
+
                                     <span style="color:#4f86f7; font-weight:600;">
                                         $<span th:text="${car.dailyRate}">0</span>
                                     </span>
+
                                     <span style="color:#000; font-weight:400;">
                                         /day
                                     </span>
+
+                                    <span class="badge badge-success"
+                                          th:if="${car.discountPercent != null and car.discountPercent > 0}"
+                                          th:text="${'-' + car.discountPercent + '%'}">-10%</span>
                                 </span>
 
                             </div>

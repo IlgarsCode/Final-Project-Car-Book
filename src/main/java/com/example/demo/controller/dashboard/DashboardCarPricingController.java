@@ -24,12 +24,18 @@ public class DashboardCarPricingController {
     @GetMapping
     public String list(Model model) {
 
-        model.addAttribute("cars", carRepository.findAll());                 // select üçün
-        model.addAttribute("rows", carPricingRepository.findAll());          // table üçün
+        model.addAttribute("cars", carRepository.findAll());
+        model.addAttribute("rows", carPricingRepository.findAll());
 
-        // ✅ bunlar yoxdursa, th:field-lər “carId” tapa bilmir
-        model.addAttribute("createForm", new CarPricingCreateDto());
-        model.addAttribute("editForm", new CarPricingUpdateDto());
+        // ✅ default-lar (checkbox-lar problemsiz işləsin)
+        CarPricingCreateDto create = new CarPricingCreateDto();
+        create.setDiscountActive(false);
+
+        CarPricingUpdateDto edit = new CarPricingUpdateDto();
+        edit.setDiscountActive(false);
+
+        model.addAttribute("createForm", create);
+        model.addAttribute("editForm", edit);
 
         return "dashboard/pricing/list";
     }
@@ -42,7 +48,11 @@ public class DashboardCarPricingController {
         if (br.hasErrors()) {
             model.addAttribute("cars", carRepository.findAll());
             model.addAttribute("rows", carPricingRepository.findAll());
-            model.addAttribute("editForm", new CarPricingUpdateDto());
+
+            CarPricingUpdateDto edit = new CarPricingUpdateDto();
+            edit.setDiscountActive(false);
+            model.addAttribute("editForm", edit);
+
             return "dashboard/pricing/list";
         }
 
@@ -58,7 +68,11 @@ public class DashboardCarPricingController {
         if (br.hasErrors()) {
             model.addAttribute("cars", carRepository.findAll());
             model.addAttribute("rows", carPricingRepository.findAll());
-            model.addAttribute("createForm", new CarPricingCreateDto());
+
+            CarPricingCreateDto create = new CarPricingCreateDto();
+            create.setDiscountActive(false);
+            model.addAttribute("createForm", create);
+
             return "dashboard/pricing/list";
         }
 

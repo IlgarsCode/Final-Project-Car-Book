@@ -62,6 +62,27 @@
 
         </div>
 
+        <!-- ✅ DISCOUNT -->
+        <div class="form-row">
+          <div class="form-group col-md-3">
+            <div class="custom-control custom-checkbox mt-4">
+              <input type="checkbox" class="custom-control-input"
+                     id="createDiscountActive"
+                     th:field="*{discountActive}">
+              <label class="custom-control-label" for="createDiscountActive">Discount active</label>
+            </div>
+          </div>
+
+          <div class="form-group col-md-3">
+            <label>Discount percent (0..100)</label>
+            <input type="number" step="0.01" min="0" max="100"
+                   class="form-control"
+                   th:field="*{discountPercent}"
+                   placeholder="e.g. 10">
+            <small class="text-muted">optional</small>
+          </div>
+        </div>
+
         <button class="btn btn-primary" type="submit">
           <i class="fas fa-plus"></i> Create
         </button>
@@ -89,6 +110,7 @@
             <th>Daily</th>
             <th>Leasing</th>
             <th>Fuel</th>
+            <th>Discount</th>
             <th>Status</th>
             <th style="width: 180px;">Actions</th>
           </tr>
@@ -96,7 +118,7 @@
 
           <tbody>
           <tr th:if="${rows == null || #lists.isEmpty(rows)}">
-            <td colspan="8" class="text-center">No pricing rows yet.</td>
+            <td colspan="9" class="text-center">No pricing rows yet.</td>
           </tr>
 
           <tr th:each="cp, i : ${rows}">
@@ -121,6 +143,18 @@
             <td th:text="${cp.monthlyLeasingRate}">0</td>
             <td th:text="${cp.fuelSurchargePerHour != null ? cp.fuelSurchargePerHour : '-'}">-</td>
 
+            <!-- ✅ DISCOUNT -->
+            <td>
+              <span class="badge badge-success"
+                    th:if="${cp.discountActive != null and cp.discountActive and cp.discountPercent != null and cp.discountPercent.doubleValue() > 0}"
+                    th:text="${'-' + cp.discountPercent + '%'}">-10%</span>
+
+              <span class="text-muted"
+                    th:if="${cp.discountActive == null || !cp.discountActive || cp.discountPercent == null || cp.discountPercent.doubleValue() <= 0}">
+                -
+              </span>
+            </td>
+
             <td>
               <span class="badge badge-success" th:if="${cp.isActive}">ACTIVE</span>
               <span class="badge badge-secondary" th:unless="${cp.isActive}">INACTIVE</span>
@@ -132,10 +166,12 @@
                       data-toggle="modal"
                       data-target="#editPricingModal"
                       th:attr="data-carid=${cp.car.id},
-                                             data-hourly=${cp.hourlyRate},
-                                             data-daily=${cp.dailyRate},
-                                             data-leasing=${cp.monthlyLeasingRate},
-                                             data-fuel=${cp.fuelSurchargePerHour}">
+                               data-hourly=${cp.hourlyRate},
+                               data-daily=${cp.dailyRate},
+                               data-leasing=${cp.monthlyLeasingRate},
+                               data-fuel=${cp.fuelSurchargePerHour},
+                               data-discountactive=${cp.discountActive},
+                               data-discountpercent=${cp.discountPercent}">
                 <i class="fas fa-edit"></i> Edit
               </button>
 
@@ -197,6 +233,28 @@
               </div>
             </div>
 
+            <!-- ✅ DISCOUNT -->
+            <div class="form-row">
+              <div class="form-group col-md-3">
+                <div class="custom-control custom-checkbox mt-4">
+                  <input type="checkbox"
+                         class="custom-control-input"
+                         id="editDiscountActive"
+                         th:field="*{discountActive}">
+                  <label class="custom-control-label" for="editDiscountActive">Discount active</label>
+                </div>
+              </div>
+
+              <div class="form-group col-md-3">
+                <label>Discount percent (0..100)</label>
+                <input type="number" step="0.01" min="0" max="100"
+                       class="form-control"
+                       th:field="*{discountPercent}"
+                       id="editDiscountPercent"
+                       placeholder="e.g. 10">
+              </div>
+            </div>
+
           </div>
 
           <div class="modal-footer">
@@ -225,13 +283,18 @@
       const leasing = btn.data('leasing');
       const fuel = btn.data('fuel');
 
+      const discountActive = btn.data('discountactive');
+      const discountPercent = btn.data('discountpercent');
+
       $('#editCarId').val(carId);
       $('#editHourly').val(hourly);
       $('#editDaily').val(daily);
       $('#editLeasing').val(leasing);
-
-      // fuel null ola bilər
       $('#editFuel').val(fuel != null ? fuel : '');
+
+      // ✅ checkbox + percent
+      $('#editDiscountActive').prop('checked', discountActive === true || discountActive === 'true');
+      $('#editDiscountPercent').val(discountPercent != null ? discountPercent : '');
     });
   </script>
 </th:block>

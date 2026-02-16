@@ -1,9 +1,6 @@
 package com.example.demo.services.impl;
 
-import com.example.demo.dto.car.CarDetailDto;
-import com.example.demo.dto.car.CarListDto;
-import com.example.demo.dto.car.CarReviewDto;
-import com.example.demo.dto.car.CarReviewStatsDto;
+import com.example.demo.dto.car.*;
 import com.example.demo.dto.enums.PricingRateType;
 import com.example.demo.repository.CarPricingRepository;
 import com.example.demo.repository.CarRepository;
@@ -41,29 +38,49 @@ public class CarServiceImpl implements CarService {
                 : carRepository.findAllByIsActiveTrueAndCategory_SlugOrderByIdDesc(categorySlug);
 
         List<Long> carIds = cars.stream().map(c -> c.getId()).toList();
-        Map<Long, BigDecimal> dailyMap = new HashMap<>();
 
+        // carId -> pricing
+        Map<Long, com.example.demo.model.CarPricing> pricingMap = new HashMap<>();
         if (!carIds.isEmpty()) {
             var pricings = carPricingRepository.findActiveByCarIds(carIds);
             for (var cp : pricings) {
-                dailyMap.put(cp.getCar().getId(), safe(cp.getDailyRate()));
+                if (cp.getCar() != null && cp.getCar().getId() != null) {
+                    pricingMap.put(cp.getCar().getId(), cp);
+                }
             }
         }
 
-        return cars.stream()
-                .map(car -> {
-                    CarListDto dto = new CarListDto();
-                    dto.setId(car.getId());
-                    dto.setTitle(car.getTitle());
-                    dto.setBrand(car.getBrand());
-                    dto.setYear(car.getYear());
-                    dto.setEngineVolume(car.getEngineVolume());
-                    dto.setImageUrl(car.getImageUrl());
-                    dto.setSlug(car.getSlug());
-                    dto.setDailyRate(dailyMap.getOrDefault(car.getId(), BigDecimal.ZERO));
-                    return dto;
-                })
-                .toList();
+        return cars.stream().map(car -> {
+            CarListDto dto = new CarListDto();
+            dto.setId(car.getId());
+            dto.setTitle(car.getTitle());
+            dto.setBrand(car.getBrand());
+            dto.setYear(car.getYear());
+            dto.setEngineVolume(car.getEngineVolume());
+            dto.setImageUrl(car.getImageUrl());
+            dto.setSlug(car.getSlug());
+
+            var cp = pricingMap.get(car.getId());
+            if (cp != null) {
+                dto.setHourlyRate(safe(cp.getEffectiveHourlyRate()));
+                dto.setDailyRate(safe(cp.getEffectiveDailyRate()));
+                dto.setMonthlyLeasingRate(safe(cp.getEffectiveMonthlyLeasingRate()));
+
+                dto.setBaseHourlyRate(safe(cp.getHourlyRate()));
+                dto.setBaseDailyRate(safe(cp.getDailyRate()));
+                dto.setBaseMonthlyLeasingRate(safe(cp.getMonthlyLeasingRate()));
+
+                dto.setHasDiscount(cp.hasDiscount());
+                dto.setDiscountPercent(cp.getDiscountPercent());
+            } else {
+                dto.setHourlyRate(BigDecimal.ZERO);
+                dto.setDailyRate(BigDecimal.ZERO);
+                dto.setMonthlyLeasingRate(BigDecimal.ZERO);
+                dto.setHasDiscount(false);
+            }
+
+            return dto;
+        }).toList();
     }
 
     @Override
@@ -85,23 +102,43 @@ public class CarServiceImpl implements CarService {
 
         var pricingOpt = carPricingRepository.findActiveByCarSlug(slug);
 
-        BigDecimal hourly = BigDecimal.ZERO;
-        BigDecimal daily = BigDecimal.ZERO;
-        BigDecimal leasing = BigDecimal.ZERO;
+        BigDecimal hourly = BigDecimal.ZERO, daily = BigDecimal.ZERO, leasing = BigDecimal.ZERO;
+        BigDecimal baseHourly = BigDecimal.ZERO, baseDaily = BigDecimal.ZERO, baseLeasing = BigDecimal.ZERO;
         BigDecimal surcharge = BigDecimal.ZERO;
+        boolean hasDiscount = false;
+        BigDecimal discPercent = null;
 
         if (pricingOpt.isPresent()) {
             var cp = pricingOpt.get();
-            hourly = safe(cp.getHourlyRate());
-            daily = safe(cp.getDailyRate());
-            leasing = safe(cp.getMonthlyLeasingRate());
+
+            // base
+            baseHourly = safe(cp.getHourlyRate());
+            baseDaily = safe(cp.getDailyRate());
+            baseLeasing = safe(cp.getMonthlyLeasingRate());
+
+            // effective
+            hourly = safe(cp.getEffectiveHourlyRate());
+            daily = safe(cp.getEffectiveDailyRate());
+            leasing = safe(cp.getEffectiveMonthlyLeasingRate());
+
             surcharge = safe(cp.getFuelSurchargePerHour());
+
+            hasDiscount = cp.hasDiscount();
+            discPercent = cp.getDiscountPercent();
         }
 
         dto.setHourlyRate(hourly);
         dto.setDailyRate(daily);
         dto.setMonthlyLeasingRate(leasing);
+
+        dto.setBaseHourlyRate(baseHourly);
+        dto.setBaseDailyRate(baseDaily);
+        dto.setBaseMonthlyLeasingRate(baseLeasing);
+
         dto.setFuelSurchargePerHour(surcharge);
+
+        dto.setHasDiscount(hasDiscount);
+        dto.setDiscountPercent(discPercent);
 
         dto.setSelectedRate(rateType.name());
 
@@ -175,12 +212,14 @@ public class CarServiceImpl implements CarService {
                 .toList();
 
         List<Long> ids = cars.stream().map(c -> c.getId()).toList();
-        Map<Long, BigDecimal> dailyMap = new HashMap<>();
+        Map<Long, com.example.demo.model.CarPricing> pricingMap = new HashMap<>();
 
         if (!ids.isEmpty()) {
             var pricings = carPricingRepository.findActiveByCarIds(ids);
             for (var cp : pricings) {
-                dailyMap.put(cp.getCar().getId(), safe(cp.getDailyRate()));
+                if (cp.getCar() != null && cp.getCar().getId() != null) {
+                    pricingMap.put(cp.getCar().getId(), cp);
+                }
             }
         }
 
@@ -193,7 +232,17 @@ public class CarServiceImpl implements CarService {
             dto.setEngineVolume(car.getEngineVolume());
             dto.setImageUrl(car.getImageUrl());
             dto.setSlug(car.getSlug());
-            dto.setDailyRate(dailyMap.getOrDefault(car.getId(), BigDecimal.ZERO));
+
+            var cp = pricingMap.get(car.getId());
+            if (cp != null) {
+                dto.setDailyRate(safe(cp.getEffectiveDailyRate()));
+                dto.setBaseDailyRate(safe(cp.getDailyRate()));
+                dto.setHasDiscount(cp.hasDiscount());
+                dto.setDiscountPercent(cp.getDiscountPercent());
+            } else {
+                dto.setDailyRate(BigDecimal.ZERO);
+                dto.setHasDiscount(false);
+            }
             return dto;
         }).toList();
     }

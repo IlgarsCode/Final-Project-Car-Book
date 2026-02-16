@@ -23,7 +23,7 @@ public class CarCategoryServiceImpl implements CarCategoryService {
                     dto.setId(x.getId());
                     dto.setName(x.getName());
                     dto.setSlug(x.getSlug());
-                    dto.setCarCount(x.getCarCount());
+                    dto.setCarCount(x.getActiveCarCount() == null ? 0L : x.getActiveCarCount());
                     return dto;
                 })
                 .toList();

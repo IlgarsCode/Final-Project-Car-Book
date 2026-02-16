@@ -37,7 +37,6 @@
 
                         <div id="checkoutMsg" class="alert" style="display:none;"></div>
 
-                        <!-- ❗ th:object dəyişdi -->
                         <form id="checkoutForm" th:action="@{/checkout}" th:object="${checkoutForm}" method="post">
 
                             <div class="form-group">
@@ -99,9 +98,20 @@
                                 <div>
                                     <div class="font-weight-bold" th:text="${it.car != null ? it.car.title : 'Car'}">Car</div>
 
+                                    <!-- ✅ price line (discount support) -->
                                     <small class="text-muted">
                                         <span th:text="${it.rateType}">DAILY</span>
-                                        — $<span th:text="${it.unitPriceSnapshot}">0</span>
+                                        —
+                                        <span th:if="${it.baseUnitPriceSnapshot != null and it.unitPriceSnapshot != null and it.baseUnitPriceSnapshot.compareTo(it.unitPriceSnapshot) > 0}">
+                                            <del>$<span th:text="${it.baseUnitPriceSnapshot}">0</span></del>
+                                            &nbsp;
+                                        </span>
+
+                                        $<span th:text="${it.unitPriceSnapshot}">0</span>
+
+                                        <span class="badge badge-success"
+                                              th:if="${it.discountPercentSnapshot != null and it.discountPercentSnapshot > 0}"
+                                              th:text="${'-' + it.discountPercentSnapshot + '%'}">-10%</span>
 
                                         <span th:if="${it.rateType != null and it.rateType.name() == 'HOURLY'
                                                        and it.fuelSurchargePerHourSnapshot != null

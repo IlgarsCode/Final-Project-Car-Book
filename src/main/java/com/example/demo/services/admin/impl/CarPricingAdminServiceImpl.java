@@ -6,6 +6,7 @@ import com.example.demo.model.CarPricing;
 import com.example.demo.repository.CarPricingRepository;
 import com.example.demo.repository.CarRepository;
 import com.example.demo.services.admin.CarPricingAdminService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -23,66 +24,102 @@ public class CarPricingAdminServiceImpl implements CarPricingAdminService {
 
     @Override
     public List<CarPricing> getAllActiveRows() {
-        return List.of();
+        // admin list üçün: hamısını göstərmək daha məntiqlidir (active+inactive)
+        return carPricingRepository.findAll();
     }
 
     @Override
     public CarPricing getByCarId(Long carId) {
-        return null;
+        return carPricingRepository.findByCar_Id(carId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Pricing tapılmadı"));
     }
 
     @Override
-    public void createForCar(Long carId, BigDecimal hourly, BigDecimal daily, BigDecimal leasing, BigDecimal fuelSurcharge) {
+    public void createForCar(Long carId,
+                             BigDecimal hourly, BigDecimal daily, BigDecimal leasing, BigDecimal fuelSurcharge) {
+        if (carPricingRepository.existsByCar_Id(carId)) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Bu car üçün pricing artıq var");
+        }
 
+        var car = carRepository.findById(carId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Car tapılmadı"));
+
+        CarPricing cp = new CarPricing();
+        cp.setCar(car);
+        cp.setHourlyRate(nz(hourly));
+        cp.setDailyRate(nz(daily));
+        cp.setMonthlyLeasingRate(nz(leasing));
+        cp.setFuelSurchargePerHour(fuelSurcharge);
+        cp.setIsActive(true);
+
+        // default: endirim yoxdur
+        cp.setDiscountActive(false);
+        cp.setDiscountPercent(null);
+
+        carPricingRepository.save(cp);
     }
 
     @Override
-    public void updateForCar(Long carId, BigDecimal hourly, BigDecimal daily, BigDecimal leasing, BigDecimal fuelSurcharge) {
-
+    public void updateForCar(Long carId,
+                             BigDecimal hourly, BigDecimal daily, BigDecimal leasing, BigDecimal fuelSurcharge) {
+        CarPricing cp = getByCarId(carId);
+        cp.setHourlyRate(nz(hourly));
+        cp.setDailyRate(nz(daily));
+        cp.setMonthlyLeasingRate(nz(leasing));
+        cp.setFuelSurchargePerHour(fuelSurcharge);
+        carPricingRepository.save(cp);
     }
 
     @Override
-    public void createOrUpdate(CarPricingCreateDto dto) {
-
+    public void createOrUpdate(@Valid CarPricingCreateDto dto) {
         var car = carRepository.findById(dto.getCarId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Car tapılmadı"));
 
-        // car_id unique olduğu üçün: varsa update, yoxsa create
-        CarPricing cp = carPricingRepository.findActiveByCarId(dto.getCarId()).orElse(null);
+        CarPricing cp = carPricingRepository.findByCar_Id(dto.getCarId()).orElse(null);
         if (cp == null) {
             cp = new CarPricing();
             cp.setCar(car);
         }
 
-        cp.setHourlyRate(dto.getHourlyRate());
-        cp.setDailyRate(dto.getDailyRate());
-        cp.setMonthlyLeasingRate(dto.getMonthlyLeasingRate());
+        cp.setHourlyRate(nz(dto.getHourlyRate()));
+        cp.setDailyRate(nz(dto.getDailyRate()));
+        cp.setMonthlyLeasingRate(nz(dto.getMonthlyLeasingRate()));
         cp.setFuelSurchargePerHour(dto.getFuelSurchargePerHour());
         cp.setIsActive(true);
+
+        // ✅ discount
+        cp.setDiscountActive(Boolean.TRUE.equals(dto.getDiscountActive()));
+        if (Boolean.TRUE.equals(dto.getDiscountActive())) {
+            cp.setDiscountPercent(dto.getDiscountPercent());
+        } else {
+            cp.setDiscountPercent(null);
+        }
 
         carPricingRepository.save(cp);
     }
 
     @Override
     public void update(CarPricingUpdateDto dto) {
-        createOrUpdate(toCreateDto(dto)); // eyni məntiq
-    }
-
-    private CarPricingCreateDto toCreateDto(CarPricingUpdateDto dto) {
+        // eyni məntiq
         CarPricingCreateDto c = new CarPricingCreateDto();
         c.setCarId(dto.getCarId());
         c.setHourlyRate(dto.getHourlyRate());
         c.setDailyRate(dto.getDailyRate());
         c.setMonthlyLeasingRate(dto.getMonthlyLeasingRate());
         c.setFuelSurchargePerHour(dto.getFuelSurchargePerHour());
-        return c;
+        c.setDiscountActive(dto.getDiscountActive());
+        c.setDiscountPercent(dto.getDiscountPercent());
+        createOrUpdate(c);
     }
 
     @Override
     public void deactivate(Long carId) {
-        var cp = carPricingRepository.findActiveByCarId(carId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Pricing tapılmadı"));
+        CarPricing cp = getByCarId(carId);
         cp.setIsActive(false);
         carPricingRepository.save(cp);
+    }
+
+    private static BigDecimal nz(BigDecimal v) {
+        return v == null ? BigDecimal.ZERO : v;
     }
 }

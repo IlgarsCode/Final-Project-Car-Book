@@ -13,11 +13,8 @@ public class CarDetailDto {
     private Long id;
     private String title;
     private String brand;
-
     private Integer year;
     private BigDecimal engineVolume;
-
-    private Double pricePerDay;
 
     private String imageUrl;
     private String slug;
@@ -30,20 +27,28 @@ public class CarDetailDto {
 
     private String description;
 
-    // DB-də saxlanan raw text (məs: textarea-dan gələn)
     private String featuresCol1;
     private String featuresCol2;
     private String featuresCol3;
 
-    // UI üçün parçalanmış list
     private List<String> features1;
     private List<String> features2;
     private List<String> features3;
 
+    // ✅ effective prices
     private BigDecimal hourlyRate;
     private BigDecimal dailyRate;
     private BigDecimal monthlyLeasingRate;
+
+    // ✅ base prices
+    private BigDecimal baseHourlyRate;
+    private BigDecimal baseDailyRate;
+    private BigDecimal baseMonthlyLeasingRate;
+
     private BigDecimal fuelSurchargePerHour;
+
+    private Boolean hasDiscount;
+    private BigDecimal discountPercent;
 
     private BigDecimal displayPrice;
     private String displayUnit;

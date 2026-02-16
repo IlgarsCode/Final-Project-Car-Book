@@ -17,7 +17,16 @@ public class CarListDto {
     private String imageUrl;
     private String slug;
 
+    // effective
     private BigDecimal hourlyRate;
     private BigDecimal dailyRate;
     private BigDecimal monthlyLeasingRate;
+
+    // base (optional UI)
+    private BigDecimal baseHourlyRate;
+    private BigDecimal baseDailyRate;
+    private BigDecimal baseMonthlyLeasingRate;
+
+    private Boolean hasDiscount;
+    private BigDecimal discountPercent;
 }

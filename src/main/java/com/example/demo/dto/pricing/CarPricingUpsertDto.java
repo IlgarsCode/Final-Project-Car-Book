@@ -1,4 +1,4 @@
-package com.example.demo.dto.dashboard.pricing;
+package com.example.demo.dto.pricing;
 
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotNull;

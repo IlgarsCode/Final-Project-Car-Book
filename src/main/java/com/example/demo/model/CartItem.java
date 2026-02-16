@@ -11,7 +11,10 @@ import java.time.LocalDateTime;
 @Entity
 @Table(
         name = "cart_items",
-        uniqueConstraints = @UniqueConstraint(name = "uk_cart_car_rate", columnNames = {"cart_id", "car_id", "rate_type"})
+        uniqueConstraints = @UniqueConstraint(
+                name = "uk_cart_car_rate",
+                columnNames = {"cart_id", "car_id", "rate_type"}
+        )
 )
 @Getter
 @Setter
@@ -33,8 +36,17 @@ public class CartItem {
     @Column(name = "rate_type", nullable = false, length = 16)
     private PricingRateType rateType;
 
+    // ✅ FINAL price (endirim tətbiq olunmuş)
     @Column(nullable = false, precision = 12, scale = 2)
     private BigDecimal unitPriceSnapshot;
+
+    // ✅ NEW: base price (endirimdən əvvəl)
+    @Column(precision = 12, scale = 2)
+    private BigDecimal baseUnitPriceSnapshot;
+
+    // ✅ NEW: discount percent
+    @Column(precision = 5, scale = 2)
+    private BigDecimal discountPercentSnapshot;
 
     @Column(precision = 12, scale = 2)
     private BigDecimal fuelSurchargePerHourSnapshot;

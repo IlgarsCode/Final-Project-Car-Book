@@ -109,6 +109,10 @@ public class OrderServiceImpl implements OrderService {
             oi.setUnitPriceSnapshot(unitPrice);
             oi.setFuelSurchargePerHourSnapshot(surcharge);
 
+// ✅ NEW
+            oi.setBaseUnitPriceSnapshot(ci.getBaseUnitPriceSnapshot());
+            oi.setDiscountPercentSnapshot(ci.getDiscountPercentSnapshot());
+
             oi.setUnitCountSnapshot(units);
             oi.setQuantity(qty);
             oi.setLineTotal(line);

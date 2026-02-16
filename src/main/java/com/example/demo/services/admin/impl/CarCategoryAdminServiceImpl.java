@@ -25,7 +25,6 @@ public class CarCategoryAdminServiceImpl implements CarCategoryAdminService {
 
     @Override
     public List<CarCategoryDashboardRowDto> getAllRows() {
-        // repository view-dən carCount götürürük
         return carCategoryRepository.findAllWithActiveCarCount()
                 .stream()
                 .map(v -> {
@@ -33,7 +32,7 @@ public class CarCategoryAdminServiceImpl implements CarCategoryAdminService {
                     dto.setId(v.getId());
                     dto.setName(v.getName());
                     dto.setSlug(v.getSlug());
-                    dto.setActiveCarCount(v.getCarCount());
+                    dto.setActiveCarCount(v.getActiveCarCount() == null ? 0L : v.getActiveCarCount());
                     return dto;
                 })
                 .sorted(Comparator.comparing(CarCategoryDashboardRowDto::getName, String.CASE_INSENSITIVE_ORDER))

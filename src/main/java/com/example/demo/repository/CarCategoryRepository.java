@@ -12,19 +12,16 @@ public interface CarCategoryRepository extends JpaRepository<CarCategory, Long> 
 
     boolean existsBySlug(String slug);
 
-    // ✅ Thymeleaf üçün: c.name, c.slug, c.activeCarCount
     interface CategoryWithCount {
+        Long getId();
         String getName();
         String getSlug();
-        Long getActiveCarCount();
-
-        Long getId();
-
-        long getCarCount();
+        Long getActiveCarCount();  // təkcə bu
     }
 
     @Query("""
         select
+          cat.id as id,
           cat.name as name,
           cat.slug as slug,
           count(c.id) as activeCarCount

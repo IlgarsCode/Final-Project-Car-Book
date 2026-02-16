@@ -33,9 +33,10 @@ public class PricingController {
             Model model
     ) {
         model.addAttribute("banner", bannerService.getBanner(BannerType.PRICING));
-        model.addAttribute("rows", pricingService.getPricingRows(categorySlug));
 
-        // ✅ burda artıq projection gələcək (name, slug, activeCarCount)
+        // ✅ tarixlərlə çağır
+        model.addAttribute("rows", pricingService.getPricingRows(categorySlug, pickupDate, dropoffDate));
+
         model.addAttribute("carCategories", carCategoryRepository.findAllWithActiveCarCount());
         model.addAttribute("selectedCategory", categorySlug);
 
