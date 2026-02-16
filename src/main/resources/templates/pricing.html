@@ -10,7 +10,6 @@
 <body>
 <div layout:fragment="content">
 
-    <!-- ===== BANNER (DINAMIK) ===== -->
     <section class="hero-wrap hero-wrap-2 js-fullheight"
              th:if="${banner != null}"
              th:style="'background-image: url(' + ${banner.photoUrl} + ');'"
@@ -39,11 +38,9 @@
         </div>
     </section>
 
-    <!-- ===== PRICING TABLE ===== -->
     <section class="ftco-section ftco-cart">
         <div class="container">
 
-            <!-- FILTER -->
             <div class="row mb-4">
                 <div class="col-md-12 ftco-animate d-flex justify-content-between align-items-center flex-wrap"
                      style="gap:12px;">
@@ -54,13 +51,14 @@
                           class="d-flex align-items-center flex-wrap"
                           style="gap:10px;">
 
+                        <!-- trip context saxla -->
                         <input type="hidden" name="pickupLoc" th:value="${trip != null ? trip.pickupLoc : ''}">
                         <input type="hidden" name="dropoffLoc" th:value="${trip != null ? trip.dropoffLoc : ''}">
                         <input type="hidden" name="pickupDate" th:value="${trip != null ? trip.pickupDate : ''}">
                         <input type="hidden" name="dropoffDate" th:value="${trip != null ? trip.dropoffDate : ''}">
 
                         <select name="category" class="form-control" style="max-width:260px;">
-                            <!-- sənin option-lar -->
+                            <!-- option-larını burada saxla -->
                         </select>
 
                         <button class="btn btn-primary" type="submit">Filter</button>
@@ -79,7 +77,6 @@
                 </div>
             </div>
 
-            <!-- TABLE -->
             <div class="row">
                 <div class="col-md-12 ftco-animate">
                     <div class="car-list">
@@ -105,8 +102,7 @@
                             <tr th:each="row : ${rows}">
                                 <td class="car-image">
                                     <div class="img"
-                                         th:style="'background-image:url(' + ${row.carImageUrl} + ');'">
-                                    </div>
+                                         th:style="'background-image:url(' + ${row.carImageUrl} + ');'"></div>
                                 </td>
 
                                 <td class="product-name">
@@ -114,25 +110,22 @@
 
                                     <p class="mb-0 rated">
                                         <span>rated:</span>
-
                                         <span th:each="i : ${#numbers.sequence(1,5)}"
-                                              th:class="${i <= T(java.lang.Math).round(row.averageRating) ? 'ion-ios-star' : 'ion-ios-star-outline'}">
-                                        </span>
-
+                                              th:class="${i <= T(java.lang.Math).round(row.averageRating) ? 'ion-ios-star' : 'ion-ios-star-outline'}"></span>
                                         <small style="margin-left:8px; color:#6c757d;"
                                                th:text="'(' + ${row.reviewCount} + ')'">(0)</small>
                                     </p>
                                 </td>
 
-                                <!-- PER HOUR -->
+                                <!-- HOURLY -->
                                 <td class="price">
                                     <p class="btn-custom">
                                         <a th:href="@{'/car/' + ${row.carSlug}(
-                                            rate='HOURLY',
-                                            pickupLoc=${trip != null ? trip.pickupLoc : null},
-                                            dropoffLoc=${trip != null ? trip.dropoffLoc : null},
-                                            pickupDate=${trip != null ? trip.pickupDate : null},
-                                            dropoffDate=${trip != null ? trip.dropoffDate : null}
+                                                rate='HOURLY',
+                                                pickupLoc=${trip != null ? trip.pickupLoc : null},
+                                                dropoffLoc=${trip != null ? trip.dropoffLoc : null},
+                                                pickupDate=${trip != null ? trip.pickupDate : null},
+                                                dropoffDate=${trip != null ? trip.dropoffDate : null}
                                         )}">Details</a>
                                     </p>
 
@@ -160,20 +153,19 @@
 
                                         <span class="subheading"
                                               th:if="${row.fuelSurchargePerHour != null and row.fuelSurchargePerHour.doubleValue() > 0}"
-                                              th:text="'$' + ${row.fuelSurchargePerHour} + '/hour fuel surcharges'">
-                                        </span>
+                                              th:text="'$' + ${row.fuelSurchargePerHour} + '/hour fuel surcharges'"></span>
                                     </div>
                                 </td>
 
-                                <!-- PER DAY -->
+                                <!-- DAILY -->
                                 <td class="price">
                                     <p class="btn-custom">
                                         <a th:href="@{'/car/' + ${row.carSlug}(
-                                            rate='DAILY',
-                                            pickupLoc=${trip != null ? trip.pickupLoc : null},
-                                            dropoffLoc=${trip != null ? trip.dropoffLoc : null},
-                                            pickupDate=${trip != null ? trip.pickupDate : null},
-                                            dropoffDate=${trip != null ? trip.dropoffDate : null}
+                                                rate='DAILY',
+                                                pickupLoc=${trip != null ? trip.pickupLoc : null},
+                                                dropoffLoc=${trip != null ? trip.dropoffLoc : null},
+                                                pickupDate=${trip != null ? trip.pickupDate : null},
+                                                dropoffDate=${trip != null ? trip.dropoffDate : null}
                                         )}">Details</a>
                                     </p>
 
@@ -205,11 +197,11 @@
                                 <td class="price">
                                     <p class="btn-custom">
                                         <a th:href="@{'/car/' + ${row.carSlug}(
-                                            rate='LEASING',
-                                            pickupLoc=${trip != null ? trip.pickupLoc : null},
-                                            dropoffLoc=${trip != null ? trip.dropoffLoc : null},
-                                            pickupDate=${trip != null ? trip.pickupDate : null},
-                                            dropoffDate=${trip != null ? trip.dropoffDate : null}
+                                                rate='LEASING',
+                                                pickupLoc=${trip != null ? trip.pickupLoc : null},
+                                                dropoffLoc=${trip != null ? trip.dropoffLoc : null},
+                                                pickupDate=${trip != null ? trip.pickupDate : null},
+                                                dropoffDate=${trip != null ? trip.dropoffDate : null}
                                         )}">Details</a>
                                     </p>
 
@@ -236,6 +228,7 @@
                                         </h3>
                                     </div>
                                 </td>
+
                             </tr>
 
                             </tbody>

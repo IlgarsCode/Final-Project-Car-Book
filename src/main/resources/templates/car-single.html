@@ -39,8 +39,7 @@
                     <div class="car-details">
 
                         <div class="img rounded"
-                             th:style="'background-image: url(' + ${car.imageUrl} + ');'">
-                        </div>
+                             th:style="'background-image: url(' + ${car.imageUrl} + ');'"></div>
 
                         <div class="text text-center">
                             <span class="subheading" th:text="${car.brand}">Brand</span>
@@ -53,42 +52,40 @@
 
                             <div class="mt-2">
                                 <span class="badge badge-info"
-                                      th:text="${car.selectedRate != null ? car.selectedRate : 'DAILY'}">
-                                    DAILY
-                                </span>
+                                      th:text="${car.selectedRate != null ? car.selectedRate : 'DAILY'}">DAILY</span>
                             </div>
 
-                            <!-- ✅ RATE SWITCH (context itmesin) -->
+                            <!-- RATE SWITCH (trip itmir) -->
                             <div class="d-flex justify-content-center mt-3" style="gap:10px; flex-wrap:wrap;">
                                 <a class="btn btn-outline-primary btn-sm"
                                    th:href="@{'/car/' + ${car.slug}(
                                         rate='HOURLY',
-                                        pickupLoc=${pickupLoc},
-                                        dropoffLoc=${dropoffLoc},
-                                        pickupDate=${pickupDate},
-                                        dropoffDate=${dropoffDate}
+                                        pickupLoc=${trip != null ? trip.pickupLoc : null},
+                                        dropoffLoc=${trip != null ? trip.dropoffLoc : null},
+                                        pickupDate=${trip != null ? trip.pickupDate : null},
+                                        dropoffDate=${trip != null ? trip.dropoffDate : null}
                                    )}">Hourly</a>
 
                                 <a class="btn btn-outline-primary btn-sm"
                                    th:href="@{'/car/' + ${car.slug}(
                                         rate='DAILY',
-                                        pickupLoc=${pickupLoc},
-                                        dropoffLoc=${dropoffLoc},
-                                        pickupDate=${pickupDate},
-                                        dropoffDate=${dropoffDate}
+                                        pickupLoc=${trip != null ? trip.pickupLoc : null},
+                                        dropoffLoc=${trip != null ? trip.dropoffLoc : null},
+                                        pickupDate=${trip != null ? trip.pickupDate : null},
+                                        dropoffDate=${trip != null ? trip.dropoffDate : null}
                                    )}">Daily</a>
 
                                 <a class="btn btn-outline-primary btn-sm"
                                    th:href="@{'/car/' + ${car.slug}(
                                         rate='LEASING',
-                                        pickupLoc=${pickupLoc},
-                                        dropoffLoc=${dropoffLoc},
-                                        pickupDate=${pickupDate},
-                                        dropoffDate=${dropoffDate}
+                                        pickupLoc=${trip != null ? trip.pickupLoc : null},
+                                        dropoffLoc=${trip != null ? trip.dropoffLoc : null},
+                                        pickupDate=${trip != null ? trip.pickupDate : null},
+                                        dropoffDate=${trip != null ? trip.dropoffDate : null}
                                    )}">Leasing</a>
                             </div>
 
-                            <!-- ✅ Availability block (yalnız context yoxdursa göstər) -->
+                            <!-- Availability block: yalnız TRIP boşdursa görünsün -->
                             <div class="mt-4"
                                  th:if="${trip == null or trip.pickupLoc == null or trip.dropoffLoc == null or trip.pickupDate == null or trip.dropoffDate == null}">
                                 <div class="availability-card mx-auto" style="max-width:760px;">
@@ -118,7 +115,8 @@
                             </div>
 
                         </div>
-                        <!-- ✅ MAIN BOOK NOW (context post et) -->
+
+                        <!-- MAIN BOOK NOW (TRIP hidden-lar dolu gedəcək) -->
                         <div class="d-flex justify-content-center mt-4" style="gap:10px; flex-wrap:wrap;">
                             <form th:action="@{/cart/add}" method="post">
                                 <input type="hidden" name="carId" th:value="${car.id}">
@@ -126,11 +124,10 @@
                                        th:value="${car.selectedRate != null ? car.selectedRate : 'DAILY'}">
                                 <input type="hidden" name="unitCount" value="1">
 
-                                <!-- booking context -->
-                                <input type="hidden" name="pickupLoc" th:value="${pickupLoc}">
-                                <input type="hidden" name="dropoffLoc" th:value="${dropoffLoc}">
-                                <input type="hidden" name="pickupDate" th:value="${pickupDate}">
-                                <input type="hidden" name="dropoffDate" th:value="${dropoffDate}">
+                                <input type="hidden" name="pickupLoc" th:value="${trip != null ? trip.pickupLoc : ''}">
+                                <input type="hidden" name="dropoffLoc" th:value="${trip != null ? trip.dropoffLoc : ''}">
+                                <input type="hidden" name="pickupDate" th:value="${trip != null ? trip.pickupDate : ''}">
+                                <input type="hidden" name="dropoffDate" th:value="${trip != null ? trip.dropoffDate : ''}">
 
                                 <button type="submit" class="btn btn-primary py-2 px-4">Book now</button>
                             </form>

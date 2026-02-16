@@ -37,7 +37,8 @@
 
                         <div id="checkoutMsg" class="alert" style="display:none;"></div>
 
-                        <form id="checkoutForm" th:action="@{/checkout}" th:object="${form}" method="post">
+                        <!-- ❗ th:object dəyişdi -->
+                        <form id="checkoutForm" th:action="@{/checkout}" th:object="${checkoutForm}" method="post">
 
                             <div class="form-group">
                                 <label>Pick-up location</label>

@@ -59,7 +59,6 @@ public class CartController {
                             @RequestParam(name = "rateType", defaultValue = "DAILY") PricingRateType rateType,
                             @RequestParam(name = "unitCount", defaultValue = "1") Integer unitCount,
 
-                            // ✅ trip context (optional) - LocalDate elədik ki parse problemi olmasın
                             @RequestParam(name = "pickupLoc", required = false) Long pickupLoc,
                             @RequestParam(name = "dropoffLoc", required = false) Long dropoffLoc,
                             @RequestParam(name = "pickupDate", required = false) LocalDate pickupDate,
@@ -70,7 +69,6 @@ public class CartController {
 
         cartService.addToCart(user.getUsername(), carId, rateType, unitCount);
 
-        // ✅ HƏR YERDƏ 1 ADET SESSION KEY: TRIP_CTX
         TripContext ctx = (TripContext) session.getAttribute("TRIP_CTX");
         if (ctx == null) ctx = new TripContext();
 
@@ -95,7 +93,7 @@ public class CartController {
     public String clear(@AuthenticationPrincipal UserDetails user,
                         HttpSession session) {
         cartService.clearCart(user.getUsername());
-        session.removeAttribute("TRIP_CTX"); // ✅
+        session.removeAttribute("TRIP_CTX");
         return "redirect:/cart";
     }
 }

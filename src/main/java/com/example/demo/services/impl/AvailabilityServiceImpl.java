@@ -15,16 +15,22 @@ public class AvailabilityServiceImpl implements AvailabilityService {
 
     private final OrderItemRepository orderItemRepository;
 
-    private static final List<OrderStatus> ACTIVE = List.of(
+    private static final List<OrderStatus> BLOCKING = List.of(
             OrderStatus.PENDING,
             OrderStatus.APPROVED
     );
 
     @Override
     public boolean isCarAvailable(Long carId, LocalDate pickupDate, LocalDate dropoffDate) {
+
+        // ✅ minimal guard (controller artıq yoxlayır, amma service də təhlükəsiz olsun)
+        if (carId == null || pickupDate == null || dropoffDate == null) return false;
+        if (dropoffDate.isBefore(pickupDate)) return false;
+
         boolean busy = orderItemRepository.existsActiveRentalOverlap(
-                carId, ACTIVE, pickupDate, dropoffDate
+                carId, BLOCKING, pickupDate, dropoffDate
         );
+
         return !busy;
     }
 }

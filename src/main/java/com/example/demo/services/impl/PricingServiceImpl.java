@@ -2,15 +2,17 @@ package com.example.demo.services.impl;
 
 import com.example.demo.dto.pricing.CarPricingRowDto;
 import com.example.demo.model.CarPricing;
+import com.example.demo.model.OrderStatus;
 import com.example.demo.repository.CarPricingRepository;
 import com.example.demo.repository.CarReviewRepository;
+import com.example.demo.repository.OrderRepository;
 import com.example.demo.services.PricingService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.time.LocalDate;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -18,15 +20,51 @@ public class PricingServiceImpl implements PricingService {
 
     private final CarPricingRepository carPricingRepository;
     private final CarReviewRepository carReviewRepository;
+    private final OrderRepository orderRepository;
 
     @Override
     public List<CarPricingRowDto> getPricingRows(String categorySlug) {
+        // tarixsiz: əvvəlki davranış
+        return getPricingRows(categorySlug, null, null);
+    }
+
+    @Override
+    public List<CarPricingRowDto> getPricingRows(String categorySlug, LocalDate pickupDate, LocalDate dropoffDate) {
 
         List<CarPricing> rows =
                 (categorySlug == null || categorySlug.isBlank())
                         ? carPricingRepository.findActivePricingRows()
                         : carPricingRepository.findActivePricingRowsByCategorySlug(categorySlug);
 
+        if (rows == null || rows.isEmpty()) return List.of();
+
+        // ✅ ƏGƏR tarixlər verilibsə → busy car-ları çıxart
+        if (pickupDate != null && dropoffDate != null) {
+
+            // səhv interval gəlibsə filtr eləmək risklidir -> hamısını göstərməyək, sadəcə boş qaytar
+            if (dropoffDate.isBefore(pickupDate)) {
+                return List.of();
+            }
+
+            List<Long> carIds = rows.stream()
+                    .map(cp -> cp.getCar().getId())
+                    .filter(Objects::nonNull)
+                    .toList();
+
+            List<OrderStatus> blocking = List.of(OrderStatus.PENDING, OrderStatus.APPROVED);
+
+            List<Long> busyIds = orderRepository.findBusyCarIdsInRange(
+                    carIds, pickupDate, dropoffDate, blocking
+            );
+
+            Set<Long> busySet = new HashSet<>(busyIds == null ? List.of() : busyIds);
+
+            rows = rows.stream()
+                    .filter(cp -> cp.getCar() != null && !busySet.contains(cp.getCar().getId()))
+                    .toList();
+        }
+
+        // rating stats (qalsın)
         Map<Long, Long> countMap = new HashMap<>();
         Map<Long, Double> avgMap = new HashMap<>();
 

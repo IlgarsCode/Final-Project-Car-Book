@@ -7,6 +7,7 @@ import com.example.demo.dto.enums.PricingRateType;
 import com.example.demo.services.BannerService;
 import com.example.demo.services.CarReviewService;
 import com.example.demo.services.CarService;
+import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
@@ -25,10 +26,8 @@ public class CarController {
     private final BannerService bannerService;
 
     @GetMapping("/car")
-    public String carPage(
-            @RequestParam(name = "category", required = false) String categorySlug,
-            Model model
-    ) {
+    public String carPage(@RequestParam(name = "category", required = false) String categorySlug,
+                          Model model) {
         model.addAttribute("banner", bannerService.getBanner(BannerType.CAR));
         model.addAttribute("cars", carService.getActiveCars(categorySlug));
         return "car";
@@ -40,11 +39,11 @@ public class CarController {
 
                             @RequestParam(name = "pickupLoc", required = false) Long pickupLoc,
                             @RequestParam(name = "dropoffLoc", required = false) Long dropoffLoc,
-                            @RequestParam(name = "pickupDate", required = false) String pickupDate,
-                            @RequestParam(name = "dropoffDate", required = false) String dropoffDate,
+                            @RequestParam(name = "pickupDate", required = false) LocalDate pickupDate,
+                            @RequestParam(name = "dropoffDate", required = false) LocalDate dropoffDate,
 
                             @RequestParam(name = "rpage", defaultValue = "0") int rpage,
-                            jakarta.servlet.http.HttpSession session,
+                            HttpSession session,
                             Model model) {
 
         PricingRateType selected = (rate == null) ? PricingRateType.DAILY : rate;
@@ -54,29 +53,16 @@ public class CarController {
         model.addAttribute("car", car);
         model.addAttribute("relatedCars", carService.getRelatedCars(car.getId(), 3));
 
-        // ✅ TRIP_CTX session
         TripContext ctx = (TripContext) session.getAttribute("TRIP_CTX");
         if (ctx == null) ctx = new TripContext();
 
         if (pickupLoc != null) ctx.setPickupLoc(pickupLoc);
         if (dropoffLoc != null) ctx.setDropoffLoc(dropoffLoc);
-
-        // String gəlir -> LocalDate parse elə (yyyy-MM-dd)
-        try {
-            if (pickupDate != null && !pickupDate.isBlank()) ctx.setPickupDate(LocalDate.parse(pickupDate));
-        } catch (Exception ignored) {}
-        try {
-            if (dropoffDate != null && !dropoffDate.isBlank()) ctx.setDropoffDate(LocalDate.parse(dropoffDate));
-        } catch (Exception ignored) {}
+        if (pickupDate != null) ctx.setPickupDate(pickupDate);
+        if (dropoffDate != null) ctx.setDropoffDate(dropoffDate);
 
         session.setAttribute("TRIP_CTX", ctx);
-
-        // ✅ HƏM trip ver, HƏM də template-də qalan köhnə dəyişənlər üçün ayrıca ver
         model.addAttribute("trip", ctx);
-        model.addAttribute("pickupLoc", ctx.getPickupLoc());
-        model.addAttribute("dropoffLoc", ctx.getDropoffLoc());
-        model.addAttribute("pickupDate", ctx.getPickupDate());
-        model.addAttribute("dropoffDate", ctx.getDropoffDate());
 
         var reviewsPage = carReviewService.getActiveReviewsByCarSlug(slug, rpage, 5);
         model.addAttribute("reviewsPage", reviewsPage);
@@ -100,7 +86,6 @@ public class CarController {
         var car = carService.getCarDetailBySlug(slug);
 
         if (bindingResult.hasErrors()) {
-
             model.addAttribute("banner", bannerService.getBanner(BannerType.CAR_SINGLE));
             model.addAttribute("car", car);
             model.addAttribute("relatedCars", carService.getRelatedCars(car.getId(), 3));
@@ -117,7 +102,6 @@ public class CarController {
         }
 
         carReviewService.create(slug, form);
-
         return "redirect:/car/" + slug + "?rpage=0#pills-review";
     }
 }
