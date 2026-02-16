@@ -52,10 +52,21 @@
                           style="gap:10px;">
 
                         <!-- trip context saxla -->
-                        <input type="hidden" name="pickupLoc" th:value="${trip != null ? trip.pickupLoc : ''}">
-                        <input type="hidden" name="dropoffLoc" th:value="${trip != null ? trip.dropoffLoc : ''}">
-                        <input type="hidden" name="pickupDate" th:value="${trip != null ? trip.pickupDate : ''}">
-                        <input type="hidden" name="dropoffDate" th:value="${trip != null ? trip.dropoffDate : ''}">
+                        <input type="hidden" name="pickupLoc"
+                               th:value="${trip != null ? trip.pickupLoc : ''}"
+                               th:disabled="${trip == null or trip.pickupLoc == null}">
+
+                        <input type="hidden" name="dropoffLoc"
+                               th:value="${trip != null ? trip.dropoffLoc : ''}"
+                               th:disabled="${trip == null or trip.dropoffLoc == null}">
+
+                        <input type="hidden" name="pickupDate"
+                               th:value="${trip != null ? trip.pickupDate : ''}"
+                               th:disabled="${trip == null or trip.pickupDate == null}">
+
+                        <input type="hidden" name="dropoffDate"
+                               th:value="${trip != null ? trip.dropoffDate : ''}"
+                               th:disabled="${trip == null or trip.dropoffDate == null}">
 
                         <select name="category" class="form-control" style="max-width:260px;">
                             <option value="">All categories</option>
