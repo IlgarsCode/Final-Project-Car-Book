@@ -25,16 +25,17 @@ public class PricingController {
     @GetMapping("/pricing")
     public String pricingPage(
             @RequestParam(name = "category", required = false) String categorySlug,
-
             @RequestParam(name = "pickupLoc", required = false) Long pickupLoc,
             @RequestParam(name = "dropoffLoc", required = false) Long dropoffLoc,
             @RequestParam(name = "pickupDate", required = false) LocalDate pickupDate,
             @RequestParam(name = "dropoffDate", required = false) LocalDate dropoffDate,
-
             HttpSession session,
             Model model
     ) {
         model.addAttribute("banner", bannerService.getBanner(BannerType.PRICING));
+        model.addAttribute("rows", pricingService.getPricingRows(categorySlug));
+
+        // ✅ burda artıq projection gələcək (name, slug, activeCarCount)
         model.addAttribute("carCategories", carCategoryRepository.findAllWithActiveCarCount());
         model.addAttribute("selectedCategory", categorySlug);
 
@@ -48,12 +49,6 @@ public class PricingController {
 
         session.setAttribute("TRIP_CTX", ctx);
         model.addAttribute("trip", ctx);
-
-        // ✅ filtr üçün tarixləri session ctx-dən götür (param null olsa belə ctx-də ola bilər)
-        LocalDate p = ctx.getPickupDate();
-        LocalDate d = ctx.getDropoffDate();
-
-        model.addAttribute("rows", pricingService.getPricingRows(categorySlug, p, d));
 
         return "pricing";
     }
