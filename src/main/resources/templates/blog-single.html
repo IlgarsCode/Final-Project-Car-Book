@@ -32,7 +32,7 @@
     <!-- ===== BANNER ===== -->
     <section class="hero-wrap hero-wrap-2 js-fullheight"
              th:if="${banner != null}"
-             th:style="'background-image: url(' + ${banner.photoUrl} + ');'"
+             th:style="|background-image: url('${banner.photoUrl}');|"
              data-stellar-background-ratio="0.5">
         <div class="overlay"></div>
         <div class="container">
@@ -236,7 +236,7 @@
                                 <a href="javascript:void(0)" class="ml-2" id="cancelReply">Cancel</a>
                             </div>
 
-                            <form th:action="@{'/blog/' + ${blog.id} + '/reply'}"
+                            <form th:action="@{/blog/{id}/reply(id=${blog.id})}"
                                   th:object="${replyForm}"
                                   method="post"
                                   class="p-5 bg-light">
@@ -283,7 +283,7 @@
                             </div>
 
                             <form th:if="${isLoggedIn}"
-                                  th:action="@{'/blog/' + ${blog.id} + '/comment'}"
+                                  th:action="@{/blog/{id}/comment(id=${blog.id})}"
                                   th:object="${commentForm}"
                                   method="post"
                                   class="p-5 bg-light">
@@ -333,7 +333,12 @@
                                 <li th:each="cc : ${carCategories}">
                                     <a th:href="@{/car(category=${cc.slug})}" class="cat-row">
                                         <div class="cat-left" th:text="${cc.name}">SUV</div>
-                                        <div class="cat-right" th:text="'(' + ${cc.carCount} + ')'">(0)</div>
+
+                                        <!-- ✅ FIX: cc.carCount YOX, cc.activeCarCount -->
+                                        <div class="cat-right"
+                                             th:text="'(' + ${cc.activeCarCount != null ? cc.activeCarCount : 0} + ')'">
+                                            (0)
+                                        </div>
                                     </a>
                                 </li>
                             </ul>
@@ -349,13 +354,13 @@
 
                         <div class="block-21 mb-4 d-flex" th:each="rb : ${recentBlogs}">
                             <a class="blog-img mr-4"
-                               th:href="@{'/blog/' + ${rb.id}}"
-                               th:style="'background-image: url(' + (rb.imageUrl != null ? rb.imageUrl : '/images/image_1.jpg') + ');'">
+                               th:href="@{/blog/{id}(id=${rb.id})}"
+                               th:style="|background-image: url('${rb.imageUrl != null ? rb.imageUrl : '/images/image_1.jpg'}');|">
                             </a>
 
                             <div class="text">
                                 <h3 class="heading">
-                                    <a th:href="@{'/blog/' + ${rb.id}}"
+                                    <a th:href="@{/blog/{id}(id=${rb.id})}"
                                        th:text="${rb.title}">
                                         Blog title
                                     </a>
@@ -363,14 +368,14 @@
 
                                 <div class="meta">
                                     <div>
-                                        <a th:href="@{'/blog/' + ${rb.id}}">
+                                        <a th:href="@{/blog/{id}(id=${rb.id})}">
                                             <span class="icon-calendar"></span>
                                             <span th:text="${#temporals.format(rb.createdAt, 'dd MMMM, yyyy')}">01 Fevral, 2026</span>
                                         </a>
                                     </div>
 
                                     <div>
-                                        <a th:href="@{'/blog/' + ${rb.id}}">
+                                        <a th:href="@{/blog/{id}(id=${rb.id})}">
                                             <span class="icon-person"></span>
                                             <span th:text="${rb.author}">Admin</span>
                                         </a>
