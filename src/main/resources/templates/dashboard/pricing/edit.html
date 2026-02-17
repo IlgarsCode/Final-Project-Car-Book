@@ -26,6 +26,10 @@
             th:object="${editForm}"
             method="post">
 
+        <th:block th:if="${_csrf != null}">
+          <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+        </th:block>
+
         <input type="hidden" th:field="*{carId}">
 
         <div class="form-row">

@@ -4,15 +4,15 @@
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{dashboard/layout}">
 <head>
-    <title>Edit Car Category</title>
+    <title>Edit Car Segment</title>
 </head>
 <body>
 
 <div layout:fragment="content">
 
     <div class="d-sm-flex align-items-center justify-content-between mb-4">
-        <h1 class="h3 mb-0 text-gray-800">Edit Category</h1>
-        <a class="btn btn-secondary" th:href="@{/dashboard/car-categories}">
+        <h1 class="h3 mb-0 text-gray-800">Edit Segment</h1>
+        <a class="btn btn-secondary" th:href="@{/dashboard/car-segments}">
             Back
         </a>
     </div>
@@ -20,13 +20,9 @@
     <div class="card shadow mb-4">
         <div class="card-body">
 
-            <form th:action="@{/dashboard/car-categories/edit/{id}(id=${id})}"
+            <form th:action="@{/dashboard/car-segments/edit/{id}(id=${id})}"
                   th:object="${editForm}"
                   method="post">
-
-                <th:block th:if="${_csrf != null}">
-                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
-                </th:block>
 
                 <div class="form-group col-md-6 p-0">
                     <label>Name</label>

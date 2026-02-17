@@ -16,6 +16,9 @@ public class CarCreateDto {
     @NotBlank
     private String brand;
 
+    @NotNull(message = "Segment seçilməlidir")
+    private Long segmentId;
+
     @Min(value = 1900, message = "Year 1900-dən aşağı ola bilməz")
     @Max(value = 2100, message = "Year çox böyükdür")
     private Integer year;

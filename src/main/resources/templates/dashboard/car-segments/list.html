@@ -4,36 +4,31 @@
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{dashboard/layout}">
 <head>
-  <title>Car Categories</title>
+  <title>Car Segments</title>
 </head>
 <body>
-
 <div layout:fragment="content">
 
   <div class="d-sm-flex align-items-center justify-content-between mb-4">
-    <h1 class="h3 mb-0 text-gray-800">Car Categories</h1>
+    <h1 class="h3 mb-0 text-gray-800">Car Segments</h1>
   </div>
 
   <!-- CREATE -->
   <div class="card shadow mb-4">
     <div class="card-header py-3">
-      <h6 class="m-0 font-weight-bold text-primary">Create Category</h6>
+      <h6 class="m-0 font-weight-bold text-primary">Create Segment</h6>
     </div>
     <div class="card-body">
 
-      <form th:action="@{/dashboard/car-categories/create}"
+      <form th:action="@{/dashboard/car-segments/create}"
             th:object="${createForm}"
             method="post">
-
-        <th:block th:if="${_csrf != null}">
-          <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
-        </th:block>
 
         <div class="form-row align-items-end">
 
           <div class="form-group col-md-6">
             <label>Name</label>
-            <input class="form-control" th:field="*{name}" placeholder="SUV, Sedan..." />
+            <input class="form-control" th:field="*{name}" placeholder="Economy, Comfort, Premium..." />
             <small class="text-danger"
                    th:if="${#fields.hasErrors('name')}"
                    th:errors="*{name}"></small>
@@ -55,7 +50,7 @@
   <!-- LIST -->
   <div class="card shadow mb-4">
     <div class="card-header py-3 d-flex align-items-center justify-content-between">
-      <h6 class="m-0 font-weight-bold text-primary">Categories</h6>
+      <h6 class="m-0 font-weight-bold text-primary">Segments</h6>
     </div>
 
     <div class="card-body">
@@ -66,38 +61,29 @@
             <th>#</th>
             <th>Name</th>
             <th>Slug</th>
-            <th>Active cars</th>
             <th style="width: 180px;">Actions</th>
           </tr>
           </thead>
 
           <tbody>
           <tr th:if="${rows == null || #lists.isEmpty(rows)}">
-            <td colspan="5" class="text-center">No categories.</td>
+            <td colspan="4" class="text-center">No segments.</td>
           </tr>
 
           <tr th:each="r, i : ${rows}">
             <td th:text="${i.count}">1</td>
-            <td th:text="${r.name}">SUV</td>
-            <td th:text="${r.slug}">suv</td>
-            <td>
-              <span class="badge badge-info" th:text="${r.activeCarCount}">0</span>
-            </td>
+            <td th:text="${r.name}">Economy</td>
+            <td th:text="${r.slug}">economy</td>
             <td>
               <a class="btn btn-sm btn-warning"
-                 th:href="@{/dashboard/car-categories/edit/{id}(id=${r.id})}">
+                 th:href="@{/dashboard/car-segments/edit/{id}(id=${r.id})}">
                 <i class="fas fa-edit"></i> Edit
               </a>
 
-              <form th:action="@{/dashboard/car-categories/delete/{id}(id=${r.id})}"
+              <form th:action="@{/dashboard/car-segments/delete/{id}(id=${r.id})}"
                     method="post"
                     class="d-inline"
-                    onsubmit="return confirm('Delete category? (Only possible if no cars are linked)');">
-
-                <th:block th:if="${_csrf != null}">
-                  <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
-                </th:block>
-
+                    onsubmit="return confirm('Delete segment? (Only possible if no cars are linked)');">
                 <button type="submit" class="btn btn-sm btn-danger">
                   <i class="fas fa-trash"></i> Delete
                 </button>
@@ -113,6 +99,5 @@
   </div>
 
 </div>
-
 </body>
 </html>

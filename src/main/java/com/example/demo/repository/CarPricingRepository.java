@@ -72,4 +72,31 @@ public interface CarPricingRepository extends JpaRepository<CarPricing, Long> {
           and c.id = :carId
     """)
     Optional<CarPricing> findActiveByCarId(@Param("carId") Long carId);
+
+    @Query("""
+    select cp
+    from CarPricing cp
+    join fetch cp.car c
+    join c.segment s
+    where cp.isActive = true
+      and c.isActive = true
+      and s.slug = :segmentSlug
+    order by c.id desc
+""")
+    List<CarPricing> findActivePricingRowsBySegmentSlug(@Param("segmentSlug") String segmentSlug);
+
+    @Query("""
+    select cp
+    from CarPricing cp
+    join fetch cp.car c
+    join c.category cat
+    join c.segment s
+    where cp.isActive = true
+      and c.isActive = true
+      and cat.slug = :categorySlug
+      and s.slug = :segmentSlug
+    order by c.id desc
+""")
+    List<CarPricing> findActivePricingRowsByCategoryAndSegment(@Param("categorySlug") String categorySlug,
+                                                               @Param("segmentSlug") String segmentSlug);
 }

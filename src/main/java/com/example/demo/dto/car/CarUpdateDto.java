@@ -16,6 +16,9 @@ public class CarUpdateDto {
     @NotBlank
     private String brand;
 
+    @NotNull(message = "Segment seçilməlidir")
+    private Long segmentId;
+
     @Min(1900)
     @Max(2100)
     private Integer year;

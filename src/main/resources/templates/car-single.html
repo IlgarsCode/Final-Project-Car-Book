@@ -9,10 +9,9 @@
 <body>
 <div layout:fragment="content">
 
-    <!-- BANNER -->
     <section class="hero-wrap hero-wrap-2 js-fullheight"
              th:if="${banner != null}"
-             th:style="'background-image: url(' + ${banner.photoUrl} + ');'"
+             th:style="|background-image: url('${banner.photoUrl}');|"
              data-stellar-background-ratio="0.5">
         <div class="overlay"></div>
         <div class="container">
@@ -39,23 +38,33 @@
                     <div class="car-details">
 
                         <div class="img rounded"
-                             th:style="'background-image: url(' + ${car.imageUrl} + ');'"></div>
+                             th:style="|background-image: url('${car.imageUrl != null ? car.imageUrl : '/images/car-1.jpg'}');|"></div>
 
                         <div class="text text-center">
                             <span class="subheading" th:text="${car.brand}">Brand</span>
                             <h2 th:text="${car.title}">Title</h2>
 
                             <p class="price mt-2">
-                                <span>$</span><span th:text="${car.displayPrice}">0</span>
-                                <span th:text="${car.displayUnit}">/per day</span>
+                                <span>$</span><span th:text="${car.displayPrice != null ? car.displayPrice : 0}">0</span>
+                                <span th:text="${car.displayUnit != null ? car.displayUnit : '/per day'}">/per day</span>
                             </p>
 
                             <div class="mt-2">
                                 <span class="badge badge-info"
                                       th:text="${car.selectedRate != null ? car.selectedRate : 'DAILY'}">DAILY</span>
+
+                                <!-- ✅ discount badge for selected rate -->
+                                <span class="badge badge-success ml-2"
+                                      th:if="${car.hasDiscount != null and car.hasDiscount and car.discountPercent != null and car.discountPercent.doubleValue() > 0}"
+                                      th:text="${'-' + car.discountPercent + '%'}">-10%</span>
+
+                                <span class="text-muted ml-2"
+                                      th:if="${car.hasDiscount != null and car.hasDiscount and car.discountPercent != null and car.discountPercent.doubleValue() > 0}">
+                                    <del>$<span th:text="${car.selectedRate == 'HOURLY' ? car.baseHourlyRate : (car.selectedRate == 'LEASING' ? car.baseMonthlyLeasingRate : car.baseDailyRate)}">0</span></del>
+                                </span>
                             </div>
 
-                            <!-- RATE SWITCH (trip itmir) -->
+                            <!-- RATE SWITCH -->
                             <div class="d-flex justify-content-center mt-3" style="gap:10px; flex-wrap:wrap;">
                                 <a class="btn btn-outline-primary btn-sm"
                                    th:href="@{'/car/' + ${car.slug}(
@@ -85,7 +94,7 @@
                                    )}">Leasing</a>
                             </div>
 
-                            <!-- Availability block: yalnız TRIP boşdursa görünsün -->
+                            <!-- Availability block -->
                             <div class="mt-4"
                                  th:if="${trip == null or trip.pickupLoc == null or trip.dropoffLoc == null or trip.pickupDate == null or trip.dropoffDate == null}">
                                 <div class="availability-card mx-auto" style="max-width:760px;">
@@ -116,9 +125,12 @@
 
                         </div>
 
-                        <!-- MAIN BOOK NOW (TRIP hidden-lar dolu gedəcək) -->
+                        <!-- MAIN BOOK NOW -->
                         <div class="d-flex justify-content-center mt-4" style="gap:10px; flex-wrap:wrap;">
                             <form th:action="@{/cart/add}" method="post">
+                                <!-- ✅ CSRF -->
+                                <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+
                                 <input type="hidden" name="carId" th:value="${car.id}">
                                 <input type="hidden" name="rateType"
                                        th:value="${car.selectedRate != null ? car.selectedRate : 'DAILY'}">
@@ -427,60 +439,25 @@
                 .rating-select label:hover ~ label{ color:#f5c518; }
             </style>
 
-            <!-- TABS -->
+            <!-- TABS + Reviews (CSRF əlavə olundu) -->
             <div class="row car-tabs-wrap">
                 <div class="col-md-12">
 
                     <nav class="nav car-tabs-nav" role="tablist">
-                        <a class="nav-link active"
-                           id="tab-features"
-                           data-toggle="tab"
-                           href="#pane-features"
-                           role="tab"
-                           aria-controls="pane-features"
-                           aria-selected="true">
-                            Features
-                        </a>
-
-                        <a class="nav-link"
-                           id="tab-description"
-                           data-toggle="tab"
-                           href="#pane-description"
-                           role="tab"
-                           aria-controls="pane-description"
-                           aria-selected="false">
-                            Description
-                        </a>
-
-                        <a class="nav-link"
-                           id="tab-reviews"
-                           data-toggle="tab"
-                           href="#pane-reviews"
-                           role="tab"
-                           aria-controls="pane-reviews"
-                           aria-selected="false">
-                            Reviews
-                        </a>
+                        <a class="nav-link active" id="tab-features" data-toggle="tab" href="#pane-features" role="tab">Features</a>
+                        <a class="nav-link" id="tab-description" data-toggle="tab" href="#pane-description" role="tab">Description</a>
+                        <a class="nav-link" id="tab-reviews" data-toggle="tab" href="#pane-reviews" role="tab">Reviews</a>
                     </nav>
 
                     <div class="tab-content car-tab-card">
 
                         <!-- Features -->
-                        <div class="tab-pane fade show active"
-                             id="pane-features"
-                             role="tabpanel"
-                             aria-labelledby="tab-features">
-
-                            <div class="card-head">
-                                <h4>Features</h4>
-                            </div>
-
+                        <div class="tab-pane fade show active" id="pane-features" role="tabpanel">
+                            <div class="card-head"><h4>Features</h4></div>
                             <div class="card-body">
                                 <div class="row">
-
                                     <div class="col-md-4">
-                                        <ul class="feature-list"
-                                            th:if="${car.features1 != null and !#lists.isEmpty(car.features1)}">
+                                        <ul class="feature-list" th:if="${car.features1 != null and !#lists.isEmpty(car.features1)}">
                                             <li th:each="f : ${car.features1}">
                                                 <span class="feature-dot"></span>
                                                 <span th:text="${f}">Feature</span>
@@ -489,8 +466,7 @@
                                     </div>
 
                                     <div class="col-md-4">
-                                        <ul class="feature-list"
-                                            th:if="${car.features2 != null and !#lists.isEmpty(car.features2)}">
+                                        <ul class="feature-list" th:if="${car.features2 != null and !#lists.isEmpty(car.features2)}">
                                             <li th:each="f : ${car.features2}">
                                                 <span class="feature-dot"></span>
                                                 <span th:text="${f}">Feature</span>
@@ -499,8 +475,7 @@
                                     </div>
 
                                     <div class="col-md-4">
-                                        <ul class="feature-list"
-                                            th:if="${car.features3 != null and !#lists.isEmpty(car.features3)}">
+                                        <ul class="feature-list" th:if="${car.features3 != null and !#lists.isEmpty(car.features3)}">
                                             <li th:each="f : ${car.features3}">
                                                 <span class="feature-dot"></span>
                                                 <span th:text="${f}">Feature</span>
@@ -520,34 +495,17 @@
                         </div>
 
                         <!-- Description -->
-                        <div class="tab-pane fade"
-                             id="pane-description"
-                             role="tabpanel"
-                             aria-labelledby="tab-description">
-
-                            <div class="card-head">
-                                <h4>Description</h4>
-                            </div>
-
+                        <div class="tab-pane fade" id="pane-description" role="tabpanel">
+                            <div class="card-head"><h4>Description</h4></div>
                             <div class="card-body">
-                                <p class="desc-text"
-                                   th:if="${car.description != null}"
-                                   th:text="${car.description}">
-                                    Description
-                                </p>
+                                <p class="desc-text" th:if="${car.description != null}" th:text="${car.description}">Description</p>
                                 <p class="text-muted mb-0" th:if="${car.description == null}">Description yoxdur.</p>
                             </div>
                         </div>
 
                         <!-- Reviews -->
-                        <div class="tab-pane fade"
-                             id="pane-reviews"
-                             role="tabpanel"
-                             aria-labelledby="tab-reviews">
-
-                            <div class="card-head">
-                                <h4>Reviews</h4>
-                            </div>
+                        <div class="tab-pane fade" id="pane-reviews" role="tabpanel">
+                            <div class="card-head"><h4>Reviews</h4></div>
 
                             <div class="card-body" id="pills-review">
 
@@ -557,13 +515,13 @@
                                     <form th:action="@{'/car/' + ${car.slug} + '/review'}"
                                           method="post"
                                           th:object="${reviewForm}">
+                                        <!-- ✅ CSRF -->
+                                        <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
 
                                         <div class="form-group">
                                             <label>Ad Soyad</label>
                                             <input class="form-control" th:field="*{fullName}">
-                                            <small class="text-danger"
-                                                   th:if="${#fields.hasErrors('fullName')}"
-                                                   th:errors="*{fullName}"></small>
+                                            <small class="text-danger" th:if="${#fields.hasErrors('fullName')}" th:errors="*{fullName}"></small>
                                         </div>
 
                                         <div class="form-group">
@@ -573,35 +531,20 @@
 
                                         <div class="form-group">
                                             <label>Comment</label>
-                                            <textarea class="form-control" rows="4"
-                                                      th:field="*{message}"
-                                                      placeholder="Rəyinizi yazın..."></textarea>
-                                            <small class="text-danger"
-                                                   th:if="${#fields.hasErrors('message')}"
-                                                   th:errors="*{message}"></small>
+                                            <textarea class="form-control" rows="4" th:field="*{message}" placeholder="Rəyinizi yazın..."></textarea>
+                                            <small class="text-danger" th:if="${#fields.hasErrors('message')}" th:errors="*{message}"></small>
                                         </div>
 
                                         <div class="form-group">
                                             <label>Rating</label>
                                             <div class="rating-select">
-                                                <input type="radio" id="rate5" th:field="*{rating}" value="5">
-                                                <label for="rate5" class="ion-ios-star"></label>
-
-                                                <input type="radio" id="rate4" th:field="*{rating}" value="4">
-                                                <label for="rate4" class="ion-ios-star"></label>
-
-                                                <input type="radio" id="rate3" th:field="*{rating}" value="3">
-                                                <label for="rate3" class="ion-ios-star"></label>
-
-                                                <input type="radio" id="rate2" th:field="*{rating}" value="2">
-                                                <label for="rate2" class="ion-ios-star"></label>
-
-                                                <input type="radio" id="rate1" th:field="*{rating}" value="1">
-                                                <label for="rate1" class="ion-ios-star"></label>
+                                                <input type="radio" id="rate5" th:field="*{rating}" value="5"><label for="rate5" class="ion-ios-star"></label>
+                                                <input type="radio" id="rate4" th:field="*{rating}" value="4"><label for="rate4" class="ion-ios-star"></label>
+                                                <input type="radio" id="rate3" th:field="*{rating}" value="3"><label for="rate3" class="ion-ios-star"></label>
+                                                <input type="radio" id="rate2" th:field="*{rating}" value="2"><label for="rate2" class="ion-ios-star"></label>
+                                                <input type="radio" id="rate1" th:field="*{rating}" value="1"><label for="rate1" class="ion-ios-star"></label>
                                             </div>
-                                            <small class="text-danger"
-                                                   th:if="${#fields.hasErrors('rating')}"
-                                                   th:errors="*{rating}"></small>
+                                            <small class="text-danger" th:if="${#fields.hasErrors('rating')}" th:errors="*{rating}"></small>
                                         </div>
 
                                         <div class="text-center mt-3">
@@ -625,7 +568,6 @@
                                                 <p class="review-name" th:text="${r.fullName}">User</p>
                                                 <span class="review-date"
                                                       th:text="${r.createdAt != null ? #temporals.format(r.createdAt, 'yyyy-MM-dd') : ''}">
-                                                    2026-02-01
                                                 </span>
                                             </div>
 
@@ -645,7 +587,6 @@
                     </div><!-- /tab-content -->
                 </div>
             </div>
-
         </div>
     </section>
 
@@ -665,17 +606,17 @@
                     <div class="car-wrap rounded ftco-animate">
 
                         <div class="img rounded d-flex align-items-end"
-                             th:style="'background-image: url(' + ${rc.imageUrl} + ');'">
+                             th:style="|background-image: url('${rc.imageUrl != null ? rc.imageUrl : '/images/car-1.jpg'}');|">
                         </div>
 
                         <div class="text">
                             <h2 class="mb-0">
                                 <a th:href="@{'/car/' + ${rc.slug}(
                                        rate=${car.selectedRate != null ? car.selectedRate : 'DAILY'},
-                                       pickupLoc=${pickupLoc},
-                                       dropoffLoc=${dropoffLoc},
-                                       pickupDate=${pickupDate},
-                                       dropoffDate=${dropoffDate}
+                                       pickupLoc=${trip != null ? trip.pickupLoc : null},
+                                       dropoffLoc=${trip != null ? trip.dropoffLoc : null},
+                                       pickupDate=${trip != null ? trip.pickupDate : null},
+                                       dropoffDate=${trip != null ? trip.dropoffDate : null}
                                 )}"
                                    th:text="${rc.title}">Car</a>
                             </h2>
@@ -684,32 +625,34 @@
                                 <span class="cat" th:text="${rc.brand}">Brand</span>
 
                                 <p class="price ml-auto">
-                                    $<span th:text="${rc.dailyRate}">0</span> <span>/day</span>
+                                    $<span th:text="${rc.dailyRate != null ? rc.dailyRate : 0}">0</span> <span>/day</span>
                                 </p>
                             </div>
 
                             <div class="d-flex mb-0 d-block" style="gap:10px; flex-wrap:wrap;">
                                 <form th:action="@{/cart/add}" method="post" class="mr-1">
+                                    <!-- ✅ CSRF -->
+                                    <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+
                                     <input type="hidden" name="carId" th:value="${rc.id}">
                                     <input type="hidden" name="rateType"
                                            th:value="${car.selectedRate != null ? car.selectedRate : 'DAILY'}">
                                     <input type="hidden" name="unitCount" value="1">
 
-                                    <!-- booking context -->
-                                    <input type="hidden" name="pickupLoc" th:value="${pickupLoc}">
-                                    <input type="hidden" name="dropoffLoc" th:value="${dropoffLoc}">
-                                    <input type="hidden" name="pickupDate" th:value="${pickupDate}">
-                                    <input type="hidden" name="dropoffDate" th:value="${dropoffDate}">
+                                    <input type="hidden" name="pickupLoc" th:value="${trip != null ? trip.pickupLoc : ''}">
+                                    <input type="hidden" name="dropoffLoc" th:value="${trip != null ? trip.dropoffLoc : ''}">
+                                    <input type="hidden" name="pickupDate" th:value="${trip != null ? trip.pickupDate : ''}">
+                                    <input type="hidden" name="dropoffDate" th:value="${trip != null ? trip.dropoffDate : ''}">
 
                                     <button type="submit" class="btn btn-primary py-2">Book now</button>
                                 </form>
 
                                 <a th:href="@{'/car/' + ${rc.slug}(
                                        rate=${car.selectedRate != null ? car.selectedRate : 'DAILY'},
-                                       pickupLoc=${pickupLoc},
-                                       dropoffLoc=${dropoffLoc},
-                                       pickupDate=${pickupDate},
-                                       dropoffDate=${dropoffDate}
+                                       pickupLoc=${trip != null ? trip.pickupLoc : null},
+                                       dropoffLoc=${trip != null ? trip.dropoffLoc : null},
+                                       pickupDate=${trip != null ? trip.pickupDate : null},
+                                       dropoffDate=${trip != null ? trip.dropoffDate : null}
                                 )}"
                                    class="btn btn-secondary py-2 ml-1">Details</a>
                             </div>
@@ -722,7 +665,7 @@
         </div>
     </section>
 
-    <!-- Availability JS -->
+    <!-- Availability JS (səndəki kimi) -->
     <script th:inline="javascript">
         (function(){
             const carId = /*[[${car.id}]]*/ 0;
@@ -732,9 +675,7 @@
             const btnEl = document.getElementById('avBtn');
             const msgEl = document.getElementById('avMsg');
 
-            if (!pickupEl || !dropoffEl || !btnEl || !msgEl) {
-                return; // availability block gizlidirsə elementlər yoxdur
-            }
+            if (!pickupEl || !dropoffEl || !btnEl || !msgEl) { return; }
 
             function todayISO(){
                 const d = new Date();
@@ -769,14 +710,8 @@
                 const pickup = pickupEl.value;
                 const dropoff = dropoffEl.value;
 
-                if (!pickup || !dropoff) {
-                    showMsg('alert-warning', 'Tarixləri seç.');
-                    return;
-                }
-                if (dropoff < pickup) {
-                    showMsg('alert-warning', 'Drop-off pickup-dan əvvəl ola bilməz.');
-                    return;
-                }
+                if (!pickup || !dropoff) { showMsg('alert-warning', 'Tarixləri seç.'); return; }
+                if (dropoff < pickup) { showMsg('alert-warning', 'Drop-off pickup-dan əvvəl ola bilməz.'); return; }
 
                 btnEl.disabled = true;
                 btnEl.textContent = 'Checking...';
@@ -793,11 +728,8 @@
                         return;
                     }
 
-                    if (data && data.available) {
-                        showMsg('alert-success', data.message || 'Uyğundur');
-                    } else {
-                        showMsg('alert-danger', data && data.message ? data.message : 'İcarədədir');
-                    }
+                    if (data && data.available) showMsg('alert-success', data.message || 'Uyğundur');
+                    else showMsg('alert-danger', data && data.message ? data.message : 'İcarədədir');
 
                 } catch (e) {
                     showMsg('alert-danger', 'Serverə qoşulmaq olmadı.');
@@ -808,7 +740,6 @@
             }
 
             btnEl.addEventListener('click', checkAvailability);
-
         })();
     </script>
 

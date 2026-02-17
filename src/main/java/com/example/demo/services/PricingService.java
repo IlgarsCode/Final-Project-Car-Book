@@ -12,4 +12,9 @@ public interface PricingService {
 
     // ✅ tarixlə filtr
     List<CarPricingRowDto> getPricingRows(String categorySlug, LocalDate pickupDate, LocalDate dropoffDate);
+    List<CarPricingRowDto> getPricingRows(String categorySlug, String segmentSlug);
+
+    // ✅ NEW: segment + date
+    List<CarPricingRowDto> getPricingRows(String categorySlug, String segmentSlug, LocalDate pickupDate, LocalDate dropoffDate);
 }
+

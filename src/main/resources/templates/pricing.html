@@ -12,7 +12,7 @@
 
     <section class="hero-wrap hero-wrap-2 js-fullheight"
              th:if="${banner != null}"
-             th:style="'background-image: url(' + ${banner.photoUrl} + ');'"
+             th:style="|background-image: url('${banner.photoUrl}');|"
              data-stellar-background-ratio="0.5">
         <div class="overlay"></div>
         <div class="container">
@@ -28,7 +28,7 @@
                     <h1 class="mb-3 bread" th:text="${banner.title}">Pricing</h1>
                     <p th:text="${banner.description}"></p>
 
-                    <a th:if="${banner.buttonText != null}"
+                    <a th:if="${banner.buttonText != null and banner.buttonUrl != null}"
                        th:href="${banner.buttonUrl}"
                        class="btn btn-primary mt-3"
                        th:text="${banner.buttonText}">
@@ -51,7 +51,6 @@
                           class="d-flex align-items-center flex-wrap"
                           style="gap:10px;">
 
-                        <!-- trip context saxla -->
                         <input type="hidden" name="pickupLoc"
                                th:value="${trip != null ? trip.pickupLoc : ''}"
                                th:disabled="${trip == null or trip.pickupLoc == null}">
@@ -76,6 +75,15 @@
                                     th:text="${c.name + ' (' + c.activeCarCount + ')'}"
                                     th:selected="${selectedCategory != null and selectedCategory == c.slug}">
                                 Category
+                            </option>
+                        </select>
+
+                        <select name="segment" class="form-control" style="max-width:260px;">
+                            <option value="">All segments</option>
+                            <option th:each="s : ${segments}"
+                                    th:value="${s.slug}"
+                                    th:text="${s.name + ' (' + s.activeCarCount + ')'}"
+                                    th:selected="${selectedSegment != null and selectedSegment == s.slug}">
                             </option>
                         </select>
 
@@ -120,7 +128,7 @@
                             <tr th:each="row : ${rows}">
                                 <td class="car-image">
                                     <div class="img"
-                                         th:style="'background-image:url(' + ${row.carImageUrl} + ');'"></div>
+                                         th:style="|background-image:url('${row.carImageUrl != null ? row.carImageUrl : '/images/car-1.jpg'}');|"></div>
                                 </td>
 
                                 <td class="product-name">
@@ -148,6 +156,8 @@
                                     </p>
 
                                     <form th:action="@{/cart/add}" method="post" style="margin:0 0 10px 0;">
+                                        <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+
                                         <input type="hidden" name="carId" th:value="${row.carId}">
                                         <input type="hidden" name="rateType" value="HOURLY">
                                         <input type="hidden" name="unitCount" value="1">
@@ -164,7 +174,18 @@
                                         <h3>
                                             <span class="num">
                                                 <small class="currency">$</small>
-                                                <span th:text="${row.hourlyRate}">0</span>
+
+                                                <!-- ✅ base strike -->
+                                                <del class="text-muted mr-1"
+                                                     th:if="${row.hourlyHasDiscount != null and row.hourlyHasDiscount and row.baseHourlyRate != null and row.baseHourlyRate.compareTo(row.hourlyRate) > 0}">
+                                                    <span th:text="${row.baseHourlyRate}">0</span>
+                                                </del>
+
+                                                <span th:text="${row.hourlyRate != null ? row.hourlyRate : 0}">0</span>
+
+                                                <span class="badge badge-success ml-2"
+                                                      th:if="${row.hourlyHasDiscount != null and row.hourlyHasDiscount and row.hourlyDiscountPercent != null and row.hourlyDiscountPercent.doubleValue() > 0}"
+                                                      th:text="${'-' + row.hourlyDiscountPercent + '%'}">-10%</span>
                                             </span>
                                             <span class="per">/per hour</span>
                                         </h3>
@@ -188,6 +209,8 @@
                                     </p>
 
                                     <form th:action="@{/cart/add}" method="post" style="margin:0 0 10px 0;">
+                                        <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+
                                         <input type="hidden" name="carId" th:value="${row.carId}">
                                         <input type="hidden" name="rateType" value="DAILY">
                                         <input type="hidden" name="unitCount" value="1">
@@ -204,7 +227,17 @@
                                         <h3>
                                             <span class="num">
                                                 <small class="currency">$</small>
-                                                <span th:text="${row.dailyRate}">0</span>
+
+                                                <del class="text-muted mr-1"
+                                                     th:if="${row.dailyHasDiscount != null and row.dailyHasDiscount and row.baseDailyRate != null and row.baseDailyRate.compareTo(row.dailyRate) > 0}">
+                                                    <span th:text="${row.baseDailyRate}">0</span>
+                                                </del>
+
+                                                <span th:text="${row.dailyRate != null ? row.dailyRate : 0}">0</span>
+
+                                                <span class="badge badge-success ml-2"
+                                                      th:if="${row.dailyHasDiscount != null and row.dailyHasDiscount and row.dailyDiscountPercent != null and row.dailyDiscountPercent.doubleValue() > 0}"
+                                                      th:text="${'-' + row.dailyDiscountPercent + '%'}">-15%</span>
                                             </span>
                                             <span class="per">/per day</span>
                                         </h3>
@@ -224,6 +257,8 @@
                                     </p>
 
                                     <form th:action="@{/cart/add}" method="post" style="margin:0 0 10px 0;">
+                                        <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+
                                         <input type="hidden" name="carId" th:value="${row.carId}">
                                         <input type="hidden" name="rateType" value="LEASING">
                                         <input type="hidden" name="unitCount" value="1">
@@ -240,7 +275,17 @@
                                         <h3>
                                             <span class="num">
                                                 <small class="currency">$</small>
-                                                <span th:text="${row.monthlyLeasingRate}">0</span>
+
+                                                <del class="text-muted mr-1"
+                                                     th:if="${row.leasingHasDiscount != null and row.leasingHasDiscount and row.baseMonthlyLeasingRate != null and row.baseMonthlyLeasingRate.compareTo(row.monthlyLeasingRate) > 0}">
+                                                    <span th:text="${row.baseMonthlyLeasingRate}">0</span>
+                                                </del>
+
+                                                <span th:text="${row.monthlyLeasingRate != null ? row.monthlyLeasingRate : 0}">0</span>
+
+                                                <span class="badge badge-success ml-2"
+                                                      th:if="${row.leasingHasDiscount != null and row.leasingHasDiscount and row.leasingDiscountPercent != null and row.leasingDiscountPercent.doubleValue() > 0}"
+                                                      th:text="${'-' + row.leasingDiscountPercent + '%'}">-5%</span>
                                             </span>
                                             <span class="per">/per month</span>
                                         </h3>

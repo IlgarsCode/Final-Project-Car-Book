@@ -19,6 +19,7 @@ public class DashboardCarController {
 
     private final CarAdminService carAdminService;
     private final CarCategoryRepository carCategoryRepository;
+    private final com.example.demo.repository.CarSegmentRepository carSegmentRepository;
 
     @GetMapping
     public String list(Model model) {
@@ -30,6 +31,7 @@ public class DashboardCarController {
     public String createPage(Model model) {
         model.addAttribute("form", new CarCreateDto());
         model.addAttribute("categories", carCategoryRepository.findAll());
+        model.addAttribute("segments", carSegmentRepository.findAll());
         return "dashboard/cars/create";
     }
 
@@ -41,6 +43,7 @@ public class DashboardCarController {
 
         if (br.hasErrors()) {
             model.addAttribute("categories", carCategoryRepository.findAll());
+            model.addAttribute("segments", carSegmentRepository.findAll());
             return "dashboard/cars/create";
         }
 
@@ -71,16 +74,23 @@ public class DashboardCarController {
 
         dto.setIsActive(car.getIsActive());
 
-        // ✅ selected category
         dto.setCategoryId(car.getCategory() != null ? car.getCategory().getId() : null);
 
+        // ✅ SegmentId doldur (Car-da segment relation varsa)
+        dto.setSegmentId(car.getSegment() != null ? car.getSegment().getId() : null);
+
         model.addAttribute("categories", carCategoryRepository.findAll());
+
+        // ✅ segments list göndər
+        model.addAttribute("segments", carSegmentRepository.findAll());
+
         model.addAttribute("carId", id);
         model.addAttribute("carImage", car.getImageUrl());
         model.addAttribute("form", dto);
 
         return "dashboard/cars/edit";
     }
+
 
 
     @PostMapping("/edit/{id}")
@@ -95,6 +105,7 @@ public class DashboardCarController {
             model.addAttribute("categories", carCategoryRepository.findAll());
             model.addAttribute("carId", id);
             model.addAttribute("carImage", car.getImageUrl());
+            model.addAttribute("segments", carSegmentRepository.findAll());
             return "dashboard/cars/edit";
         }
 

@@ -3,6 +3,7 @@ package com.example.demo.controller.web;
 import com.example.demo.dto.checkout.TripContext;
 import com.example.demo.dto.enums.BannerType;
 import com.example.demo.repository.CarCategoryRepository;
+import com.example.demo.repository.CarSegmentRepository;
 import com.example.demo.services.BannerService;
 import com.example.demo.services.PricingService;
 import jakarta.servlet.http.HttpSession;
@@ -21,6 +22,7 @@ public class PricingController {
     private final PricingService pricingService;
     private final BannerService bannerService;
     private final CarCategoryRepository carCategoryRepository;
+    private final CarSegmentRepository carSegmentRepository;
 
     @GetMapping("/pricing")
     public String pricingPage(
@@ -29,13 +31,18 @@ public class PricingController {
             @RequestParam(name = "dropoffLoc", required = false) Long dropoffLoc,
             @RequestParam(name = "pickupDate", required = false) LocalDate pickupDate,
             @RequestParam(name = "dropoffDate", required = false) LocalDate dropoffDate,
+            @RequestParam(name = "segment", required = false) String segmentSlug,
             HttpSession session,
             Model model
     ) {
         model.addAttribute("banner", bannerService.getBanner(BannerType.PRICING));
 
         // ✅ tarixlərlə çağır
-        model.addAttribute("rows", pricingService.getPricingRows(categorySlug, pickupDate, dropoffDate));
+        if (segmentSlug != null && !segmentSlug.isBlank()) {
+            model.addAttribute("rows", pricingService.getPricingRows(categorySlug, segmentSlug, pickupDate, dropoffDate));
+        } else {
+            model.addAttribute("rows", pricingService.getPricingRows(categorySlug, pickupDate, dropoffDate));
+        }
 
         model.addAttribute("carCategories", carCategoryRepository.findAllWithActiveCarCount());
         model.addAttribute("selectedCategory", categorySlug);
@@ -50,6 +57,8 @@ public class PricingController {
 
         session.setAttribute("TRIP_CTX", ctx);
         model.addAttribute("trip", ctx);
+        model.addAttribute("segments", carSegmentRepository.findAllWithActiveCarCount());
+        model.addAttribute("selectedSegment", segmentSlug);
 
         return "pricing";
     }

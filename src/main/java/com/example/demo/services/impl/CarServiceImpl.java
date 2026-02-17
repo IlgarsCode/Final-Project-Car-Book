@@ -27,15 +27,27 @@ public class CarServiceImpl implements CarService {
 
     @Override
     public List<CarListDto> getActiveCars() {
-        return getActiveCars(null);
+        return getActiveCars(null, null);
     }
 
     @Override
     public List<CarListDto> getActiveCars(String categorySlug) {
+        return getActiveCars(categorySlug, null);
+    }
 
-        var cars = (categorySlug == null || categorySlug.isBlank())
+    @Override
+    public List<CarListDto> getActiveCars(String categorySlug, String segmentSlug) {
+
+        boolean hasCat = categorySlug != null && !categorySlug.isBlank();
+        boolean hasSeg = segmentSlug != null && !segmentSlug.isBlank();
+
+        var cars = (!hasCat && !hasSeg)
                 ? carRepository.findAllByIsActiveTrueOrderByIdDesc()
-                : carRepository.findAllByIsActiveTrueAndCategory_SlugOrderByIdDesc(categorySlug);
+                : (hasCat && !hasSeg)
+                ? carRepository.findAllByIsActiveTrueAndCategory_SlugOrderByIdDesc(categorySlug)
+                : (!hasCat)
+                ? carRepository.findAllByIsActiveTrueAndSegment_SlugOrderByIdDesc(segmentSlug)
+                : carRepository.findAllByIsActiveTrueAndCategory_SlugAndSegment_SlugOrderByIdDesc(categorySlug, segmentSlug);
 
         List<Long> carIds = cars.stream().map(c -> c.getId()).toList();
 
@@ -62,18 +74,14 @@ public class CarServiceImpl implements CarService {
             var cp = pricingMap.get(car.getId());
             if (cp != null) {
 
-                // effective
                 dto.setHourlyRate(safe(cp.getEffectiveHourlyRate()));
                 dto.setDailyRate(safe(cp.getEffectiveDailyRate()));
                 dto.setMonthlyLeasingRate(safe(cp.getEffectiveMonthlyLeasingRate()));
 
-                // base
                 dto.setBaseHourlyRate(safe(cp.getHourlyRate()));
                 dto.setBaseDailyRate(safe(cp.getDailyRate()));
                 dto.setBaseMonthlyLeasingRate(safe(cp.getMonthlyLeasingRate()));
 
-                // ✅ car list-də hansı endirim göstərilsin?
-                // adətən car list daily göstərir — ona görə daily endirimi götürürük.
                 boolean hasDailyDiscount = Boolean.TRUE.equals(cp.getDailyDiscountActive())
                         && cp.getDailyDiscountPercent() != null
                         && cp.getDailyDiscountPercent().compareTo(BigDecimal.ZERO) > 0;

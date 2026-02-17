@@ -1,5 +1,6 @@
 package com.example.demo.model;
 
+import com.example.demo.model.CarSegment;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -25,6 +26,10 @@ public class Car {
     private BigDecimal engineVolume;
 
     private String imageUrl;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "segment_id")
+    private CarSegment segment;
 
     @Column(unique = true)
     private String slug;

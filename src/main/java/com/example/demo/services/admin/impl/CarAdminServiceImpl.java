@@ -1,6 +1,7 @@
 package com.example.demo.services.admin.impl;
 
 import com.example.demo.dto.car.CarCreateDto;
+
 import com.example.demo.dto.car.CarUpdateDto;
 import com.example.demo.model.Car;
 import com.example.demo.repository.CarCategoryRepository;
@@ -17,6 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
+
 import java.util.List;
 
 @Service
@@ -28,6 +30,7 @@ public class CarAdminServiceImpl implements CarAdminService {
     private final CarReviewRepository carReviewRepository;
     private final CarCategoryRepository carCategoryRepository;// varsa
     private final FileStorageService fileStorageService;
+    private final com.example.demo.repository.CarSegmentRepository carSegmentRepository;
 
     @Override
     public List<Car> getAll() {
@@ -72,6 +75,14 @@ public class CarAdminServiceImpl implements CarAdminService {
             car.setCategory(category);
         } else {
             car.setCategory(null);
+        }
+        // ✅ segment
+        if (dto.getSegmentId() != null) {
+            var segment = carSegmentRepository.findById(dto.getSegmentId())
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Segment tapılmadı"));
+            car.setSegment(segment);
+        } else {
+            car.setSegment(null);
         }
 
         // ✅ slug auto
@@ -124,6 +135,16 @@ public class CarAdminServiceImpl implements CarAdminService {
         } else {
             car.setCategory(null);
         }
+
+        // ✅ segment
+        if (dto.getSegmentId() != null) {
+            var segment = carSegmentRepository.findById(dto.getSegmentId())
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Segment tapılmadı"));
+            car.setSegment(segment);
+        } else {
+            car.setSegment(null);
+        }
+
 
         // ✅ slug yenilə
         String base = SlugUtil.slugify(dto.getBrand() + " " + dto.getTitle());

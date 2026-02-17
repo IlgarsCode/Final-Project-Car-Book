@@ -23,16 +23,33 @@ public class PricingServiceImpl implements PricingService {
 
     @Override
     public List<CarPricingRowDto> getPricingRows(String categorySlug) {
-        return getPricingRows(categorySlug, null, null);
+        return getPricingRows(categorySlug, null, null, null);
     }
 
     @Override
     public List<CarPricingRowDto> getPricingRows(String categorySlug, LocalDate pickupDate, LocalDate dropoffDate) {
+        return getPricingRows(categorySlug, null, pickupDate, dropoffDate);
+    }
+
+    @Override
+    public List<CarPricingRowDto> getPricingRows(String categorySlug, String segmentSlug) {
+        return getPricingRows(categorySlug, segmentSlug, null, null);
+    }
+
+    @Override
+    public List<CarPricingRowDto> getPricingRows(String categorySlug, String segmentSlug, LocalDate pickupDate, LocalDate dropoffDate) {
+
+        boolean hasCat = categorySlug != null && !categorySlug.isBlank();
+        boolean hasSeg = segmentSlug != null && !segmentSlug.isBlank();
 
         List<CarPricing> rows =
-                (categorySlug == null || categorySlug.isBlank())
+                (!hasCat && !hasSeg)
                         ? carPricingRepository.findActivePricingRows()
-                        : carPricingRepository.findActivePricingRowsByCategorySlug(categorySlug);
+                        : (hasCat && !hasSeg)
+                        ? carPricingRepository.findActivePricingRowsByCategorySlug(categorySlug)
+                        : (!hasCat)
+                        ? carPricingRepository.findActivePricingRowsBySegmentSlug(segmentSlug)
+                        : carPricingRepository.findActivePricingRowsByCategoryAndSegment(categorySlug, segmentSlug);
 
         if (rows == null || rows.isEmpty()) return List.of();
 
@@ -90,19 +107,16 @@ public class PricingServiceImpl implements PricingService {
             dto.setCarImageUrl(car.getImageUrl());
             dto.setCarSlug(car.getSlug());
 
-            // ✅ effective
             dto.setHourlyRate(cp.getEffectiveHourlyRate());
             dto.setDailyRate(cp.getEffectiveDailyRate());
             dto.setMonthlyLeasingRate(cp.getEffectiveMonthlyLeasingRate());
 
-            // ✅ base
             dto.setBaseHourlyRate(cp.getHourlyRate());
             dto.setBaseDailyRate(cp.getDailyRate());
             dto.setBaseMonthlyLeasingRate(cp.getMonthlyLeasingRate());
 
             dto.setFuelSurchargePerHour(cp.getFuelSurchargePerHour());
 
-            // ✅ discounts (separate)
             dto.setHourlyHasDiscount(cp.hasHourlyDiscount());
             dto.setHourlyDiscountPercent(cp.getHourlyDiscountPercent());
 

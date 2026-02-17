@@ -4,6 +4,8 @@ import com.example.demo.dto.car.CarReviewCreateDto;
 import com.example.demo.dto.checkout.TripContext;
 import com.example.demo.dto.enums.BannerType;
 import com.example.demo.dto.enums.PricingRateType;
+import com.example.demo.repository.CarCategoryRepository;
+import com.example.demo.repository.CarSegmentRepository;
 import com.example.demo.services.BannerService;
 import com.example.demo.services.CarReviewService;
 import com.example.demo.services.CarService;
@@ -24,12 +26,22 @@ public class CarController {
     private final CarService carService;
     private final CarReviewService carReviewService;
     private final BannerService bannerService;
+    private final CarCategoryRepository carCategoryRepository;
+    private final CarSegmentRepository carSegmentRepository;
 
     @GetMapping("/car")
     public String carPage(@RequestParam(name = "category", required = false) String categorySlug,
+                          @RequestParam(name = "segment", required = false) String segmentSlug,
                           Model model) {
         model.addAttribute("banner", bannerService.getBanner(BannerType.CAR));
-        model.addAttribute("cars", carService.getActiveCars(categorySlug));
+        model.addAttribute("cars", carService.getActiveCars(categorySlug, segmentSlug));
+
+        // frontend dropdown üçün hazır saxla
+        model.addAttribute("carCategories", carCategoryRepository.findAllWithActiveCarCount());
+        model.addAttribute("segments", carSegmentRepository.findAllWithActiveCarCount());
+        model.addAttribute("selectedCategory", categorySlug);
+        model.addAttribute("selectedSegment", segmentSlug);
+
         return "car";
     }
 
