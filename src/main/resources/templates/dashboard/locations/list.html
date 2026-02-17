@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{dashboard/layout}">
+<head>
+  <title>Locations</title>
+</head>
+<body>
+<div layout:fragment="content">
+
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h1 class="h3 mb-0 text-gray-800">Locations</h1>
+  </div>
+
+  <!-- CREATE -->
+  <div class="card shadow mb-4">
+    <div class="card-body">
+
+      <h5 class="mb-3">Add new location</h5>
+
+      <form th:action="@{/dashboard/locations/create}"
+            th:object="${createForm}"
+            method="post"
+            class="row" style="gap:12px; align-items:end;">
+
+        <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+
+        <div class="col-md-5">
+          <label class="small text-muted mb-1">Name</label>
+          <input class="form-control" th:field="*{name}" placeholder="e.g. Baku Airport">
+          <div class="text-danger small mt-1" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></div>
+        </div>
+
+        <div class="col-md-3">
+          <label class="small text-muted mb-1">Sort order</label>
+          <input class="form-control" type="number" th:field="*{sortOrder}" min="0">
+          <div class="text-danger small mt-1" th:if="${#fields.hasErrors('sortOrder')}" th:errors="*{sortOrder}"></div>
+        </div>
+
+        <div class="col-md-2">
+          <div class="form-check mt-4">
+            <input class="form-check-input" type="checkbox" th:field="*{isActive}">
+            <label class="form-check-label">Active</label>
+          </div>
+        </div>
+
+        <div class="col-md-2">
+          <button class="btn btn-primary btn-block" type="submit">Create</button>
+        </div>
+
+      </form>
+
+    </div>
+  </div>
+
+  <!-- LIST -->
+  <div class="card shadow">
+    <div class="card-body table-responsive">
+
+      <table class="table table-bordered table-hover">
+        <thead>
+        <tr>
+          <th style="width:60px;">#</th>
+          <th>Name</th>
+          <th style="width:120px;">Sort</th>
+          <th style="width:120px;">Status</th>
+          <th style="width:220px;">Actions</th>
+        </tr>
+        </thead>
+
+        <tbody>
+        <tr th:if="${rows == null || #lists.isEmpty(rows)}">
+          <td colspan="5" class="text-center">No locations yet.</td>
+        </tr>
+
+        <tr th:each="r, i : ${rows}">
+          <td th:text="${i.count}">1</td>
+          <td th:text="${r.name}">Baku</td>
+          <td th:text="${r.sortOrder}">0</td>
+
+          <td>
+                        <span class="badge"
+                              th:classappend="${r.isActive} ? ' badge-success' : ' badge-secondary'"
+                              th:text="${r.isActive} ? 'ACTIVE' : 'INACTIVE'">
+                        </span>
+          </td>
+
+          <td style="display:flex; gap:8px; flex-wrap:wrap;">
+            <a class="btn btn-sm btn-info"
+               th:href="@{/dashboard/locations/edit/{id}(id=${r.id})}">
+              Edit
+            </a>
+
+            <form th:if="${r.isActive}"
+                  th:action="@{/dashboard/locations/deactivate/{id}(id=${r.id})}"
+                  method="post" style="margin:0;">
+              <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+              <button class="btn btn-sm btn-warning" onclick="return confirm('Deactivate?')">Deactivate</button>
+            </form>
+
+            <form th:if="${!r.isActive}"
+                  th:action="@{/dashboard/locations/activate/{id}(id=${r.id})}"
+                  method="post" style="margin:0;">
+              <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+              <button class="btn btn-sm btn-success" onclick="return confirm('Activate?')">Activate</button>
+            </form>
+          </td>
+        </tr>
+
+        </tbody>
+      </table>
+
+    </div>
+  </div>
+
+</div>
+</body>
+</html>
