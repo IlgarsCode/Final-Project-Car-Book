@@ -5,6 +5,179 @@
 <head>
     <meta charset="UTF-8">
     <title>Checkout</title>
+
+    <style>
+        /* ===== Checkout location picker (custom dropdown) ===== */
+        .trip-card{
+            border-radius: 14px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,.06);
+            border: 1px solid rgba(0,0,0,.06);
+            background: #fff;
+        }
+        .trip-card__head{
+            padding: 18px 18px;
+            background: linear-gradient(135deg, rgba(79,134,247,.16), rgba(79,134,247,.06));
+            border-bottom: 1px solid rgba(0,0,0,.06);
+        }
+        .trip-card__title{
+            margin: 0;
+            font-weight: 700;
+            letter-spacing: .2px;
+        }
+        .trip-card__sub{
+            margin: 6px 0 0 0;
+            color: #6c757d;
+            font-size: 13px;
+        }
+        .trip-card__body{
+            padding: 18px;
+            background: #fff;
+        }
+
+        .loc-picker{
+            position: relative;
+        }
+        .loc-btn{
+            width: 100%;
+            text-align: left;
+            border: 1px solid rgba(0,0,0,.12);
+            border-radius: 12px;
+            padding: 12px 12px;
+            background: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            transition: .15s ease;
+            min-height: 46px;
+        }
+        .loc-btn:hover{
+            border-color: rgba(79,134,247,.55);
+            box-shadow: 0 6px 18px rgba(79,134,247,.10);
+        }
+        .loc-btn:focus{
+            outline: none;
+            border-color: rgba(79,134,247,.75);
+            box-shadow: 0 0 0 3px rgba(79,134,247,.15);
+        }
+        .loc-btn .left{
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            min-width: 0;
+        }
+        .loc-dot{
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: rgba(79,134,247,.9);
+            box-shadow: 0 0 0 4px rgba(79,134,247,.12);
+            flex: 0 0 auto;
+        }
+        .loc-text{
+            display: flex;
+            flex-direction: column;
+            min-width: 0;
+        }
+        .loc-label{
+            font-size: 12px;
+            color: #6c757d;
+            line-height: 1.1;
+        }
+        .loc-value{
+            font-weight: 600;
+            color: #111;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            line-height: 1.2;
+        }
+        .loc-arrow{
+            color: #6c757d;
+            font-size: 16px;
+            flex: 0 0 auto;
+        }
+
+        .loc-panel{
+            position: absolute;
+            z-index: 50;
+            top: calc(100% + 8px);
+            left: 0;
+            right: 0;
+            background: #fff;
+            border: 1px solid rgba(0,0,0,.10);
+            border-radius: 14px;
+            box-shadow: 0 18px 40px rgba(0,0,0,.12);
+            overflow: hidden;
+            display: none;
+        }
+        .loc-panel.open{ display:block; }
+
+        .loc-panel__search{
+            padding: 12px;
+            border-bottom: 1px solid rgba(0,0,0,.06);
+            background: rgba(0,0,0,.02);
+        }
+        .loc-search{
+            width: 100%;
+            border: 1px solid rgba(0,0,0,.10);
+            border-radius: 10px;
+            padding: 10px 12px;
+            background: #fff;
+        }
+        .loc-search:focus{
+            outline: none;
+            border-color: rgba(79,134,247,.75);
+            box-shadow: 0 0 0 3px rgba(79,134,247,.15);
+        }
+
+        .loc-list{
+            max-height: 260px;
+            overflow: auto;
+            margin: 0;
+            padding: 6px;
+            list-style: none;
+        }
+        .loc-item{
+            padding: 10px 10px;
+            border-radius: 10px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+        }
+        .loc-item:hover{
+            background: rgba(79,134,247,.10);
+        }
+        .loc-item .name{
+            font-weight: 600;
+            color: #111;
+            line-height: 1.2;
+        }
+        .loc-item .hint{
+            font-size: 12px;
+            color: #6c757d;
+            white-space: nowrap;
+        }
+        .loc-empty{
+            padding: 14px 12px;
+            color: #6c757d;
+            text-align: center;
+        }
+
+        /* Make the filter section sit slightly lower (not inside hero) */
+        .checkout-section{
+            margin-top: -40px; /* hero overlap effect */
+            position: relative;
+            z-index: 2;
+        }
+
+        @media (max-width: 767px){
+            .checkout-section{ margin-top: -20px; }
+        }
+    </style>
 </head>
 <body>
 <div layout:fragment="content">
@@ -26,67 +199,142 @@
         </div>
     </section>
 
-    <section class="ftco-section">
+    <section class="ftco-section checkout-section">
         <div class="container">
             <div class="row">
 
-                <!-- LEFT: form -->
+                <!-- LEFT -->
                 <div class="col-md-6 ftco-animate">
-                    <div class="p-4 bg-light">
-                        <h3 class="mb-4">Trip details</h3>
+                    <div class="trip-card">
+                        <div class="trip-card__head">
+                            <h3 class="trip-card__title">Trip details</h3>
+                            <p class="trip-card__sub">Choose locations & dates — we’ll validate availability before placing the order.</p>
+                        </div>
 
-                        <div id="checkoutMsg" class="alert" style="display:none;"></div>
+                        <div class="trip-card__body">
+                            <div id="checkoutMsg" class="alert" style="display:none;"></div>
 
-                        <form id="checkoutForm" th:action="@{/checkout}" th:object="${checkoutForm}" method="post">
+                            <form id="checkoutForm" th:action="@{/checkout}" th:object="${checkoutForm}" method="post">
 
-                            <div class="form-group">
-                                <label>Pick-up location</label>
-                                <input class="form-control" th:field="*{pickupLocation}">
-                                <small class="text-danger" th:if="${#fields.hasErrors('pickupLocation')}" th:errors="*{pickupLocation}"></small>
-                            </div>
+                                <!-- hidden ids (bind) -->
+                                <input type="hidden" th:field="*{pickupLocationId}" id="pickupLocationId">
+                                <input type="hidden" th:field="*{dropoffLocationId}" id="dropoffLocationId">
 
-                            <div class="form-group">
-                                <label>Drop-off location</label>
-                                <input class="form-control" th:field="*{dropoffLocation}">
-                                <small class="text-danger" th:if="${#fields.hasErrors('dropoffLocation')}" th:errors="*{dropoffLocation}"></small>
-                            </div>
+                                <!-- Pick-up custom list -->
+                                <div class="form-group">
+                                    <div class="loc-picker" data-target="pickup">
+                                        <button type="button" class="loc-btn" data-open>
+                                            <div class="left">
+                                                <div class="loc-dot"></div>
+                                                <div class="loc-text">
+                                                    <div class="loc-label">Pick-up location</div>
+                                                    <div class="loc-value" data-value-text>Choose location</div>
+                                                </div>
+                                            </div>
+                                            <div class="loc-arrow"><span class="ion-ios-arrow-down"></span></div>
+                                        </button>
 
-                            <div class="form-group">
-                                <label>Pick-up date</label>
-                                <input id="pickupDate" type="date" class="form-control" th:field="*{pickupDate}">
-                                <small class="text-danger" th:if="${#fields.hasErrors('pickupDate')}" th:errors="*{pickupDate}"></small>
-                            </div>
+                                        <div class="loc-panel" data-panel>
+                                            <div class="loc-panel__search">
+                                                <input class="loc-search" type="text" placeholder="Search location..." data-search>
+                                            </div>
 
-                            <div class="form-group">
-                                <label>Drop-off date</label>
-                                <input id="dropoffDate" type="date" class="form-control" th:field="*{dropoffDate}">
-                                <small class="text-danger" th:if="${#fields.hasErrors('dropoffDate')}" th:errors="*{dropoffDate}"></small>
-                            </div>
+                                            <ul class="loc-list" data-list>
+                                                <li class="loc-item"
+                                                    th:each="l : ${locations}"
+                                                    th:attr="data-id=${l.id},data-name=${l.name}">
+                                                    <div class="name" th:text="${l.name}">Location</div>
+                                                    <div class="hint">select</div>
+                                                </li>
 
-                            <div class="form-group">
-                                <label>Pick-up time (optional)</label>
-                                <input class="form-control" placeholder="09:00" th:field="*{pickupTime}">
-                            </div>
+                                                <li class="loc-empty" data-empty style="display:none;">
+                                                    No results.
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </div>
 
-                            <div class="form-group">
-                                <label>Drop-off time (optional)</label>
-                                <input class="form-control" placeholder="18:00" th:field="*{dropoffTime}">
-                            </div>
+                                    <small class="text-danger"
+                                           th:if="${#fields.hasErrors('pickupLocationId')}"
+                                           th:errors="*{pickupLocationId}"></small>
+                                </div>
 
-                            <div class="form-group" style="gap:10px; display:flex; flex-wrap:wrap;">
-                                <button id="placeOrderBtn" class="btn btn-primary" type="submit">Place Order</button>
-                                <a th:href="@{/cart}" class="btn btn-outline-secondary">Back to cart</a>
-                            </div>
+                                <!-- Drop-off custom list -->
+                                <div class="form-group">
+                                    <div class="loc-picker" data-target="dropoff">
+                                        <button type="button" class="loc-btn" data-open>
+                                            <div class="left">
+                                                <div class="loc-dot" style="background: rgba(34,197,94,.9); box-shadow:0 0 0 4px rgba(34,197,94,.12);"></div>
+                                                <div class="loc-text">
+                                                    <div class="loc-label">Drop-off location</div>
+                                                    <div class="loc-value" data-value-text>Choose location</div>
+                                                </div>
+                                            </div>
+                                            <div class="loc-arrow"><span class="ion-ios-arrow-down"></span></div>
+                                        </button>
 
-                            <div class="text-danger" th:if="${#fields.hasGlobalErrors()}"
-                                 th:each="e : ${#fields.globalErrors()}" th:text="${e}"></div>
-                        </form>
+                                        <div class="loc-panel" data-panel>
+                                            <div class="loc-panel__search">
+                                                <input class="loc-search" type="text" placeholder="Search location..." data-search>
+                                            </div>
+
+                                            <ul class="loc-list" data-list>
+                                                <li class="loc-item"
+                                                    th:each="l : ${locations}"
+                                                    th:attr="data-id=${l.id},data-name=${l.name}">
+                                                    <div class="name" th:text="${l.name}">Location</div>
+                                                    <div class="hint">select</div>
+                                                </li>
+
+                                                <li class="loc-empty" data-empty style="display:none;">
+                                                    No results.
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </div>
+
+                                    <small class="text-danger"
+                                           th:if="${#fields.hasErrors('dropoffLocationId')}"
+                                           th:errors="*{dropoffLocationId}"></small>
+                                </div>
+
+                                <div class="form-group">
+                                    <label>Pick-up date</label>
+                                    <input id="pickupDate" type="date" class="form-control" th:field="*{pickupDate}">
+                                    <small class="text-danger" th:if="${#fields.hasErrors('pickupDate')}" th:errors="*{pickupDate}"></small>
+                                </div>
+
+                                <div class="form-group">
+                                    <label>Drop-off date</label>
+                                    <input id="dropoffDate" type="date" class="form-control" th:field="*{dropoffDate}">
+                                    <small class="text-danger" th:if="${#fields.hasErrors('dropoffDate')}" th:errors="*{dropoffDate}"></small>
+                                </div>
+
+                                <div class="form-group">
+                                    <label>Pick-up time (optional)</label>
+                                    <input class="form-control" placeholder="09:00" th:field="*{pickupTime}">
+                                </div>
+
+                                <div class="form-group">
+                                    <label>Drop-off time (optional)</label>
+                                    <input class="form-control" placeholder="18:00" th:field="*{dropoffTime}">
+                                </div>
+
+                                <div class="form-group" style="gap:10px; display:flex; flex-wrap:wrap;">
+                                    <button id="placeOrderBtn" class="btn btn-primary" type="submit">Place Order</button>
+                                    <a th:href="@{/cart}" class="btn btn-outline-secondary">Back to cart</a>
+                                </div>
+
+                                <div class="text-danger" th:if="${#fields.hasGlobalErrors()}"
+                                     th:each="e : ${#fields.globalErrors()}" th:text="${e}"></div>
+                            </form>
+                        </div>
                     </div>
                 </div>
 
-                <!-- RIGHT: cart summary -->
+                <!-- RIGHT -->
                 <div class="col-md-6 ftco-animate">
-                    <div class="p-4 bg-white border">
+                    <div class="p-4 bg-white border" style="border-radius:14px; box-shadow: 0 10px 30px rgba(0,0,0,.05);">
                         <h3 class="mb-4">Cart summary</h3>
 
                         <div th:if="${cart == null or cart.items == null or cart.items.empty}" class="alert alert-info">
@@ -97,32 +345,21 @@
                             <div th:each="it : ${cart.items}" class="d-flex justify-content-between border-bottom py-2">
                                 <div>
                                     <div class="font-weight-bold" th:text="${it.car != null ? it.car.title : 'Car'}">Car</div>
-
-                                    <!-- ✅ price line (discount support) -->
                                     <small class="text-muted">
                                         <span th:text="${it.rateType}">DAILY</span>
                                         —
                                         <span th:if="${it.baseUnitPriceSnapshot != null and it.unitPriceSnapshot != null and it.baseUnitPriceSnapshot.compareTo(it.unitPriceSnapshot) > 0}">
-                                            <del>$<span th:text="${it.baseUnitPriceSnapshot}">0</span></del>
-                                            &nbsp;
+                                            <del>$<span th:text="${it.baseUnitPriceSnapshot}">0</span></del>&nbsp;
                                         </span>
-
                                         $<span th:text="${it.unitPriceSnapshot}">0</span>
 
                                         <span class="badge badge-success"
                                               th:if="${it.discountPercentSnapshot != null and it.discountPercentSnapshot > 0}"
                                               th:text="${'-' + it.discountPercentSnapshot + '%'}">-10%</span>
 
-                                        <span th:if="${it.rateType != null and it.rateType.name() == 'HOURLY'
-                                                       and it.fuelSurchargePerHourSnapshot != null
-                                                       and it.fuelSurchargePerHourSnapshot.doubleValue() > 0}">
-                                            (+$<span th:text="${it.fuelSurchargePerHourSnapshot}">0</span>/hour)
-                                        </span>
-
                                         × qty: <span th:text="${it.quantity}">1</span>
                                     </small>
                                 </div>
-
                                 <div class="text-right">
                                     <small class="text-muted">snapshot</small>
                                 </div>
@@ -132,7 +369,6 @@
                                 Total checkout zamanı tarixlərə görə (saat/gün/ay) hesablanacaq və OrderItem-a yazılacaq.
                             </p>
                         </div>
-
                     </div>
                 </div>
 
@@ -140,6 +376,7 @@
         </div>
     </section>
 
+    <!-- ===== JS: custom dropdown + date validation + availability check ===== -->
     <script th:inline="javascript">
         (function(){
             const form = document.getElementById('checkoutForm');
@@ -148,6 +385,9 @@
 
             const pickup = document.getElementById('pickupDate');
             const dropoff = document.getElementById('dropoffDate');
+
+            const pickupIdInput = document.getElementById('pickupLocationId');
+            const dropoffIdInput = document.getElementById('dropoffLocationId');
 
             const carIds = /*[[${cart != null && cart.items != null ? cart.items.![car.id] : {}}]]*/ [];
 
@@ -165,6 +405,7 @@
                 msg.textContent = text;
             }
 
+            // ===== date min sync =====
             const t = todayISO();
             pickup.min = t;
             dropoff.min = t;
@@ -180,6 +421,82 @@
                 }
             });
 
+            // ===== custom dropdown =====
+            function setupPicker(pickerEl){
+                const target = pickerEl.getAttribute('data-target'); // pickup / dropoff
+                const btnOpen = pickerEl.querySelector('[data-open]');
+                const panel = pickerEl.querySelector('[data-panel]');
+                const search = pickerEl.querySelector('[data-search]');
+                const list = pickerEl.querySelector('[data-list]');
+                const empty = pickerEl.querySelector('[data-empty]');
+                const valueText = pickerEl.querySelector('[data-value-text]');
+
+                const idInput = (target === 'pickup') ? pickupIdInput : dropoffIdInput;
+
+                function open(){
+                    panel.classList.add('open');
+                    setTimeout(() => search && search.focus(), 0);
+                }
+                function close(){
+                    panel.classList.remove('open');
+                    if (search) search.value = '';
+                    filter('');
+                }
+                function filter(q){
+                    const query = (q || '').toLowerCase().trim();
+                    let visibleCount = 0;
+
+                    list.querySelectorAll('.loc-item').forEach(li => {
+                        const name = (li.getAttribute('data-name') || '').toLowerCase();
+                        const showIt = name.includes(query);
+                        li.style.display = showIt ? 'flex' : 'none';
+                        if (showIt) visibleCount++;
+                    });
+
+                    if (empty) empty.style.display = (visibleCount === 0) ? 'block' : 'none';
+                }
+
+                btnOpen.addEventListener('click', function(){
+                    const isOpen = panel.classList.contains('open');
+                    document.querySelectorAll('.loc-panel.open').forEach(p => p.classList.remove('open'));
+                    if (!isOpen) open();
+                });
+
+                document.addEventListener('click', function(e){
+                    if (!pickerEl.contains(e.target)) close();
+                });
+
+                if (search){
+                    search.addEventListener('input', function(){
+                        filter(search.value);
+                    });
+                }
+
+                list.addEventListener('click', function(e){
+                    const item = e.target.closest('.loc-item');
+                    if (!item) return;
+
+                    const id = item.getAttribute('data-id');
+                    const name = item.getAttribute('data-name');
+
+                    idInput.value = id;
+                    valueText.textContent = name || 'Selected';
+                    close();
+                });
+
+                // prefill (if id already set from ctx / validation)
+                const currentId = idInput.value;
+                if (currentId){
+                    const found = list.querySelector(`.loc-item[data-id="${currentId}"]`);
+                    if (found){
+                        valueText.textContent = found.getAttribute('data-name') || 'Selected';
+                    }
+                }
+            }
+
+            document.querySelectorAll('.loc-picker').forEach(setupPicker);
+
+            // ===== availability check =====
             async function checkAllCarsAvailable(pickupDate, dropoffDate){
                 if (!Array.isArray(carIds) || carIds.length === 0) return { ok: true };
 
@@ -205,6 +522,16 @@
                 const p = pickup.value;
                 const d = dropoff.value;
 
+                if (!pickupIdInput.value){
+                    e.preventDefault();
+                    show('alert-warning', 'Pick-up location seç.');
+                    return;
+                }
+                if (!dropoffIdInput.value){
+                    e.preventDefault();
+                    show('alert-warning', 'Drop-off location seç.');
+                    return;
+                }
                 if (!p || !d){
                     e.preventDefault();
                     show('alert-warning', 'Pickup və dropoff tarixlərini seç.');

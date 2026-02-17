@@ -1,7 +1,6 @@
 package com.example.demo.dto.checkout;
 
 import jakarta.validation.constraints.FutureOrPresent;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
@@ -12,11 +11,11 @@ import java.time.LocalDate;
 @Setter
 public class CheckoutCreateDto {
 
-    @NotBlank
-    private String pickupLocation;
+    @NotNull(message = "Pick-up location seçilməlidir")
+    private Long pickupLocationId;
 
-    @NotBlank
-    private String dropoffLocation;
+    @NotNull(message = "Drop-off location seçilməlidir")
+    private Long dropoffLocationId;
 
     @NotNull
     @FutureOrPresent(message = "Pickup date bu gün və ya gələcək olmalıdır")
@@ -28,5 +27,4 @@ public class CheckoutCreateDto {
 
     private String pickupTime;   // "HH:mm"
     private String dropoffTime;  // "HH:mm"
-
 }

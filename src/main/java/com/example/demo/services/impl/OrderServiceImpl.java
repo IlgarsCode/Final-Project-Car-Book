@@ -61,8 +61,6 @@ public class OrderServiceImpl implements OrderService {
         long nextUserNo = orderRepository.findMaxUserOrderNo(user.getId()) + 1;
         order.setUserOrderNo(nextUserNo);
 
-        order.setPickupLocation(dto.getPickupLocation());
-        order.setDropoffLocation(dto.getDropoffLocation());
         order.setPickupDate(dto.getPickupDate());
         order.setDropoffDate(dto.getDropoffDate());
         order.setPickupTime(dto.getPickupTime());
