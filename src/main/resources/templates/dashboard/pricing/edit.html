@@ -47,24 +47,63 @@
           </div>
         </div>
 
-        <!-- ✅ DISCOUNT -->
+        <!-- ✅ DISCOUNTS (separate) -->
         <div class="form-row">
-          <div class="form-group col-md-3">
-            <div class="custom-control custom-checkbox mt-4">
-              <input type="checkbox"
-                     class="custom-control-input"
-                     id="editDiscountActivePage"
-                     th:field="*{discountActive}">
-              <label class="custom-control-label" for="editDiscountActivePage">Discount active</label>
+          <div class="form-group col-md-4">
+            <div class="border rounded p-3">
+              <div class="custom-control custom-checkbox">
+                <input type="checkbox"
+                       class="custom-control-input"
+                       id="editHourlyDiscountActivePage"
+                       th:field="*{hourlyDiscountActive}">
+                <label class="custom-control-label" for="editHourlyDiscountActivePage">Hourly discount active</label>
+              </div>
+              <div class="mt-2">
+                <label class="mb-1">Hourly discount % (0..100)</label>
+                <input type="number" step="0.01" min="0" max="100"
+                       class="form-control"
+                       th:field="*{hourlyDiscountPercent}"
+                       placeholder="e.g. 10">
+              </div>
             </div>
           </div>
 
-          <div class="form-group col-md-3">
-            <label>Discount percent (0..100)</label>
-            <input type="number" step="0.01" min="0" max="100"
-                   class="form-control"
-                   th:field="*{discountPercent}"
-                   placeholder="e.g. 10">
+          <div class="form-group col-md-4">
+            <div class="border rounded p-3">
+              <div class="custom-control custom-checkbox">
+                <input type="checkbox"
+                       class="custom-control-input"
+                       id="editDailyDiscountActivePage"
+                       th:field="*{dailyDiscountActive}">
+                <label class="custom-control-label" for="editDailyDiscountActivePage">Daily discount active</label>
+              </div>
+              <div class="mt-2">
+                <label class="mb-1">Daily discount % (0..100)</label>
+                <input type="number" step="0.01" min="0" max="100"
+                       class="form-control"
+                       th:field="*{dailyDiscountPercent}"
+                       placeholder="e.g. 15">
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group col-md-4">
+            <div class="border rounded p-3">
+              <div class="custom-control custom-checkbox">
+                <input type="checkbox"
+                       class="custom-control-input"
+                       id="editLeasingDiscountActivePage"
+                       th:field="*{leasingDiscountActive}">
+                <label class="custom-control-label" for="editLeasingDiscountActivePage">Leasing discount active</label>
+              </div>
+              <div class="mt-2">
+                <label class="mb-1">Leasing discount % (0..100)</label>
+                <input type="number" step="0.01" min="0" max="100"
+                       class="form-control"
+                       th:field="*{leasingDiscountPercent}"
+                       placeholder="e.g. 5">
+              </div>
+            </div>
           </div>
         </div>
 

@@ -47,7 +47,6 @@ public class CartServiceImpl implements CartService {
     @Override
     @Transactional
     public Cart getCartForUser(String email) {
-        // Səndəki məntiq: yoxdursa yaradırıq
         return getOrCreateCartForUser(email);
     }
 
@@ -59,7 +58,6 @@ public class CartServiceImpl implements CartService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "carId boş ola bilməz");
         }
         if (rateType == null) {
-            // əvvəl səndə error atırdı, amma UI rahatlığı üçün default edək
             rateType = PricingRateType.DAILY;
         }
         if (unitCount == null || unitCount < 1) unitCount = 1;
@@ -76,19 +74,36 @@ public class CartServiceImpl implements CartService {
         var pricing = carPricingRepository.findActiveByCarId(carId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Bu car üçün pricing tapılmadı"));
 
-        // ✅ base qiymət (endirimdən əvvəl)
+        // ✅ base (endirimdən əvvəl)
         BigDecimal baseUnitPrice = switch (rateType) {
             case HOURLY -> nz(pricing.getHourlyRate());
             case LEASING -> nz(pricing.getMonthlyLeasingRate());
             default -> nz(pricing.getDailyRate());
         };
 
-        // ✅ effective qiymət (endirim tətbiq olunmuş)
+        // ✅ effective (endirim tətbiq olunmuş)
         BigDecimal effectiveUnitPrice = switch (rateType) {
             case HOURLY -> nz(pricing.getEffectiveHourlyRate());
             case LEASING -> nz(pricing.getEffectiveMonthlyLeasingRate());
             default -> nz(pricing.getEffectiveDailyRate());
         };
+
+        // ✅ discount snapshot: rateType-ə görə seç
+        Boolean discountActiveSnapshot = switch (rateType) {
+            case HOURLY -> pricing.getHourlyDiscountActive();
+            case LEASING -> pricing.getLeasingDiscountActive();
+            default -> pricing.getDailyDiscountActive();
+        };
+
+        BigDecimal discountPercentSnapshot = switch (rateType) {
+            case HOURLY -> pricing.getHourlyDiscountPercent();
+            case LEASING -> pricing.getLeasingDiscountPercent();
+            default -> pricing.getDailyDiscountPercent();
+        };
+
+        if (!Boolean.TRUE.equals(discountActiveSnapshot)) {
+            discountPercentSnapshot = null;
+        }
 
         // hourly üçün ayrıca surcharge var (endirimə düşmür)
         BigDecimal surcharge = nz(pricing.getFuelSurchargePerHour());
@@ -101,15 +116,14 @@ public class CartServiceImpl implements CartService {
             int q = item.getQuantity() == null ? 1 : item.getQuantity();
             item.setQuantity(q + 1);
 
-            // unitCount paket kimi saxlanılırsa: boşdursa set et, əks halda toxunma
             if (item.getUnitCount() == null || item.getUnitCount() < 1) {
                 item.setUnitCount(unitCount);
             }
 
-            // ✅ snapshot-ları yenilə (endirim dəyişibsə cart-da dərhal görünsün)
+            // ✅ snapshot-ları yenilə
             item.setBaseUnitPriceSnapshot(baseUnitPrice);
             item.setUnitPriceSnapshot(effectiveUnitPrice);
-            item.setDiscountPercentSnapshot(pricing.getDiscountPercent());
+            item.setDiscountPercentSnapshot(discountPercentSnapshot);
             item.setFuelSurchargePerHourSnapshot(surcharge);
 
             cartItemRepository.save(item);
@@ -119,10 +133,9 @@ public class CartServiceImpl implements CartService {
             item.setCar(car);
             item.setRateType(rateType);
 
-            // ✅ snapshots
             item.setBaseUnitPriceSnapshot(baseUnitPrice);
             item.setUnitPriceSnapshot(effectiveUnitPrice);
-            item.setDiscountPercentSnapshot(pricing.getDiscountPercent());
+            item.setDiscountPercentSnapshot(discountPercentSnapshot);
 
             item.setFuelSurchargePerHourSnapshot(surcharge);
 

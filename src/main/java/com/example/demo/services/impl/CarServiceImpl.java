@@ -39,7 +39,6 @@ public class CarServiceImpl implements CarService {
 
         List<Long> carIds = cars.stream().map(c -> c.getId()).toList();
 
-        // carId -> pricing
         Map<Long, com.example.demo.model.CarPricing> pricingMap = new HashMap<>();
         if (!carIds.isEmpty()) {
             var pricings = carPricingRepository.findActiveByCarIds(carIds);
@@ -62,21 +61,32 @@ public class CarServiceImpl implements CarService {
 
             var cp = pricingMap.get(car.getId());
             if (cp != null) {
+
+                // effective
                 dto.setHourlyRate(safe(cp.getEffectiveHourlyRate()));
                 dto.setDailyRate(safe(cp.getEffectiveDailyRate()));
                 dto.setMonthlyLeasingRate(safe(cp.getEffectiveMonthlyLeasingRate()));
 
+                // base
                 dto.setBaseHourlyRate(safe(cp.getHourlyRate()));
                 dto.setBaseDailyRate(safe(cp.getDailyRate()));
                 dto.setBaseMonthlyLeasingRate(safe(cp.getMonthlyLeasingRate()));
 
-                dto.setHasDiscount(cp.hasDiscount());
-                dto.setDiscountPercent(cp.getDiscountPercent());
+                // ✅ car list-də hansı endirim göstərilsin?
+                // adətən car list daily göstərir — ona görə daily endirimi götürürük.
+                boolean hasDailyDiscount = Boolean.TRUE.equals(cp.getDailyDiscountActive())
+                        && cp.getDailyDiscountPercent() != null
+                        && cp.getDailyDiscountPercent().compareTo(BigDecimal.ZERO) > 0;
+
+                dto.setHasDiscount(hasDailyDiscount);
+                dto.setDiscountPercent(hasDailyDiscount ? cp.getDailyDiscountPercent() : null);
+
             } else {
                 dto.setHourlyRate(BigDecimal.ZERO);
                 dto.setDailyRate(BigDecimal.ZERO);
                 dto.setMonthlyLeasingRate(BigDecimal.ZERO);
                 dto.setHasDiscount(false);
+                dto.setDiscountPercent(null);
             }
 
             return dto;
@@ -105,6 +115,7 @@ public class CarServiceImpl implements CarService {
         BigDecimal hourly = BigDecimal.ZERO, daily = BigDecimal.ZERO, leasing = BigDecimal.ZERO;
         BigDecimal baseHourly = BigDecimal.ZERO, baseDaily = BigDecimal.ZERO, baseLeasing = BigDecimal.ZERO;
         BigDecimal surcharge = BigDecimal.ZERO;
+
         boolean hasDiscount = false;
         BigDecimal discPercent = null;
 
@@ -123,8 +134,27 @@ public class CarServiceImpl implements CarService {
 
             surcharge = safe(cp.getFuelSurchargePerHour());
 
-            hasDiscount = cp.hasDiscount();
-            discPercent = cp.getDiscountPercent();
+            // ✅ seçilmiş rateType-ə görə endirim
+            switch (rateType) {
+                case HOURLY -> {
+                    hasDiscount = Boolean.TRUE.equals(cp.getHourlyDiscountActive())
+                            && cp.getHourlyDiscountPercent() != null
+                            && cp.getHourlyDiscountPercent().compareTo(BigDecimal.ZERO) > 0;
+                    discPercent = hasDiscount ? cp.getHourlyDiscountPercent() : null;
+                }
+                case LEASING -> {
+                    hasDiscount = Boolean.TRUE.equals(cp.getLeasingDiscountActive())
+                            && cp.getLeasingDiscountPercent() != null
+                            && cp.getLeasingDiscountPercent().compareTo(BigDecimal.ZERO) > 0;
+                    discPercent = hasDiscount ? cp.getLeasingDiscountPercent() : null;
+                }
+                default -> { // DAILY
+                    hasDiscount = Boolean.TRUE.equals(cp.getDailyDiscountActive())
+                            && cp.getDailyDiscountPercent() != null
+                            && cp.getDailyDiscountPercent().compareTo(BigDecimal.ZERO) > 0;
+                    discPercent = hasDiscount ? cp.getDailyDiscountPercent() : null;
+                }
+            }
         }
 
         dto.setHourlyRate(hourly);
@@ -235,13 +265,21 @@ public class CarServiceImpl implements CarService {
 
             var cp = pricingMap.get(car.getId());
             if (cp != null) {
+
                 dto.setDailyRate(safe(cp.getEffectiveDailyRate()));
                 dto.setBaseDailyRate(safe(cp.getDailyRate()));
-                dto.setHasDiscount(cp.hasDiscount());
-                dto.setDiscountPercent(cp.getDiscountPercent());
+
+                boolean hasDailyDiscount = Boolean.TRUE.equals(cp.getDailyDiscountActive())
+                        && cp.getDailyDiscountPercent() != null
+                        && cp.getDailyDiscountPercent().compareTo(BigDecimal.ZERO) > 0;
+
+                dto.setHasDiscount(hasDailyDiscount);
+                dto.setDiscountPercent(hasDailyDiscount ? cp.getDailyDiscountPercent() : null);
+
             } else {
                 dto.setDailyRate(BigDecimal.ZERO);
                 dto.setHasDiscount(false);
+                dto.setDiscountPercent(null);
             }
             return dto;
         }).toList();

@@ -62,24 +62,60 @@
 
         </div>
 
-        <!-- ✅ DISCOUNT -->
+        <!-- ✅ DISCOUNTS (separate) -->
         <div class="form-row">
-          <div class="form-group col-md-3">
-            <div class="custom-control custom-checkbox mt-4">
-              <input type="checkbox" class="custom-control-input"
-                     id="createDiscountActive"
-                     th:field="*{discountActive}">
-              <label class="custom-control-label" for="createDiscountActive">Discount active</label>
+          <div class="form-group col-md-4">
+            <div class="border rounded p-3">
+              <div class="custom-control custom-checkbox">
+                <input type="checkbox" class="custom-control-input"
+                       id="createHourlyDiscountActive"
+                       th:field="*{hourlyDiscountActive}">
+                <label class="custom-control-label" for="createHourlyDiscountActive">Hourly discount active</label>
+              </div>
+              <div class="mt-2">
+                <label class="mb-1">Hourly discount % (0..100)</label>
+                <input type="number" step="0.01" min="0" max="100"
+                       class="form-control"
+                       th:field="*{hourlyDiscountPercent}"
+                       placeholder="e.g. 10">
+              </div>
             </div>
           </div>
 
-          <div class="form-group col-md-3">
-            <label>Discount percent (0..100)</label>
-            <input type="number" step="0.01" min="0" max="100"
-                   class="form-control"
-                   th:field="*{discountPercent}"
-                   placeholder="e.g. 10">
-            <small class="text-muted">optional</small>
+          <div class="form-group col-md-4">
+            <div class="border rounded p-3">
+              <div class="custom-control custom-checkbox">
+                <input type="checkbox" class="custom-control-input"
+                       id="createDailyDiscountActive"
+                       th:field="*{dailyDiscountActive}">
+                <label class="custom-control-label" for="createDailyDiscountActive">Daily discount active</label>
+              </div>
+              <div class="mt-2">
+                <label class="mb-1">Daily discount % (0..100)</label>
+                <input type="number" step="0.01" min="0" max="100"
+                       class="form-control"
+                       th:field="*{dailyDiscountPercent}"
+                       placeholder="e.g. 15">
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group col-md-4">
+            <div class="border rounded p-3">
+              <div class="custom-control custom-checkbox">
+                <input type="checkbox" class="custom-control-input"
+                       id="createLeasingDiscountActive"
+                       th:field="*{leasingDiscountActive}">
+                <label class="custom-control-label" for="createLeasingDiscountActive">Leasing discount active</label>
+              </div>
+              <div class="mt-2">
+                <label class="mb-1">Leasing discount % (0..100)</label>
+                <input type="number" step="0.01" min="0" max="100"
+                       class="form-control"
+                       th:field="*{leasingDiscountPercent}"
+                       placeholder="e.g. 5">
+              </div>
+            </div>
           </div>
         </div>
 
@@ -110,7 +146,7 @@
             <th>Daily</th>
             <th>Leasing</th>
             <th>Fuel</th>
-            <th>Discount</th>
+            <th>Discounts</th>
             <th>Status</th>
             <th style="width: 180px;">Actions</th>
           </tr>
@@ -143,14 +179,24 @@
             <td th:text="${cp.monthlyLeasingRate}">0</td>
             <td th:text="${cp.fuelSurchargePerHour != null ? cp.fuelSurchargePerHour : '-'}">-</td>
 
-            <!-- ✅ DISCOUNT -->
-            <td>
+            <!-- ✅ DISCOUNTS BADGES -->
+            <td style="white-space:nowrap;">
+              <span class="badge badge-success mr-1"
+                    th:if="${cp.hourlyDiscountActive != null and cp.hourlyDiscountActive and cp.hourlyDiscountPercent != null and cp.hourlyDiscountPercent.doubleValue() > 0}"
+                    th:text="${'H: -' + cp.hourlyDiscountPercent + '%'}">H: -10%</span>
+
+              <span class="badge badge-success mr-1"
+                    th:if="${cp.dailyDiscountActive != null and cp.dailyDiscountActive and cp.dailyDiscountPercent != null and cp.dailyDiscountPercent.doubleValue() > 0}"
+                    th:text="${'D: -' + cp.dailyDiscountPercent + '%'}">D: -15%</span>
+
               <span class="badge badge-success"
-                    th:if="${cp.discountActive != null and cp.discountActive and cp.discountPercent != null and cp.discountPercent.doubleValue() > 0}"
-                    th:text="${'-' + cp.discountPercent + '%'}">-10%</span>
+                    th:if="${cp.leasingDiscountActive != null and cp.leasingDiscountActive and cp.leasingDiscountPercent != null and cp.leasingDiscountPercent.doubleValue() > 0}"
+                    th:text="${'L: -' + cp.leasingDiscountPercent + '%'}">L: -5%</span>
 
               <span class="text-muted"
-                    th:if="${cp.discountActive == null || !cp.discountActive || cp.discountPercent == null || cp.discountPercent.doubleValue() <= 0}">
+                    th:if="${(cp.hourlyDiscountActive == null or !cp.hourlyDiscountActive or cp.hourlyDiscountPercent == null or cp.hourlyDiscountPercent.doubleValue() <= 0)
+                         and (cp.dailyDiscountActive == null or !cp.dailyDiscountActive or cp.dailyDiscountPercent == null or cp.dailyDiscountPercent.doubleValue() <= 0)
+                         and (cp.leasingDiscountActive == null or !cp.leasingDiscountActive or cp.leasingDiscountPercent == null or cp.leasingDiscountPercent.doubleValue() <= 0)}">
                 -
               </span>
             </td>
@@ -170,8 +216,15 @@
                                data-daily=${cp.dailyRate},
                                data-leasing=${cp.monthlyLeasingRate},
                                data-fuel=${cp.fuelSurchargePerHour},
-                               data-discountactive=${cp.discountActive},
-                               data-discountpercent=${cp.discountPercent}">
+
+                               data-hdiscactive=${cp.hourlyDiscountActive},
+                               data-hdiscpercent=${cp.hourlyDiscountPercent},
+
+                               data-ddiscactive=${cp.dailyDiscountActive},
+                               data-ddiscpercent=${cp.dailyDiscountPercent},
+
+                               data-ldiscactive=${cp.leasingDiscountActive},
+                               data-ldiscpercent=${cp.leasingDiscountPercent}">
                 <i class="fas fa-edit"></i> Edit
               </button>
 
@@ -233,25 +286,66 @@
               </div>
             </div>
 
-            <!-- ✅ DISCOUNT -->
+            <!-- ✅ DISCOUNTS -->
             <div class="form-row">
-              <div class="form-group col-md-3">
-                <div class="custom-control custom-checkbox mt-4">
-                  <input type="checkbox"
-                         class="custom-control-input"
-                         id="editDiscountActive"
-                         th:field="*{discountActive}">
-                  <label class="custom-control-label" for="editDiscountActive">Discount active</label>
+              <div class="form-group col-md-4">
+                <div class="border rounded p-3">
+                  <div class="custom-control custom-checkbox">
+                    <input type="checkbox"
+                           class="custom-control-input"
+                           id="editHourlyDiscountActive"
+                           th:field="*{hourlyDiscountActive}">
+                    <label class="custom-control-label" for="editHourlyDiscountActive">Hourly discount active</label>
+                  </div>
+                  <div class="mt-2">
+                    <label class="mb-1">Hourly discount %</label>
+                    <input type="number" step="0.01" min="0" max="100"
+                           class="form-control"
+                           th:field="*{hourlyDiscountPercent}"
+                           id="editHourlyDiscountPercent"
+                           placeholder="e.g. 10">
+                  </div>
                 </div>
               </div>
 
-              <div class="form-group col-md-3">
-                <label>Discount percent (0..100)</label>
-                <input type="number" step="0.01" min="0" max="100"
-                       class="form-control"
-                       th:field="*{discountPercent}"
-                       id="editDiscountPercent"
-                       placeholder="e.g. 10">
+              <div class="form-group col-md-4">
+                <div class="border rounded p-3">
+                  <div class="custom-control custom-checkbox">
+                    <input type="checkbox"
+                           class="custom-control-input"
+                           id="editDailyDiscountActive"
+                           th:field="*{dailyDiscountActive}">
+                    <label class="custom-control-label" for="editDailyDiscountActive">Daily discount active</label>
+                  </div>
+                  <div class="mt-2">
+                    <label class="mb-1">Daily discount %</label>
+                    <input type="number" step="0.01" min="0" max="100"
+                           class="form-control"
+                           th:field="*{dailyDiscountPercent}"
+                           id="editDailyDiscountPercent"
+                           placeholder="e.g. 15">
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-group col-md-4">
+                <div class="border rounded p-3">
+                  <div class="custom-control custom-checkbox">
+                    <input type="checkbox"
+                           class="custom-control-input"
+                           id="editLeasingDiscountActive"
+                           th:field="*{leasingDiscountActive}">
+                    <label class="custom-control-label" for="editLeasingDiscountActive">Leasing discount active</label>
+                  </div>
+                  <div class="mt-2">
+                    <label class="mb-1">Leasing discount %</label>
+                    <input type="number" step="0.01" min="0" max="100"
+                           class="form-control"
+                           th:field="*{leasingDiscountPercent}"
+                           id="editLeasingDiscountPercent"
+                           placeholder="e.g. 5">
+                  </div>
+                </div>
               </div>
             </div>
 
@@ -277,24 +371,31 @@
     $('#editPricingModal').on('show.bs.modal', function (event) {
       const btn = $(event.relatedTarget);
 
-      const carId = btn.data('carid');
-      const hourly = btn.data('hourly');
-      const daily = btn.data('daily');
-      const leasing = btn.data('leasing');
+      $('#editCarId').val(btn.data('carid'));
+      $('#editHourly').val(btn.data('hourly'));
+      $('#editDaily').val(btn.data('daily'));
+      $('#editLeasing').val(btn.data('leasing'));
+
       const fuel = btn.data('fuel');
-
-      const discountActive = btn.data('discountactive');
-      const discountPercent = btn.data('discountpercent');
-
-      $('#editCarId').val(carId);
-      $('#editHourly').val(hourly);
-      $('#editDaily').val(daily);
-      $('#editLeasing').val(leasing);
       $('#editFuel').val(fuel != null ? fuel : '');
 
-      // ✅ checkbox + percent
-      $('#editDiscountActive').prop('checked', discountActive === true || discountActive === 'true');
-      $('#editDiscountPercent').val(discountPercent != null ? discountPercent : '');
+      // Hourly
+      const hA = btn.data('hdiscactive');
+      const hP = btn.data('hdiscpercent');
+      $('#editHourlyDiscountActive').prop('checked', hA === true || hA === 'true');
+      $('#editHourlyDiscountPercent').val(hP != null ? hP : '');
+
+      // Daily
+      const dA = btn.data('ddiscactive');
+      const dP = btn.data('ddiscpercent');
+      $('#editDailyDiscountActive').prop('checked', dA === true || dA === 'true');
+      $('#editDailyDiscountPercent').val(dP != null ? dP : '');
+
+      // Leasing
+      const lA = btn.data('ldiscactive');
+      const lP = btn.data('ldiscpercent');
+      $('#editLeasingDiscountActive').prop('checked', lA === true || lA === 'true');
+      $('#editLeasingDiscountPercent').val(lP != null ? lP : '');
     });
   </script>
 </th:block>

@@ -20,10 +20,18 @@ public class CarPricingUpdateDto {
 
     @PositiveOrZero private BigDecimal fuelSurchargePerHour;
 
-    @NotNull
-    private Boolean discountActive = false;
-
+    @NotNull private Boolean hourlyDiscountActive = false;
     @DecimalMin(value = "0.0", inclusive = true)
     @DecimalMax(value = "100.0", inclusive = true)
-    private BigDecimal discountPercent;
+    private BigDecimal hourlyDiscountPercent;
+
+    @NotNull private Boolean dailyDiscountActive = false;
+    @DecimalMin(value = "0.0", inclusive = true)
+    @DecimalMax(value = "100.0", inclusive = true)
+    private BigDecimal dailyDiscountPercent;
+
+    @NotNull private Boolean leasingDiscountActive = false;
+    @DecimalMin(value = "0.0", inclusive = true)
+    @DecimalMax(value = "100.0", inclusive = true)
+    private BigDecimal leasingDiscountPercent;
 }

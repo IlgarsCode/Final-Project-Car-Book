@@ -8,7 +8,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 
 @Entity
-@Table(name = "car_pricings")
+@Table(name = "car_pricing")
 @Getter
 @Setter
 public class CarPricing {
@@ -21,62 +21,89 @@ public class CarPricing {
     @JoinColumn(name = "car_id", nullable = false, unique = true)
     private Car car;
 
-    @Column(nullable = false, precision = 12, scale = 2)
-    private BigDecimal hourlyRate;
+    @Column(nullable = false)
+    private BigDecimal hourlyRate = BigDecimal.ZERO;
 
-    @Column(nullable = false, precision = 12, scale = 2)
-    private BigDecimal dailyRate;
+    @Column(nullable = false)
+    private BigDecimal dailyRate = BigDecimal.ZERO;
 
-    @Column(nullable = false, precision = 12, scale = 2)
-    private BigDecimal monthlyLeasingRate;
+    @Column(nullable = false)
+    private BigDecimal monthlyLeasingRate = BigDecimal.ZERO;
 
-    @Column(precision = 12, scale = 2)
     private BigDecimal fuelSurchargePerHour;
 
+    @Column(nullable = false)
     private Boolean isActive = true;
 
-    // ✅ NEW
-    @Column(name = "discount_active", nullable = false)
-    private Boolean discountActive = false;
+    // ✅ NEW: separate discounts
+    @Column(nullable = false)
+    private Boolean hourlyDiscountActive = false;
+    private BigDecimal hourlyDiscountPercent;
 
-    // 0..100
-    @Column(name = "discount_percent", precision = 5, scale = 2)
-    private BigDecimal discountPercent;
+    @Column(nullable = false)
+    private Boolean dailyDiscountActive = false;
+    private BigDecimal dailyDiscountPercent;
 
-    // ---- old getters (qalsın)
-    public BigDecimal getPerHourRate() { return hourlyRate; }
-    public BigDecimal getPerDayRate()  { return dailyRate; }
-    public BigDecimal getLeasingPerMonth() { return monthlyLeasingRate; }
+    @Column(nullable = false)
+    private Boolean leasingDiscountActive = false;
+    private BigDecimal leasingDiscountPercent;
 
-    // ✅ Effective rates (endirim tətbiq olunur; fuel surcharge endirimə düşmür)
+    // ==========================
+    // ✅ Effective rate calculators
+    // ==========================
+
     public BigDecimal getEffectiveHourlyRate() {
-        return applyDiscount(hourlyRate);
+        return applyDiscount(safe(hourlyRate), hourlyDiscountActive, hourlyDiscountPercent);
     }
 
     public BigDecimal getEffectiveDailyRate() {
-        return applyDiscount(dailyRate);
+        return applyDiscount(safe(dailyRate), dailyDiscountActive, dailyDiscountPercent);
     }
 
     public BigDecimal getEffectiveMonthlyLeasingRate() {
-        return applyDiscount(monthlyLeasingRate);
+        return applyDiscount(safe(monthlyLeasingRate), leasingDiscountActive, leasingDiscountPercent);
     }
 
-    public boolean hasDiscount() {
-        return Boolean.TRUE.equals(discountActive)
-                && discountPercent != null
-                && discountPercent.compareTo(BigDecimal.ZERO) > 0;
+    public boolean hasAnyDiscount() {
+        return hasDiscount(hourlyDiscountActive, hourlyDiscountPercent)
+                || hasDiscount(dailyDiscountActive, dailyDiscountPercent)
+                || hasDiscount(leasingDiscountActive, leasingDiscountPercent);
     }
 
-    private BigDecimal applyDiscount(BigDecimal base) {
-        if (base == null) return BigDecimal.ZERO;
-        if (!hasDiscount()) return base;
+    public boolean hasHourlyDiscount() {
+        return hasDiscount(hourlyDiscountActive, hourlyDiscountPercent);
+    }
 
-        // base * (100 - p) / 100
-        BigDecimal p = discountPercent;
-        BigDecimal factor = BigDecimal.valueOf(100)
-                .subtract(p)
-                .divide(BigDecimal.valueOf(100), 6, RoundingMode.HALF_UP);
+    public boolean hasDailyDiscount() {
+        return hasDiscount(dailyDiscountActive, dailyDiscountPercent);
+    }
 
-        return base.multiply(factor).setScale(2, RoundingMode.HALF_UP);
+    public boolean hasLeasingDiscount() {
+        return hasDiscount(leasingDiscountActive, leasingDiscountPercent);
+    }
+
+    private static boolean hasDiscount(Boolean active, BigDecimal percent) {
+        return Boolean.TRUE.equals(active)
+                && percent != null
+                && percent.compareTo(BigDecimal.ZERO) > 0;
+    }
+
+    private static BigDecimal applyDiscount(BigDecimal base, Boolean active, BigDecimal percent) {
+        if (!hasDiscount(active, percent)) return base;
+
+        // 0..100 clamp (safety)
+        BigDecimal p = percent;
+        if (p.compareTo(BigDecimal.ZERO) < 0) p = BigDecimal.ZERO;
+        if (p.compareTo(new BigDecimal("100")) > 0) p = new BigDecimal("100");
+
+        BigDecimal multiplier = BigDecimal.ONE.subtract(p.divide(new BigDecimal("100"), 6, RoundingMode.HALF_UP));
+        BigDecimal out = base.multiply(multiplier);
+
+        // currency-like
+        return out.setScale(2, RoundingMode.HALF_UP);
+    }
+
+    private static BigDecimal safe(BigDecimal v) {
+        return v == null ? BigDecimal.ZERO : v;
     }
 }

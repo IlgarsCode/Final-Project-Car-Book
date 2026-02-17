@@ -27,12 +27,15 @@ public class DashboardCarPricingController {
         model.addAttribute("cars", carRepository.findAll());
         model.addAttribute("rows", carPricingRepository.findAll());
 
-        // ✅ default-lar (checkbox-lar problemsiz işləsin)
         CarPricingCreateDto create = new CarPricingCreateDto();
-        create.setDiscountActive(false);
+        create.setHourlyDiscountActive(false);
+        create.setDailyDiscountActive(false);
+        create.setLeasingDiscountActive(false);
 
         CarPricingUpdateDto edit = new CarPricingUpdateDto();
-        edit.setDiscountActive(false);
+        edit.setHourlyDiscountActive(false);
+        edit.setDailyDiscountActive(false);
+        edit.setLeasingDiscountActive(false);
 
         model.addAttribute("createForm", create);
         model.addAttribute("editForm", edit);
@@ -50,7 +53,9 @@ public class DashboardCarPricingController {
             model.addAttribute("rows", carPricingRepository.findAll());
 
             CarPricingUpdateDto edit = new CarPricingUpdateDto();
-            edit.setDiscountActive(false);
+            edit.setHourlyDiscountActive(false);
+            edit.setDailyDiscountActive(false);
+            edit.setLeasingDiscountActive(false);
             model.addAttribute("editForm", edit);
 
             return "dashboard/pricing/list";
@@ -70,7 +75,9 @@ public class DashboardCarPricingController {
             model.addAttribute("rows", carPricingRepository.findAll());
 
             CarPricingCreateDto create = new CarPricingCreateDto();
-            create.setDiscountActive(false);
+            create.setHourlyDiscountActive(false);
+            create.setDailyDiscountActive(false);
+            create.setLeasingDiscountActive(false);
             model.addAttribute("createForm", create);
 
             return "dashboard/pricing/list";

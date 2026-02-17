@@ -53,9 +53,14 @@ public class CarPricingAdminServiceImpl implements CarPricingAdminService {
         cp.setIsActive(true);
 
         // default: endirim yoxdur
-        cp.setDiscountActive(false);
-        cp.setDiscountPercent(null);
+        cp.setHourlyDiscountActive(false);
+        cp.setHourlyDiscountPercent(null);
 
+        cp.setDailyDiscountActive(false);
+        cp.setDailyDiscountPercent(null);
+
+        cp.setLeasingDiscountActive(false);
+        cp.setLeasingDiscountPercent(null);
         carPricingRepository.save(cp);
     }
 
@@ -87,28 +92,39 @@ public class CarPricingAdminServiceImpl implements CarPricingAdminService {
         cp.setFuelSurchargePerHour(dto.getFuelSurchargePerHour());
         cp.setIsActive(true);
 
-        // ✅ discount
-        cp.setDiscountActive(Boolean.TRUE.equals(dto.getDiscountActive()));
-        if (Boolean.TRUE.equals(dto.getDiscountActive())) {
-            cp.setDiscountPercent(dto.getDiscountPercent());
-        } else {
-            cp.setDiscountPercent(null);
-        }
+        // ✅ Hourly discount
+        cp.setHourlyDiscountActive(Boolean.TRUE.equals(dto.getHourlyDiscountActive()));
+        cp.setHourlyDiscountPercent(Boolean.TRUE.equals(dto.getHourlyDiscountActive()) ? dto.getHourlyDiscountPercent() : null);
+
+        // ✅ Daily discount
+        cp.setDailyDiscountActive(Boolean.TRUE.equals(dto.getDailyDiscountActive()));
+        cp.setDailyDiscountPercent(Boolean.TRUE.equals(dto.getDailyDiscountActive()) ? dto.getDailyDiscountPercent() : null);
+
+        // ✅ Leasing discount
+        cp.setLeasingDiscountActive(Boolean.TRUE.equals(dto.getLeasingDiscountActive()));
+        cp.setLeasingDiscountPercent(Boolean.TRUE.equals(dto.getLeasingDiscountActive()) ? dto.getLeasingDiscountPercent() : null);
 
         carPricingRepository.save(cp);
     }
 
     @Override
     public void update(CarPricingUpdateDto dto) {
-        // eyni məntiq
         CarPricingCreateDto c = new CarPricingCreateDto();
         c.setCarId(dto.getCarId());
         c.setHourlyRate(dto.getHourlyRate());
         c.setDailyRate(dto.getDailyRate());
         c.setMonthlyLeasingRate(dto.getMonthlyLeasingRate());
         c.setFuelSurchargePerHour(dto.getFuelSurchargePerHour());
-        c.setDiscountActive(dto.getDiscountActive());
-        c.setDiscountPercent(dto.getDiscountPercent());
+
+        c.setHourlyDiscountActive(dto.getHourlyDiscountActive());
+        c.setHourlyDiscountPercent(dto.getHourlyDiscountPercent());
+
+        c.setDailyDiscountActive(dto.getDailyDiscountActive());
+        c.setDailyDiscountPercent(dto.getDailyDiscountPercent());
+
+        c.setLeasingDiscountActive(dto.getLeasingDiscountActive());
+        c.setLeasingDiscountPercent(dto.getLeasingDiscountPercent());
+
         createOrUpdate(c);
     }
 

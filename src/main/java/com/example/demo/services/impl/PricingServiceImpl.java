@@ -90,21 +90,27 @@ public class PricingServiceImpl implements PricingService {
             dto.setCarImageUrl(car.getImageUrl());
             dto.setCarSlug(car.getSlug());
 
-            // ✅ DTO-ya endirimli qiymətləri yaz
+            // ✅ effective
             dto.setHourlyRate(cp.getEffectiveHourlyRate());
             dto.setDailyRate(cp.getEffectiveDailyRate());
             dto.setMonthlyLeasingRate(cp.getEffectiveMonthlyLeasingRate());
 
-            dto.setFuelSurchargePerHour(cp.getFuelSurchargePerHour());
-
-            // ✅ UI üçün endirim flag-ları
-            dto.setHasDiscount(cp.hasDiscount());
-            dto.setDiscountPercent(cp.getDiscountPercent());
-
-            // istəsən “was price” də qoy (UI-də üstündən xətt)
+            // ✅ base
             dto.setBaseHourlyRate(cp.getHourlyRate());
             dto.setBaseDailyRate(cp.getDailyRate());
             dto.setBaseMonthlyLeasingRate(cp.getMonthlyLeasingRate());
+
+            dto.setFuelSurchargePerHour(cp.getFuelSurchargePerHour());
+
+            // ✅ discounts (separate)
+            dto.setHourlyHasDiscount(cp.hasHourlyDiscount());
+            dto.setHourlyDiscountPercent(cp.getHourlyDiscountPercent());
+
+            dto.setDailyHasDiscount(cp.hasDailyDiscount());
+            dto.setDailyDiscountPercent(cp.getDailyDiscountPercent());
+
+            dto.setLeasingHasDiscount(cp.hasLeasingDiscount());
+            dto.setLeasingDiscountPercent(cp.getLeasingDiscountPercent());
 
             dto.setAverageRating(avgMap.getOrDefault(carId, 0.0));
             dto.setReviewCount(countMap.getOrDefault(carId, 0L));
