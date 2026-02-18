@@ -5,6 +5,45 @@
 <head>
     <meta charset="UTF-8">
     <title>Profile</title>
+
+    <style>
+        .profile-card { border: 1px solid rgba(0,0,0,.06); border-radius: 14px; }
+        .profile-divider { height: 1px; background: rgba(0,0,0,.06); margin: 18px 0; }
+
+        .pwd-actions {
+            display:flex; gap:12px; flex-wrap:wrap; align-items:center; margin-top: 10px;
+        }
+
+        .hint-box {
+            border-radius: 12px;
+            border: 1px dashed rgba(79,134,247,.35);
+            background: rgba(79,134,247,.06);
+            padding: 12px 14px;
+            margin-top: 14px;
+        }
+
+        .hint-box .title {
+            font-weight: 700;
+            margin-bottom: 4px;
+            color: #1f2d3d;
+        }
+
+        .hint-box .text {
+            margin:0;
+            color: rgba(0,0,0,.65);
+            font-size: 14px;
+            line-height: 1.35;
+        }
+
+        .link-soft {
+            display:inline-flex;
+            align-items:center;
+            gap:8px;
+            text-decoration:none;
+            font-weight: 600;
+        }
+        .link-soft:hover { text-decoration: underline; }
+    </style>
 </head>
 <body>
 <div layout:fragment="content">
@@ -20,7 +59,8 @@
                     <div class="alert alert-success" th:if="${avatarOk}">Avatar yeniləndi.</div>
                     <div class="alert alert-success" th:if="${pwdOk}">Şifrə dəyişdi.</div>
 
-                    <div class="card shadow p-4 mb-4">
+                    <!-- PROFILE CARD -->
+                    <div class="card shadow p-4 mb-4 profile-card">
 
                         <div class="row align-items-center">
                             <div class="col-md-3 text-center mb-3 mb-md-0">
@@ -62,9 +102,7 @@
                                         <label>Bio</label>
                                         <textarea class="form-control" th:field="*{bio}" rows="4"
                                                   placeholder="Özünüz haqqında qısa məlumat..."></textarea>
-                                        <small class="text-danger"
-                                               th:if="${#fields.hasErrors('bio')}"
-                                               th:errors="*{bio}"></small>
+                                        <small class="text-danger" th:if="${#fields.hasErrors('bio')}" th:errors="*{bio}"></small>
                                         <small class="text-muted" style="font-size:12px;">
                                             Bu məlumat blog və rəylərdə “author bio” kimi görünəcək.
                                         </small>
@@ -76,8 +114,21 @@
                         </div>
                     </div>
 
-                    <div class="card shadow p-4">
-                        <h5 class="mb-3">Change Password</h5>
+                    <!-- PASSWORD CARD -->
+                    <div class="card shadow p-4 profile-card">
+                        <div class="d-flex justify-content-between align-items-center flex-wrap" style="gap:10px;">
+                            <h5 class="mb-0">Change Password</h5>
+
+                            <!-- ✅ forgot link -->
+                            <a class="link-soft text-primary"
+                               th:href="@{/auth/forgot-password}"
+                               title="Şifrənizi unutmusunuzsa email ilə yeniləyin">
+                                <span class="icon ion-ios-help-circle-outline"></span>
+                                Şifrəni unutdum?
+                            </a>
+                        </div>
+
+                        <div class="profile-divider"></div>
 
                         <form th:action="@{/profile/password}" th:object="${pwdForm}" method="post">
 
@@ -93,6 +144,7 @@
                                     <input type="password" class="form-control" th:field="*{newPassword}">
                                     <small class="text-danger" th:if="${#fields.hasErrors('newPassword')}" th:errors="*{newPassword}"></small>
                                 </div>
+
                                 <div class="form-group col-md-6">
                                     <label>Confirm New Password</label>
                                     <input type="password" class="form-control" th:field="*{confirmNewPassword}">
@@ -100,8 +152,22 @@
                                 </div>
                             </div>
 
-                            <button class="btn btn-secondary" type="submit">Update Password</button>
+                            <div class="pwd-actions">
+                                <button class="btn btn-secondary" type="submit">Update Password</button>
+                                <small class="text-muted" style="font-size:12px;">
+                                    Old password yadında deyilsə, “Şifrəni unutdum?” ilə email OTP istifadə et.
+                                </small>
+                            </div>
+
                         </form>
+
+                        <div class="hint-box">
+                            <div class="title">Təhlükəsizlik qeydi</div>
+                            <p class="text">
+                                “Şifrəni unutdum” prosesi email-ə OTP göndərir. Email hesabına giriş səndə deyilsə, şifrə yenilənməyəcək.
+                            </p>
+                        </div>
+
                     </div>
 
                 </div>
