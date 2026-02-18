@@ -2,12 +2,8 @@ package com.example.demo.services.impl;
 
 import com.example.demo.dto.checkout.CheckoutCreateDto;
 import com.example.demo.dto.enums.PricingRateType;
-import com.example.demo.model.Order;
-import com.example.demo.model.OrderItem;
-import com.example.demo.model.OrderStatus;
-import com.example.demo.repository.CartRepository;
-import com.example.demo.repository.OrderRepository;
-import com.example.demo.repository.UserRepository;
+import com.example.demo.model.*;
+import com.example.demo.repository.*;
 import com.example.demo.services.OrderService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -29,6 +25,7 @@ public class OrderServiceImpl implements OrderService {
     private final UserRepository userRepository;
     private final CartRepository cartRepository;
     private final OrderRepository orderRepository;
+    private final LocationRepository locationRepository;
 
     @Override
     public Order checkout(String email, CheckoutCreateDto dto) {
@@ -47,6 +44,14 @@ public class OrderServiceImpl implements OrderService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Drop-off date pick-up date-dən əvvəl ola bilməz");
         }
 
+        String pickupName = locationRepository.findById(dto.getPickupLocationId())
+                .map(Location::getName)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Pick-up location tapılmadı"));
+
+        String dropoffName = locationRepository.findById(dto.getDropoffLocationId())
+                .map(Location::getName)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Drop-off location tapılmadı"));
+
         long daysBetween = ChronoUnit.DAYS.between(dto.getPickupDate(), dto.getDropoffDate());
         int rentalDays = (int) Math.max(1, daysBetween);
 
@@ -55,11 +60,13 @@ public class OrderServiceImpl implements OrderService {
 
         Order order = new Order();
         order.setUser(user);
-        order.setStatus(OrderStatus.PENDING);
+        order.setStatus(OrderStatus.PENDING); // payment gözlənir
 
-        // ✅ per-user sıra nömrəsi
         long nextUserNo = orderRepository.findMaxUserOrderNo(user.getId()) + 1;
         order.setUserOrderNo(nextUserNo);
+
+        order.setPickupLocation(pickupName);
+        order.setDropoffLocation(dropoffName);
 
         order.setPickupDate(dto.getPickupDate());
         order.setDropoffDate(dto.getDropoffDate());
@@ -107,7 +114,6 @@ public class OrderServiceImpl implements OrderService {
             oi.setUnitPriceSnapshot(unitPrice);
             oi.setFuelSurchargePerHourSnapshot(surcharge);
 
-// ✅ NEW
             oi.setBaseUnitPriceSnapshot(ci.getBaseUnitPriceSnapshot());
             oi.setDiscountPercentSnapshot(ci.getDiscountPercentSnapshot());
 
@@ -121,19 +127,14 @@ public class OrderServiceImpl implements OrderService {
 
         order.setTotalAmount(total);
 
-        Order saved = orderRepository.save(order);
-
-        cart.getItems().clear();
-        cartRepository.save(cart);
-
-        return saved;
+        // ❗ Cart-ı burada silmirik (payment success olanda silinəcək)
+        return orderRepository.save(order);
     }
 
     @Override
     public List<Order> getMyOrders(String email) {
         var user = userRepository.findByEmailIgnoreCase(email)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User tapılmadı"));
-
         return orderRepository.findAllByUser_IdOrderByCreatedAtDesc(user.getId());
     }
 
@@ -141,7 +142,6 @@ public class OrderServiceImpl implements OrderService {
     public Order getMyOrderDetail(String email, Long orderId) {
         var user = userRepository.findByEmailIgnoreCase(email)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User tapılmadı"));
-
         return orderRepository.findByIdAndUser_Id(orderId, user.getId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Order tapılmadı"));
     }

@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+<head>
+    <meta charset="UTF-8">
+    <title>Payment</title>
+    <style>
+        .pay-card{
+            border-radius: 16px;
+            box-shadow: 0 12px 34px rgba(0,0,0,.08);
+            border: 1px solid rgba(0,0,0,.06);
+            overflow: hidden;
+        }
+        .pay-head{
+            padding: 18px 18px;
+            background: linear-gradient(135deg, rgba(79,134,247,.18), rgba(79,134,247,.06));
+            border-bottom: 1px solid rgba(0,0,0,.06);
+        }
+        .pay-title{ margin:0; font-weight:800; }
+        .pay-sub{ margin:6px 0 0 0; color:#6c757d; font-size:13px; }
+        .pay-body{ padding: 18px; background:#fff; }
+        .test-cards{
+            background: rgba(0,0,0,.03);
+            border: 1px dashed rgba(0,0,0,.15);
+            padding: 12px;
+            border-radius: 12px;
+            font-size: 13px;
+            color:#333;
+        }
+        .mono{ font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; }
+    </style>
+</head>
+<body>
+<div layout:fragment="content">
+
+    <section class="ftco-section">
+        <div class="container">
+            <div class="row justify-content-center">
+
+                <div class="col-md-7 ftco-animate">
+                    <div class="pay-card">
+
+                        <div class="pay-head">
+                            <h3 class="pay-title">Secure Payment (Simulation)</h3>
+                            <p class="pay-sub">
+                                Order #<span th:text="${payment.order.id}">0</span>
+                                • Amount:
+                                <strong>$<span th:text="${payment.amount}">0</span></strong>
+                            </p>
+                        </div>
+
+                        <div class="pay-body">
+
+                            <div class="test-cards mb-4">
+                                <div><strong>Test cards:</strong></div>
+                                <div>✅ Success: <span class="mono">4242 4242 4242 4242</span></div>
+                                <div>❌ Fail: <span class="mono">4000 0000 0000 0002</span></div>
+                                <div class="text-muted mt-1">Exp: 12/30 • CVC: 123</div>
+                            </div>
+
+                            <form th:action="@{'/payment/checkout/' + ${payment.id}}"
+                                  th:object="${form}"
+                                  method="post"
+                                  class="p-3 bg-light"
+                                  style="border-radius:14px;">
+
+                                <div class="form-group">
+                                    <label>Card holder</label>
+                                    <input class="form-control" th:field="*{cardHolder}" placeholder="John Doe">
+                                    <small class="text-danger" th:if="${#fields.hasErrors('cardHolder')}" th:errors="*{cardHolder}"></small>
+                                </div>
+
+                                <div class="form-group">
+                                    <label>Card number</label>
+                                    <input class="form-control" th:field="*{cardNumber}" placeholder="4242 4242 4242 4242">
+                                    <small class="text-danger" th:if="${#fields.hasErrors('cardNumber')}" th:errors="*{cardNumber}"></small>
+                                </div>
+
+                                <div class="form-row">
+                                    <div class="form-group col-md-6">
+                                        <label>Exp (MM/YY)</label>
+                                        <input class="form-control" th:field="*{exp}" placeholder="12/30">
+                                        <small class="text-danger" th:if="${#fields.hasErrors('exp')}" th:errors="*{exp}"></small>
+                                    </div>
+                                    <div class="form-group col-md-6">
+                                        <label>CVC</label>
+                                        <input class="form-control" th:field="*{cvc}" placeholder="123">
+                                        <small class="text-danger" th:if="${#fields.hasErrors('cvc')}" th:errors="*{cvc}"></small>
+                                    </div>
+                                </div>
+
+                                <div class="d-flex" style="gap:10px; flex-wrap:wrap;">
+                                    <button class="btn btn-primary" type="submit">
+                                        Pay $<span th:text="${payment.amount}">0</span>
+                                    </button>
+                                    <a class="btn btn-outline-secondary" th:href="@{'/order/' + ${payment.order.id}}">
+                                        Back to order
+                                    </a>
+                                </div>
+
+                            </form>
+
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+</div>
+</body>
+</html>

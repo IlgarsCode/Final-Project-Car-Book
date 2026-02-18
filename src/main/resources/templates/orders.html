@@ -39,22 +39,43 @@
                         <th>Status</th>
                         <th>Dates</th>
                         <th>Total</th>
-                        <th></th>
+                        <th>Actions</th>
                     </tr>
                     </thead>
                     <tbody>
+
                     <tr th:each="o : ${orders}" class="text-center">
                         <td th:text="${o.id}">1</td>
-                        <td th:text="${o.status}">PENDING</td>
+
+                        <td>
+                            <span th:text="${o.status}">PENDING</span>
+                            <span class="badge badge-success ml-2"
+                                  th:if="${o.status != null and o.status.name() == 'PAID'}">PAID</span>
+                            <span class="badge badge-warning ml-2"
+                                  th:if="${o.status != null and o.status.name() == 'PENDING'}">PAYMENT</span>
+                            <span class="badge badge-danger ml-2"
+                                  th:if="${o.status != null and o.status.name() == 'PAYMENT_FAILED'}">FAILED</span>
+                        </td>
+
                         <td>
                             <span th:text="${o.pickupDate}"></span> →
                             <span th:text="${o.dropoffDate}"></span>
                         </td>
+
                         <td>$<span th:text="${o.totalAmount}">0</span></td>
-                        <td>
+
+                        <td style="display:flex; gap:8px; justify-content:center; flex-wrap:wrap;">
                             <a class="btn btn-sm btn-primary" th:href="@{'/order/' + ${o.id}}">Details</a>
+
+                            <!-- ✅ Pay now only if pending/failed -->
+                            <a class="btn btn-sm btn-success"
+                               th:if="${o.status != null and (o.status.name() == 'PENDING' or o.status.name() == 'PAYMENT_FAILED')}"
+                               th:href="@{'/payment/start/' + ${o.id}}">
+                                Pay now
+                            </a>
                         </td>
                     </tr>
+
                     </tbody>
                 </table>
             </div>

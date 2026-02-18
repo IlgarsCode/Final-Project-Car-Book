@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+<head>
+  <meta charset="UTF-8">
+  <title>Processing</title>
+</head>
+<body>
+<div layout:fragment="content">
+
+  <section class="ftco-section">
+    <div class="container">
+      <div class="row justify-content-center">
+
+        <div class="col-md-7 ftco-animate">
+          <div class="p-4 bg-white border"
+               style="border-radius:16px; box-shadow:0 12px 34px rgba(0,0,0,.08);">
+
+            <h3 class="mb-2">Processing payment...</h3>
+            <p class="text-muted mb-4">
+              Please wait. We are confirming the transaction.
+            </p>
+
+            <div class="alert alert-info" id="statusBox">
+              Status: PROCESSING
+            </div>
+
+            <div class="text-muted" style="font-size:13px;">
+              Payment ID: <span th:text="${payment.id}">0</span>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <script th:inline="javascript">
+    (function(){
+      const paymentId = /*[[${payment.id}]]*/ 0;
+      const box = document.getElementById('statusBox');
+
+      async function poll(){
+        const res = await fetch(`/payment/api/${paymentId}`, { headers: { 'Accept': 'application/json' }});
+        const data = await res.json();
+
+        if (!data || !data.status) return;
+
+        box.textContent = "Status: " + data.status;
+
+        if (data.status !== 'PROCESSING'){
+          window.location.href = `/payment/result/${paymentId}`;
+        }
+      }
+
+      setInterval(poll, 800);
+      poll();
+    })();
+  </script>
+
+</div>
+</body>
+</html>

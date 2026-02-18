@@ -11,18 +11,18 @@ import java.time.LocalDate;
 @Setter
 public class CheckoutCreateDto {
 
-    @NotNull(message = "Pick-up location seçilməlidir")
+    @NotNull
     private Long pickupLocationId;
 
-    @NotNull(message = "Drop-off location seçilməlidir")
+    @NotNull
     private Long dropoffLocationId;
 
     @NotNull
-    @FutureOrPresent(message = "Pickup date bu gün və ya gələcək olmalıdır")
+    @FutureOrPresent
     private LocalDate pickupDate;
 
     @NotNull
-    @FutureOrPresent(message = "Dropoff date bu gün və ya gələcək olmalıdır")
+    @FutureOrPresent
     private LocalDate dropoffDate;
 
     private String pickupTime;   // "HH:mm"

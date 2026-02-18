@@ -72,8 +72,8 @@ public class CheckoutController {
 
         // ✅ orderService checkout artıq ID-lərlə işləməlidir
         var order = orderService.checkout(user.getUsername(), checkoutForm);
-
         session.removeAttribute("TRIP_CTX");
-        return "redirect:/order/" + order.getId();
+
+        return "redirect:/payment/start/" + order.getId();
     }
 }

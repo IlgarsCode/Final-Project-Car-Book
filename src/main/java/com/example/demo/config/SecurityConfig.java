@@ -93,6 +93,7 @@ public class SecurityConfig {
                                         "/cart/**",
                                         "/booking/**",
                                         "/checkout/**",
+                                        "/payment/**",
                                         "/order/**",
                                         "/testimonial/new"
                                 ).hasRole("USER")

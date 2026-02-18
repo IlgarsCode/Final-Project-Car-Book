@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+<head>
+    <meta charset="UTF-8">
+    <title>Payment Result</title>
+</head>
+<body>
+<div layout:fragment="content">
+
+    <section class="ftco-section">
+        <div class="container">
+            <h3 class="mb-3">Payment Result</h3>
+
+            <div class="alert alert-success" th:if="${success}">
+                ✅ Payment uğurlu oldu.
+            </div>
+
+            <div class="alert alert-danger" th:if="${success == false}">
+                ❌ Payment uğursuz oldu.
+            </div>
+
+            <div class="mb-3">
+                <b>Payment status:</b> <span th:text="${payment.status}">PROCESSING</span>
+            </div>
+
+            <a class="btn btn-primary"
+               th:href="${orderId != null} ? @{/order/{id}(id=${orderId})} : @{/order}">
+                Back to order
+            </a>
+        </div>
+    </section>
+
+</div>
+</body>
+</html>

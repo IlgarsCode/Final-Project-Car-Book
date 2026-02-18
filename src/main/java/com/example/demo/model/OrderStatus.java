@@ -1,8 +1,10 @@
 package com.example.demo.model;
 
 public enum OrderStatus {
-    PENDING,     // checkout edilib, hələ təsdiq yox
-    APPROVED,    // admin təsdiq edər (sonra)
+    PENDING,            // order yaradılıb, payment gözlənir
+    PAID,               // payment success
+    PAYMENT_FAILED,     // payment fail
+    APPROVED,           // admin təsdiqi (sonra)
     CANCELED,
     COMPLETED
 }

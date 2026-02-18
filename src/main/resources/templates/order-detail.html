@@ -30,6 +30,44 @@
     <section class="ftco-section">
         <div class="container">
 
+            <!-- ✅ PAYMENT STATUS BLOCK -->
+            <div class="mb-3">
+                <!-- PENDING və ya PAYMENT_FAILED -> Pay now -->
+                <div class="alert alert-warning"
+                     th:if="${order.status != null and (order.status.name() == 'PENDING' or order.status.name() == 'PAYMENT_FAILED')}">
+                    <div class="d-flex align-items-center justify-content-between" style="gap:12px; flex-wrap:wrap;">
+                        <div>
+                            <b>Payment:</b>
+                            <span th:if="${order.status.name() == 'PENDING'}">Payment gözlənilir.</span>
+                            <span th:if="${order.status.name() == 'PAYMENT_FAILED'}">Payment uğursuz oldu. Yenidən cəhd et.</span>
+                        </div>
+
+                        <a class="btn btn-primary btn-sm"
+                           th:href="@{'/payment/start/' + ${order.id}}">
+                            Pay now
+                        </a>
+                    </div>
+                </div>
+
+                <!-- PAID -->
+                <div class="alert alert-success"
+                     th:if="${order.status != null and order.status.name() == 'PAID'}">
+                    ✅ Paid. Order ödənilib.
+                </div>
+
+                <!-- CANCELED -->
+                <div class="alert alert-secondary"
+                     th:if="${order.status != null and order.status.name() == 'CANCELED'}">
+                    ℹ️ Order ləğv olunub.
+                </div>
+
+                <!-- COMPLETED -->
+                <div class="alert alert-info"
+                     th:if="${order.status != null and order.status.name() == 'COMPLETED'}">
+                    ✅ Order tamamlanıb.
+                </div>
+            </div>
+
             <div class="mb-4 p-4 bg-light">
                 <div><b>Status:</b> <span th:text="${order.status}">PENDING</span></div>
                 <div><b>Pick-up:</b> <span th:text="${order.pickupLocation}"></span></div>
