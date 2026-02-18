@@ -2,6 +2,7 @@ package com.example.demo.controller.dashboard;
 
 import com.example.demo.dto.order.OrderAdminFilterDto;
 import com.example.demo.model.OrderStatus;
+import com.example.demo.repository.PaymentRepository;
 import com.example.demo.services.admin.OrderAdminService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 public class DashboardOrderController {
 
     private final OrderAdminService orderAdminService;
+    private final PaymentRepository paymentRepository; // ✅ NEW
 
     @GetMapping
     public String list(@ModelAttribute("filter") OrderAdminFilterDto filter,
@@ -31,8 +33,15 @@ public class DashboardOrderController {
 
     @GetMapping("/{id}")
     public String detail(@PathVariable Long id, Model model) {
-        model.addAttribute("order", orderAdminService.getDetail(id));
+
+        var order = orderAdminService.getDetail(id);
+        model.addAttribute("order", order);
         model.addAttribute("statuses", OrderStatus.values());
+
+        // ✅ Order-a bağlı ən son payment (yoxdursa null)
+        var paymentOpt = paymentRepository.findTopByOrder_IdOrderByIdDesc(id);
+        model.addAttribute("payment", paymentOpt.orElse(null));
+
         return "dashboard/orders/detail";
     }
 
