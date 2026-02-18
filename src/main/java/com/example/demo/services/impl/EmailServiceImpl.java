@@ -45,12 +45,30 @@ public class EmailServiceImpl implements EmailService {
             );
 
             mailSender.send(mailMessage);
-
-            log.info("✅ Contact mail Gmail-ə göndərildi");
+            log.info("✅ Contact mail göndərildi");
 
         } catch (Exception e) {
-            log.error("❌ Mail göndərilmədi", e);
+            log.error("❌ Contact mail göndərilmədi", e);
             throw new RuntimeException("Mail göndərilmədi");
+        }
+    }
+
+    // ✅ NEW
+    @Override
+    public void sendOtpMail(String toEmail, String subject, String text) {
+        try {
+            SimpleMailMessage mail = new SimpleMailMessage();
+            mail.setTo(toEmail);
+            mail.setFrom(TO_EMAIL);
+            mail.setSubject(subject);
+            mail.setText(text);
+
+            mailSender.send(mail);
+            log.info("✅ OTP mail göndərildi: {}", toEmail);
+
+        } catch (Exception e) {
+            log.error("❌ OTP mail göndərilmədi", e);
+            throw new RuntimeException("OTP mail göndərilmədi");
         }
     }
 }
