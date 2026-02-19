@@ -26,8 +26,15 @@
             </div>
 
             <a class="btn btn-primary"
-               th:href="${orderId != null} ? @{/order/{id}(id=${orderId})} : @{/order}">
-                Back to order
+               th:if="${orderId != null}"
+               th:href="@{/order/{id}(id=${orderId})}">
+                View Order
+            </a>
+
+            <a class="btn btn-outline-secondary ml-2"
+               th:if="${orderId == null}"
+               th:href="@{/order}">
+                My Orders
             </a>
         </div>
     </section>

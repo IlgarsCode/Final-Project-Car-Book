@@ -6,6 +6,7 @@ import com.example.demo.repository.OrderRepository;
 import com.example.demo.repository.PaymentRepository;
 import com.example.demo.repository.UserRepository;
 import com.example.demo.services.CartService;
+import com.example.demo.services.EmailService;
 import com.example.demo.services.PaymentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -25,6 +26,9 @@ public class PaymentServiceImpl implements PaymentService {
     private final UserRepository userRepository;
     private final CartService cartService;
 
+    // ✅ NEW
+    private final EmailService emailService;
+
     @Override
     public Payment startPayment(String userEmail, Long orderId) {
 
@@ -41,7 +45,6 @@ public class PaymentServiceImpl implements PaymentService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Bu order üçün payment mümkün deyil");
         }
 
-        // eyni order üçün son payment PROCESSING varsa, reuse edək
         var last = paymentRepository.findTopByOrder_IdOrderByIdDesc(order.getId()).orElse(null);
         if (last != null && last.getStatus() == PaymentStatus.PROCESSING) {
             return last;
@@ -64,20 +67,16 @@ public class PaymentServiceImpl implements PaymentService {
 
         Payment p = getPaymentForUser(userEmail, paymentId);
 
-        // artıq final olubsa toxunma
         if (p.getStatus() != PaymentStatus.PROCESSING) return p;
 
-        // ✅ outcome qaydası burada saxlanmalıdır (controller-də set etsən save olunmur)
         String clean = dto.getCardNumber() == null ? "" : dto.getCardNumber().replace(" ", "").trim();
 
-        // 4242 -> success, 4000000000000002 -> fail
         if ("4000000000000002".equals(clean)) {
             p.setFailureReason("WILL_FAIL");
         } else {
             p.setFailureReason(null);
         }
 
-        // confirm mərhələsi: hələ final etmə, processing səhifəsi poll edəcək
         return paymentRepository.save(p);
     }
 
@@ -105,28 +104,25 @@ public class PaymentServiceImpl implements PaymentService {
 
         if (p.getStatus() != PaymentStatus.PROCESSING) return p;
 
-        // “real hiss” üçün: 2 saniyə keçməyibsə hələ processing qalır
         long seconds = Duration.between(p.getCreatedAt(), LocalDateTime.now()).getSeconds();
         if (seconds < 2) return p;
 
-        boolean success = true;
-        if ("WILL_FAIL".equalsIgnoreCase(p.getFailureReason())) {
-            success = false;
-        }
+        boolean success = !"WILL_FAIL".equalsIgnoreCase(p.getFailureReason());
 
         if (success) {
             p.setStatus(PaymentStatus.SUCCEEDED);
             p.setCompletedAt(LocalDateTime.now());
             paymentRepository.save(p);
 
-            // order paid
             Order o = p.getOrder();
             o.setStatus(OrderStatus.PAID);
             orderRepository.save(o);
 
-            // checkout artıq cart-ı təmizləmiş ola bilər.
-            // Səndə clearCart cart boş olsa da problem yaratmamalıdır.
             cartService.clearCart(userEmail);
+
+            // ✅ (2) user mail + (7) admin notify
+            emailService.sendPaymentSucceeded(p);
+            emailService.notifyAdminNewPaidOrder(p);
 
             return p;
         } else {
@@ -138,6 +134,9 @@ public class PaymentServiceImpl implements PaymentService {
             Order o = p.getOrder();
             o.setStatus(OrderStatus.PAYMENT_FAILED);
             orderRepository.save(o);
+
+            // ✅ (3) user mail
+            emailService.sendPaymentFailed(p);
 
             return p;
         }

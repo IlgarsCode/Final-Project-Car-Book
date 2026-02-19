@@ -4,6 +4,7 @@ import com.example.demo.dto.checkout.CheckoutCreateDto;
 import com.example.demo.dto.enums.PricingRateType;
 import com.example.demo.model.*;
 import com.example.demo.repository.*;
+import com.example.demo.services.EmailService;
 import com.example.demo.services.OrderService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -26,6 +27,9 @@ public class OrderServiceImpl implements OrderService {
     private final CartRepository cartRepository;
     private final OrderRepository orderRepository;
     private final LocationRepository locationRepository;
+
+    // ✅ NEW
+    private final EmailService emailService;
 
     @Override
     public Order checkout(String email, CheckoutCreateDto dto) {
@@ -60,7 +64,7 @@ public class OrderServiceImpl implements OrderService {
 
         Order order = new Order();
         order.setUser(user);
-        order.setStatus(OrderStatus.PENDING); // payment gözlənir
+        order.setStatus(OrderStatus.PENDING);
 
         long nextUserNo = orderRepository.findMaxUserOrderNo(user.getId()) + 1;
         order.setUserOrderNo(nextUserNo);
@@ -127,8 +131,14 @@ public class OrderServiceImpl implements OrderService {
 
         order.setTotalAmount(total);
 
-        // ❗ Cart-ı burada silmirik (payment success olanda silinəcək)
-        return orderRepository.save(order);
+        // ✅ save
+        Order saved = orderRepository.save(order);
+
+        // ✅ (1) Order yaradıldı maili (PENDING)
+        emailService.sendOrderCreatedPending(saved);
+
+        // cart burada silinmir — payment success olanda təmizlənir
+        return saved;
     }
 
     @Override

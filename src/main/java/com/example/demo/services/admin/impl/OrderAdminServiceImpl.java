@@ -6,6 +6,7 @@ import com.example.demo.model.OrderStatus;
 import com.example.demo.model.User;
 import com.example.demo.repository.OrderItemRepository;
 import com.example.demo.repository.OrderRepository;
+import com.example.demo.services.EmailService;
 import com.example.demo.services.admin.OrderAdminService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -28,6 +29,9 @@ public class OrderAdminServiceImpl implements OrderAdminService {
 
     private final OrderRepository orderRepository;
     private final OrderItemRepository orderItemRepository;
+
+    // ✅ NEW
+    private final EmailService emailService;
 
     @Override
     public Page<OrderDashboardDto> getPage(OrderAdminFilterDto filter, int page, int size) {
@@ -73,12 +77,12 @@ public class OrderAdminServiceImpl implements OrderAdminService {
         var pageable = PageRequest.of(p, s, Sort.by(Sort.Direction.DESC, "createdAt"));
         Page<Order> orderPage = orderRepository.findAll(spec, pageable);
 
-        // ✅ itemCount bulk
         List<Long> orderIds = orderPage.getContent().stream().map(Order::getId).toList();
         Map<Long, Long> countMap = orderIds.isEmpty()
                 ? Map.of()
                 : orderItemRepository.countItemsByOrderIds(orderIds).stream()
-                .collect(Collectors.toMap(OrderItemRepository.OrderCountView::getOrderId, OrderItemRepository.OrderCountView::getCnt));
+                .collect(Collectors.toMap(OrderItemRepository.OrderCountView::getOrderId,
+                        OrderItemRepository.OrderCountView::getCnt));
 
         return orderPage.map(o -> toDashboardDto(o, countMap.getOrDefault(o.getId(), 0L)));
     }
@@ -131,8 +135,15 @@ public class OrderAdminServiceImpl implements OrderAdminService {
         Order o = orderRepository.findById(orderId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Order tapılmadı"));
 
+        OrderStatus old = o.getStatus();
+
+        if (old == status) return; // duplicate mail göndərmə
+
         o.setStatus(status);
         orderRepository.save(o);
+
+        // ✅ (4) APPROVED/CANCELED mail
+        emailService.sendOrderStatusChanged(o, old);
     }
 
     @Override

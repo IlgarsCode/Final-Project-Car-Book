@@ -9,7 +9,9 @@
 <body>
 <div layout:fragment="content">
 
-    <section class="hero-wrap hero-wrap-2 js-fullheight" style="background-image: url('/images/bg_3.jpg');" data-stellar-background-ratio="0.5">
+    <section class="hero-wrap hero-wrap-2 js-fullheight"
+             style="background-image: url('/images/bg_3.jpg');"
+             data-stellar-background-ratio="0.5">
         <div class="overlay"></div>
         <div class="container">
             <div class="row no-gutters slider-text js-fullheight align-items-end justify-content-start">
@@ -49,17 +51,29 @@
 
                         <td>
                             <span th:text="${o.status}">PENDING</span>
+
                             <span class="badge badge-success ml-2"
                                   th:if="${o.status != null and o.status.name() == 'PAID'}">PAID</span>
+
                             <span class="badge badge-warning ml-2"
                                   th:if="${o.status != null and o.status.name() == 'PENDING'}">PAYMENT</span>
+
                             <span class="badge badge-danger ml-2"
                                   th:if="${o.status != null and o.status.name() == 'PAYMENT_FAILED'}">FAILED</span>
+
+                            <span class="badge badge-info ml-2"
+                                  th:if="${o.status != null and o.status.name() == 'APPROVED'}">APPROVED</span>
+
+                            <span class="badge badge-secondary ml-2"
+                                  th:if="${o.status != null and o.status.name() == 'CANCELED'}">CANCELED</span>
+
+                            <span class="badge badge-dark ml-2"
+                                  th:if="${o.status != null and o.status.name() == 'COMPLETED'}">COMPLETED</span>
                         </td>
 
                         <td>
-                            <span th:text="${o.pickupDate}"></span> →
-                            <span th:text="${o.dropoffDate}"></span>
+                            <span th:text="${#temporals.format(o.pickupDate, 'dd.MM.yyyy')}"></span> →
+                            <span th:text="${#temporals.format(o.dropoffDate, 'dd.MM.yyyy')}"></span>
                         </td>
 
                         <td>$<span th:text="${o.totalAmount}">0</span></td>
@@ -67,7 +81,6 @@
                         <td style="display:flex; gap:8px; justify-content:center; flex-wrap:wrap;">
                             <a class="btn btn-sm btn-primary" th:href="@{'/order/' + ${o.id}}">Details</a>
 
-                            <!-- ✅ Pay now only if pending/failed -->
                             <a class="btn btn-sm btn-success"
                                th:if="${o.status != null and (o.status.name() == 'PENDING' or o.status.name() == 'PAYMENT_FAILED')}"
                                th:href="@{'/payment/start/' + ${o.id}}">
