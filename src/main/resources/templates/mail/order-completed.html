@@ -1,0 +1,30 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body style="font-family:Arial,sans-serif; background:#f6f7fb; padding:24px;">
+<div style="max-width:640px;margin:0 auto;background:#fff;border-radius:10px;padding:24px;border:1px solid #eee;">
+    <h2 style="margin:0 0 10px;">Order tamamlandı 🎉</h2>
+
+    <p style="margin:0 0 16px;">
+        Sifarişiniz uğurla tamamlandı. Təşəkkür edirik!
+    </p>
+
+    <div style="background:#fafafa;border:1px solid #eee;border-radius:10px;padding:14px;margin:14px 0;">
+        <div><b>Order No:</b> <span th:text="${order.userOrderNo}"></span></div>
+        <div><b>Pick-up:</b> <span th:text="${order.pickupLocation}"></span></div>
+        <div><b>Drop-off:</b> <span th:text="${order.dropoffLocation}"></span></div>
+        <div><b>Dates:</b> <span th:text="${pickupDate}"></span> → <span th:text="${dropoffDate}"></span></div>
+        <div><b>Total:</b> <span th:text="${order.totalAmount}"></span> <span>USD</span></div>
+    </div>
+
+    <p>
+        <a th:href="${orderUrl}" style="display:inline-block;padding:12px 18px;background:#0b5ed7;color:#fff;border-radius:8px;text-decoration:none;">
+            Order detallarına bax
+        </a>
+    </p>
+
+    <p style="color:#777;margin:18px 0 0;font-size:12px;">
+        Bu mail avtomatik göndərilib.
+    </p>
+</div>
+</body>
+</html>

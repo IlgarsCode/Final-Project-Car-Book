@@ -143,16 +143,30 @@ public class EmailServiceImpl implements EmailService {
     // ---------------- ADMIN STATUS CHANGED ----------------
     @Override
     public void sendOrderStatusChanged(Order order, OrderStatus oldStatus) {
-        // yalnız APPROVED və CANCELED üçün göndərək (sən bunu istədin)
-        if (order.getStatus() != OrderStatus.APPROVED && order.getStatus() != OrderStatus.CANCELED) return;
+        if (order.getStatus() == null) return;
+
+        // yalnız bu statuslar üçün mail göndəririk
+        boolean allowed =
+                order.getStatus() == OrderStatus.APPROVED ||
+                        order.getStatus() == OrderStatus.CANCELED ||
+                        order.getStatus() == OrderStatus.COMPLETED;
+
+        if (!allowed) return;
 
         String to = order.getUser().getEmail();
 
         String subject;
+        String template;
+
         if (order.getStatus() == OrderStatus.APPROVED) {
             subject = "✅ Order təsdiqləndi — #" + order.getUserOrderNo();
-        } else {
+            template = "mail/order-approved";
+        } else if (order.getStatus() == OrderStatus.CANCELED) {
             subject = "⚠️ Order ləğv olundu — #" + order.getUserOrderNo();
+            template = "mail/order-canceled";
+        } else {
+            subject = "🎉 Order tamamlandı — #" + order.getUserOrderNo();
+            template = "mail/order-completed";
         }
 
         String orderUrl = baseUrl + "/order/" + order.getId();
@@ -161,12 +175,8 @@ public class EmailServiceImpl implements EmailService {
         ctx.setVariable("order", order);
         ctx.setVariable("oldStatus", oldStatus != null ? oldStatus.name() : "-");
         ctx.setVariable("orderUrl", orderUrl);
-        ctx.setVariable("pickupDate", order.getPickupDate().format(DATE_FMT));
-        ctx.setVariable("dropoffDate", order.getDropoffDate().format(DATE_FMT));
-
-        String template = (order.getStatus() == OrderStatus.APPROVED)
-                ? "mail/order-approved"
-                : "mail/order-canceled";
+        ctx.setVariable("pickupDate", order.getPickupDate() != null ? order.getPickupDate().format(DATE_FMT) : "-");
+        ctx.setVariable("dropoffDate", order.getDropoffDate() != null ? order.getDropoffDate().format(DATE_FMT) : "-");
 
         sendHtml(to, subject, template, ctx);
     }
