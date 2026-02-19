@@ -3,6 +3,7 @@ package com.example.demo.services.impl;
 import com.example.demo.dto.contact.ContactDto;
 import com.example.demo.model.*;
 import com.example.demo.services.EmailService;
+import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -13,7 +14,6 @@ import org.springframework.stereotype.Service;
 import org.thymeleaf.context.Context;
 import org.thymeleaf.spring6.SpringTemplateEngine;
 
-import jakarta.mail.internet.MimeMessage;
 import java.nio.charset.StandardCharsets;
 import java.time.format.DateTimeFormatter;
 
@@ -30,6 +30,9 @@ public class EmailServiceImpl implements EmailService {
 
     @Value("${app.mail.from}")
     private String fromEmail;
+
+    @Value("${app.mail.from-name:CarBook}")
+    private String fromName; // ✅ BUNU ELAVE ETMIRDIN
 
     @Value("${app.mail.admin}")
     private String adminEmail;
@@ -52,7 +55,10 @@ public class EmailServiceImpl implements EmailService {
         try {
             SimpleMailMessage mailMessage = new SimpleMailMessage();
             mailMessage.setTo(adminEmail);
-            mailMessage.setFrom(fromEmail);
+
+            // SimpleMailMessage-də "ad" stabil deyil, amma çox vaxt işləyir:
+            mailMessage.setFrom(fromName + " <" + fromEmail + ">");
+
             mailMessage.setReplyTo(dto.getEmail());
             mailMessage.setSubject("📩 Contact Form: " + dto.getSubject());
             mailMessage.setText(
@@ -60,6 +66,7 @@ public class EmailServiceImpl implements EmailService {
                             "Email: " + dto.getEmail() + "\n\n" +
                             "Message:\n" + dto.getMessage()
             );
+
             mailSender.send(mailMessage);
             log.info("✅ Contact mail göndərildi");
         } catch (Exception e) {
@@ -74,9 +81,13 @@ public class EmailServiceImpl implements EmailService {
         try {
             SimpleMailMessage mail = new SimpleMailMessage();
             mail.setTo(toEmail);
-            mail.setFrom(fromEmail);
+
+            // SimpleMailMessage-də "ad" stabil deyil, amma çox vaxt işləyir:
+            mail.setFrom(fromName + " <" + fromEmail + ">");
+
             mail.setSubject(subject);
             mail.setText(text);
+
             mailSender.send(mail);
             log.info("✅ OTP mail göndərildi: {}", toEmail);
         } catch (Exception e) {
@@ -98,8 +109,8 @@ public class EmailServiceImpl implements EmailService {
         ctx.setVariable("order", order);
         ctx.setVariable("payNowUrl", payNowUrl);
         ctx.setVariable("orderUrl", orderUrl);
-        ctx.setVariable("pickupDate", order.getPickupDate().format(DATE_FMT));
-        ctx.setVariable("dropoffDate", order.getDropoffDate().format(DATE_FMT));
+        ctx.setVariable("pickupDate", order.getPickupDate() != null ? order.getPickupDate().format(DATE_FMT) : "-");
+        ctx.setVariable("dropoffDate", order.getDropoffDate() != null ? order.getDropoffDate().format(DATE_FMT) : "-");
 
         sendHtml(to, subject, "mail/order-created", ctx);
     }
@@ -145,7 +156,6 @@ public class EmailServiceImpl implements EmailService {
     public void sendOrderStatusChanged(Order order, OrderStatus oldStatus) {
         if (order.getStatus() == null) return;
 
-        // yalnız bu statuslar üçün mail göndəririk
         boolean allowed =
                 order.getStatus() == OrderStatus.APPROVED ||
                         order.getStatus() == OrderStatus.CANCELED ||
@@ -204,11 +214,13 @@ public class EmailServiceImpl implements EmailService {
 
             MimeMessage mime = mailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(
-                    mime, MimeMessageHelper.MULTIPART_MODE_MIXED_RELATED, StandardCharsets.UTF_8.name()
+                    mime,
+                    MimeMessageHelper.MULTIPART_MODE_MIXED_RELATED,
+                    StandardCharsets.UTF_8.name()
             );
 
             helper.setTo(to);
-            helper.setFrom(fromEmail);
+            helper.setFrom(fromEmail, fromName); // ✅ CarBook adı
             helper.setSubject(subject);
             helper.setText(html, true);
 
@@ -216,7 +228,6 @@ public class EmailServiceImpl implements EmailService {
             log.info("✅ HTML mail göndərildi: {} -> {}", templateName, to);
         } catch (Exception e) {
             log.error("❌ HTML mail göndərilmədi: {}", templateName, e);
-            // mail problemi order/payment flow-u sındırmasın deyə hard-throw etmə
         }
     }
 }
