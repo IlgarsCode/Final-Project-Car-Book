@@ -1,11 +1,12 @@
 <!DOCTYPE html>
-<html
-        xmlns:th="http://www.thymeleaf.org"
-        xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-        layout:decorate="~{layout}">
+<html lang="az"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+
 <head>
     <meta charset="UTF-8">
-    <title>Blog Single</title>
+    <title>Bloq detalları</title>
 
     <style>
         .about-author .bio img.author-avatar{
@@ -26,6 +27,7 @@
         }
     </style>
 </head>
+
 <body>
 <div layout:fragment="content">
 
@@ -41,15 +43,15 @@
 
                     <p class="breadcrumbs">
                         <span class="mr-2">
-                            <a th:href="@{/}">Home <i class="ion-ios-arrow-forward"></i></a>
+                            <a th:href="@{/}">Ana səhifə <i class="ion-ios-arrow-forward"></i></a>
                         </span>
                         <span class="mr-2">
-                            <a th:href="@{/blog}">Blog <i class="ion-ios-arrow-forward"></i></a>
+                            <a th:href="@{/blog}">Bloq <i class="ion-ios-arrow-forward"></i></a>
                         </span>
-                        <span>Blog Single <i class="ion-ios-arrow-forward"></i></span>
+                        <span>Bloq detalları <i class="ion-ios-arrow-forward"></i></span>
                     </p>
 
-                    <h1 class="mb-3 bread" th:text="${banner.title}">Read our blog</h1>
+                    <h1 class="mb-3 bread" th:text="${banner.title}">Bloqu oxu</h1>
                     <p th:text="${banner.description}"></p>
 
                 </div>
@@ -65,7 +67,7 @@
                 <!-- LEFT -->
                 <div class="col-md-8 ftco-animate">
 
-                    <h2 class="mb-3" th:text="${blog.title}">Blog title</h2>
+                    <h2 class="mb-3" th:text="${blog.title}">Bloq başlığı</h2>
 
                     <div class="mb-4" style="color:#6c757d; font-size:14px;">
                         <span class="mr-3">
@@ -75,7 +77,7 @@
 
                         <span>
                             <i class="icon-person"></i>
-                            <span th:text="${blog.authorName != null ? blog.authorName : blog.author}">Author</span>
+                            <span th:text="${blog.authorName != null ? blog.authorName : blog.author}">Müəllif</span>
                         </span>
                     </div>
 
@@ -83,7 +85,7 @@
                         <img th:src="${blog.imageUrl}" alt="" class="img-fluid">
                     </p>
 
-                    <p th:if="${blog.content != null}" th:text="${blog.content}">Blog content</p>
+                    <p th:if="${blog.content != null}" th:text="${blog.content}">Bloq məzmunu</p>
 
                     <p th:if="${blog.content == null}" style="color:#6c757d;">
                         Bu bloq üçün məzmun əlavə edilməyib.
@@ -97,7 +99,7 @@
                                th:href="@{/blog(tag=${t.slug})}"
                                class="tag-cloud-link"
                                th:text="${t.name}">
-                                Tag
+                                Teq
                             </a>
                         </div>
                     </div>
@@ -108,11 +110,11 @@
                         <div class="bio mr-4">
                             <img class="author-avatar"
                                  th:src="${blog.authorAvatarUrl != null ? blog.authorAvatarUrl : '/images/person_1.jpg'}"
-                                 alt="Author">
+                                 alt="Müəllif">
                         </div>
 
                         <div class="desc">
-                            <h3 class="mb-1" th:text="${blog.authorName}">Author Name</h3>
+                            <h3 class="mb-1" th:text="${blog.authorName}">Müəllif</h3>
                             <p class="mb-0" th:text="${blog.authorBio != null ? blog.authorBio : 'CarBook istifadəçisi'}">
                                 Bio
                             </p>
@@ -123,7 +125,7 @@
                     <div class="pt-5 mt-5">
 
                         <h3 class="mb-5" id="comments">
-                            <span th:text="${blog.commentCount}">0</span> Comments
+                            <span th:text="${blog.commentCount}">0</span> Şərh
                         </h3>
 
                         <ul class="comment-list">
@@ -155,7 +157,7 @@
                                         <a href="javascript:void(0)"
                                            class="reply"
                                            th:attr="data-parent=${c.id},data-name=${c.fullName}">
-                                            Reply
+                                            Cavab yaz
                                         </a>
                                     </p>
                                 </div>
@@ -184,7 +186,7 @@
                                                 <a href="javascript:void(0)"
                                                    class="reply"
                                                    th:attr="data-parent=${r.id},data-name=${r.fullName}">
-                                                    Reply
+                                                    Cavab yaz
                                                 </a>
                                             </p>
                                         </div>
@@ -212,7 +214,7 @@
                                                         <a href="javascript:void(0)"
                                                            class="reply"
                                                            th:attr="data-parent=${r2.id},data-name=${r2.fullName}">
-                                                            Reply
+                                                            Cavab yaz
                                                         </a>
                                                     </p>
                                                 </div>
@@ -229,11 +231,11 @@
 
                         <!-- ===== REPLY FORM (gizli) ===== -->
                         <div class="comment-form-wrap pt-5" id="replyFormBlock" style="display:none;" th:if="${isLoggedIn}">
-                            <h3 class="mb-4">Reply</h3>
+                            <h3 class="mb-4">Cavab yaz</h3>
 
                             <div class="alert alert-info py-2" id="replyInfo" style="display:none;">
                                 <span id="replyText"></span>
-                                <a href="javascript:void(0)" class="ml-2" id="cancelReply">Cancel</a>
+                                <a href="javascript:void(0)" class="ml-2" id="cancelReply">Ləğv et</a>
                             </div>
 
                             <form th:action="@{/blog/{id}/reply(id=${blog.id})}"
@@ -244,7 +246,7 @@
                                 <input type="hidden" th:field="*{parentId}" id="replyParentId"/>
 
                                 <div class="form-group">
-                                    <label for="replyMessage">Message *</label>
+                                    <label for="replyMessage">Mesaj *</label>
                                     <textarea id="replyMessage" cols="30" rows="6"
                                               class="form-control"
                                               th:field="*{message}"></textarea>
@@ -259,8 +261,8 @@
                                 </div>
 
                                 <div class="form-group">
-                                    <input type="submit" value="Post Reply" class="btn py-3 px-4 btn-primary">
-                                    <a class="btn btn-outline-secondary py-3 px-4" href="#comments">Back to comments</a>
+                                    <input type="submit" value="Cavabı göndər" class="btn py-3 px-4 btn-primary">
+                                    <a class="btn btn-outline-secondary py-3 px-4" href="#comments">Şərhlərə qayıt</a>
                                 </div>
                             </form>
                         </div>
@@ -268,18 +270,18 @@
                         <!-- Reply üçün login deyilsə -->
                         <div class="comment-form-wrap pt-5" th:if="${!isLoggedIn}">
                             <div class="alert alert-warning">
-                                Reply yazmaq üçün giriş etməlisən.
-                                <a th:href="@{/auth/login}">Login</a>
+                                Cavab yazmaq üçün giriş etməlisən.
+                                <a th:href="@{/auth/login}">Giriş</a>
                             </div>
                         </div>
 
                         <!-- ===== COMMENT FORM (yalnız message) ===== -->
                         <div class="comment-form-wrap pt-5" id="commentForm">
-                            <h3 class="mb-4">Leave a comment</h3>
+                            <h3 class="mb-4">Şərh yaz</h3>
 
                             <div class="alert alert-warning" th:if="${!isLoggedIn}">
                                 Şərh yazmaq üçün giriş etməlisən.
-                                <a th:href="@{/auth/login}">Login</a>
+                                <a th:href="@{/auth/login}">Giriş</a>
                             </div>
 
                             <form th:if="${isLoggedIn}"
@@ -289,7 +291,7 @@
                                   class="p-5 bg-light">
 
                                 <div class="form-group">
-                                    <label for="message">Message *</label>
+                                    <label for="message">Mesaj *</label>
                                     <textarea id="message" cols="30" rows="8" class="form-control"
                                               th:field="*{message}"></textarea>
 
@@ -299,7 +301,7 @@
                                 </div>
 
                                 <div class="form-group">
-                                    <input type="submit" value="Post Comment" class="btn py-3 px-4 btn-primary">
+                                    <input type="submit" value="Şərhi göndər" class="btn py-3 px-4 btn-primary">
                                 </div>
 
                                 <div class="text-muted" style="font-size:13px;">
@@ -321,14 +323,14 @@
                                 <span class="icon icon-search"></span>
                                 <input type="text" name="search" class="form-control"
                                        th:value="${search}"
-                                       placeholder="Type a keyword and hit enter">
+                                       placeholder="Açar sözü yaz və Enter-ə bas">
                             </div>
                         </form>
                     </div>
 
                     <div class="sidebar-box ftco-animate">
                         <div class="categories">
-                            <h3>Car Categories</h3>
+                            <h3>Avtomobil kateqoriyaları</h3>
                             <ul class="category-list">
                                 <li th:each="cc : ${carCategories}">
                                     <a th:href="@{/car(category=${cc.slug})}" class="cat-row">
@@ -346,10 +348,10 @@
                     </div>
 
                     <div class="sidebar-box ftco-animate">
-                        <h3>Recent Blog</h3>
+                        <h3>Son bloqlar</h3>
 
                         <div th:if="${recentBlogs == null or #lists.isEmpty(recentBlogs)}" style="color:#6c757d;">
-                            Hələ başqa blog yoxdur.
+                            Hələ başqa bloq yoxdur.
                         </div>
 
                         <div class="block-21 mb-4 d-flex" th:each="rb : ${recentBlogs}">
@@ -362,7 +364,7 @@
                                 <h3 class="heading">
                                     <a th:href="@{/blog/{id}(id=${rb.id})}"
                                        th:text="${rb.title}">
-                                        Blog title
+                                        Bloq başlığı
                                     </a>
                                 </h3>
 
@@ -410,7 +412,7 @@
                     if (parentField) parentField.value = parentId;
 
                     if (replyInfo && replyText) {
-                        replyText.textContent = 'Replying to: ' + name;
+                        replyText.textContent = 'Cavab yazılır: ' + name;
                         replyInfo.style.display = 'block';
                     }
 

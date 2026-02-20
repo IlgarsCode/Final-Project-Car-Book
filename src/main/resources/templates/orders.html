@@ -1,10 +1,11 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org"
+<html lang="az"
+      xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layout}">
 <head>
     <meta charset="UTF-8">
-    <title>My Orders</title>
+    <title>Mənim sifarişlərim</title>
 </head>
 <body>
 <div layout:fragment="content">
@@ -17,10 +18,12 @@
             <div class="row no-gutters slider-text js-fullheight align-items-end justify-content-start">
                 <div class="col-md-9 ftco-animate pb-5">
                     <p class="breadcrumbs">
-                        <span class="mr-2"><a th:href="@{/}">Home <i class="ion-ios-arrow-forward"></i></a></span>
-                        <span>Orders <i class="ion-ios-arrow-forward"></i></span>
+                        <span class="mr-2">
+                            <a th:href="@{/}">Ana səhifə <i class="ion-ios-arrow-forward"></i></a>
+                        </span>
+                        <span>Sifarişlər <i class="ion-ios-arrow-forward"></i></span>
                     </p>
-                    <h1 class="mb-3 bread">My Orders</h1>
+                    <h1 class="mb-3 bread">Mənim sifarişlərim</h1>
                 </div>
             </div>
         </div>
@@ -39,9 +42,9 @@
                     <tr class="text-center">
                         <th>ID</th>
                         <th>Status</th>
-                        <th>Dates</th>
-                        <th>Total</th>
-                        <th>Actions</th>
+                        <th>Tarixlər</th>
+                        <th>Cəmi</th>
+                        <th>Əməliyyatlar</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -53,22 +56,22 @@
                             <span th:text="${o.status}">PENDING</span>
 
                             <span class="badge badge-success ml-2"
-                                  th:if="${o.status != null and o.status.name() == 'PAID'}">PAID</span>
+                                  th:if="${o.status != null and o.status.name() == 'PAID'}">ÖDƏNİLİB</span>
 
                             <span class="badge badge-warning ml-2"
-                                  th:if="${o.status != null and o.status.name() == 'PENDING'}">PAYMENT</span>
+                                  th:if="${o.status != null and o.status.name() == 'PENDING'}">ÖDƏNİŞ GÖZLƏYİR</span>
 
                             <span class="badge badge-danger ml-2"
-                                  th:if="${o.status != null and o.status.name() == 'PAYMENT_FAILED'}">FAILED</span>
+                                  th:if="${o.status != null and o.status.name() == 'PAYMENT_FAILED'}">UĞURSUZ</span>
 
                             <span class="badge badge-info ml-2"
-                                  th:if="${o.status != null and o.status.name() == 'APPROVED'}">APPROVED</span>
+                                  th:if="${o.status != null and o.status.name() == 'APPROVED'}">TƏSDİQLƏNİB</span>
 
                             <span class="badge badge-secondary ml-2"
-                                  th:if="${o.status != null and o.status.name() == 'CANCELED'}">CANCELED</span>
+                                  th:if="${o.status != null and o.status.name() == 'CANCELED'}">LƏĞV EDİLİB</span>
 
                             <span class="badge badge-dark ml-2"
-                                  th:if="${o.status != null and o.status.name() == 'COMPLETED'}">COMPLETED</span>
+                                  th:if="${o.status != null and o.status.name() == 'COMPLETED'}">TAMAMLANIB</span>
                         </td>
 
                         <td>
@@ -79,12 +82,12 @@
                         <td>$<span th:text="${o.totalAmount}">0</span></td>
 
                         <td style="display:flex; gap:8px; justify-content:center; flex-wrap:wrap;">
-                            <a class="btn btn-sm btn-primary" th:href="@{'/order/' + ${o.id}}">Details</a>
+                            <a class="btn btn-sm btn-primary" th:href="@{'/order/' + ${o.id}}">Detallar</a>
 
                             <a class="btn btn-sm btn-success"
                                th:if="${o.status != null and (o.status.name() == 'PENDING' or o.status.name() == 'PAYMENT_FAILED')}"
                                th:href="@{'/payment/start/' + ${o.id}}">
-                                Pay now
+                                İndi ödə
                             </a>
                         </td>
                     </tr>

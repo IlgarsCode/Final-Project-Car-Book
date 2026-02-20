@@ -5,7 +5,7 @@
         layout:decorate="~{layout}">
 <head>
     <meta charset="UTF-8">
-    <title th:text="${about.pageTitle}">About</title>
+    <title th:text="${about.pageTitle}">Haqqımızda</title>
 </head>
 <body>
 
@@ -25,16 +25,16 @@
                     <p class="breadcrumbs">
                     <span class="mr-2">
                         <a th:href="@{/}">
-                            Home <i class="ion-ios-arrow-forward"></i>
+                            Ana səhifə <i class="ion-ios-arrow-forward"></i>
                         </a>
                     </span>
-                        <span>About <i class="ion-ios-arrow-forward"></i></span>
+                        <span>Haqqımızda <i class="ion-ios-arrow-forward"></i></span>
                     </p>
 
                     <!-- Banner title göstər -->
                     <h1 class="mb-3 bread"
                         th:text="${banner.title != null ? banner.title : about.pageTitle}">
-                        About
+                        Haqqımızda
                     </h1>
 
                     <!-- İstəsən description da göstər -->
@@ -66,20 +66,20 @@
                     <div class="heading-section heading-section-white pl-md-5">
 
                         <span class="subheading" th:text="${about.pageTitle}">
-                            About us
+                            Haqqımızda
                         </span>
 
                         <h2 class="mb-4" th:text="${about.sectionTitle}">
-                            Welcome to Carbook
+                            CarBook-a xoş gəlmisiniz
                         </h2>
 
                         <p th:utext="${about.description}">
-                            About description
+                            Haqqımızda təsvir
                         </p>
 
                         <p>
                             <a th:href="@{/car}" class="btn btn-primary py-3 px-4">
-                                Search Vehicle
+                                Avtomobil axtar
                             </a>
                         </p>
 

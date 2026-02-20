@@ -1,11 +1,11 @@
 <!DOCTYPE html>
-<html
-        xmlns:th="http://www.thymeleaf.org"
-        xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-        layout:decorate="~{layout}">
+<html lang="az"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
 <head>
   <meta charset="UTF-8">
-  <title>Create Blog</title>
+  <title>Bloq yarat</title>
 </head>
 <body>
 <div layout:fragment="content">
@@ -18,13 +18,15 @@
       <div class="row no-gutters slider-text js-fullheight align-items-end justify-content-start">
         <div class="col-md-9 ftco-animate pb-5">
           <p class="breadcrumbs">
-                        <span class="mr-2">
-                            <a th:href="@{/}">Home <i class="ion-ios-arrow-forward"></i></a>
-                        </span>
-            <span><a th:href="@{/blog}">Blog</a> <i class="ion-ios-arrow-forward"></i></span>
-            <span>Create</span>
+            <span class="mr-2">
+              <a th:href="@{/}">Ana səhifə <i class="ion-ios-arrow-forward"></i></a>
+            </span>
+            <span>
+              <a th:href="@{/blog}">Bloq</a> <i class="ion-ios-arrow-forward"></i>
+            </span>
+            <span>Yarat</span>
           </p>
-          <h1 class="mb-3 bread">Create Blog</h1>
+          <h1 class="mb-3 bread">Bloq yarat</h1>
         </div>
       </div>
     </div>
@@ -36,7 +38,7 @@
         <div class="col-md-8">
 
           <div class="card shadow p-4">
-            <h3 class="mb-4">Yeni blog yaz</h3>
+            <h3 class="mb-4">Yeni bloq yaz</h3>
 
             <form th:action="@{/blog/new}"
                   th:object="${form}"
@@ -44,15 +46,15 @@
                   enctype="multipart/form-data">
 
               <div class="form-group">
-                <label>Title</label>
-                <input class="form-control" th:field="*{title}" placeholder="Blog title">
+                <label>Başlıq</label>
+                <input class="form-control" th:field="*{title}" placeholder="Bloqun başlığı">
                 <small class="text-danger"
                        th:if="${#fields.hasErrors('title')}"
                        th:errors="*{title}"></small>
               </div>
 
               <div class="form-group">
-                <label>Short description</label>
+                <label>Qısa təsvir</label>
                 <textarea class="form-control" rows="3"
                           th:field="*{shortDescription}"
                           placeholder="Qısa açıqlama"></textarea>
@@ -62,7 +64,7 @@
               </div>
 
               <div class="form-group">
-                <label>Content</label>
+                <label>Məzmun</label>
                 <textarea class="form-control" rows="10"
                           th:field="*{content}"
                           placeholder="Məqalə mətnini yaz..."></textarea>
@@ -72,18 +74,18 @@
               </div>
 
               <div class="form-group">
-                <label>Tags (comma separated)</label>
+                <label>Teqlər (vergüllə ayır)</label>
                 <input class="form-control" th:field="*{tags}" placeholder="java, spring, security">
               </div>
 
               <div class="form-group">
-                <label>Image (optional)</label>
+                <label>Şəkil (istəyə görə)</label>
                 <input type="file" class="form-control" name="image" accept="image/*">
               </div>
 
               <div class="d-flex" style="gap:10px;">
-                <button class="btn btn-primary" type="submit">Publish</button>
-                <a class="btn btn-secondary" th:href="@{/blog}">Back</a>
+                <button class="btn btn-primary" type="submit">Yayımla</button>
+                <a class="btn btn-secondary" th:href="@{/blog}">Geri</a>
               </div>
 
             </form>

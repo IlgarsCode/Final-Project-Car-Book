@@ -5,7 +5,7 @@
         layout:decorate="~{layout}">
 <head>
     <meta charset="UTF-8">
-    <title>Pricing</title>
+    <title>Qiymətlər</title>
 </head>
 <body>
 <div layout:fragment="content">
@@ -20,12 +20,12 @@
                 <div class="col-md-9 ftco-animate pb-5">
                     <p class="breadcrumbs">
                         <span class="mr-2">
-                            <a th:href="@{/}">Home <i class="ion-ios-arrow-forward"></i></a>
+                            <a th:href="@{/}">Ana səhifə <i class="ion-ios-arrow-forward"></i></a>
                         </span>
-                        <span>Pricing <i class="ion-ios-arrow-forward"></i></span>
+                        <span>Qiymətlər <i class="ion-ios-arrow-forward"></i></span>
                     </p>
 
-                    <h1 class="mb-3 bread" th:text="${banner.title}">Pricing</h1>
+                    <h1 class="mb-3 bread" th:text="${banner.title}">Qiymətlər</h1>
                     <p th:text="${banner.description}"></p>
 
                     <a th:if="${banner.buttonText != null and banner.buttonUrl != null}"
@@ -45,7 +45,7 @@
                 <div class="col-md-12 ftco-animate d-flex justify-content-between align-items-center flex-wrap"
                      style="gap:12px;">
 
-                    <h3 class="mb-0">Pricing</h3>
+                    <h3 class="mb-0">Qiymətlər</h3>
 
                     <form th:action="@{/pricing}" method="get"
                           class="d-flex align-items-center flex-wrap"
@@ -68,18 +68,18 @@
                                th:disabled="${trip == null or trip.dropoffDate == null}">
 
                         <select name="category" class="form-control" style="max-width:260px;">
-                            <option value="">All categories</option>
+                            <option value="">Bütün kateqoriyalar</option>
 
                             <option th:each="c : ${carCategories}"
                                     th:value="${c.slug}"
                                     th:text="${c.name + ' (' + c.activeCarCount + ')'}"
                                     th:selected="${selectedCategory != null and selectedCategory == c.slug}">
-                                Category
+                                Kateqoriya
                             </option>
                         </select>
 
                         <select name="segment" class="form-control" style="max-width:260px;">
-                            <option value="">All segments</option>
+                            <option value="">Bütün seqmentlər</option>
                             <option th:each="s : ${segments}"
                                     th:value="${s.slug}"
                                     th:text="${s.name + ' (' + s.activeCarCount + ')'}"
@@ -87,7 +87,7 @@
                             </option>
                         </select>
 
-                        <button class="btn btn-primary" type="submit">Filter</button>
+                        <button class="btn btn-primary" type="submit">Filtrlə</button>
 
                         <a class="btn btn-outline-secondary"
                            th:href="@{/pricing(
@@ -97,7 +97,7 @@
                                 dropoffDate=${trip != null ? trip.dropoffDate : null}
                            )}"
                            th:if="${selectedCategory != null and selectedCategory != ''}">
-                            Reset
+                            Sıfırla
                         </a>
                     </form>
                 </div>
@@ -111,9 +111,9 @@
                             <tr class="text-center">
                                 <th>&nbsp;</th>
                                 <th>&nbsp;</th>
-                                <th class="bg-primary heading">Per Hour Rate</th>
-                                <th class="bg-dark heading">Per Day Rate</th>
-                                <th class="bg-black heading">Leasing</th>
+                                <th class="bg-primary heading">Saatlıq tarif</th>
+                                <th class="bg-dark heading">Günlük tarif</th>
+                                <th class="bg-black heading">Lizinq</th>
                             </tr>
                             </thead>
 
@@ -121,7 +121,7 @@
 
                             <tr th:if="${rows == null or #lists.isEmpty(rows)}">
                                 <td colspan="5" class="text-center py-5" style="color:#6c757d;">
-                                    Pricing məlumatı tapılmadı.
+                                    Qiymət məlumatı tapılmadı.
                                 </td>
                             </tr>
 
@@ -132,10 +132,10 @@
                                 </td>
 
                                 <td class="product-name">
-                                    <h3 th:text="${row.carTitle}">Car</h3>
+                                    <h3 th:text="${row.carTitle}">Maşın</h3>
 
                                     <p class="mb-0 rated">
-                                        <span>rated:</span>
+                                        <span>reytinq:</span>
                                         <span th:each="i : ${#numbers.sequence(1,5)}"
                                               th:class="${i <= T(java.lang.Math).round(row.averageRating) ? 'ion-ios-star' : 'ion-ios-star-outline'}"></span>
                                         <small style="margin-left:8px; color:#6c757d;"
@@ -152,7 +152,7 @@
                                                 dropoffLoc=${trip != null ? trip.dropoffLoc : null},
                                                 pickupDate=${trip != null ? trip.pickupDate : null},
                                                 dropoffDate=${trip != null ? trip.dropoffDate : null}
-                                        )}">Details</a>
+                                        )}">Ətraflı</a>
                                     </p>
 
                                     <form th:action="@{/cart/add}" method="post" style="margin:0 0 10px 0;">
@@ -167,7 +167,7 @@
                                         <input type="hidden" name="pickupDate" th:value="${trip != null ? trip.pickupDate : ''}">
                                         <input type="hidden" name="dropoffDate" th:value="${trip != null ? trip.dropoffDate : ''}">
 
-                                        <button type="submit" class="btn btn-primary btn-sm">Book now</button>
+                                        <button type="submit" class="btn btn-primary btn-sm">İndi bron et</button>
                                     </form>
 
                                     <div class="price-rate">
@@ -175,7 +175,6 @@
                                             <span class="num">
                                                 <small class="currency">$</small>
 
-                                                <!-- ✅ base strike -->
                                                 <del class="text-muted mr-1"
                                                      th:if="${row.hourlyHasDiscount != null and row.hourlyHasDiscount and row.baseHourlyRate != null and row.baseHourlyRate.compareTo(row.hourlyRate) > 0}">
                                                     <span th:text="${row.baseHourlyRate}">0</span>
@@ -187,12 +186,12 @@
                                                       th:if="${row.hourlyHasDiscount != null and row.hourlyHasDiscount and row.hourlyDiscountPercent != null and row.hourlyDiscountPercent.doubleValue() > 0}"
                                                       th:text="${'-' + row.hourlyDiscountPercent + '%'}">-10%</span>
                                             </span>
-                                            <span class="per">/per hour</span>
+                                            <span class="per">/saat</span>
                                         </h3>
 
                                         <span class="subheading"
                                               th:if="${row.fuelSurchargePerHour != null and row.fuelSurchargePerHour.doubleValue() > 0}"
-                                              th:text="'$' + ${row.fuelSurchargePerHour} + '/hour fuel surcharges'"></span>
+                                              th:text="'$' + ${row.fuelSurchargePerHour} + '/saat yanacaq əlavəsi'"></span>
                                     </div>
                                 </td>
 
@@ -205,7 +204,7 @@
                                                 dropoffLoc=${trip != null ? trip.dropoffLoc : null},
                                                 pickupDate=${trip != null ? trip.pickupDate : null},
                                                 dropoffDate=${trip != null ? trip.dropoffDate : null}
-                                        )}">Details</a>
+                                        )}">Ətraflı</a>
                                     </p>
 
                                     <form th:action="@{/cart/add}" method="post" style="margin:0 0 10px 0;">
@@ -220,7 +219,7 @@
                                         <input type="hidden" name="pickupDate" th:value="${trip != null ? trip.pickupDate : ''}">
                                         <input type="hidden" name="dropoffDate" th:value="${trip != null ? trip.dropoffDate : ''}">
 
-                                        <button type="submit" class="btn btn-primary btn-sm">Book now</button>
+                                        <button type="submit" class="btn btn-primary btn-sm">İndi bron et</button>
                                     </form>
 
                                     <div class="price-rate">
@@ -239,7 +238,7 @@
                                                       th:if="${row.dailyHasDiscount != null and row.dailyHasDiscount and row.dailyDiscountPercent != null and row.dailyDiscountPercent.doubleValue() > 0}"
                                                       th:text="${'-' + row.dailyDiscountPercent + '%'}">-15%</span>
                                             </span>
-                                            <span class="per">/per day</span>
+                                            <span class="per">/gün</span>
                                         </h3>
                                     </div>
                                 </td>
@@ -253,7 +252,7 @@
                                                 dropoffLoc=${trip != null ? trip.dropoffLoc : null},
                                                 pickupDate=${trip != null ? trip.pickupDate : null},
                                                 dropoffDate=${trip != null ? trip.dropoffDate : null}
-                                        )}">Details</a>
+                                        )}">Ətraflı</a>
                                     </p>
 
                                     <form th:action="@{/cart/add}" method="post" style="margin:0 0 10px 0;">
@@ -268,7 +267,7 @@
                                         <input type="hidden" name="pickupDate" th:value="${trip != null ? trip.pickupDate : ''}">
                                         <input type="hidden" name="dropoffDate" th:value="${trip != null ? trip.dropoffDate : ''}">
 
-                                        <button type="submit" class="btn btn-primary btn-sm">Book now</button>
+                                        <button type="submit" class="btn btn-primary btn-sm">İndi bron et</button>
                                     </form>
 
                                     <div class="price-rate">
@@ -287,7 +286,7 @@
                                                       th:if="${row.leasingHasDiscount != null and row.leasingHasDiscount and row.leasingDiscountPercent != null and row.leasingDiscountPercent.doubleValue() > 0}"
                                                       th:text="${'-' + row.leasingDiscountPercent + '%'}">-5%</span>
                                             </span>
-                                            <span class="per">/per month</span>
+                                            <span class="per">/ay</span>
                                         </h3>
                                     </div>
                                 </td>

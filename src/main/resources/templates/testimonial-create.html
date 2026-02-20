@@ -1,10 +1,11 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org"
+<html lang="az"
+      xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layout}">
 <head>
     <meta charset="UTF-8">
-    <title>Write a Testimonial</title>
+    <title>Rəy yaz</title>
 </head>
 <body>
 
@@ -17,25 +18,34 @@
                 <div class="col-md-8">
 
                     <div class="heading-section text-center mb-4">
-                        <span class="subheading">Testimonial</span>
-                        <h2 class="mb-3">Write your review</h2>
+                        <span class="subheading">Rəy</span>
+                        <h2 class="mb-3">Rəyinizi yazın</h2>
                     </div>
 
                     <form th:action="@{/testimonial/new}" th:object="${form}" method="post">
 
                         <div class="form-group">
-                            <label>Position (optional)</label>
-                            <input class="form-control" th:field="*{position}" placeholder="e.g. Customer">
-                            <small class="text-danger" th:if="${#fields.hasErrors('position')}" th:errors="*{position}"></small>
+                            <label>Vəzifə (istəyə görə)</label>
+                            <input class="form-control"
+                                   th:field="*{position}"
+                                   placeholder="məs: Müştəri">
+                            <small class="text-danger"
+                                   th:if="${#fields.hasErrors('position')}"
+                                   th:errors="*{position}"></small>
                         </div>
 
                         <div class="form-group">
-                            <label>Comment</label>
-                            <textarea class="form-control" rows="8" th:field="*{comment}" placeholder="Write your review..."></textarea>
-                            <small class="text-danger" th:if="${#fields.hasErrors('comment')}" th:errors="*{comment}"></small>
+                            <label>Rəy</label>
+                            <textarea class="form-control"
+                                      rows="8"
+                                      th:field="*{comment}"
+                                      placeholder="Rəyinizi yazın..."></textarea>
+                            <small class="text-danger"
+                                   th:if="${#fields.hasErrors('comment')}"
+                                   th:errors="*{comment}"></small>
                         </div>
 
-                        <button class="btn btn-primary">Send</button>
+                        <button class="btn btn-primary">Göndər</button>
                     </form>
 
                 </div>

@@ -4,23 +4,27 @@
       layout:decorate="~{layout}">
 <head>
     <meta charset="UTF-8">
-    <title>Order Detail</title>
+    <title>Sifariş detalları</title>
 </head>
 <body>
 <div layout:fragment="content">
 
-    <section class="hero-wrap hero-wrap-2 js-fullheight" style="background-image: url('/images/bg_3.jpg');" data-stellar-background-ratio="0.5">
+    <section class="hero-wrap hero-wrap-2 js-fullheight"
+             style="background-image: url('/images/bg_3.jpg');"
+             data-stellar-background-ratio="0.5">
         <div class="overlay"></div>
         <div class="container">
             <div class="row no-gutters slider-text js-fullheight align-items-end justify-content-start">
                 <div class="col-md-9 ftco-animate pb-5">
                     <p class="breadcrumbs">
-                        <span class="mr-2"><a th:href="@{/}">Home <i class="ion-ios-arrow-forward"></i></a></span>
-                        <span>Order <i class="ion-ios-arrow-forward"></i></span>
+                        <span class="mr-2">
+                            <a th:href="@{/}">Ana səhifə <i class="ion-ios-arrow-forward"></i></a>
+                        </span>
+                        <span>Sifariş <i class="ion-ios-arrow-forward"></i></span>
                     </p>
 
                     <h1 class="mb-2 bread">
-                        Order #<span th:text="${order.userOrderNo}">1</span>
+                        Sifariş #<span th:text="${order.userOrderNo}">1</span>
                     </h1>
                 </div>
             </div>
@@ -30,21 +34,21 @@
     <section class="ftco-section">
         <div class="container">
 
-            <!-- ✅ PAYMENT STATUS BLOCK -->
+            <!-- ✅ ÖDƏNİŞ STATUS BLOKU -->
             <div class="mb-3">
                 <!-- PENDING və ya PAYMENT_FAILED -> Pay now -->
                 <div class="alert alert-warning"
                      th:if="${order.status != null and (order.status.name() == 'PENDING' or order.status.name() == 'PAYMENT_FAILED')}">
                     <div class="d-flex align-items-center justify-content-between" style="gap:12px; flex-wrap:wrap;">
                         <div>
-                            <b>Payment:</b>
-                            <span th:if="${order.status.name() == 'PENDING'}">Payment gözlənilir.</span>
-                            <span th:if="${order.status.name() == 'PAYMENT_FAILED'}">Payment uğursuz oldu. Yenidən cəhd et.</span>
+                            <b>Ödəniş:</b>
+                            <span th:if="${order.status.name() == 'PENDING'}">Ödəniş gözlənilir.</span>
+                            <span th:if="${order.status.name() == 'PAYMENT_FAILED'}">Ödəniş uğursuz oldu. Yenidən cəhd et.</span>
                         </div>
 
                         <a class="btn btn-primary btn-sm"
                            th:href="@{'/payment/start/' + ${order.id}}">
-                            Pay now
+                            İndi ödə
                         </a>
                     </div>
                 </div>
@@ -52,62 +56,63 @@
                 <!-- PAID -->
                 <div class="alert alert-success"
                      th:if="${order.status != null and order.status.name() == 'PAID'}">
-                    ✅ Paid. Order ödənilib.
+                    ✅ Ödənilib. Sifarişin ödənişi tamamlanıb.
                 </div>
 
                 <!-- CANCELED -->
                 <div class="alert alert-secondary"
                      th:if="${order.status != null and order.status.name() == 'CANCELED'}">
-                    ℹ️ Order ləğv olunub.
+                    ℹ️ Sifariş ləğv olunub.
                 </div>
 
                 <!-- COMPLETED -->
                 <div class="alert alert-info"
                      th:if="${order.status != null and order.status.name() == 'COMPLETED'}">
-                    ✅ Order tamamlanıb.
+                    ✅ Sifariş tamamlanıb.
                 </div>
             </div>
 
             <div class="mb-4 p-4 bg-light">
                 <div><b>Status:</b> <span th:text="${order.status}">PENDING</span></div>
-                <div><b>Pick-up:</b> <span th:text="${order.pickupLocation}"></span></div>
-                <div><b>Drop-off:</b> <span th:text="${order.dropoffLocation}"></span></div>
+                <div><b>Götürmə məntəqəsi:</b> <span th:text="${order.pickupLocation}"></span></div>
+                <div><b>Təhvil məntəqəsi:</b> <span th:text="${order.dropoffLocation}"></span></div>
 
-                <div><b>Dates:</b>
+                <div>
+                    <b>Tarixlər:</b>
                     <span th:text="${order.pickupDate}"></span> →
                     <span th:text="${order.dropoffDate}"></span>
-                    (<span th:text="${order.rentalDays}">1</span> duration)
+                    (<span th:text="${order.rentalDays}">1</span> müddət)
                 </div>
 
                 <div th:if="${order.pickupTime != null and !order.pickupTime.isBlank()}">
-                    <b>Pick-up time:</b> <span th:text="${order.pickupTime}"></span>
+                    <b>Götürmə vaxtı:</b> <span th:text="${order.pickupTime}"></span>
                 </div>
 
-                <div class="mt-2"><b>Total:</b> $<span th:text="${order.totalAmount}">0</span></div>
+                <div class="mt-2"><b>Cəm:</b> $<span th:text="${order.totalAmount}">0</span></div>
             </div>
 
             <div class="table-responsive">
                 <table class="table">
                     <thead class="thead-primary">
                     <tr class="text-center">
-                        <th>Car</th>
-                        <th>Package</th>
-                        <th>Unit price</th>
-                        <th>Units</th>
-                        <th>Qty</th>
-                        <th>Line total</th>
+                        <th>Maşın</th>
+                        <th>Paket</th>
+                        <th>Vahid qiymət</th>
+                        <th>Vahid</th>
+                        <th>Say</th>
+                        <th>Sətir cəmi</th>
                     </tr>
                     </thead>
 
                     <tbody>
                     <tr th:each="it : ${order.items}" class="text-center">
-                        <td class="text-left" th:text="${it.carTitleSnapshot}">Car</td>
+                        <td class="text-left" th:text="${it.carTitleSnapshot}">Maşın</td>
 
                         <td>
                             <span class="badge badge-info" th:text="${it.rateType}">DAILY</span>
                         </td>
 
-                        <!-- ✅ Unit price (discount support) -->
+                        <!-- ✅ Vahid qiymət (endirim dəstəyi) -->
                         <td style="line-height:1.3;">
                             <div style="display:flex; gap:8px; justify-content:center; align-items:baseline; flex-wrap:wrap;">
                                 <span th:if="${it.baseUnitPriceSnapshot != null and it.unitPriceSnapshot != null and it.baseUnitPriceSnapshot.compareTo(it.unitPriceSnapshot) > 0}"
@@ -128,7 +133,7 @@
                                            and it.fuelSurchargePerHourSnapshot != null
                                            and it.fuelSurchargePerHourSnapshot.doubleValue() > 0}">
                                 <br>
-                                <small class="text-muted">+$<span th:text="${it.fuelSurchargePerHourSnapshot}">0</span>/hour</small>
+                                <small class="text-muted">+$<span th:text="${it.fuelSurchargePerHourSnapshot}">0</span>/saat</small>
                             </span>
                         </td>
 
@@ -140,7 +145,7 @@
                 </table>
             </div>
 
-            <a th:href="@{/order}" class="btn btn-outline-primary">My orders</a>
+            <a th:href="@{/order}" class="btn btn-outline-primary">Sifarişlərim</a>
 
         </div>
     </section>

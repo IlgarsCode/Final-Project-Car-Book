@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="en"
+<html lang="az"
       xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
-    <title>Carbook - Free Bootstrap 4 Template by Colorlib</title>
+    <title>CarBook - Avtomobil icarəsi</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
@@ -36,37 +36,37 @@
         <a class="navbar-brand" th:href="@{/}">Car<span>Book</span></a>
 
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#ftco-nav"
-                aria-controls="ftco-nav" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="oi oi-menu"></span> Menu
+                aria-controls="ftco-nav" aria-expanded="false" aria-label="Naviqasiya menyusu">
+            <span class="oi oi-menu"></span> Menyu
         </button>
 
         <div class="collapse navbar-collapse" id="ftco-nav">
             <ul class="navbar-nav ml-auto">
 
-                <li class="nav-item"><a th:href="@{/}" class="nav-link">Home</a></li>
-                <li class="nav-item"><a th:href="@{/about}" class="nav-link">About</a></li>
-                <li class="nav-item"><a th:href="@{/services}" class="nav-link">Services</a></li>
-                <li class="nav-item"><a th:href="@{/pricing}" class="nav-link">Pricing</a></li>
-                <li class="nav-item"><a th:href="@{/car}" class="nav-link">Cars</a></li>
+                <li class="nav-item"><a th:href="@{/}" class="nav-link">Ana səhifə</a></li>
+                <li class="nav-item"><a th:href="@{/about}" class="nav-link">Haqqımızda</a></li>
+                <li class="nav-item"><a th:href="@{/services}" class="nav-link">Xidmətlər</a></li>
+                <li class="nav-item"><a th:href="@{/pricing}" class="nav-link">Qiymətlər</a></li>
+                <li class="nav-item"><a th:href="@{/car}" class="nav-link">Maşınlar</a></li>
 
-                <li class="nav-item"><a th:href="@{/blog}" class="nav-link">Blog</a></li>
-                <li class="nav-item"><a th:href="@{/testimonial}" class="nav-link">Testimonials</a></li>
-                <li class="nav-item"><a th:href="@{/contact}" class="nav-link">Contact</a></li>
+                <li class="nav-item"><a th:href="@{/blog}" class="nav-link">Bloq</a></li>
+                <li class="nav-item"><a th:href="@{/testimonial}" class="nav-link">Rəylər</a></li>
+                <li class="nav-item"><a th:href="@{/contact}" class="nav-link">Əlaqə</a></li>
 
-                <!-- ✅ Profile yalnız logged-in -->
+                <!-- ✅ Profil yalnız logged-in -->
                 <li class="nav-item" sec:authorize="isAuthenticated()">
-                    <a th:href="@{/profile}" class="nav-link">Profile</a>
+                    <a th:href="@{/profile}" class="nav-link">Profil</a>
                 </li>
 
-                <!-- ✅ Login/Register yalnız anonymous -->
+                <!-- ✅ Login/Qeydiyyat yalnız anonymous -->
                 <li class="nav-item" sec:authorize="isAnonymous()">
-                    <a th:href="@{/auth/login}" class="nav-link">Login</a>
+                    <a th:href="@{/auth/login}" class="nav-link">Giriş</a>
                 </li>
                 <li class="nav-item" sec:authorize="isAnonymous()">
-                    <a th:href="@{/auth/register}" class="nav-link">Register</a>
+                    <a th:href="@{/auth/register}" class="nav-link">Qeydiyyat</a>
                 </li>
 
-                <!-- ✅ OTHERS dropdown (Logout-dan əvvəl) -->
+                <!-- ✅ Digərləri dropdown (Logout-dan əvvəl) -->
                 <li class="nav-item dropdown" sec:authorize="isAuthenticated()">
                     <a class="nav-link dropdown-toggle"
                        href="#"
@@ -75,35 +75,35 @@
                        data-toggle="dropdown"
                        aria-haspopup="true"
                        aria-expanded="false">
-                        Others
+                        Digərləri
                     </a>
 
                     <div class="dropdown-menu dropdown-menu-right" aria-labelledby="othersDropdown">
 
                         <!-- My Orders: yalnız USER -->
                         <a class="dropdown-item" th:href="@{/my-orders}" sec:authorize="hasRole('USER')">
-                            My Orders
+                            Sifarişlərim
                         </a>
 
                         <!-- My Blogs: yalnız USER -->
                         <a class="dropdown-item" th:href="@{/my-blogs}" sec:authorize="hasRole('USER')">
-                            My Blogs
+                            Bloqlarım
                         </a>
 
                         <!-- Dashboard: yalnız ADMIN -->
                         <a class="dropdown-item" th:href="@{/dashboard}" sec:authorize="hasRole('ADMIN')">
-                            Dashboard
+                            Admin panel
                         </a>
 
                     </div>
                 </li>
 
-                <!-- ✅ Logout (POST) -->
+                <!-- ✅ Çıxış (POST) -->
                 <li class="nav-item" sec:authorize="isAuthenticated()">
                     <form th:action="@{/auth/logout}" method="post" style="margin:0;">
                         <button type="submit" class="nav-link btn btn-link"
                                 style="padding-top:.9rem; padding-bottom:.9rem; color: rgba(255,255,255,.7); text-decoration:none;">
-                            Logout
+                            Çıxış
                         </button>
                     </form>
                 </li>
@@ -122,7 +122,10 @@
             <div class="col-md">
                 <div class="ftco-footer-widget mb-4">
                     <h2 class="ftco-heading-2"><a href="#" class="logo">Car<span>book</span></a></h2>
-                    <p>Far far away, behind the word mountains, far from the countries Vokalia and Consonantia, there live the blind texts.</p>
+                    <p>
+                        Biz, sürətli və rahat avtomobil icarəsi təcrübəsi təqdim edirik.
+                        Ehtiyacınıza uyğun avtomobili seçin və dərhal yola çıxın.
+                    </p>
                     <ul class="ftco-footer-social list-unstyled float-md-left float-lft mt-5">
                         <li class="ftco-animate"><a href="#"><span class="icon-twitter"></span></a></li>
                         <li class="ftco-animate"><a href="#"><span class="icon-facebook"></span></a></li>
@@ -133,38 +136,45 @@
 
             <div class="col-md">
                 <div class="ftco-footer-widget mb-4 ml-md-5">
-                    <h2 class="ftco-heading-2">Information</h2>
+                    <h2 class="ftco-heading-2">Məlumat</h2>
                     <ul class="list-unstyled">
-                        <li><a href="#" class="py-2 d-block">About</a></li>
-                        <li><a href="#" class="py-2 d-block">Services</a></li>
-                        <li><a href="#" class="py-2 d-block">Term and Conditions</a></li>
-                        <li><a href="#" class="py-2 d-block">Best Price Guarantee</a></li>
-                        <li><a href="#" class="py-2 d-block">Privacy &amp; Cookies Policy</a></li>
+                        <li><a th:href="@{/about}" class="py-2 d-block">Haqqımızda</a></li>
+                        <li><a th:href="@{/services}" class="py-2 d-block">Xidmətlər</a></li>
+                        <li><a href="#" class="py-2 d-block">Şərtlər və qaydalar</a></li>
+                        <li><a href="#" class="py-2 d-block">Ən yaxşı qiymət zəmanəti</a></li>
+                        <li><a href="#" class="py-2 d-block">Məxfilik və çərəz siyasəti</a></li>
                     </ul>
                 </div>
             </div>
 
             <div class="col-md">
                 <div class="ftco-footer-widget mb-4">
-                    <h2 class="ftco-heading-2">Customer Support</h2>
+                    <h2 class="ftco-heading-2">Müştəri dəstəyi</h2>
                     <ul class="list-unstyled">
-                        <li><a href="#" class="py-2 d-block">FAQ</a></li>
-                        <li><a href="#" class="py-2 d-block">Payment Option</a></li>
-                        <li><a href="#" class="py-2 d-block">Booking Tips</a></li>
-                        <li><a href="#" class="py-2 d-block">How it works</a></li>
-                        <li><a href="#" class="py-2 d-block">Contact Us</a></li>
+                        <li><a href="#" class="py-2 d-block">Tez-tez verilən suallar</a></li>
+                        <li><a href="#" class="py-2 d-block">Ödəniş seçimləri</a></li>
+                        <li><a href="#" class="py-2 d-block">Rezerv məsləhətləri</a></li>
+                        <li><a href="#" class="py-2 d-block">Necə işləyir?</a></li>
+                        <li><a th:href="@{/contact}" class="py-2 d-block">Bizimlə əlaqə</a></li>
                     </ul>
                 </div>
             </div>
 
             <div class="col-md">
                 <div class="ftco-footer-widget mb-4">
-                    <h2 class="ftco-heading-2">Have a Questions?</h2>
+                    <h2 class="ftco-heading-2">Sualınız var?</h2>
                     <div class="block-23 mb-3">
                         <ul>
-                            <li><span class="icon icon-map-marker"></span><span class="text">203 Fake St. Mountain View, San Francisco, California, USA</span></li>
-                            <li><a href="#"><span class="icon icon-phone"></span><span class="text">+2 392 3929 210</span></a></li>
-                            <li><a href="#"><span class="icon icon-envelope"></span><span class="text">info@yourdomain.com</span></a></li>
+                            <li>
+                                <span class="icon icon-map-marker"></span>
+                                <span class="text">Bakı, Azərbaycan</span>
+                            </li>
+                            <li>
+                                <a href="#"><span class="icon icon-phone"></span><span class="text">+994 XX XXX XX XX</span></a>
+                            </li>
+                            <li>
+                                <a href="#"><span class="icon icon-envelope"></span><span class="text">info@yourdomain.com</span></a>
+                            </li>
                         </ul>
                     </div>
                 </div>
@@ -176,8 +186,7 @@
             <div class="col-md-12 text-center">
                 <p>
                     Copyright &copy;<script>document.write(new Date().getFullYear());</script>
-                    All rights reserved | This template is made with <i class="icon-heart color-danger" aria-hidden="true"></i>
-                    by <a href="https://colorlib.com" target="_blank">Colorlib</a>
+                    Bütün hüquqlar qorunur.
                 </p>
             </div>
         </div>

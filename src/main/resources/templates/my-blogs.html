@@ -5,7 +5,7 @@
         layout:decorate="~{layout}">
 <head>
   <meta charset="UTF-8">
-  <title>My Blogs</title>
+  <title>Bloglarım</title>
 </head>
 <body>
 <div layout:fragment="content">
@@ -19,11 +19,11 @@
         <div class="col-md-9 ftco-animate pb-5">
           <p class="breadcrumbs">
                         <span class="mr-2">
-                            <a th:href="@{/}">Home <i class="ion-ios-arrow-forward"></i></a>
+                            <a th:href="@{/}">Ana səhifə <i class="ion-ios-arrow-forward"></i></a>
                         </span>
-            <span>My Blogs</span>
+            <span>Bloglarım</span>
           </p>
-          <h1 class="mb-3 bread">My Blogs</h1>
+          <h1 class="mb-3 bread">Bloglarım</h1>
         </div>
       </div>
     </div>
@@ -34,7 +34,7 @@
 
       <div class="d-flex justify-content-between align-items-center mb-4">
         <h3 class="mb-0">Yazdıqlarım</h3>
-        <a class="btn btn-primary" th:href="@{/blog/new}">Create new</a>
+        <a class="btn btn-primary" th:href="@{/blog/new}">Yeni yarat</a>
       </div>
 
       <div class="alert alert-info" th:if="${blogs == null or #lists.isEmpty(blogs)}">
@@ -56,20 +56,21 @@
               </div>
 
               <h3 class="heading mt-2">
-                <a th:href="@{'/blog/' + ${b.id}}" th:text="${b.title}">Title</a>
+                <a th:href="@{'/blog/' + ${b.id}}" th:text="${b.title}">Başlıq</a>
               </h3>
 
               <p th:text="${b.shortDescription}"></p>
 
               <p class="mb-0">
                 <a th:href="@{'/blog/' + ${b.id}}" class="btn btn-primary">
-                  Read <span class="icon-long-arrow-right"></span>
+                  Oxu <span class="icon-long-arrow-right"></span>
                 </a>
+
               <form th:action="@{'/my-blogs/' + ${b.id} + '/delete'}"
                     method="post"
                     style="display:inline;"
                     onsubmit="return confirm('Bu blog silinsin?');">
-                <button class="btn btn-sm btn-danger" type="submit">Delete</button>
+                <button class="btn btn-sm btn-danger" type="submit">Sil</button>
               </form>
               </p>
             </div>

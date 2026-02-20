@@ -5,7 +5,7 @@
         layout:decorate="~{layout}">
 <head>
     <meta charset="UTF-8">
-    <title>Home</title>
+    <title>Ana səhifə</title>
 
     <!-- ✅ FIX: Select option text görünmürdü (ağ rəng / ağ fon problemi) -->
     <style>
@@ -47,9 +47,9 @@
                 <div class="col-lg-8 ftco-animate">
                     <div class="text w-100 text-center mb-md-5 pb-md-5">
 
-                        <h1 class="mb-4" th:text="${banner.title}">Banner title</h1>
+                        <h1 class="mb-4" th:text="${banner.title}">Banner başlığı</h1>
 
-                        <p style="font-size: 18px;" th:text="${banner.description}">Banner description</p>
+                        <p style="font-size: 18px;" th:text="${banner.description}">Banner təsviri</p>
 
                         <a th:if="${banner.videoUrl != null}"
                            th:href="${banner.videoUrl}"
@@ -60,7 +60,7 @@
                             </div>
 
                             <div class="heading-title ml-5">
-                                <span th:text="${banner.buttonText}">Button text</span>
+                                <span th:text="${banner.buttonText}">Videoya bax</span>
                             </div>
                         </a>
 
@@ -84,13 +84,13 @@
                                   method="post"
                                   class="request-form ftco-animate bg-primary">
 
-                                <h2>Make your trip</h2>
+                                <h2>Səfərini planlaşdır</h2>
 
                                 <!-- Pick-up location -->
                                 <div class="form-group">
-                                    <label class="label">Pick-up location</label>
+                                    <label class="label">Götürmə məntəqəsi</label>
                                     <select class="form-control" th:field="*{pickupLocationId}">
-                                        <option value="" disabled selected hidden>Select location...</option>
+                                        <option value="" disabled selected hidden>Məntəqə seçin...</option>
                                         <option th:each="l : ${locations}"
                                                 th:value="${l.id}"
                                                 th:text="${l.name}">
@@ -103,9 +103,9 @@
 
                                 <!-- Drop-off location -->
                                 <div class="form-group">
-                                    <label class="label">Drop-off location</label>
+                                    <label class="label">Təhvil məntəqəsi</label>
                                     <select class="form-control" th:field="*{dropoffLocationId}">
-                                        <option value="" disabled selected hidden>Select location...</option>
+                                        <option value="" disabled selected hidden>Məntəqə seçin...</option>
                                         <option th:each="l : ${locations}"
                                                 th:value="${l.id}"
                                                 th:text="${l.name}">
@@ -119,7 +119,7 @@
                                 <!-- Dates -->
                                 <div class="d-flex">
                                     <div class="form-group mr-2" style="flex:1;">
-                                        <label class="label">Pick-up date</label>
+                                        <label class="label">Götürmə tarixi</label>
                                         <input type="date"
                                                id="pickupDate"
                                                class="form-control"
@@ -131,7 +131,7 @@
                                     </div>
 
                                     <div class="form-group ml-2" style="flex:1;">
-                                        <label class="label">Drop-off date</label>
+                                        <label class="label">Təhvil tarixi</label>
                                         <input type="date"
                                                id="dropoffDate"
                                                class="form-control"
@@ -145,13 +145,13 @@
 
                                 <!-- time (optional) -->
                                 <div class="form-group">
-                                    <label class="label">Pick-up time (optional)</label>
-                                    <input type="time" class="form-control" name="pickupTime" placeholder="Time">
+                                    <label class="label">Götürmə saatı (ixtiyari)</label>
+                                    <input type="time" class="form-control" name="pickupTime" placeholder="Saat">
                                 </div>
 
                                 <!-- Submit -->
                                 <div class="form-group">
-                                    <input type="submit" value="Rent A Car Now" class="btn btn-secondary py-3 px-4">
+                                    <input type="submit" value="İndi avtomobil icarə et" class="btn btn-secondary py-3 px-4">
                                 </div>
 
                                 <!-- global errors -->
@@ -165,7 +165,7 @@
                         <!-- RIGHT: INFO -->
                         <div class="col-md-8 d-flex align-items-center">
                             <div class="services-wrap rounded-right w-100">
-                                <h3 class="heading-section mb-4">Better Way to Rent Your Perfect Cars</h3>
+                                <h3 class="heading-section mb-4">İdeal avtomobili icarəyə götürməyin daha rahat yolu</h3>
 
                                 <div class="row d-flex mb-4">
                                     <div class="col-md-4 d-flex align-self-stretch ftco-animate">
@@ -174,7 +174,7 @@
                                                 <span class="flaticon-route"></span>
                                             </div>
                                             <div class="text w-100">
-                                                <h3 class="heading mb-2">Choose Your Pickup Location</h3>
+                                                <h3 class="heading mb-2">Götürmə məntəqəsini seçin</h3>
                                             </div>
                                         </div>
                                     </div>
@@ -185,7 +185,7 @@
                                                 <span class="flaticon-handshake"></span>
                                             </div>
                                             <div class="text w-100">
-                                                <h3 class="heading mb-2">Select the Best Deal</h3>
+                                                <h3 class="heading mb-2">Ən uyğun təklifi seçin</h3>
                                             </div>
                                         </div>
                                     </div>
@@ -196,7 +196,7 @@
                                                 <span class="flaticon-rent"></span>
                                             </div>
                                             <div class="text w-100">
-                                                <h3 class="heading mb-2">Reserve Your Rental Car</h3>
+                                                <h3 class="heading mb-2">Avtomobili rezerv edin</h3>
                                             </div>
                                         </div>
                                     </div>
@@ -204,7 +204,7 @@
 
                                 <p>
                                     <a th:href="@{/car}" class="btn btn-primary py-3 px-4">
-                                        Reserve Your Perfect Car
+                                        Öz ideal avtomobilini seç
                                     </a>
                                 </p>
                             </div>
@@ -253,8 +253,8 @@
 
             <div class="row justify-content-center">
                 <div class="col-md-12 heading-section text-center ftco-animate mb-5">
-                    <span class="subheading">What we offer</span>
-                    <h2 class="mb-2">Featured Vehicles</h2>
+                    <span class="subheading">Təklif etdiklərimiz</span>
+                    <h2 class="mb-2">Seçilmiş avtomobillər</h2>
                 </div>
             </div>
 
@@ -278,13 +278,13 @@
                                 <div class="text">
                                     <h2 class="mb-0">
                                         <a th:href="@{'/car/' + ${rc.slug}}"
-                                           th:text="${rc.title}">Car</a>
+                                           th:text="${rc.title}">Maşın</a>
                                     </h2>
 
                                     <div class="d-flex mb-3">
-                                        <span class="cat" th:text="${rc.brand}">Brand</span>
+                                        <span class="cat" th:text="${rc.brand}">Marka</span>
                                         <p class="price ml-auto">
-                                            $<span th:text="${rc.dailyRate}">0</span> <span>/day</span>
+                                            $<span th:text="${rc.dailyRate}">0</span> <span>/gün</span>
                                         </p>
                                     </div>
 
@@ -296,13 +296,13 @@
                                             <input type="hidden" name="unitCount" value="1">
 
                                             <button type="submit" class="btn btn-primary py-2 mr-1">
-                                                Book now
+                                                İndi bron et
                                             </button>
                                         </form>
 
                                         <a th:href="@{'/car/' + ${rc.slug}}"
                                            class="btn btn-secondary py-2 ml-1">
-                                            Details
+                                            Ətraflı
                                         </a>
                                     </div>
 
@@ -339,20 +339,20 @@
                     <div class="heading-section heading-section-white pl-md-5">
 
                         <span class="subheading" th:text="${about.pageTitle}">
-                            About us
+                            Haqqımızda
                         </span>
 
                         <h2 class="mb-4" th:text="${about.sectionTitle}">
-                            Welcome to Carbook
+                            CarBook-a xoş gəlmisiniz
                         </h2>
 
                         <p th:utext="${about.description}">
-                            About description
+                            Haqqımızda təsvir
                         </p>
 
                         <p>
                             <a th:href="@{/car}" class="btn btn-primary py-3 px-4">
-                                Search Vehicle
+                                Avtomobil axtar
                             </a>
                         </p>
 
@@ -367,8 +367,8 @@
         <div class="container">
             <div class="row justify-content-center mb-5">
                 <div class="col-md-7 text-center heading-section ftco-animate">
-                    <span class="subheading">Services</span>
-                    <h2 class="mb-3">Our Latest Services</h2>
+                    <span class="subheading">Xidmətlər</span>
+                    <h2 class="mb-3">Ən son xidmətlərimiz</h2>
                 </div>
             </div>
 
@@ -386,11 +386,11 @@
                         <div class="text w-100">
                             <h3 class="heading mb-2"
                                 th:text="${service.title}">
-                                Service title
+                                Xidmət başlığı
                             </h3>
 
                             <p th:text="${service.description}">
-                                Service description
+                                Xidmət təsviri
                             </p>
                         </div>
                     </div>
@@ -405,8 +405,8 @@
 
             <div class="row justify-content-center mb-5">
                 <div class="col-md-7 text-center heading-section">
-                    <span class="subheading">Testimonial</span>
-                    <h2 class="mb-3">Happy Clients</h2>
+                    <span class="subheading">Rəylər</span>
+                    <h2 class="mb-3">Məmnun müştərilər</h2>
                 </div>
             </div>
 
@@ -421,21 +421,20 @@
 
                             <div class="testimony-wrap rounded text-center py-4 pb-5">
 
-
                                 <div class="text pt-4">
                                     <p class="mb-4"
                                        th:text="${t.comment}">
-                                        Testimonial comment
+                                        Rəy mətni
                                     </p>
 
                                     <p class="name"
                                        th:text="${t.fullName}">
-                                        Full name
+                                        Ad Soyad
                                     </p>
 
                                     <span class="position"
                                           th:text="${t.position}">
-                                        Position
+                                        Vəzifə
                                     </span>
                                 </div>
 
@@ -455,54 +454,64 @@
         <div class="container">
             <div class="row justify-content-center mb-5">
                 <div class="col-md-7 heading-section text-center ftco-animate">
-                    <span class="subheading">Blog</span>
-                    <h2>Recent Blog</h2>
+                    <span class="subheading">Bloq</span>
+                    <h2>Son bloqlar</h2>
                 </div>
             </div>
-            <div class="row d-flex">
-                <div class="col-md-4 d-flex ftco-animate">
-                    <div class="blog-entry justify-content-end">
-                        <a href="blog-single.html" class="block-20" style="background-image: url('images/image_1.jpg');">
+
+            <!-- boşdursa -->
+            <div class="alert alert-info" th:if="${blogs == null or blogs.empty}">
+                Blog tapılmadı.
+            </div>
+
+            <!-- dinamik 3 blog -->
+            <div class="row d-flex" th:if="${blogs != null and !blogs.empty}">
+                <div class="col-md-4 d-flex ftco-animate" th:each="blog, stat : ${blogs}" th:if="${stat.index < 3}">
+                    <div class="blog-entry justify-content-end w-100">
+
+                        <a th:href="@{'/blog/' + ${blog.id}}"
+                           class="block-20"
+                           th:style="'background-image: url(' + ${blog.imageUrl} + ');'">
                         </a>
+
                         <div class="text pt-4">
                             <div class="meta mb-3">
-                                <div><a href="#">Oct. 29, 2019</a></div>
-                                <div><a href="#">Admin</a></div>
-                                <div><a href="#" class="meta-chat"><span class="icon-chat"></span> 3</a></div>
+                                <div>
+                                    <a th:href="@{'/blog/' + ${blog.id}}"
+                                       th:text="${#temporals.format(blog.createdAt, 'dd MMMM yyyy')}">
+                                        29 Yanvar 2026
+                                    </a>
+                                </div>
+
+                                <div>
+                                    <a th:href="@{'/blog?page=1&search='}"
+                                       th:text="${blog.author}">
+                                        Admin
+                                    </a>
+                                </div>
+
+                                <div>
+                                    <a th:href="@{'/blog/' + ${blog.id} + '#comments'}" class="meta-chat">
+                                        <span class="icon-chat"></span>
+                                        <span th:text="${blog.commentCount}">0</span>
+                                    </a>
+                                </div>
                             </div>
-                            <h3 class="heading mt-2"><a href="#">Why Lead Generation is Key for Business Growth</a></h3>
-                            <p><a href="#" class="btn btn-primary">Read more</a></p>
+
+                            <h3 class="heading mt-2">
+                                <a th:href="@{'/blog/' + ${blog.id}}"
+                                   th:text="${blog.title}">
+                                    Blog başlığı
+                                </a>
+                            </h3>
+
+                            <p class="mb-0">
+                                <a th:href="@{'/blog/' + ${blog.id}}" class="btn btn-primary">
+                                    Davamını oxu
+                                </a>
+                            </p>
                         </div>
-                    </div>
-                </div>
-                <div class="col-md-4 d-flex ftco-animate">
-                    <div class="blog-entry justify-content-end">
-                        <a href="blog-single.html" class="block-20" style="background-image: url('images/image_2.jpg');">
-                        </a>
-                        <div class="text pt-4">
-                            <div class="meta mb-3">
-                                <div><a href="#">Oct. 29, 2019</a></div>
-                                <div><a href="#">Admin</a></div>
-                                <div><a href="#" class="meta-chat"><span class="icon-chat"></span> 3</a></div>
-                            </div>
-                            <h3 class="heading mt-2"><a href="#">Why Lead Generation is Key for Business Growth</a></h3>
-                            <p><a href="#" class="btn btn-primary">Read more</a></p>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-4 d-flex ftco-animate">
-                    <div class="blog-entry">
-                        <a href="blog-single.html" class="block-20" style="background-image: url('images/image_3.jpg');">
-                        </a>
-                        <div class="text pt-4">
-                            <div class="meta mb-3">
-                                <div><a href="#">Oct. 29, 2019</a></div>
-                                <div><a href="#">Admin</a></div>
-                                <div><a href="#" class="meta-chat"><span class="icon-chat"></span> 3</a></div>
-                            </div>
-                            <h3 class="heading mt-2"><a href="#">Why Lead Generation is Key for Business Growth</a></h3>
-                            <p><a href="#" class="btn btn-primary">Read more</a></p>
-                        </div>
+
                     </div>
                 </div>
             </div>
@@ -519,7 +528,7 @@
                         <div class="text text-border d-flex align-items-center">
                             <strong class="number"
                                     th:attr="data-number=${stats.totalOrders}">0</strong>
-                            <span>Total <br>Orders</span>
+                            <span>Ümumi <br>Sifarişlər</span>
                         </div>
                     </div>
                 </div>
@@ -530,7 +539,7 @@
                         <div class="text text-border d-flex align-items-center">
                             <strong class="number"
                                     th:attr="data-number=${stats.totalCars}">0</strong>
-                            <span>Total <br>Cars</span>
+                            <span>Ümumi <br>Avtomobillər</span>
                         </div>
                     </div>
                 </div>
@@ -541,7 +550,7 @@
                         <div class="text text-border d-flex align-items-center">
                             <strong class="number"
                                     th:attr="data-number=${stats.happyCustomers}">0</strong>
-                            <span>Happy <br>Customers</span>
+                            <span>Məmnun <br>Müştərilər</span>
                         </div>
                     </div>
                 </div>
@@ -552,7 +561,7 @@
                         <div class="text d-flex align-items-center">
                             <strong class="number"
                                     th:attr="data-number=${stats.totalTestimonials}">0</strong>
-                            <span>Total <br>Testimonials</span>
+                            <span>Ümumi <br>Rəylər</span>
                         </div>
                     </div>
                 </div>

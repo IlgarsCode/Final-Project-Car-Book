@@ -1,12 +1,12 @@
 <!DOCTYPE html>
-<html lang="en"
+<html lang="az"
       xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layout}">
 
 <head>
     <meta charset="UTF-8">
-    <title>Cars</title>
+    <title>Maşınlar</title>
 
     <style>
         /* --- Cars filter bar (below banner, colorful but clean) --- */
@@ -214,12 +214,12 @@
 
                     <p class="breadcrumbs">
                         <span class="mr-2">
-                            <a th:href="@{/}">Home <i class="ion-ios-arrow-forward"></i></a>
+                            <a th:href="@{/}">Ana səhifə <i class="ion-ios-arrow-forward"></i></a>
                         </span>
-                        <span>Cars <i class="ion-ios-arrow-forward"></i></span>
+                        <span>Maşınlar <i class="ion-ios-arrow-forward"></i></span>
                     </p>
 
-                    <h1 class="mb-3 bread" th:text="${banner.title}">Cars</h1>
+                    <h1 class="mb-3 bread" th:text="${banner.title}">Maşınlar</h1>
                     <p th:text="${banner.description}"></p>
 
                     <a th:if="${banner.buttonText != null and banner.buttonUrl != null}"
@@ -243,55 +243,55 @@
                         <div>
                             <h4 class="cars-filter-title">
                                 <span class="chip">⚡</span>
-                                Filter cars
+                                Maşınları filtrlə
                             </h4>
-                            <p class="cars-filter-sub">Category və segment seç — nəticələr avtomatik daralır.</p>
+                            <p class="cars-filter-sub">Kateqoriya və seqment seç — nəticələr avtomatik daralır.</p>
                         </div>
 
                         <div class="cars-filter-badges">
                             <span class="badge"
                                   th:if="${selectedCategory != null and selectedCategory != ''}"
-                                  th:text="${'Category: ' + selectedCategory}">Category</span>
+                                  th:text="${'Kateqoriya: ' + selectedCategory}">Kateqoriya</span>
                             <span class="badge"
                                   th:if="${selectedSegment != null and selectedSegment != ''}"
-                                  th:text="${'Segment: ' + selectedSegment}">Segment</span>
+                                  th:text="${'Seqment: ' + selectedSegment}">Seqment</span>
                         </div>
                     </div>
 
                     <form class="cars-filter-form" th:action="@{/car}" method="get">
                         <div class="cars-filter-group">
-                            <label class="cars-filter-label">Category</label>
+                            <label class="cars-filter-label">Kateqoriya</label>
                             <select name="category" class="cars-filter-select">
-                                <option value="">All categories</option>
+                                <option value="">Bütün kateqoriyalar</option>
                                 <option th:each="c : ${carCategories}"
                                         th:value="${c.slug}"
                                         th:text="${c.name + ' (' + c.activeCarCount + ')'}"
                                         th:selected="${selectedCategory != null and selectedCategory == c.slug}">
-                                    Category
+                                    Kateqoriya
                                 </option>
                             </select>
                         </div>
 
                         <div class="cars-filter-group">
-                            <label class="cars-filter-label">Segment</label>
+                            <label class="cars-filter-label">Seqment</label>
                             <select name="segment" class="cars-filter-select">
-                                <option value="">All segments</option>
+                                <option value="">Bütün seqmentlər</option>
                                 <option th:each="s : ${segments}"
                                         th:value="${s.slug}"
                                         th:text="${s.name + ' (' + s.activeCarCount + ')'}"
                                         th:selected="${selectedSegment != null and selectedSegment == s.slug}">
-                                    Segment
+                                    Seqment
                                 </option>
                             </select>
                         </div>
 
                         <div class="cars-filter-actions">
-                            <button class="cars-filter-btn btn-primary" type="submit">Filter</button>
+                            <button class="cars-filter-btn btn-primary" type="submit">Filtrlə</button>
 
                             <a class="cars-filter-btn btn-outline"
                                th:href="@{/car}"
                                th:if="${(selectedCategory != null and selectedCategory != '') or (selectedSegment != null and selectedSegment != '')}">
-                                Reset
+                                Sıfırla
                             </a>
                         </div>
                     </form>
@@ -317,7 +317,7 @@
                             <span class="d-block mb-1"
                                   style="font-weight:700; color:#000;"
                                   th:text="${car.brand}">
-                                Brand
+                                Brend
                             </span>
 
                             <div class="d-flex justify-content-between align-items-center mb-2">
@@ -338,7 +338,7 @@
                                     </span>
 
                                     <span style="color:#000; font-weight:400;">
-                                        /day
+                                        /gün
                                     </span>
 
                                     <span class="badge badge-success"
@@ -356,11 +356,11 @@
                                     <input type="hidden" name="carId" th:value="${car.id}">
                                     <input type="hidden" name="rateType" value="DAILY">
                                     <input type="hidden" name="unitCount" value="1">
-                                    <button type="submit" class="btn btn-primary py-2 px-3">Book now</button>
+                                    <button type="submit" class="btn btn-primary py-2 px-3">İndi bron et</button>
                                 </form>
 
                                 <a th:href="@{'/car/' + ${car.slug}}"
-                                   class="btn btn-secondary py-2 px-3">Details</a>
+                                   class="btn btn-secondary py-2 px-3">Ətraflı</a>
 
                             </div>
 

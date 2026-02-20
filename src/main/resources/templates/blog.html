@@ -1,11 +1,11 @@
 <!DOCTYPE html>
-<html
-        xmlns:th="http://www.thymeleaf.org"
-        xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-        layout:decorate="~{layout}">
+<html lang="az"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
 <head>
     <meta charset="UTF-8">
-    <title>Blog</title>
+    <title>Bloq</title>
 
     <!-- ✅ Page-specific fixes (square images + less whitespace + sidebar top) -->
     <style>
@@ -59,15 +59,15 @@
                     <p class="breadcrumbs">
                         <span class="mr-2">
                             <a th:href="@{/}">
-                                Home <i class="ion-ios-arrow-forward"></i>
+                                Ana səhifə <i class="ion-ios-arrow-forward"></i>
                             </a>
                         </span>
                         <span>
-                            Blog <i class="ion-ios-arrow-forward"></i>
+                            Bloq <i class="ion-ios-arrow-forward"></i>
                         </span>
                     </p>
 
-                    <h1 class="mb-3 bread" th:text="${banner.title}">Blog</h1>
+                    <h1 class="mb-3 bread" th:text="${banner.title}">Bloq</h1>
                 </div>
             </div>
         </div>
@@ -76,7 +76,7 @@
     <section class="ftco-section">
         <div class="container">
 
-            <!-- ✅ İKİ SÜTUN: solda bloglar, sağda search -->
+            <!-- ✅ İKİ SÜTUN: solda bloqlar, sağda axtarış -->
             <div class="row align-items-start">
 
                 <!-- ✅ LEFT: BLOG GRID -->
@@ -84,10 +84,10 @@
 
                     <!-- boş nəticə -->
                     <div class="alert alert-info" th:if="${blogs == null or blogs.empty}">
-                        Heç bir blog tapılmadı.
+                        Heç bir bloq tapılmadı.
                     </div>
 
-                    <!-- ✅ 1 sətirdə 3 blog -->
+                    <!-- ✅ 1 sətirdə 3 bloq -->
                     <div class="row blog-grid" th:if="${blogs != null and !blogs.empty}">
 
                         <div class="col-md-4 d-flex ftco-animate mb-4"
@@ -110,7 +110,7 @@
                                         </div>
 
                                         <div style="color:#007bff;" th:text="${blog.author}">
-                                            Author
+                                            Müəllif
                                         </div>
 
                                         <div>
@@ -125,18 +125,18 @@
                                     <h3 class="heading mt-2">
                                         <a th:href="@{'/blog/' + ${blog.id}}"
                                            th:text="${blog.title}">
-                                            Blog title
+                                            Bloq başlığı
                                         </a>
                                     </h3>
 
                                     <p th:text="${blog.shortDescription}">
-                                        Blog short description
+                                        Bloq üçün qısa təsvir
                                     </p>
 
                                     <p class="mb-0">
                                         <a th:href="@{'/blog/' + ${blog.id}}"
                                            class="btn btn-primary">
-                                            Continue <span class="icon-long-arrow-right"></span>
+                                            Davamını oxu <span class="icon-long-arrow-right"></span>
                                         </a>
                                     </p>
 
@@ -192,7 +192,7 @@
 
                                 <input type="text" name="search" class="form-control"
                                        th:value="${search}"
-                                       placeholder="Type a keyword and hit enter">
+                                       placeholder="Açar sözü yaz və Enter-ə bas">
 
                                 <!-- ✅ tag filter itirməsin -->
                                 <input type="hidden" name="tag" th:value="${tag}">

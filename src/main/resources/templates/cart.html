@@ -1,10 +1,11 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org"
+<html lang="az"
+      xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layout}">
 <head>
     <meta charset="UTF-8">
-    <title>Cart</title>
+    <title>Səbət</title>
 </head>
 <body>
 <div layout:fragment="content">
@@ -17,10 +18,12 @@
             <div class="row no-gutters slider-text js-fullheight align-items-end justify-content-start">
                 <div class="col-md-9 ftco-animate pb-5">
                     <p class="breadcrumbs">
-                        <span class="mr-2"><a th:href="@{/}">Home <i class="ion-ios-arrow-forward"></i></a></span>
-                        <span>Cart <i class="ion-ios-arrow-forward"></i></span>
+                        <span class="mr-2">
+                            <a th:href="@{/}">Ana səhifə <i class="ion-ios-arrow-forward"></i></a>
+                        </span>
+                        <span>Səbət <i class="ion-ios-arrow-forward"></i></span>
                     </p>
-                    <h1 class="mb-3 bread">Your Cart</h1>
+                    <h1 class="mb-3 bread">Sənin səbətin</h1>
                 </div>
             </div>
         </div>
@@ -33,26 +36,26 @@
             <div th:if="${trip != null}" class="alert alert-secondary" style="border-radius:10px;">
                 <div class="row" style="row-gap:6px;">
                     <div class="col-md-6">
-                        <strong>Pick-up:</strong>
+                        <strong>Götürmə:</strong>
                         <span th:text="${pickupName != null ? pickupName : (trip.pickupLoc != null ? trip.pickupLoc : '-') }">-</span>
                     </div>
                     <div class="col-md-6">
-                        <strong>Drop-off:</strong>
+                        <strong>Təhvil:</strong>
                         <span th:text="${dropoffName != null ? dropoffName : (trip.dropoffLoc != null ? trip.dropoffLoc : '-') }">-</span>
                     </div>
                     <div class="col-md-6">
-                        <strong>Pick-up date:</strong>
+                        <strong>Götürmə tarixi:</strong>
                         <span th:text="${trip.pickupDate != null ? trip.pickupDate : '-'}">-</span>
                     </div>
                     <div class="col-md-6">
-                        <strong>Drop-off date:</strong>
+                        <strong>Təhvil tarixi:</strong>
                         <span th:text="${trip.dropoffDate != null ? trip.dropoffDate : '-'}">-</span>
                     </div>
                 </div>
             </div>
 
             <div th:if="${cart == null or cart.items == null or cart.items.empty}" class="alert alert-info">
-                Cart boşdur.
+                Səbət boşdur.
             </div>
 
             <div th:if="${cart != null and cart.items != null and !cart.items.empty}" class="row">
@@ -61,12 +64,12 @@
                         <table class="table">
                             <thead class="thead-primary">
                             <tr class="text-center">
-                                <th>Car</th>
-                                <th>Package</th>
-                                <th>Unit price</th>
-                                <th>Units</th>
-                                <th>Qty</th>
-                                <th>Remove</th>
+                                <th>Maşın</th>
+                                <th>Paket</th>
+                                <th>Vahid qiymət</th>
+                                <th>Vahid sayı</th>
+                                <th>Miqdar</th>
+                                <th>Sil</th>
                             </tr>
                             </thead>
 
@@ -81,7 +84,7 @@
 
                                         <div class="pl-3">
                                             <div class="font-weight-bold"
-                                                 th:text="${it.car != null ? it.car.title : 'Car'}">Car title</div>
+                                                 th:text="${it.car != null ? it.car.title : 'Maşın'}">Car title</div>
                                             <small class="text-muted"
                                                    th:text="${it.car != null ? it.car.brand : ''}">Brand</small>
                                         </div>
@@ -113,7 +116,7 @@
                                                    and it.fuelSurchargePerHourSnapshot != null
                                                    and it.fuelSurchargePerHourSnapshot.doubleValue() > 0}">
                                         <br>
-                                        <small class="text-muted">+$<span th:text="${it.fuelSurchargePerHourSnapshot}">0</span>/hour</small>
+                                        <small class="text-muted">+$<span th:text="${it.fuelSurchargePerHourSnapshot}">0</span>/saat</small>
                                     </span>
                                 </td>
 
@@ -122,7 +125,7 @@
 
                                 <td>
                                     <form th:action="@{'/cart/remove/' + ${it.id}}" method="post">
-                                        <button class="btn btn-danger btn-sm">Remove</button>
+                                        <button class="btn btn-danger btn-sm">Sil</button>
                                     </form>
                                 </td>
                             </tr>
@@ -132,14 +135,14 @@
 
                     <div class="d-flex justify-content-between" style="gap:10px; flex-wrap:wrap;">
                         <form th:action="@{/cart/clear}" method="post">
-                            <button class="btn btn-outline-danger">Clear Cart</button>
+                            <button class="btn btn-outline-danger">Səbəti təmizlə</button>
                         </form>
 
-                        <a th:href="@{/checkout}" class="btn btn-primary">Proceed to Checkout</a>
+                        <a th:href="@{/checkout}" class="btn btn-primary">Ödənişə keç</a>
                     </div>
 
                     <p class="mt-3 text-muted">
-                        Qeyd: Gün/saat/ay hesabı checkout zamanı (pickup/dropoff seçiləndə) edilir.
+                        Qeyd: Gün/saat/ay hesablanması checkout zamanı (götürmə/təhvil tarixləri seçiləndə) edilir.
                     </p>
 
                 </div>

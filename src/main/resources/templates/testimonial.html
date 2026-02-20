@@ -1,10 +1,11 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org"
+<html lang="az"
+      xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layout}">
 <head>
   <meta charset="UTF-8">
-  <title>Testimonials</title>
+  <title>Rəylər</title>
 </head>
 <body>
 
@@ -21,23 +22,23 @@
         <div class="col-md-9 ftco-animate pb-5">
 
           <p class="breadcrumbs">
-                        <span class="mr-2">
-                            <a th:href="@{/}">
-                                Home <i class="ion-ios-arrow-forward"></i>
-                            </a>
-                        </span>
-            <span>Testimonials</span>
+            <span class="mr-2">
+              <a th:href="@{/}">
+                Ana səhifə <i class="ion-ios-arrow-forward"></i>
+              </a>
+            </span>
+            <span>Rəylər</span>
           </p>
 
           <h1 class="mb-3 bread"
-              th:text="${banner.title != null ? banner.title : 'Testimonials'}">
-            Testimonials
+              th:text="${banner.title != null ? banner.title : 'Rəylər'}">
+            Rəylər
           </h1>
 
           <p class="text-white"
              th:if="${banner.description != null}"
              th:text="${banner.description}">
-            Banner description
+            Banner təsviri
           </p>
 
         </div>
@@ -53,8 +54,8 @@
       <!-- HEADER -->
       <div class="row justify-content-center mb-4">
         <div class="col-md-7 text-center heading-section ftco-animate">
-          <span class="subheading">Testimonial</span>
-          <h2 class="mb-3">Happy Clients</h2>
+          <span class="subheading">Rəy</span>
+          <h2 class="mb-3">Məmnun müştərilər</h2>
         </div>
       </div>
 
@@ -62,7 +63,7 @@
       <div class="row justify-content-center mb-5">
         <div class="col-md-7 text-center">
           <a th:href="@{/testimonial/new}" class="btn btn-primary">
-            Write a Review
+            Rəy yaz
           </a>
         </div>
       </div>
@@ -70,7 +71,7 @@
       <!-- EMPTY STATE -->
       <div class="row" th:if="${testimonials == null or #lists.isEmpty(testimonials)}">
         <div class="col-md-12 text-center">
-          <p class="mb-0">No testimonials yet.</p>
+          <p class="mb-0">Hələ rəy yoxdur.</p>
         </div>
       </div>
 
@@ -88,12 +89,13 @@
             </div>
 
             <div class="text pt-4">
-              <p class="name" th:text="${t.fullName}">Full name</p>
-              <span class="position" th:text="${t.position}">Position</span>
-              <p class="mb-4" th:text="${t.comment}">Testimonial comment</p>
+              <p class="name" th:text="${t.fullName}">Ad Soyad</p>
+              <span class="position" th:text="${t.position}">Vəzifə</span>
+              <p class="mb-4" th:text="${t.comment}">Rəy mətni</p>
             </div>
 
-          </div>        </div>
+          </div>
+        </div>
 
       </div>
       <!-- /GRID -->
