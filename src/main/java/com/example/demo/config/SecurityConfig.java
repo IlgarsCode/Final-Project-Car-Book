@@ -8,6 +8,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.access.hierarchicalroles.RoleHierarchy;
 import org.springframework.security.access.hierarchicalroles.RoleHierarchyImpl;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -15,9 +16,11 @@ import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
 @RequiredArgsConstructor
+@EnableMethodSecurity
 public class SecurityConfig {
 
     private final CustomUserDetailsService customUserDetailsService;
+    private final CustomAccessDeniedHandler accessDeniedHandler;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -51,7 +54,7 @@ public class SecurityConfig {
                 .authenticationProvider(authenticationProvider(passwordEncoder()))
                 .authorizeHttpRequests(auth -> auth
 
-                        // ✅ STATIC (login olmadan hər şey görünsün deyə geniş açırıq)
+                        // ✅ STATIC
                         .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()
                         .requestMatchers(
                                 "/fonts/**",
@@ -60,45 +63,47 @@ public class SecurityConfig {
                                 "/scss/**", "/lib/**", "/plugins/**",
                                 "/webjars/**",
                                 "/uploads/**",
-                                "/admin/**" // admin panel template-lərin assetləri burdadırsa
+                                "/admin/**"
                         ).permitAll()
+
+                        // ✅ Error page-lər hamıya açıq olmalıdır
+                        .requestMatchers("/error", "/error/**").permitAll()
 
                         // ✅ Auth pages
                         .requestMatchers("/auth/**").permitAll()
 
-// ✅ Public pages
-                                .requestMatchers(
-                                        "/", "/index",
-                                        "/about", "/services", "/contact",
-                                        "/pricing", "/pricing/**",
-                                        "/car", "/car/**",
-                                        "/blog", "/blog/**",      // ✅ qalır, amma artıq /blog/new yuxarıda bağlandı
-                                        "/testimonial"
-                                ).permitAll()
+                        // ✅ Public pages
+                        .requestMatchers(
+                                "/", "/index",
+                                "/about", "/services", "/contact",
+                                "/pricing", "/pricing/**",
+                                "/car", "/car/**",
+                                "/blog", "/blog/**",
+                                "/testimonial"
+                        ).permitAll()
 
-                        // ✅ SUPER ADMIN (spesifik olanı yuxarıda saxla)
+                        // ✅ SUPER ADMIN (spesifik)
                         .requestMatchers("/dashboard/users/**").hasRole("SUPER_ADMIN")
 
                         // ✅ ADMIN PANEL
                         .requestMatchers("/dashboard/**").hasRole("ADMIN")
 
+                        // ✅ USER pages
+                        .requestMatchers(
+                                "/blog/new",
+                                "/my-blogs",
+                                "/my-blogs/**",
+                                "/blog/*/comment",
+                                "/blog/*/reply",
+                                "/profile/**",
+                                "/cart/**",
+                                "/booking/**",
+                                "/checkout/**",
+                                "/payment/**",
+                                "/order/**",
+                                "/testimonial/new"
+                        ).hasRole("USER")
 
-                                .requestMatchers(
-                                        "/blog/new",
-                                        "/my-blogs",
-                                        "/my-blogs/**",
-                                        "/blog/*/comment",
-                                        "/blog/*/reply",
-                                        "/profile/**",
-                                        "/cart/**",
-                                        "/booking/**",
-                                        "/checkout/**",
-                                        "/payment/**",
-                                        "/order/**",
-                                        "/testimonial/new"
-                                ).hasRole("USER")
-
-                        // ✅ Qalan hər şey login istəsin
                         .anyRequest().authenticated()
                 )
                 .formLogin(form -> form
@@ -109,6 +114,10 @@ public class SecurityConfig {
                         .defaultSuccessUrl("/", true)
                         .failureUrl("/auth/login?error=true")
                         .permitAll()
+                )
+                // ✅ 403 handling düzgün: status 403 saxlayır, view 403 açır
+                .exceptionHandling(ex -> ex
+                        .accessDeniedHandler(accessDeniedHandler)
                 )
                 .logout(logout -> logout
                         .logoutUrl("/auth/logout")

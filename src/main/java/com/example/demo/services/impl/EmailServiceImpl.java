@@ -32,7 +32,7 @@ public class EmailServiceImpl implements EmailService {
     private String fromEmail;
 
     @Value("${app.mail.from-name:CarBook}")
-    private String fromName; // ✅ BUNU ELAVE ETMIRDIN
+    private String fromName;
 
     @Value("${app.mail.admin}")
     private String adminEmail;
@@ -56,7 +56,7 @@ public class EmailServiceImpl implements EmailService {
             SimpleMailMessage mailMessage = new SimpleMailMessage();
             mailMessage.setTo(adminEmail);
 
-            // SimpleMailMessage-də "ad" stabil deyil, amma çox vaxt işləyir:
+            // SimpleMailMessage’de personal name bazen sorun çıkarır; ama çoğu zaman çalışır.
             mailMessage.setFrom(fromName + " <" + fromEmail + ">");
 
             mailMessage.setReplyTo(dto.getEmail());
@@ -68,9 +68,9 @@ public class EmailServiceImpl implements EmailService {
             );
 
             mailSender.send(mailMessage);
-            log.info("✅ Contact mail göndərildi");
+            log.info("✅ Contact mail sent -> {}", adminEmail);
         } catch (Exception e) {
-            log.error("❌ Contact mail göndərilmədi", e);
+            log.error("❌ Contact mail FAILED", e);
             throw new RuntimeException("Mail göndərilmədi");
         }
     }
@@ -79,19 +79,20 @@ public class EmailServiceImpl implements EmailService {
     @Override
     public void sendOtpMail(String toEmail, String subject, String text) {
         try {
-            SimpleMailMessage mail = new SimpleMailMessage();
-            mail.setTo(toEmail);
+            // OTP’yi de MIME ile atmak daha stabil (From name garantili)
+            MimeMessage mime = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(
+                    mime, MimeMessageHelper.MULTIPART_MODE_MIXED_RELATED, StandardCharsets.UTF_8.name()
+            );
+            helper.setTo(toEmail);
+            helper.setFrom(fromEmail, fromName);
+            helper.setSubject(subject);
+            helper.setText(text, false);
 
-            // SimpleMailMessage-də "ad" stabil deyil, amma çox vaxt işləyir:
-            mail.setFrom(fromName + " <" + fromEmail + ">");
-
-            mail.setSubject(subject);
-            mail.setText(text);
-
-            mailSender.send(mail);
-            log.info("✅ OTP mail göndərildi: {}", toEmail);
+            mailSender.send(mime);
+            log.info("✅ OTP mail sent -> {}", toEmail);
         } catch (Exception e) {
-            log.error("❌ OTP mail göndərilmədi", e);
+            log.error("❌ OTP mail FAILED -> {}", toEmail, e);
             throw new RuntimeException("OTP mail göndərilmədi");
         }
     }
@@ -207,7 +208,7 @@ public class EmailServiceImpl implements EmailService {
         sendHtml(adminEmail, subject, "mail/admin-new-paid-order", ctx);
     }
 
-    // ---------------- helper ----------------
+    // ---------------- helper (kritik) ----------------
     private void sendHtml(String to, String subject, String templateName, Context ctx) {
         try {
             String html = templateEngine.process(templateName, ctx);
@@ -220,14 +221,16 @@ public class EmailServiceImpl implements EmailService {
             );
 
             helper.setTo(to);
-            helper.setFrom(fromEmail, fromName); // ✅ CarBook adı
+            helper.setFrom(fromEmail, fromName);
             helper.setSubject(subject);
             helper.setText(html, true);
 
             mailSender.send(mime);
-            log.info("✅ HTML mail göndərildi: {} -> {}", templateName, to);
+
+            log.info("✅ HTML mail SENT. to={}, subject='{}', template={}", to, subject, templateName);
         } catch (Exception e) {
-            log.error("❌ HTML mail göndərilmədi: {}", templateName, e);
+            // BURASI ÖNEMLİ: artık neden gitmediğini göreceksin
+            log.error("❌ HTML mail FAILED. to={}, subject='{}', template={}", to, subject, templateName, e);
         }
     }
 }

@@ -11,10 +11,9 @@ public interface EmailService {
 
     void sendOtpMail(String toEmail, String subject, String text);
 
-    // ✅ Order & Payment mail-ləri
-    void sendOrderCreatedPending(Order order);                    // (1)
-    void sendPaymentSucceeded(Payment payment);                   // (2)
-    void sendPaymentFailed(Payment payment);                      // (3)
-    void sendOrderStatusChanged(Order order, OrderStatus oldSt);  // (4)
-    void notifyAdminNewPaidOrder(Payment payment);                // (7)
+    void sendOrderCreatedPending(Order order);
+    void sendPaymentSucceeded(Payment payment);
+    void sendPaymentFailed(Payment payment);
+    void sendOrderStatusChanged(Order order, OrderStatus oldSt);
+    void notifyAdminNewPaidOrder(Payment payment);
 }

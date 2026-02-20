@@ -9,6 +9,7 @@ import com.example.demo.services.CartService;
 import com.example.demo.services.EmailService;
 import com.example.demo.services.PaymentService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -19,14 +20,13 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class PaymentServiceImpl implements PaymentService {
 
     private final PaymentRepository paymentRepository;
     private final OrderRepository orderRepository;
     private final UserRepository userRepository;
     private final CartService cartService;
-
-    // ✅ NEW
     private final EmailService emailService;
 
     @Override
@@ -45,6 +45,7 @@ public class PaymentServiceImpl implements PaymentService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Bu order üçün payment mümkün deyil");
         }
 
+        // aynı order için PROCESSING varsa reuse
         var last = paymentRepository.findTopByOrder_IdOrderByIdDesc(order.getId()).orElse(null);
         if (last != null && last.getStatus() == PaymentStatus.PROCESSING) {
             return last;
@@ -59,7 +60,9 @@ public class PaymentServiceImpl implements PaymentService {
         p.setFailureReason(null);
         p.setCompletedAt(null);
 
-        return paymentRepository.save(p);
+        Payment saved = paymentRepository.save(p);
+        log.info("✅ Payment started. paymentId={}, orderId={}, user={}", saved.getId(), order.getId(), userEmail);
+        return saved;
     }
 
     @Override
@@ -67,17 +70,22 @@ public class PaymentServiceImpl implements PaymentService {
 
         Payment p = getPaymentForUser(userEmail, paymentId);
 
+        // zaten final ise dokunma
         if (p.getStatus() != PaymentStatus.PROCESSING) return p;
 
         String clean = dto.getCardNumber() == null ? "" : dto.getCardNumber().replace(" ", "").trim();
 
+        // 4000000000000002 -> fail, diğerleri -> success
         if ("4000000000000002".equals(clean)) {
             p.setFailureReason("WILL_FAIL");
         } else {
             p.setFailureReason(null);
         }
 
-        return paymentRepository.save(p);
+        Payment saved = paymentRepository.save(p);
+        log.info("✅ Payment confirm saved. paymentId={}, willFail={}", saved.getId(),
+                "WILL_FAIL".equalsIgnoreCase(saved.getFailureReason()));
+        return saved;
     }
 
     @Override
@@ -110,34 +118,52 @@ public class PaymentServiceImpl implements PaymentService {
         boolean success = !"WILL_FAIL".equalsIgnoreCase(p.getFailureReason());
 
         if (success) {
+            // 1) payment success
             p.setStatus(PaymentStatus.SUCCEEDED);
             p.setCompletedAt(LocalDateTime.now());
             paymentRepository.save(p);
 
+            // 2) order paid
             Order o = p.getOrder();
             o.setStatus(OrderStatus.PAID);
             orderRepository.save(o);
 
+            // 3) cart temizle
             cartService.clearCart(userEmail);
 
-            // ✅ (2) user mail + (7) admin notify
-            emailService.sendPaymentSucceeded(p);
-            emailService.notifyAdminNewPaidOrder(p);
+            // 4) mail tetikle
+            try {
+                emailService.sendPaymentSucceeded(p);
+                emailService.notifyAdminNewPaidOrder(p);
+            } catch (Exception ex) {
+                // EmailServiceImpl içinde zaten log var ama ekstra güven
+                log.error("❌ Mail trigger error (SUCCEEDED). paymentId={}, orderId={}", p.getId(), o.getId(), ex);
+            }
 
+            log.info("✅ Payment finalized SUCCEEDED. paymentId={}, orderId={}", p.getId(), o.getId());
             return p;
+
         } else {
+            // 1) payment failed
             p.setStatus(PaymentStatus.FAILED);
+            // burada gerçek sebebi yaz
             p.setFailureReason("Card declined");
             p.setCompletedAt(LocalDateTime.now());
             paymentRepository.save(p);
 
+            // 2) order payment_failed
             Order o = p.getOrder();
             o.setStatus(OrderStatus.PAYMENT_FAILED);
             orderRepository.save(o);
 
-            // ✅ (3) user mail
-            emailService.sendPaymentFailed(p);
+            // 3) mail tetikle
+            try {
+                emailService.sendPaymentFailed(p);
+            } catch (Exception ex) {
+                log.error("❌ Mail trigger error (FAILED). paymentId={}, orderId={}", p.getId(), o.getId(), ex);
+            }
 
+            log.info("✅ Payment finalized FAILED. paymentId={}, orderId={}", p.getId(), o.getId());
             return p;
         }
     }

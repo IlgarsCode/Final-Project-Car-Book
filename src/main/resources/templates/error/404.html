@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="az" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>404 — Tapılmadı</title>
+    <style>
+        :root{
+          --bg:#070A12;
+          --card: rgba(255,255,255,.07);
+          --stroke: rgba(255,255,255,.12);
+          --text:#eaf0ff;
+          --muted:#a2accb;
+          --a:#38bdf8; --b:#fb7185; --c:#a78bfa;
+          --shadow: 0 30px 90px rgba(0,0,0,.55);
+          --r:22px;
+        }
+        *{box-sizing:border-box}
+        body{
+          margin:0; min-height:100vh; display:grid; place-items:center; color:var(--text);
+          font-family: ui-sans-serif, system-ui, Segoe UI, Roboto, Arial;
+          background:
+            radial-gradient(1200px 700px at 10% 10%, rgba(56,189,248,.22), transparent 60%),
+            radial-gradient(900px 600px at 90% 30%, rgba(251,113,133,.18), transparent 55%),
+            radial-gradient(900px 600px at 70% 90%, rgba(167,139,250,.18), transparent 55%),
+            linear-gradient(180deg, #090c16, var(--bg));
+          overflow:hidden;
+        }
+        .wrap{width:min(980px, 92vw); display:grid; gap:14px}
+        .card{
+          border-radius:var(--r);
+          background:var(--card);
+          border:1px solid var(--stroke);
+          box-shadow:var(--shadow);
+          backdrop-filter: blur(16px);
+          overflow:hidden;
+        }
+        .top{
+          padding:26px 26px 0;
+          display:flex; justify-content:space-between; gap:16px; flex-wrap:wrap;
+          align-items:flex-end;
+        }
+        .tag{
+          padding:10px 14px; border-radius:999px;
+          background:rgba(0,0,0,.18);
+          border:1px solid rgba(255,255,255,.14);
+          color:var(--muted); width:fit-content;
+        }
+        .title{
+          padding:0 26px 22px;
+          display:grid; gap:10px;
+        }
+        h1{margin:0; font-size:clamp(30px,4vw,46px); letter-spacing:-.03em;}
+        p{margin:0; color:var(--muted); line-height:1.6; font-size:15px}
+        .hero{
+          display:grid; grid-template-columns: 1fr 1fr; gap:0;
+          border-top:1px solid rgba(255,255,255,.10);
+        }
+        .pane{padding:24px 26px;}
+        .pane + .pane{border-left:1px solid rgba(255,255,255,.10); background:rgba(0,0,0,.10)}
+        .code{
+          font-size: clamp(68px, 10vw, 132px);
+          font-weight: 900;
+          letter-spacing:-.08em;
+          margin:0;
+          background: linear-gradient(90deg, rgba(56,189,248,1), rgba(167,139,250,1), rgba(251,113,133,1));
+          -webkit-background-clip:text; background-clip:text; color:transparent;
+        }
+        .btns{display:flex; gap:10px; flex-wrap:wrap; margin-top:14px}
+        a.btn{
+          text-decoration:none; color:var(--text);
+          padding:12px 14px; border-radius:14px;
+          border:1px solid rgba(255,255,255,.14);
+          background: rgba(0,0,0,.20);
+          transition:.18s;
+        }
+        a.btn:hover{transform:translateY(-1px); border-color:rgba(255,255,255,.22)}
+        a.btn.primary{
+          background: linear-gradient(135deg, rgba(56,189,248,.9), rgba(167,139,250,.55));
+          border-color: rgba(56,189,248,.35);
+        }
+        .search{
+          display:flex; gap:10px; align-items:center;
+          padding:12px 14px;
+          border-radius:16px;
+          border:1px solid rgba(255,255,255,.14);
+          background: rgba(255,255,255,.04);
+        }
+        .search input{
+          width:100%; background:transparent; border:none; outline:none;
+          color:var(--text); font-size:14px;
+        }
+        .kbd{
+          padding:6px 10px; border-radius:10px; font-size:12px;
+          border:1px solid rgba(255,255,255,.16);
+          background: rgba(0,0,0,.24);
+          color:var(--muted);
+          white-space:nowrap;
+        }
+        @media (max-width: 860px){
+          .hero{grid-template-columns:1fr}
+          .pane + .pane{border-left:none; border-top:1px solid rgba(255,255,255,.10)}
+        }
+    </style>
+</head>
+<body>
+<main class="wrap">
+    <section class="card">
+        <div class="top">
+            <div class="tag">🧭 Naviqasiya xətası</div>
+            <div class="kbd">URL səhv ola bilər</div>
+        </div>
+
+        <div class="title">
+            <h1>Səhifə tapılmadı</h1>
+            <p>
+                Axtardığın səhifə silinmiş, adı dəyişmiş və ya müvəqqəti əlçatan olmaya bilər.
+            </p>
+        </div>
+
+        <div class="hero">
+            <div class="pane">
+                <p class="code">404</p>
+                <div class="btns">
+                    <a class="btn primary" th:href="@{/}">🏠 Ana səhifə</a>
+                    <a class="btn" th:href="@{/car}">🚗 Avtomobillər</a>
+                    <a class="btn" th:href="@{/contact}">💬 Dəstək</a>
+                </div>
+            </div>
+
+            <div class="pane">
+                <div class="tag" style="margin-bottom:12px;">Tez tapmaq üçün</div>
+                <div class="search">
+                    🔎
+                    <input id="q" placeholder="Məsələn: /dashboard/orders və ya /car" />
+                    <span class="kbd">Enter</span>
+                </div>
+                <p style="margin-top:10px;">
+                    İpucu: Axtardığın səhifənin URL-i yadında deyilsə, menyudan seç.
+                </p>
+            </div>
+        </div>
+    </section>
+</main>
+
+<script>
+    const input = document.getElementById('q');
+    input?.addEventListener('keydown', (e) => {
+      if(e.key === 'Enter'){
+        const v = (input.value || '').trim();
+        if(!v) return;
+        // sadə davranış: yazdığını route kimi açır
+        window.location.href = v.startsWith('/') ? v : '/' + v;
+      }
+    });
+</script>
+</body>
+</html>
