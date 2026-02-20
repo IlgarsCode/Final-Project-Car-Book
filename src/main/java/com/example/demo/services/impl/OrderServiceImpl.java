@@ -28,7 +28,6 @@ public class OrderServiceImpl implements OrderService {
     private final OrderRepository orderRepository;
     private final LocationRepository locationRepository;
 
-    // ✅ NEW
     private final EmailService emailService;
 
     @Override
@@ -66,6 +65,7 @@ public class OrderServiceImpl implements OrderService {
         order.setUser(user);
         order.setStatus(OrderStatus.PENDING);
 
+        // ✅ userOrderNo düzgün
         long nextUserNo = orderRepository.findMaxUserOrderNo(user.getId()) + 1;
         order.setUserOrderNo(nextUserNo);
 
@@ -131,13 +131,10 @@ public class OrderServiceImpl implements OrderService {
 
         order.setTotalAmount(total);
 
-        // ✅ save
         Order saved = orderRepository.save(order);
 
-        // ✅ (1) Order yaradıldı maili (PENDING)
         emailService.sendOrderCreatedPending(saved);
 
-        // cart burada silinmir — payment success olanda təmizlənir
         return saved;
     }
 
@@ -149,11 +146,13 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public Order getMyOrderDetail(String email, Long orderId) {
+    public Order getMyOrderDetail(String email, Long userOrderNo) {
         var user = userRepository.findByEmailIgnoreCase(email)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User tapılmadı"));
-        return orderRepository.findByIdAndUser_Id(orderId, user.getId())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Order tapılmadı"));
+
+        // ✅ əsas düzəliş: global id yox, userOrderNo
+        return orderRepository.findWithItemsByUser_IdAndUserOrderNo(user.getId(), userOrderNo)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Sifariş tapılmadı"));
     }
 
     private int calculateRentalHours(CheckoutCreateDto dto) {

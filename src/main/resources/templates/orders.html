@@ -40,7 +40,7 @@
                 <table class="table">
                     <thead class="thead-primary">
                     <tr class="text-center">
-                        <th>ID</th>
+                        <th>Sifariş №</th>
                         <th>Status</th>
                         <th>Tarixlər</th>
                         <th>Cəmi</th>
@@ -50,7 +50,10 @@
                     <tbody>
 
                     <tr th:each="o : ${orders}" class="text-center">
-                        <td th:text="${o.id}">1</td>
+                        <!-- ✅ ƏVVƏL: o.id idi (global) — İNDİ: userOrderNo -->
+                        <td>
+                            <span th:text="${o.userOrderNo}">1</span>
+                        </td>
 
                         <td>
                             <span th:text="${o.status}">PENDING</span>
@@ -82,9 +85,13 @@
                         <td>$<span th:text="${o.totalAmount}">0</span></td>
 
                         <td style="display:flex; gap:8px; justify-content:center; flex-wrap:wrap;">
+                            <!-- ✅ ƏVVƏL: id=${o.id} idi (global) — İNDİ: userOrderNo -->
                             <a class="btn btn-sm btn-primary"
-                               th:href="@{/sifarislerim/{id}(id=${o.id})}">Detallar</a>
+                               th:href="@{/sifarislerim/{no}(no=${o.userOrderNo})}">
+                                Detallar
+                            </a>
 
+                            <!-- ✅ Payment START mütləq global order id ilə getməlidir -->
                             <a class="btn btn-sm btn-success"
                                th:if="${o.status != null and (o.status.name() == 'PENDING' or o.status.name() == 'PAYMENT_FAILED')}"
                                th:href="@{/payment/start/{id}(id=${o.id})}">

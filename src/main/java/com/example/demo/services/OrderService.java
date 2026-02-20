@@ -6,8 +6,11 @@ import com.example.demo.model.Order;
 import java.util.List;
 
 public interface OrderService {
+
     Order checkout(String email, CheckoutCreateDto dto);
 
     List<Order> getMyOrders(String email);
-    Order getMyOrderDetail(String email, Long orderId);
+
+    // ✅ artıq orderId yox, userOrderNo
+    Order getMyOrderDetail(String email, Long userOrderNo);
 }

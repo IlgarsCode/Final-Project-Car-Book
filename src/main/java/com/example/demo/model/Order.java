@@ -11,7 +11,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Table(name = "orders")
+@Table(
+        name = "orders",
+        uniqueConstraints = {
+                @UniqueConstraint(name = "uk_orders_user_order_no", columnNames = {"user_id", "user_order_no"})
+        }
+)
 @Getter
 @Setter
 public class Order {
