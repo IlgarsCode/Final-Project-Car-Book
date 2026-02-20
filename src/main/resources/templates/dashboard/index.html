@@ -5,39 +5,52 @@
       layout:decorate="~{dashboard/layout}">
 
 <head>
-    <title>SB Admin 2 - Dashboard</title>
+    <title>Dashboard</title>
+
+    <!-- ✅ chart container fix + daha yaxşı görünüş -->
+    <th:block layout:fragment="css">
+        <style>
+            .chart-area {
+                position: relative;
+                height: 340px;   /* buranı 360 da edə bilərsən */
+                width: 100%;
+            }
+            .chart-pie {
+                position: relative;
+                height: 340px;
+                width: 100%;
+            }
+
+            /* canvas mütləq blok olsun */
+            .chart-area canvas,
+            .chart-pie canvas {
+                display: block;
+                width: 100% !important;
+                height: 100% !important;
+            }
+
+            /* kartların içi daha səliqəli */
+            .card-header {
+                background: #fff;
+            }
+        </style>
+    </th:block>
 </head>
 
 <body>
 
 <div layout:fragment="content">
 
-    <!-- Burada template-in öz dashboard contenti qalır -->
     <div class="d-sm-flex align-items-center justify-content-between mb-4">
         <h1 class="h3 mb-0 text-gray-800">Dashboard</h1>
-        <a href="#" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm">
-            <i class="fas fa-download fa-sm text-white-50"></i> Generate Report
+        <a class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"
+           th:href="@{/dashboard/orders}">
+            <i class="fas fa-shopping-cart fa-sm text-white-50"></i> Orders Panel
         </a>
     </div>
 
+    <!-- KPI ROW -->
     <div class="row">
-        <div class="col-xl-3 col-md-6 mb-4">
-            <div class="card border-left-primary shadow h-100 py-2">
-                <div class="card-body">
-                    <div class="row no-gutters align-items-center">
-                        <div class="col mr-2">
-                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
-                                Earnings (Monthly)
-                            </div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800">$40,000</div>
-                        </div>
-                        <div class="col-auto">
-                            <i class="fas fa-calendar fa-2x text-gray-300"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
 
         <div class="col-xl-3 col-md-6 mb-4">
             <div class="card border-left-success shadow h-100 py-2">
@@ -45,9 +58,11 @@
                     <div class="row no-gutters align-items-center">
                         <div class="col mr-2">
                             <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
-                                Earnings (Annual)
+                                Today Revenue
                             </div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800">$215,000</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                $<span th:text="${stats != null ? stats.todayRevenue : 0}">0</span>
+                            </div>
                         </div>
                         <div class="col-auto">
                             <i class="fas fa-dollar-sign fa-2x text-gray-300"></i>
@@ -58,26 +73,19 @@
         </div>
 
         <div class="col-xl-3 col-md-6 mb-4">
-            <div class="card border-left-info shadow h-100 py-2">
+            <div class="card border-left-primary shadow h-100 py-2">
                 <div class="card-body">
                     <div class="row no-gutters align-items-center">
                         <div class="col mr-2">
-                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">Tasks</div>
-                            <div class="row no-gutters align-items-center">
-                                <div class="col-auto">
-                                    <div class="h5 mb-0 mr-3 font-weight-bold text-gray-800">50%</div>
-                                </div>
-                                <div class="col">
-                                    <div class="progress progress-sm mr-2">
-                                        <div class="progress-bar bg-info" role="progressbar"
-                                             style="width: 50%" aria-valuenow="50" aria-valuemin="0"
-                                             aria-valuemax="100"></div>
-                                    </div>
-                                </div>
+                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                Month Revenue
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                $<span th:text="${stats != null ? stats.monthRevenue : 0}">0</span>
                             </div>
                         </div>
                         <div class="col-auto">
-                            <i class="fas fa-clipboard-list fa-2x text-gray-300"></i>
+                            <i class="fas fa-calendar fa-2x text-gray-300"></i>
                         </div>
                     </div>
                 </div>
@@ -85,47 +93,70 @@
         </div>
 
         <div class="col-xl-3 col-md-6 mb-4">
-            <div class="card border-left-warning shadow h-100 py-2">
-                <div class="card-body">
-                    <div class="row no-gutters align-items-center">
-                        <div class="col mr-2">
-                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
-                                Pending Requests
+            <a class="text-decoration-none"
+               th:href="@{/dashboard/orders(status=${T(com.example.demo.model.OrderStatus).PAID})}">
+                <div class="card border-left-info shadow h-100 py-2">
+                    <div class="card-body">
+                        <div class="row no-gutters align-items-center">
+                            <div class="col mr-2">
+                                <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                                    Approval Waiting (PAID)
+                                </div>
+                                <div class="h5 mb-0 font-weight-bold text-gray-800"
+                                     th:text="${stats != null ? stats.approvalWaiting : 0}">
+                                    0
+                                </div>
                             </div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800">18</div>
-                        </div>
-                        <div class="col-auto">
-                            <i class="fas fa-comments fa-2x text-gray-300"></i>
+                            <div class="col-auto">
+                                <i class="fas fa-user-check fa-2x text-gray-300"></i>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
+            </a>
         </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <a class="text-decoration-none"
+               th:href="@{/dashboard/orders(status=${T(com.example.demo.model.OrderStatus).PENDING})}">
+                <div class="card border-left-warning shadow h-100 py-2">
+                    <div class="card-body">
+                        <div class="row no-gutters align-items-center">
+                            <div class="col mr-2">
+                                <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                                    Pending Orders
+                                </div>
+                                <div class="h5 mb-0 font-weight-bold text-gray-800"
+                                     th:text="${stats != null ? stats.pendingOrders : 0}">
+                                    0
+                                </div>
+                                <div class="text-muted small mt-1">
+                                    Failed:
+                                    <b th:text="${stats != null ? stats.paymentFailedOrders : 0}">0</b>
+                                </div>
+                            </div>
+                            <div class="col-auto">
+                                <i class="fas fa-hourglass-half fa-2x text-gray-300"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </a>
+        </div>
+
     </div>
 
+    <!-- CHARTS ROW -->
     <div class="row">
+
         <div class="col-xl-8 col-lg-7">
             <div class="card shadow mb-4">
                 <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                    <h6 class="m-0 font-weight-bold text-primary">Earnings Overview</h6>
-                    <div class="dropdown no-arrow">
-                        <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink"
-                           data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
-                        </a>
-                        <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in"
-                             aria-labelledby="dropdownMenuLink">
-                            <div class="dropdown-header">Dropdown Header:</div>
-                            <a class="dropdown-item" href="#">Action</a>
-                            <a class="dropdown-item" href="#">Another action</a>
-                            <div class="dropdown-divider"></div>
-                            <a class="dropdown-item" href="#">Something else here</a>
-                        </div>
-                    </div>
+                    <h6 class="m-0 font-weight-bold text-primary">Revenue (Last 7 Days)</h6>
                 </div>
                 <div class="card-body">
                     <div class="chart-area">
-                        <canvas id="myAreaChart"></canvas>
+                        <canvas id="rev7Chart"></canvas>
                     </div>
                 </div>
             </div>
@@ -134,42 +165,207 @@
         <div class="col-xl-4 col-lg-5">
             <div class="card shadow mb-4">
                 <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                    <h6 class="m-0 font-weight-bold text-primary">Revenue Sources</h6>
-                    <div class="dropdown no-arrow">
-                        <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink2"
-                           data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
-                        </a>
-                        <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in"
-                             aria-labelledby="dropdownMenuLink2">
-                            <div class="dropdown-header">Dropdown Header:</div>
-                            <a class="dropdown-item" href="#">Action</a>
-                            <a class="dropdown-item" href="#">Another action</a>
-                            <div class="dropdown-divider"></div>
-                            <a class="dropdown-item" href="#">Something else here</a>
-                        </div>
-                    </div>
+                    <h6 class="m-0 font-weight-bold text-primary">Orders by Status</h6>
                 </div>
                 <div class="card-body">
-                    <div class="chart-pie pt-4 pb-2">
-                        <canvas id="myPieChart"></canvas>
+                    <div class="chart-pie pt-2 pb-2">
+                        <canvas id="statusPie"></canvas>
                     </div>
-                    <div class="mt-4 text-center small">
-                        <span class="mr-2"><i class="fas fa-circle text-primary"></i> Direct</span>
-                        <span class="mr-2"><i class="fas fa-circle text-success"></i> Social</span>
-                        <span class="mr-2"><i class="fas fa-circle text-info"></i> Referral</span>
+                    <div class="mt-3 text-center small text-muted">
+                        Chart shows current distribution
                     </div>
                 </div>
             </div>
         </div>
+
+    </div>
+
+    <!-- LATEST TABLES -->
+    <div class="row">
+
+        <div class="col-lg-7 mb-4">
+            <div class="card shadow">
+                <div class="card-header py-3 d-flex justify-content-between align-items-center">
+                    <h6 class="m-0 font-weight-bold text-primary">Latest Orders</h6>
+                    <a class="btn btn-sm btn-outline-primary" th:href="@{/dashboard/orders}">View all</a>
+                </div>
+                <div class="card-body table-responsive">
+                    <div class="text-muted" th:if="${latestOrders == null or #lists.isEmpty(latestOrders)}">
+                        No orders yet.
+                    </div>
+
+                    <table class="table table-sm table-hover" th:if="${latestOrders != null and !#lists.isEmpty(latestOrders)}">
+                        <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>User</th>
+                            <th>Status</th>
+                            <th>Total</th>
+                            <th>Created</th>
+                            <th></th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="o : ${latestOrders}">
+                            <td th:text="${o.id}">1</td>
+                            <td th:text="${o.user != null ? o.user.email : '-'}">mail</td>
+                            <td><span class="badge badge-secondary" th:text="${o.status}">PENDING</span></td>
+                            <td>$<span th:text="${o.totalAmount}">0</span></td>
+                            <td th:text="${o.createdAt != null ? #temporals.format(o.createdAt,'yyyy-MM-dd HH:mm') : '-'}">-</td>
+                            <td>
+                                <a class="btn btn-sm btn-info" th:href="@{/dashboard/orders/{id}(id=${o.id})}">Detail</a>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-5 mb-4">
+            <div class="card shadow">
+                <div class="card-header py-3 d-flex justify-content-between align-items-center">
+                    <h6 class="m-0 font-weight-bold text-primary">Latest Paid Payments</h6>
+                </div>
+                <div class="card-body table-responsive">
+                    <div class="text-muted" th:if="${latestPayments == null or #lists.isEmpty(latestPayments)}">
+                        No paid payments yet.
+                    </div>
+
+                    <table class="table table-sm table-hover" th:if="${latestPayments != null and !#lists.isEmpty(latestPayments)}">
+                        <thead>
+                        <tr>
+                            <th>Pay ID</th>
+                            <th>Order</th>
+                            <th>Amount</th>
+                            <th>Done</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="p : ${latestPayments}">
+                            <td th:text="${p.id}">1</td>
+                            <td>
+                                <a th:href="@{/dashboard/orders/{id}(id=${p.order != null ? p.order.id : 0})}">
+                                    #<span th:text="${p.order != null ? p.order.id : '-'}">-</span>
+                                </a>
+                            </td>
+                            <td>
+                                <b>$<span th:text="${p.amount}">0</span></b>
+                                <span class="text-muted" th:text="${p.currency}">USD</span>
+                            </td>
+                            <td th:text="${p.completedAt != null ? #temporals.format(p.completedAt,'MM-dd HH:mm') : '-'}">-</td>
+                        </tr>
+                        </tbody>
+                    </table>
+
+                </div>
+            </div>
+        </div>
+
     </div>
 
 </div>
 
 <th:block layout:fragment="js">
     <script th:src="@{/admin/vendor/chart.js/Chart.min.js}"></script>
-    <script th:src="@{/admin/js/demo/chart-area-demo.js}"></script>
-    <script th:src="@{/admin/js/demo/chart-pie-demo.js}"></script>
+
+    <script th:inline="javascript">
+        const revLabels = /*[[${stats != null ? stats.last7DaysLabels : {}}]]*/ [];
+        const revValues = /*[[${stats != null ? stats.last7DaysRevenue : {}}]]*/ [];
+
+        const statusLabels = /*[[${stats != null ? stats.statusLabels : {}}]]*/ [];
+        const statusCounts = /*[[${stats != null ? stats.statusCounts : {}}]]*/ [];
+
+        let revChart = null;
+        let pieChart = null;
+
+        function buildCharts() {
+            const c1 = document.getElementById('rev7Chart');
+            const c2 = document.getElementById('statusPie');
+
+            if (revChart) { revChart.destroy(); revChart = null; }
+            if (pieChart) { pieChart.destroy(); pieChart = null; }
+
+            if (c1) {
+                revChart = new Chart(c1, {
+                    type: 'line',
+                    data: {
+                        labels: revLabels,
+                        datasets: [{
+                            label: 'Revenue',
+                            data: revValues,
+                            fill: true,
+                            tension: 0.35,
+                            borderWidth: 2,
+                            pointRadius: 3,
+                            pointHoverRadius: 6,
+                            backgroundColor: 'rgba(78, 115, 223, 0.12)',
+                            borderColor: 'rgba(78, 115, 223, 1)',
+                            pointBackgroundColor: 'rgba(78, 115, 223, 1)'
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { legend: { display: true } },
+                        scales: { y: { beginAtZero: true } }
+                    }
+                });
+            }
+
+            if (c2) {
+                pieChart = new Chart(c2, {
+                    type: 'doughnut',
+                    data: {
+                        labels: statusLabels,
+                        datasets: [{
+                            data: statusCounts,
+                            borderWidth: 2,
+                            hoverOffset: 10,
+                            backgroundColor: [
+                                'rgba(28, 200, 138, 0.9)',
+                                'rgba(78, 115, 223, 0.9)',
+                                'rgba(246, 194, 62, 0.9)',
+                                'rgba(231, 74, 59, 0.9)',
+                                'rgba(54, 185, 204, 0.9)'
+                            ]
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        cutout: '65%',
+                        plugins: { legend: { position: 'top' } }
+                    }
+                });
+            }
+
+            // ✅ hover gözləmədən render et
+            setTimeout(() => {
+                window.dispatchEvent(new Event('resize'));
+                if (revChart) revChart.resize();
+                if (pieChart) pieChart.resize();
+            }, 150);
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            // SB Admin bəzən ölçünü gec verir — buna görə azca gec başlat
+            setTimeout(buildCharts, 200);
+        });
+
+        // Sidebar toggle zamanı chart ölçüləri pozulur, yenilə
+        document.addEventListener('click', function (e) {
+            const id = e.target && e.target.id ? e.target.id : '';
+            if (id === 'sidebarToggle' || id === 'sidebarToggleTop') {
+                setTimeout(() => {
+                    window.dispatchEvent(new Event('resize'));
+                    if (revChart) revChart.resize();
+                    if (pieChart) pieChart.resize();
+                }, 250);
+            }
+        });
+    </script>
 </th:block>
 
 </body>

@@ -2,6 +2,7 @@ package com.example.demo.repository;
 
 import com.example.demo.model.Order;
 import com.example.demo.model.OrderStatus;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
@@ -9,6 +10,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -23,8 +25,6 @@ public interface OrderRepository extends JpaRepository<Order, Long>, JpaSpecific
     @Query("select coalesce(max(o.userOrderNo), 0) from Order o where o.user.id = :userId")
     long findMaxUserOrderNo(@Param("userId") Long userId);
 
-    // ✅ pricing + availability üçün: bu tarix intervalında DOLU olan carId-lər
-    // Overlap qaydası: o.pickupDate <= dropoff AND o.dropoffDate >= pickup
     @Query("""
         select distinct oi.car.id
         from OrderItem oi
@@ -40,4 +40,35 @@ public interface OrderRepository extends JpaRepository<Order, Long>, JpaSpecific
             @Param("dropoffDate") LocalDate dropoffDate,
             @Param("statuses") List<OrderStatus> statuses
     );
+
+    // ✅ KPI
+    long countByStatus(OrderStatus status);
+
+    @Query("""
+        select o.status as status, count(o) as cnt
+        from Order o
+        group by o.status
+    """)
+    List<StatusCountView> countByStatusGroup();
+
+    interface StatusCountView {
+        OrderStatus getStatus();
+        long getCnt();
+    }
+
+    @Query("""
+        select o
+        from Order o
+        order by o.createdAt desc
+    """)
+    List<Order> findLatest(Pageable pageable);
+
+    @Query("""
+        select count(o)
+        from Order o
+        where o.status = :status and o.createdAt between :from and :to
+    """)
+    long countByStatusBetween(@Param("status") OrderStatus status,
+                              @Param("from") LocalDateTime from,
+                              @Param("to") LocalDateTime to);
 }
