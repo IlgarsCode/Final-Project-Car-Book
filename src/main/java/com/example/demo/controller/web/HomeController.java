@@ -1,9 +1,11 @@
 package com.example.demo.controller.web;
 
 import com.example.demo.dto.booking.BookingSearchDto;
+import com.example.demo.dto.checkout.TripContext;
 import com.example.demo.dto.enums.BannerType;
 import com.example.demo.model.About;
 import com.example.demo.services.*;
+import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
@@ -24,7 +26,6 @@ public class HomeController {
     private final BlogService blogService;
     private final CarService carService;
     private final LocationService locationService;
-
     private final HomeStatsService homeStatsService;
 
     @GetMapping("/")
@@ -48,23 +49,33 @@ public class HomeController {
         return "index";
     }
 
-    // ✅ ƏVVƏL: /search
-    // ✅ İNDİ: /axtaris
+    // ✅ /axtaris
     @PostMapping("/axtaris")
     public String axtaris(@Valid @ModelAttribute("bookingForm") BookingSearchDto form,
                           BindingResult br,
-                          Model model) {
+                          Model model,
+                          HttpSession session) {
 
         if (br.hasErrors()) {
             model.addAttribute("locations", locationService.getActiveLocations());
             return "index";
         }
 
-        // ✅ ƏVVƏL: /pricing?pickupLoc=...
-        // ✅ İNDİ: /qiymetler?goturmeMenteqesi=...
-        return "redirect:/qiymetler?goturmeMenteqesi=" + form.getPickupLocationId()
-                + "&tehvilMenteqesi=" + form.getDropoffLocationId()
-                + "&goturmeTarixi=" + form.getPickupDate()
-                + "&tehvilTarixi=" + form.getDropoffDate();
+        // ✅ 1) TRIP_CTX-ni session-a yaz
+        TripContext ctx = (TripContext) session.getAttribute("TRIP_CTX");
+        if (ctx == null) ctx = new TripContext();
+
+        ctx.setPickupLoc(form.getPickupLocationId());
+        ctx.setDropoffLoc(form.getDropoffLocationId());
+        ctx.setPickupDate(form.getPickupDate());
+        ctx.setDropoffDate(form.getDropoffDate());
+
+        session.setAttribute("TRIP_CTX", ctx);
+
+        // ✅ 2) PricingController-in gözlədiyi query adları ilə redirect et
+        return "redirect:/qiymetler?pickupLoc=" + form.getPickupLocationId()
+                + "&dropoffLoc=" + form.getDropoffLocationId()
+                + "&pickupDate=" + form.getPickupDate()
+                + "&dropoffDate=" + form.getDropoffDate();
     }
 }
