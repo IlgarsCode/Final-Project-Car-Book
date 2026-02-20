@@ -6,7 +6,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>Maşınlar</title>
+    <title>Avtomobillər</title>
 
     <style>
         /* --- Cars filter bar (below banner, colorful but clean) --- */
@@ -215,10 +215,10 @@
                         <span class="mr-2">
                             <a th:href="@{/}">Ana səhifə <i class="ion-ios-arrow-forward"></i></a>
                         </span>
-                        <span>Maşınlar <i class="ion-ios-arrow-forward"></i></span>
+                        <span>Avtomobillər <i class="ion-ios-arrow-forward"></i></span>
                     </p>
 
-                    <h1 class="mb-3 bread" th:text="${banner.title}">Maşınlar</h1>
+                    <h1 class="mb-3 bread" th:text="${banner.title}">Avtomobillər</h1>
                     <p th:text="${banner.description}"></p>
 
                     <a th:if="${banner.buttonText != null and banner.buttonUrl != null}"
@@ -241,7 +241,7 @@
                         <div>
                             <h4 class="cars-filter-title">
                                 <span class="chip">⚡</span>
-                                Maşınları filtrlə
+                                Avtomobilləri filtrlə
                             </h4>
                             <p class="cars-filter-sub">Kateqoriya və seqment seç — nəticələr avtomatik daralır.</p>
                         </div>
@@ -256,7 +256,7 @@
                         </div>
                     </div>
 
-                    <form class="cars-filter-form" th:action="@{/masinlar}" method="get">
+                    <form class="cars-filter-form" th:action="@{/Avtomobiller}" method="get">
                         <div class="cars-filter-group">
                             <label class="cars-filter-label">Kateqoriya</label>
                             <select name="category" class="cars-filter-select">
@@ -286,9 +286,9 @@
                         <div class="cars-filter-actions">
                             <button class="cars-filter-btn btn-primary" type="submit">Filtrlə</button>
 
-                            <!-- ✅ reset: /masinlar -->
+                            <!-- ✅ reset: /Avtomobiller -->
                             <a class="cars-filter-btn btn-outline"
-                               th:href="@{/masinlar}"
+                               th:href="@{/Avtomobiller}"
                                th:if="${(selectedCategory != null and selectedCategory != '') or (selectedSegment != null and selectedSegment != '')}">
                                 Sıfırla
                             </a>
@@ -359,8 +359,8 @@
                                     <button type="submit" class="btn btn-primary py-2 px-3">İndi bron et</button>
                                 </form>
 
-                                <!-- ✅ detail: /masinlar/{slug} -->
-                                <a th:href="@{'/masinlar/' + ${car.slug}}"
+                                <!-- ✅ detail: /Avtomobiller/{slug} -->
+                                <a th:href="@{'/Avtomobiller/' + ${car.slug}}"
                                    class="btn btn-secondary py-2 px-3">Ətraflı</a>
 
                             </div>
@@ -370,7 +370,7 @@
                 </div>
 
                 <div class="col-12" th:if="${cars == null or #lists.isEmpty(cars)}">
-                    <div class="alert alert-info">Hazırda maşın yoxdur.</div>
+                    <div class="alert alert-info">Hazırda Avtomobil yoxdur.</div>
                 </div>
 
             </div>

@@ -312,7 +312,7 @@
                         <div th:if="${cart != null and cart.items != null and !cart.items.empty}">
                             <div th:each="it : ${cart.items}" class="d-flex justify-content-between border-bottom py-2">
                                 <div>
-                                    <div class="font-weight-bold" th:text="${it.car != null ? it.car.title : 'Maşın'}">Maşın</div>
+                                    <div class="font-weight-bold" th:text="${it.car != null ? it.car.title : 'Avtomobil'}">Avtomobil</div>
                                     <small class="text-muted">
                                         <span th:text="${it.rateType}">DAILY</span>
                                         —
@@ -473,7 +473,7 @@
                         return { ok:false, message: (data && data.message) ? data.message : 'Uyğunluq yoxlanmadı.' };
                     }
                     if (!(data && data.available)){
-                        return { ok:false, message: 'Səbətdəki maşınlardan biri seçilən tarixdə icarədədir.' };
+                        return { ok:false, message: 'Səbətdəki Avtomobillardan biri seçilən tarixdə icarədədir.' };
                     }
                 }
                 return { ok:true };

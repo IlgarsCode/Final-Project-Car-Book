@@ -7,26 +7,19 @@
     <meta charset="UTF-8">
     <title>Ana səhifə</title>
 
-    <!-- ✅ FIX: Select option text görünmürdü (ağ rəng / ağ fon problemi) -->
     <style>
         .request-form .form-control {
             color: rgba(255,255,255,.9) !important;
         }
-
-        /* ✅ Select bağlı olanda (mavi fonda) yazı ağ qalsın */
         .request-form select.form-control {
             color: rgba(255,255,255,.95) !important;
             background-color: rgba(255,255,255,.08) !important;
             border: 1px solid rgba(255,255,255,.25) !important;
         }
-
-        /* ✅ Dropdown açılan hissədə option-lar ağ fonda qara görünsün */
         .request-form select.form-control option {
             color: #111 !important;
             background: #fff !important;
         }
-
-        /* Placeholder option (Select location...) */
         .request-form select.form-control option[disabled] {
             color: #777 !important;
         }
@@ -35,7 +28,6 @@
 <body>
 <div layout:fragment="content">
 
-    <!-- HERO -->
     <div class="hero-wrap ftco-degree-bg"
          th:style="'background-image: url(' + ${banner.photoUrl} + ')'"
          data-stellar-background-ratio="0.5">
@@ -48,7 +40,6 @@
                     <div class="text w-100 text-center mb-md-5 pb-md-5">
 
                         <h1 class="mb-4" th:text="${banner.title}">Banner başlığı</h1>
-
                         <p style="font-size: 18px;" th:text="${banner.description}">Banner təsviri</p>
 
                         <a th:if="${banner.videoUrl != null}"
@@ -70,23 +61,22 @@
         </div>
     </div>
 
-    <!-- FORM + INFO -->
     <section class="ftco-section ftco-no-pt bg-light">
         <div class="container">
             <div class="row no-gutters">
                 <div class="col-md-12 featured-top">
                     <div class="row no-gutters">
 
-                        <!-- LEFT: SEARCH FORM -->
                         <div class="col-md-4 d-flex align-items-center">
-                            <form th:action="@{/search}"
+                            <!-- ✅ ƏVVƏL: /search -->
+                            <!-- ✅ İNDİ: /axtaris -->
+                            <form th:action="@{/axtaris}"
                                   th:object="${bookingForm}"
                                   method="post"
                                   class="request-form ftco-animate bg-primary">
 
                                 <h2>Səfərini planlaşdır</h2>
 
-                                <!-- Pick-up location -->
                                 <div class="form-group">
                                     <label class="label">Götürmə məntəqəsi</label>
                                     <select class="form-control" th:field="*{pickupLocationId}">
@@ -101,7 +91,6 @@
                                            th:errors="*{pickupLocationId}"></small>
                                 </div>
 
-                                <!-- Drop-off location -->
                                 <div class="form-group">
                                     <label class="label">Təhvil məntəqəsi</label>
                                     <select class="form-control" th:field="*{dropoffLocationId}">
@@ -116,7 +105,6 @@
                                            th:errors="*{dropoffLocationId}"></small>
                                 </div>
 
-                                <!-- Dates -->
                                 <div class="d-flex">
                                     <div class="form-group mr-2" style="flex:1;">
                                         <label class="label">Götürmə tarixi</label>
@@ -143,18 +131,15 @@
                                     </div>
                                 </div>
 
-                                <!-- time (optional) -->
                                 <div class="form-group">
                                     <label class="label">Götürmə saatı (ixtiyari)</label>
                                     <input type="time" class="form-control" name="pickupTime" placeholder="Saat">
                                 </div>
 
-                                <!-- Submit -->
                                 <div class="form-group">
                                     <input type="submit" value="İndi avtomobil icarə et" class="btn btn-secondary py-3 px-4">
                                 </div>
 
-                                <!-- global errors -->
                                 <div class="text-warning" th:if="${#fields.hasGlobalErrors()}">
                                     <div th:each="e : ${#fields.globalErrors()}" th:text="${e}"></div>
                                 </div>
@@ -162,7 +147,6 @@
                             </form>
                         </div>
 
-                        <!-- RIGHT: INFO -->
                         <div class="col-md-8 d-flex align-items-center">
                             <div class="services-wrap rounded-right w-100">
                                 <h3 class="heading-section mb-4">İdeal avtomobili icarəyə götürməyin daha rahat yolu</h3>
@@ -203,17 +187,18 @@
                                 </div>
 
                                 <p>
-                                    <a th:href="@{/car}" class="btn btn-primary py-3 px-4">
+                                    <!-- ✅ Əgər CarController də AZ olacaqsa: /avtomobiller -->
+                                    <a th:href="@{/Avtomobiller}" class="btn btn-primary py-3 px-4">
                                         Öz ideal avtomobilini seç
                                     </a>
                                 </p>
                             </div>
                         </div>
 
-                    </div><!-- /row no-gutters -->
-                </div><!-- /featured-top -->
-            </div><!-- /row -->
-        </div><!-- /container -->
+                    </div>
+                </div>
+            </div>
+        </div>
     </section>
 
     <script>
@@ -277,7 +262,9 @@
 
                                 <div class="text">
                                     <h2 class="mb-0">
-                                        <a th:href="@{'/car/' + ${rc.slug}}"
+                                        <!-- ✅ ƏVVƏL: /car/{slug} -->
+                                        <!-- ✅ İNDİ: /Avtomobiller/{slug} -->
+                                        <a th:href="@{'/Avtomobiller/' + ${rc.slug}}"
                                            th:text="${rc.title}">Maşın</a>
                                     </h2>
 
@@ -289,9 +276,11 @@
                                     </div>
 
                                     <div class="d-flex mb-0 d-block">
-                                        <form th:action="@{/cart/add}" method="post" class="mr-1" style="margin:0;">
+
+                                        <!-- ✅ ƏVVƏL: /cart/add -->
+                                        <!-- ✅ İNDİ: /sebet/elave-et -->
+                                        <form th:action="@{/sebet/elave-et}" method="post" class="mr-1" style="margin:0;">
                                             <input type="hidden" name="carId" th:value="${rc.id}">
-                                            <!-- ✅ index-də rate seçimi yoxdur -> sabit DAILY -->
                                             <input type="hidden" name="rateType" value="DAILY">
                                             <input type="hidden" name="unitCount" value="1">
 
@@ -300,7 +289,9 @@
                                             </button>
                                         </form>
 
-                                        <a th:href="@{'/car/' + ${rc.slug}}"
+                                        <!-- ✅ ƏVVƏL: /car/{slug} -->
+                                        <!-- ✅ İNDİ: /Avtomobiller/{slug} -->
+                                        <a th:href="@{'/Avtomobiller/' + ${rc.slug}}"
                                            class="btn btn-secondary py-2 ml-1">
                                             Ətraflı
                                         </a>
@@ -319,47 +310,79 @@
     </section>
 
 
-    <!-- ===== ABOUT CONTENT ===== -->
-    <section class="ftco-section ftco-about">
+    <section class="ftco-section ftco-no-pt bg-light">
         <div class="container">
-            <div class="row no-gutters align-items-center">
 
-                <!-- IMAGE (TEMPLATE-DƏKİ KİMİ ÖLÇÜ) -->
-                <div class="col-md-6 p-md-5 img img-2 d-flex align-items-stretch"
-                     th:style="
-                        'background-image: url(' + ${about.imageUrl} + ');
-                         min-height: 600px;
-                         background-size: cover;
-                         background-position: center;
-                         background-repeat: no-repeat;'">
+            <div class="row justify-content-center">
+                <div class="col-md-12 heading-section text-center ftco-animate mb-5">
+                    <span class="subheading">Təklif etdiklərimiz</span>
+                    <h2 class="mb-2">Seçilmiş avtomobillər</h2>
                 </div>
+            </div>
 
-                <!-- TEXT -->
-                <div class="col-md-6 wrap-about ftco-animate">
-                    <div class="heading-section heading-section-white pl-md-5">
+            <!-- boşdursa -->
+            <div class="alert alert-info text-center"
+                 th:if="${relatedCars == null or #lists.isEmpty(relatedCars)}">
+                Hal-hazırda maşın yoxdur.
+            </div>
 
-                        <span class="subheading" th:text="${about.pageTitle}">
-                            Haqqımızda
-                        </span>
+            <div class="row" th:if="${relatedCars != null and !#lists.isEmpty(relatedCars)}">
+                <div class="col-md-12">
+                    <div class="carousel-car owl-carousel">
 
-                        <h2 class="mb-4" th:text="${about.sectionTitle}">
-                            CarBook-a xoş gəlmisiniz
-                        </h2>
+                        <div class="item" th:each="rc : ${relatedCars}">
+                            <div class="car-wrap rounded ftco-animate">
 
-                        <p th:utext="${about.description}">
-                            Haqqımızda təsvir
-                        </p>
+                                <div class="img rounded d-flex align-items-end"
+                                     th:style="'background-image: url(' + ${rc.imageUrl} + ');'">
+                                </div>
 
-                        <p>
-                            <a th:href="@{/car}" class="btn btn-primary py-3 px-4">
-                                Avtomobil axtar
-                            </a>
-                        </p>
+                                <div class="text">
+                                    <h2 class="mb-0">
+                                        <!-- ✅ ƏVVƏL: /car/{slug} -->
+                                        <!-- ✅ İNDİ: /Avtomobiller/{slug} -->
+                                        <a th:href="@{'/Avtomobiller/' + ${rc.slug}}"
+                                           th:text="${rc.title}">Maşın</a>
+                                    </h2>
+
+                                    <div class="d-flex mb-3">
+                                        <span class="cat" th:text="${rc.brand}">Marka</span>
+                                        <p class="price ml-auto">
+                                            $<span th:text="${rc.dailyRate}">0</span> <span>/gün</span>
+                                        </p>
+                                    </div>
+
+                                    <div class="d-flex mb-0 d-block">
+
+                                        <!-- ✅ ƏVVƏL: /cart/add -->
+                                        <!-- ✅ İNDİ: /sebet/elave-et -->
+                                        <form th:action="@{/sebet/elave-et}" method="post" class="mr-1" style="margin:0;">
+                                            <input type="hidden" name="carId" th:value="${rc.id}">
+                                            <input type="hidden" name="rateType" value="DAILY">
+                                            <input type="hidden" name="unitCount" value="1">
+
+                                            <button type="submit" class="btn btn-primary py-2 mr-1">
+                                                İndi bron et
+                                            </button>
+                                        </form>
+
+                                        <!-- ✅ ƏVVƏL: /car/{slug} -->
+                                        <!-- ✅ İNDİ: /Avtomobiller/{slug} -->
+                                        <a th:href="@{'/Avtomobiller/' + ${rc.slug}}"
+                                           class="btn btn-secondary py-2 ml-1">
+                                            Ətraflı
+                                        </a>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                        <!-- /item -->
 
                     </div>
                 </div>
-
             </div>
+
         </div>
     </section>
 
@@ -466,10 +489,13 @@
 
             <!-- dinamik 3 blog -->
             <div class="row d-flex" th:if="${blogs != null and !blogs.empty}">
-                <div class="col-md-4 d-flex ftco-animate" th:each="blog, stat : ${blogs}" th:if="${stat.index < 3}">
+                <div class="col-md-4 d-flex ftco-animate"
+                     th:each="blog, stat : ${blogs}" th:if="${stat.index < 3}">
                     <div class="blog-entry justify-content-end w-100">
 
-                        <a th:href="@{'/blog/' + ${blog.id}}"
+                        <!-- ✅ ƏVVƏL: /blog/{id} -->
+                        <!-- ✅ İNDİ: /bloq/{id} -->
+                        <a th:href="@{'/bloq/' + ${blog.id}}"
                            class="block-20"
                            th:style="'background-image: url(' + ${blog.imageUrl} + ');'">
                         </a>
@@ -477,21 +503,25 @@
                         <div class="text pt-4">
                             <div class="meta mb-3">
                                 <div>
-                                    <a th:href="@{'/blog/' + ${blog.id}}"
+                                    <a th:href="@{'/bloq/' + ${blog.id}}"
                                        th:text="${#temporals.format(blog.createdAt, 'dd MMMM yyyy')}">
                                         29 Yanvar 2026
                                     </a>
                                 </div>
 
                                 <div>
-                                    <a th:href="@{'/blog?page=1&search='}"
+                                    <!-- ✅ ƏVVƏL: /blog?page=1&search= -->
+                                    <!-- ✅ İNDİ: /bloq?page=1&search= -->
+                                    <a th:href="@{'/bloq?page=1&search='}"
                                        th:text="${blog.author}">
                                         Admin
                                     </a>
                                 </div>
 
                                 <div>
-                                    <a th:href="@{'/blog/' + ${blog.id} + '#comments'}" class="meta-chat">
+                                    <!-- ✅ ƏVVƏL: /blog/{id}#comments -->
+                                    <!-- ✅ İNDİ: /bloq/{id}#comments -->
+                                    <a th:href="@{'/bloq/' + ${blog.id} + '#comments'}" class="meta-chat">
                                         <span class="icon-chat"></span>
                                         <span th:text="${blog.commentCount}">0</span>
                                     </a>
@@ -499,14 +529,14 @@
                             </div>
 
                             <h3 class="heading mt-2">
-                                <a th:href="@{'/blog/' + ${blog.id}}"
+                                <a th:href="@{'/bloq/' + ${blog.id}}"
                                    th:text="${blog.title}">
                                     Blog başlığı
                                 </a>
                             </h3>
 
                             <p class="mb-0">
-                                <a th:href="@{'/blog/' + ${blog.id}}" class="btn btn-primary">
+                                <a th:href="@{'/bloq/' + ${blog.id}}" class="btn btn-primary">
                                     Davamını oxu
                                 </a>
                             </p>

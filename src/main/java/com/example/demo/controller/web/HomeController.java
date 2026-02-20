@@ -25,7 +25,7 @@ public class HomeController {
     private final CarService carService;
     private final LocationService locationService;
 
-    private final HomeStatsService homeStatsService; // ✅ əlavə et
+    private final HomeStatsService homeStatsService;
 
     @GetMapping("/")
     public String index(Model model) {
@@ -48,20 +48,23 @@ public class HomeController {
         return "index";
     }
 
-    @PostMapping("/search")
-    public String search(@Valid @ModelAttribute("bookingForm") BookingSearchDto form,
-                         BindingResult br,
-                         Model model) {
+    // ✅ ƏVVƏL: /search
+    // ✅ İNDİ: /axtaris
+    @PostMapping("/axtaris")
+    public String axtaris(@Valid @ModelAttribute("bookingForm") BookingSearchDto form,
+                          BindingResult br,
+                          Model model) {
 
         if (br.hasErrors()) {
             model.addAttribute("locations", locationService.getActiveLocations());
             return "index";
         }
 
-        // hələlik query param-la pricing-ə ötürürük
-        return "redirect:/pricing?pickupLoc=" + form.getPickupLocationId()
-                + "&dropoffLoc=" + form.getDropoffLocationId()
-                + "&pickupDate=" + form.getPickupDate()
-                + "&dropoffDate=" + form.getDropoffDate();
+        // ✅ ƏVVƏL: /pricing?pickupLoc=...
+        // ✅ İNDİ: /qiymetler?goturmeMenteqesi=...
+        return "redirect:/qiymetler?goturmeMenteqesi=" + form.getPickupLocationId()
+                + "&tehvilMenteqesi=" + form.getDropoffLocationId()
+                + "&goturmeTarixi=" + form.getPickupDate()
+                + "&tehvilTarixi=" + form.getDropoffDate();
     }
 }

@@ -5,7 +5,7 @@
       layout:decorate="~{layout}">
 <head>
     <meta charset="UTF-8">
-    <title th:text="${car.title}">Maşın detalları</title>
+    <title th:text="${car.title}">Avtomobil detalları</title>
 </head>
 <body>
 <div layout:fragment="content">
@@ -22,9 +22,9 @@
                         <span class="mr-2">
                             <a th:href="@{/}">Ana səhifə <i class="ion-ios-arrow-forward"></i></a>
                         </span>
-                        <span>Maşın detalları <i class="ion-ios-arrow-forward"></i></span>
+                        <span>Avtomobil detalları <i class="ion-ios-arrow-forward"></i></span>
                     </p>
-                    <h1 class="mb-3 bread" th:text="${banner.title}">Maşın detalları</h1>
+                    <h1 class="mb-3 bread" th:text="${banner.title}">Avtomobil detalları</h1>
                     <p th:text="${banner.description}"></p>
                 </div>
             </div>
@@ -64,10 +64,10 @@
                                 </span>
                             </div>
 
-                            <!-- ✅ RATE SWITCH: /masinlar/{slug} -->
+                            <!-- ✅ RATE SWITCH: /Avtomobiller/{slug} -->
                             <div class="d-flex justify-content-center mt-3" style="gap:10px; flex-wrap:wrap;">
                                 <a class="btn btn-outline-primary btn-sm"
-                                   th:href="@{'/masinlar/' + ${car.slug}(
+                                   th:href="@{'/Avtomobiller/' + ${car.slug}(
                                         rate='HOURLY',
                                         pickupLoc=${trip != null ? trip.pickupLoc : null},
                                         dropoffLoc=${trip != null ? trip.dropoffLoc : null},
@@ -76,7 +76,7 @@
                                    )}">Saatlıq</a>
 
                                 <a class="btn btn-outline-primary btn-sm"
-                                   th:href="@{'/masinlar/' + ${car.slug}(
+                                   th:href="@{'/Avtomobiller/' + ${car.slug}(
                                         rate='DAILY',
                                         pickupLoc=${trip != null ? trip.pickupLoc : null},
                                         dropoffLoc=${trip != null ? trip.dropoffLoc : null},
@@ -85,7 +85,7 @@
                                    )}">Günlük</a>
 
                                 <a class="btn btn-outline-primary btn-sm"
-                                   th:href="@{'/masinlar/' + ${car.slug}(
+                                   th:href="@{'/Avtomobiller/' + ${car.slug}(
                                         rate='LEASING',
                                         pickupLoc=${trip != null ? trip.pickupLoc : null},
                                         dropoffLoc=${trip != null ? trip.dropoffLoc : null},
@@ -512,7 +512,7 @@
                                 <div class="review-form-card">
                                     <h5>Rəy yaz</h5>
 
-                                    <form th:action="@{'/masinlar/' + ${car.slug} + '/rey'}" method="post" th:object="${reviewForm}">
+                                    <form th:action="@{'/Avtomobiller/' + ${car.slug} + '/rey'}" method="post" th:object="${reviewForm}">
                                         <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
 
                                         <div class="form-group">
@@ -599,14 +599,14 @@
 
                         <div class="text">
                             <h2 class="mb-0">
-                                <a th:href="@{'/masinlar/' + ${rc.slug}(
+                                <a th:href="@{'/Avtomobiller/' + ${rc.slug}(
                                        rate=${car.selectedRate != null ? car.selectedRate : 'DAILY'},
                                        pickupLoc=${trip != null ? trip.pickupLoc : null},
                                        dropoffLoc=${trip != null ? trip.dropoffLoc : null},
                                        pickupDate=${trip != null ? trip.pickupDate : null},
                                        dropoffDate=${trip != null ? trip.dropoffDate : null}
                                 )}"
-                                   th:text="${rc.title}">Maşın</a>
+                                   th:text="${rc.title}">Avtomobil</a>
                             </h2>
 
                             <div class="d-flex mb-3">
@@ -633,7 +633,7 @@
                                     <button type="submit" class="btn btn-primary py-2">İndi bron et</button>
                                 </form>
 
-                                <a th:href="@{'/masinlar/' + ${rc.slug}(
+                                <a th:href="@{'/Avtomobiller/' + ${rc.slug}(
                                        rate=${car.selectedRate != null ? car.selectedRate : 'DAILY'},
                                        pickupLoc=${trip != null ? trip.pickupLoc : null},
                                        dropoffLoc=${trip != null ? trip.dropoffLoc : null},

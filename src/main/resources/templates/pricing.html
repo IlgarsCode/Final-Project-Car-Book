@@ -144,7 +144,7 @@
                                 <!-- HOURLY -->
                                 <td class="price">
                                     <p class="btn-custom">
-                                        <a th:href="@{'/masinlar/' + ${row.carSlug}(
+                                        <a th:href="@{'/avtomobiller/' + ${row.carSlug}(
                                                 rate='HOURLY',
                                                 pickupLoc=${trip != null ? trip.pickupLoc : null},
                                                 dropoffLoc=${trip != null ? trip.dropoffLoc : null},
@@ -197,7 +197,7 @@
                                 <!-- DAILY -->
                                 <td class="price">
                                     <p class="btn-custom">
-                                        <a th:href="@{'/masinlar/' + ${row.carSlug}(
+                                        <a th:href="@{'/avtomobiller/' + ${row.carSlug}(
                                                 rate='DAILY',
                                                 pickupLoc=${trip != null ? trip.pickupLoc : null},
                                                 dropoffLoc=${trip != null ? trip.dropoffLoc : null},
@@ -246,7 +246,7 @@
                                 <!-- LEASING -->
                                 <td class="price">
                                     <p class="btn-custom">
-                                        <a th:href="@{'/masinlar/' + ${row.carSlug}(
+                                        <a th:href="@{'/avtomobiller/' + ${row.carSlug}(
                                                 rate='LEASING',
                                                 pickupLoc=${trip != null ? trip.pickupLoc : null},
                                                 dropoffLoc=${trip != null ? trip.dropoffLoc : null},

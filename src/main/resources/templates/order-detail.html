@@ -94,7 +94,7 @@
                 <table class="table">
                     <thead class="thead-primary">
                     <tr class="text-center">
-                        <th>Maşın</th>
+                        <th>Avtomobil</th>
                         <th>Paket</th>
                         <th>Vahid qiymət</th>
                         <th>Vahid</th>
@@ -105,7 +105,7 @@
 
                     <tbody>
                     <tr th:each="it : ${order.items}" class="text-center">
-                        <td class="text-left" th:text="${it.carTitleSnapshot}">Maşın</td>
+                        <td class="text-left" th:text="${it.carTitleSnapshot}">Avtomobil</td>
 
                         <td>
                             <span class="badge badge-info" th:text="${it.rateType}">DAILY</span>

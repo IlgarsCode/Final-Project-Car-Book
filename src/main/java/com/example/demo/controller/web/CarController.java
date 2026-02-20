@@ -33,8 +33,8 @@ public class CarController {
     // ✅ AZ ROUTES
     // =========================
 
-    // /car -> /masinlar
-    @GetMapping("/masinlar")
+    // /car -> /avtomobiller
+    @GetMapping("/avtomobiller")
     public String carPage(@RequestParam(name = "category", required = false) String categorySlug,
                           @RequestParam(name = "segment", required = false) String segmentSlug,
                           Model model) {
@@ -50,8 +50,8 @@ public class CarController {
         return "car";
     }
 
-    // /car/{slug} -> /masinlar/{slug}
-    @GetMapping("/masinlar/{slug}")
+    // /car/{slug} -> /avtomobiller/{slug}
+    @GetMapping("/avtomobiller/{slug}")
     public String carSingle(@PathVariable String slug,
                             @RequestParam(name = "rate", required = false) PricingRateType rate,
 
@@ -94,8 +94,8 @@ public class CarController {
         return "car-single";
     }
 
-    // /car/{slug}/review -> /masinlar/{slug}/rey
-    @PostMapping("/masinlar/{slug}/rey")
+    // /car/{slug}/review -> /avtomobiller/{slug}/rey
+    @PostMapping("/avtomobiller/{slug}/rey")
     public String addReview(@PathVariable String slug,
                             @RequestParam(name = "rpage", defaultValue = "0") int rpage,
                             @Valid @ModelAttribute("reviewForm") CarReviewCreateDto form,
@@ -121,7 +121,7 @@ public class CarController {
         }
 
         carReviewService.create(slug, form);
-        return "redirect:/masinlar/" + slug + "?rpage=0#pills-review";
+        return "redirect:/avtomobiller/" + slug + "?rpage=0#pills-review";
     }
 
     // =========================
@@ -132,7 +132,7 @@ public class CarController {
     public String oldCarsRedirect(@RequestParam(name = "category", required = false) String categorySlug,
                                   @RequestParam(name = "segment", required = false) String segmentSlug) {
 
-        String url = "redirect:/masinlar";
+        String url = "redirect:/avtomobiller";
         boolean hasQ = false;
 
         if (categorySlug != null && !categorySlug.isBlank()) {
@@ -155,7 +155,7 @@ public class CarController {
                                        @RequestParam(name = "rpage", defaultValue = "0") int rpage) {
 
         // query-ni qoruyuruq
-        String url = "redirect:/masinlar/" + slug;
+        String url = "redirect:/avtomobiller/" + slug;
 
         String q = "";
         if (rate != null) q += (q.isEmpty() ? "?" : "&") + "rate=" + rate.name();
@@ -171,6 +171,6 @@ public class CarController {
     @PostMapping("/car/{slug}/review")
     public String oldReviewRedirect(@PathVariable String slug) {
         // POST-u birbaşa redirect etmək yetər; form action-u da düzəltmək daha doğrudur (aşağıda yazıram)
-        return "redirect:/masinlar/" + slug + "?rpage=0#pills-review";
+        return "redirect:/avtomobiller/" + slug + "?rpage=0#pills-review";
     }
 }
