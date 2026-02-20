@@ -12,6 +12,8 @@ import com.example.demo.services.CarService;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -108,9 +110,14 @@ public class CarController {
     @PostMapping("/avtomobiller/{slug}/rey")
     public String addReview(@PathVariable String slug,
                             @RequestParam(name = "rpage", defaultValue = "0") int rpage,
+                            @AuthenticationPrincipal UserDetails user,
                             @Valid @ModelAttribute("reviewForm") CarReviewCreateDto form,
                             BindingResult bindingResult,
                             Model model) {
+
+        if (user == null) {
+            return "redirect:/giris";
+        }
 
         var car = carService.getCarDetailBySlug(slug);
 
@@ -126,11 +133,10 @@ public class CarController {
 
             model.addAttribute("reviewCount", carReviewService.countActiveByCarSlug(slug));
             model.addAttribute("reviewStats", carReviewService.getStatsByCarSlug(slug));
-
             return "car-single";
         }
 
-        carReviewService.create(slug, form);
+        carReviewService.create(slug, user.getUsername(), form);
         return "redirect:/avtomobiller/" + slug + "?rpage=0#pills-review";
     }
 

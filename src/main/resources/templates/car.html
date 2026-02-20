@@ -107,7 +107,6 @@
 <body>
 <div layout:fragment="content">
 
-    <!-- BANNER -->
     <section class="hero-wrap hero-wrap-2 js-fullheight"
              th:if="${banner != null}"
              th:style="|background-image: url('${banner.photoUrl}');|">
@@ -139,7 +138,6 @@
         </div>
     </section>
 
-    <!-- FILTER -->
     <div class="cars-filter-wrap">
         <div class="container">
             <div class="cars-filter-card ftco-animate">
@@ -165,7 +163,6 @@
                     </div>
 
                     <form class="cars-filter-form" th:action="@{/avtomobiller}" method="get">
-                        <!-- ✅ filter ediləndə page=1 olsun -->
                         <input type="hidden" name="page" value="1"/>
 
                         <div class="cars-filter-group">
@@ -210,7 +207,6 @@
         </div>
     </div>
 
-    <!-- LIST -->
     <section class="ftco-section bg-light">
         <div class="container">
             <div class="row">
@@ -240,11 +236,11 @@
                                 <span style="display:flex; align-items:baseline; gap:8px; flex-wrap:wrap; justify-content:flex-end;">
                                     <span th:if="${car.baseDailyRate != null and car.dailyRate != null and car.baseDailyRate.compareTo(car.dailyRate) > 0}"
                                           style="color:#6c757d;">
-                                        <del>$<span th:text="${car.baseDailyRate}">0</span></del>
+                                        <del>₼<span th:text="${car.baseDailyRate}">0</span></del>
                                     </span>
 
                                     <span style="color:#4f86f7; font-weight:600;">
-                                        $<span th:text="${car.dailyRate != null ? car.dailyRate : 0}">0</span>
+                                        ₼<span th:text="${car.dailyRate != null ? car.dailyRate : 0}">0</span>
                                     </span>
 
                                     <span style="color:#000; font-weight:400;">/gün</span>
@@ -282,20 +278,17 @@
 
             </div>
 
-            <!-- ✅ PAGINATION -->
             <div class="row mt-4" th:if="${totalPages != null and totalPages > 1}">
                 <div class="col text-center">
                     <div class="block-27">
                         <ul>
 
-                            <!-- Prev -->
                             <li th:classappend="${currentPage == 1} ? 'disabled'">
                                 <a th:if="${currentPage > 1}"
                                    th:href="@{/avtomobiller(page=${currentPage-1}, category=${selectedCategory}, segment=${selectedSegment})}">&lt;</a>
                                 <span th:if="${currentPage == 1}">&lt;</span>
                             </li>
 
-                            <!-- Page numbers -->
                             <li th:each="i : ${#numbers.sequence(1, totalPages)}"
                                 th:classappend="${i == currentPage} ? 'active'">
                                 <a th:if="${i != currentPage}"
@@ -304,7 +297,6 @@
                                 <span th:if="${i == currentPage}" th:text="${i}">1</span>
                             </li>
 
-                            <!-- Next -->
                             <li th:classappend="${currentPage == totalPages} ? 'disabled'">
                                 <a th:if="${currentPage < totalPages}"
                                    th:href="@{/avtomobiller(page=${currentPage+1}, category=${selectedCategory}, segment=${selectedSegment})}">&gt;</a>

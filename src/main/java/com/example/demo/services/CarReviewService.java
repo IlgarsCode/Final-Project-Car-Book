@@ -10,6 +10,8 @@ import java.util.List;
 public interface CarReviewService {
     void create(String carSlug, CarReviewCreateDto form);
 
+    void create(String carSlug, String userEmail, CarReviewCreateDto form);
+
     List<CarReviewDto> getActiveReviewsByCarSlug(String carSlug);
 
     long countActiveByCarSlug(String carSlug);

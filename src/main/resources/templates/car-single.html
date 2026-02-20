@@ -2,7 +2,7 @@
 <html lang="az"
       xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      layout:decorate="~{layout}">
+      layout:decorate="~{layout}" xmlns:sec="http://www.w3.org/1999/xhtml">
 <head>
     <meta charset="UTF-8">
     <title th:text="${car.title}">Avtomobil detalları</title>
@@ -45,8 +45,9 @@
                             <span class="subheading" th:text="${car.brand}">Brend</span>
                             <h2 th:text="${car.title}">Başlıq</h2>
 
+                            <!-- ✅ $ -> ₼ -->
                             <p class="price mt-2">
-                                <span>$</span><span th:text="${car.displayPrice != null ? car.displayPrice : 0}">0</span>
+                                <span>₼</span><span th:text="${car.displayPrice != null ? car.displayPrice : 0}">0</span>
                                 <span th:text="${car.displayUnit != null ? car.displayUnit : '/gün'}">/gün</span>
                             </p>
 
@@ -58,13 +59,13 @@
                                       th:if="${car.hasDiscount != null and car.hasDiscount and car.discountPercent != null and car.discountPercent.doubleValue() > 0}"
                                       th:text="${'-' + car.discountPercent + '%'}">-10%</span>
 
+                                <!-- ✅ $ -> ₼ -->
                                 <span class="text-muted ml-2"
                                       th:if="${car.hasDiscount != null and car.hasDiscount and car.discountPercent != null and car.discountPercent.doubleValue() > 0}">
-                                    <del>$<span th:text="${car.selectedRate == 'HOURLY' ? car.baseHourlyRate : (car.selectedRate == 'LEASING' ? car.baseMonthlyLeasingRate : car.baseDailyRate)}">0</span></del>
+                                    <del>₼<span th:text="${car.selectedRate == 'HOURLY' ? car.baseHourlyRate : (car.selectedRate == 'LEASING' ? car.baseMonthlyLeasingRate : car.baseDailyRate)}">0</span></del>
                                 </span>
                             </div>
 
-                            <!-- ✅ RATE SWITCH: /Avtomobiller/{slug} -->
                             <div class="d-flex justify-content-center mt-3" style="gap:10px; flex-wrap:wrap;">
                                 <a class="btn btn-outline-primary btn-sm"
                                    th:href="@{'/avtomobiller/' + ${car.slug}(
@@ -94,7 +95,6 @@
                                    )}">Lizinq</a>
                             </div>
 
-                            <!-- Availability block (saxlanıldı) -->
                             <div class="mt-4"
                                  th:if="${trip == null or trip.pickupLoc == null or trip.dropoffLoc == null or trip.pickupDate == null or trip.dropoffDate == null}">
                                 <div class="availability-card mx-auto" style="max-width:760px;">
@@ -125,7 +125,6 @@
 
                         </div>
 
-                        <!-- ✅ MAIN BOOK NOW: /sebet/elave-et -->
                         <div class="d-flex justify-content-center mt-4" style="gap:10px; flex-wrap:wrap;">
                             <form th:action="@{/sebet/elave-et}" method="post">
                                 <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
@@ -143,7 +142,6 @@
                                 <button type="submit" class="btn btn-primary py-2 px-4">İndi bron et</button>
                             </form>
 
-                            <!-- ✅ /sebet -->
                             <a th:href="@{/sebet}" class="btn btn-secondary py-2 px-4">Səbətə bax</a>
                         </div>
 
@@ -282,7 +280,7 @@
 
             </div>
 
-            <!-- STYLES -->
+            <!-- STYLES (səninki kimi qalır) -->
             <style>
                 .car-stats-row{ display:flex; flex-wrap:wrap; }
                 @media (min-width: 768px){
@@ -439,7 +437,7 @@
                 .rating-select label:hover ~ label{ color:#f5c518; }
             </style>
 
-            <!-- TABS + Reviews (CSRF əlavə olundu) -->
+            <!-- TABS + Reviews -->
             <div class="row car-tabs-wrap">
                 <div class="col-md-12">
 
@@ -503,52 +501,53 @@
                             </div>
                         </div>
 
-                        <!-- Reviews -->
-                        <div class="tab-pane fade" id="pane-reviews" role="tabpanel">
-                            <div class="card-head"><h4>Rəylər</h4></div>
+                        <div class="review-form-card" sec:authorize="isAuthenticated()">
+                            <h5>Rəy yaz</h5>
 
-                            <div class="card-body" id="pills-review">
+                            <form th:action="@{'/avtomobiller/' + ${car.slug} + '/rey'}"
+                                  method="post"
+                                  th:object="${reviewForm}">
 
-                                <div class="review-form-card">
-                                    <h5>Rəy yaz</h5>
+                                <input type="hidden" th:if="${_csrf != null}"
+                                       th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
 
-                                    <form th:action="@{'/avtomobiller/' + ${car.slug} + '/rey'}" method="post" th:object="${reviewForm}">
-                                        <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
-
-                                        <div class="form-group">
-                                            <label>Ad Soyad</label>
-                                            <input class="form-control" th:field="*{fullName}">
-                                            <small class="text-danger" th:if="${#fields.hasErrors('fullName')}" th:errors="*{fullName}"></small>
-                                        </div>
-
-                                        <div class="form-group">
-                                            <label>E-poçt (istəyə görə)</label>
-                                            <input class="form-control" th:field="*{email}">
-                                        </div>
-
-                                        <div class="form-group">
-                                            <label>Şərh</label>
-                                            <textarea class="form-control" rows="4" th:field="*{message}" placeholder="Rəyinizi yazın..."></textarea>
-                                            <small class="text-danger" th:if="${#fields.hasErrors('message')}" th:errors="*{message}"></small>
-                                        </div>
-
-                                        <div class="form-group">
-                                            <label>Qiymətləndirmə</label>
-                                            <div class="rating-select">
-                                                <input type="radio" id="rate5" th:field="*{rating}" value="5"><label for="rate5" class="ion-ios-star"></label>
-                                                <input type="radio" id="rate4" th:field="*{rating}" value="4"><label for="rate4" class="ion-ios-star"></label>
-                                                <input type="radio" id="rate3" th:field="*{rating}" value="3"><label for="rate3" class="ion-ios-star"></label>
-                                                <input type="radio" id="rate2" th:field="*{rating}" value="2"><label for="rate2" class="ion-ios-star"></label>
-                                                <input type="radio" id="rate1" th:field="*{rating}" value="1"><label for="rate1" class="ion-ios-star"></label>
-                                            </div>
-                                            <small class="text-danger" th:if="${#fields.hasErrors('rating')}" th:errors="*{rating}"></small>
-                                        </div>
-
-                                        <div class="text-center mt-3">
-                                            <button class="btn btn-primary px-4">Göndər</button>
-                                        </div>
-                                    </form>
+                                <div class="form-group">
+                                    <label>Şərh</label>
+                                    <textarea class="form-control" rows="4"
+                                              th:field="*{message}"
+                                              placeholder="Rəyinizi yazın..."></textarea>
+                                    <small class="text-danger"
+                                           th:if="${#fields.hasErrors('message')}"
+                                           th:errors="*{message}"></small>
                                 </div>
+
+                                <div class="form-group">
+                                    <label>Qiymətləndirmə</label>
+                                    <div class="rating-select">
+                                        <input type="radio" id="rate5" th:field="*{rating}" value="5"><label for="rate5" class="ion-ios-star"></label>
+                                        <input type="radio" id="rate4" th:field="*{rating}" value="4"><label for="rate4" class="ion-ios-star"></label>
+                                        <input type="radio" id="rate3" th:field="*{rating}" value="3"><label for="rate3" class="ion-ios-star"></label>
+                                        <input type="radio" id="rate2" th:field="*{rating}" value="2"><label for="rate2" class="ion-ios-star"></label>
+                                        <input type="radio" id="rate1" th:field="*{rating}" value="1"><label for="rate1" class="ion-ios-star"></label>
+                                    </div>
+                                    <small class="text-danger"
+                                           th:if="${#fields.hasErrors('rating')}"
+                                           th:errors="*{rating}"></small>
+                                </div>
+
+                                <div class="text-center mt-3">
+                                    <button class="btn btn-primary px-4">Göndər</button>
+                                </div>
+                            </form>
+                        </div>
+
+                        <!-- login olmayanlar üçün -->
+                        <div class="review-form-card" sec:authorize="isAnonymous()">
+                            <h5>Rəy yaz</h5>
+                            <div class="alert alert-info mb-0">
+                                Rəy yazmaq üçün <a th:href="@{/giris}">daxil ol</a>.
+                            </div>
+                        </div>
 
                                 <div th:if="${reviews == null or #lists.isEmpty(reviews)}" class="text-muted">
                                     Rəy yoxdur.
@@ -611,8 +610,10 @@
 
                             <div class="d-flex mb-3">
                                 <span class="cat" th:text="${rc.brand}">Brend</span>
+
+                                <!-- ✅ $ -> ₼ -->
                                 <p class="price ml-auto">
-                                    $<span th:text="${rc.dailyRate != null ? rc.dailyRate : 0}">0</span> <span>/gün</span>
+                                    ₼<span th:text="${rc.dailyRate != null ? rc.dailyRate : 0}">0</span> <span>/gün</span>
                                 </p>
                             </div>
 
@@ -650,7 +651,6 @@
         </div>
     </section>
 
-    <!-- Availability JS (səndəki kimi) -->
     <script th:inline="javascript">
         (function(){
             const carId = /*[[${car.id}]]*/ 0;

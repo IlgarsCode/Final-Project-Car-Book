@@ -153,7 +153,6 @@
                                         )}">Ətraflı</a>
                                     </p>
 
-                                    <!-- ✅ /sebet/elave-et -->
                                     <form th:action="@{/sebet/elave-et}" method="post" style="margin:0 0 10px 0;">
                                         <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
 
@@ -172,7 +171,7 @@
                                     <div class="price-rate">
                                         <h3>
                                             <span class="num">
-                                                <small class="currency">$</small>
+                                                <small class="currency">₼</small>
 
                                                 <del class="text-muted mr-1"
                                                      th:if="${row.hourlyHasDiscount != null and row.hourlyHasDiscount and row.baseHourlyRate != null and row.baseHourlyRate.compareTo(row.hourlyRate) > 0}">
@@ -190,7 +189,7 @@
 
                                         <span class="subheading"
                                               th:if="${row.fuelSurchargePerHour != null and row.fuelSurchargePerHour.doubleValue() > 0}"
-                                              th:text="'$' + ${row.fuelSurchargePerHour} + '/saat yanacaq əlavəsi'"></span>
+                                              th:text="'₼' + ${row.fuelSurchargePerHour} + '/saat yanacaq əlavəsi'"></span>
                                     </div>
                                 </td>
 
@@ -206,7 +205,6 @@
                                         )}">Ətraflı</a>
                                     </p>
 
-                                    <!-- ✅ /sebet/elave-et -->
                                     <form th:action="@{/sebet/elave-et}" method="post" style="margin:0 0 10px 0;">
                                         <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
 
@@ -225,7 +223,7 @@
                                     <div class="price-rate">
                                         <h3>
                                             <span class="num">
-                                                <small class="currency">$</small>
+                                                <small class="currency">₼</small>
 
                                                 <del class="text-muted mr-1"
                                                      th:if="${row.dailyHasDiscount != null and row.dailyHasDiscount and row.baseDailyRate != null and row.baseDailyRate.compareTo(row.dailyRate) > 0}">
@@ -255,7 +253,6 @@
                                         )}">Ətraflı</a>
                                     </p>
 
-                                    <!-- ✅ /sebet/elave-et -->
                                     <form th:action="@{/sebet/elave-et}" method="post" style="margin:0 0 10px 0;">
                                         <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
 
@@ -274,7 +271,7 @@
                                     <div class="price-rate">
                                         <h3>
                                             <span class="num">
-                                                <small class="currency">$</small>
+                                                <small class="currency">₼</small>
 
                                                 <del class="text-muted mr-1"
                                                      th:if="${row.leasingHasDiscount != null and row.leasingHasDiscount and row.baseMonthlyLeasingRate != null and row.baseMonthlyLeasingRate.compareTo(row.monthlyLeasingRate) > 0}">

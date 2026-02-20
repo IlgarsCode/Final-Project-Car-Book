@@ -6,6 +6,7 @@ import com.example.demo.dto.car.CarReviewStatsDto;
 import com.example.demo.model.CarReview;
 import com.example.demo.repository.CarRepository;
 import com.example.demo.repository.CarReviewRepository;
+import com.example.demo.repository.UserRepository;
 import com.example.demo.services.CarReviewService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -24,25 +25,44 @@ public class CarReviewServiceImpl implements CarReviewService {
 
     private final CarRepository carRepository;
     private final CarReviewRepository carReviewRepository;
+    private final UserRepository userRepository; // ✅ əlavə olundu
 
     @Override
     public void create(String carSlug, CarReviewCreateDto form) {
 
+    }
+
+    @Override
+    public void create(String carSlug, String userEmail, CarReviewCreateDto form) {
+
+        if (userEmail == null || userEmail.isBlank()) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Rəy yazmaq üçün giriş et");
+        }
+
+        var u = userRepository.findByEmailIgnoreCase(userEmail.trim())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "İstifadəçi tapılmadı"));
+
         var car = carRepository.findBySlugAndIsActiveTrue(carSlug)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Car tapılmadı"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Avtomobil tapılmadı"));
 
         CarReview r = new CarReview();
-        // ID-ni heç yerdə set ETMƏ! (duplicate key problemi burdan çıxır)
         r.setCar(car);
-        r.setFullName(form.getFullName());
-        r.setEmail(form.getEmail());
-        r.setRating(form.getRating());
-        r.setMessage(form.getMessage());
-        r.setCreatedAt(LocalDateTime.now());
-        r.setIsActive(true);
 
-        // istəsən sonra açarsan
-        // r.setPhotoUrl(form.getPhotoUrl());
+        String fullName = (u.getFullName() != null && !u.getFullName().isBlank())
+                ? u.getFullName().trim()
+                : u.getEmail();
+
+        r.setFullName(fullName);
+        r.setEmail(u.getEmail());
+
+        // ✅ User-də photoUrl var, ona uyğun yazırıq
+        r.setPhotoUrl(u.getPhotoUrl());
+
+        r.setMessage(form.getMessage() == null ? "" : form.getMessage().trim());
+        r.setRating(form.getRating());
+
+        r.setIsActive(true);
+        r.setCreatedAt(LocalDateTime.now());
 
         carReviewRepository.save(r);
     }
@@ -123,11 +143,11 @@ public class CarReviewServiceImpl implements CarReviewService {
         CarReviewDto dto = new CarReviewDto();
         dto.setId(x.getId());
         dto.setFullName(x.getFullName());
-        dto.setEmail(x.getEmail());      // CarReviewDto-da varsa
+        dto.setEmail(x.getEmail());
         dto.setRating(x.getRating());
         dto.setMessage(x.getMessage());
         dto.setCreatedAt(x.getCreatedAt());
-        dto.setPhotoUrl(x.getPhotoUrl()); // CarReviewDto-da varsa
+        dto.setPhotoUrl(x.getPhotoUrl());
         return dto;
     }
 }
