@@ -72,6 +72,7 @@ public class CheckoutController {
         var order = orderService.checkout(user.getUsername(), checkoutForm);
         session.removeAttribute("TRIP_CTX");
 
-        return "redirect:/payment/start/" + order.getId();
+        // ✅ DÜZƏLİŞ: səndə route budur
+        return "redirect:/odenis/baslat/" + order.getId();
     }
 }

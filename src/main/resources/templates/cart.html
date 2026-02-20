@@ -98,11 +98,11 @@
                                     <div style="display:flex; gap:8px; justify-content:center; align-items:baseline; flex-wrap:wrap;">
                                         <span th:if="${it.baseUnitPriceSnapshot != null and it.unitPriceSnapshot != null and it.baseUnitPriceSnapshot.compareTo(it.unitPriceSnapshot) > 0}"
                                               style="color:#6c757d;">
-                                            <del>$<span th:text="${it.baseUnitPriceSnapshot}">0</span></del>
+                                            <del>₼<span th:text="${it.baseUnitPriceSnapshot}">0</span></del>
                                         </span>
 
                                         <span style="font-weight:800;">
-                                            $<span th:text="${it.unitPriceSnapshot}">0</span>
+                                            ₼<span th:text="${it.unitPriceSnapshot}">0</span>
                                         </span>
 
                                         <span class="badge badge-success"
@@ -114,7 +114,7 @@
                                                    and it.fuelSurchargePerHourSnapshot != null
                                                    and it.fuelSurchargePerHourSnapshot.doubleValue() > 0}">
                                         <br>
-                                        <small class="text-muted">+$<span th:text="${it.fuelSurchargePerHourSnapshot}">0</span>/saat</small>
+                                        <small class="text-muted">+₼<span th:text="${it.fuelSurchargePerHourSnapshot}">0</span>/saat</small>
                                     </span>
                                 </td>
 

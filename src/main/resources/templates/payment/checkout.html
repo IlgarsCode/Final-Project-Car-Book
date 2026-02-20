@@ -29,7 +29,7 @@
                             <h3 class="pay-title">Təhlükəsiz ödəniş (Simulyasiya)</h3>
                             <p class="pay-sub">
                                 Sifariş #<span th:text="${payment.order.id}">0</span>
-                                • Məbləğ: <strong>$<span th:text="${payment.amount}">0</span></strong>
+                                • Məbləğ: <strong>₼<span th:text="${payment.amount}">0</span></strong>
                             </p>
                         </div>
 
@@ -80,12 +80,12 @@
 
                                 <div class="d-flex" style="gap:10px; flex-wrap:wrap;">
                                     <button class="btn btn-primary" type="submit">
-                                        Ödə $<span th:text="${payment.amount}">0</span>
+                                        Ödə ₼<span th:text="${payment.amount}">0</span>
                                     </button>
 
-                                    <!-- Sifarişə qayıt -->
+                                    <!-- ✅ Sifarişə qayıt (userOrderNo ilə) -->
                                     <a class="btn btn-outline-secondary"
-                                       th:href="@{/sifarislerim/{id}(id=${payment.order.id})}">
+                                       th:href="@{/sifarislerim/{no}(no=${payment.order.userOrderNo})}">
                                         Sifarişə qayıt
                                     </a>
                                 </div>

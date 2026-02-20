@@ -317,9 +317,9 @@
                                         <span th:text="${it.rateType}">DAILY</span>
                                         —
                                         <span th:if="${it.baseUnitPriceSnapshot != null and it.unitPriceSnapshot != null and it.baseUnitPriceSnapshot.compareTo(it.unitPriceSnapshot) > 0}">
-                                            <del>$<span th:text="${it.baseUnitPriceSnapshot}">0</span></del>&nbsp;
+                                            <del>₼<span th:text="${it.baseUnitPriceSnapshot}">0</span></del>&nbsp;
                                         </span>
-                                        $<span th:text="${it.unitPriceSnapshot}">0</span>
+                                        ₼<span th:text="${it.unitPriceSnapshot}">0</span>
 
                                         <span class="badge badge-success"
                                               th:if="${it.discountPercentSnapshot != null and it.discountPercentSnapshot > 0}"

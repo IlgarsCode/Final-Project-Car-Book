@@ -47,10 +47,9 @@
                         <th>Əməliyyatlar</th>
                     </tr>
                     </thead>
-                    <tbody>
 
-                    <tr th:each="o : ${orders}" class="text-center">
-                        <!-- ✅ ƏVVƏL: o.id idi (global) — İNDİ: userOrderNo -->
+                    <tbody>
+                    <tr th:each="o : ${orders}" th:if="${o != null}" class="text-center">
                         <td>
                             <span th:text="${o.userOrderNo}">1</span>
                         </td>
@@ -82,24 +81,21 @@
                             <span th:text="${#temporals.format(o.dropoffDate, 'dd.MM.yyyy')}"></span>
                         </td>
 
-                        <td>$<span th:text="${o.totalAmount}">0</span></td>
+                        <td>₼<span th:text="${o.totalAmount}">0</span></td>
 
                         <td style="display:flex; gap:8px; justify-content:center; flex-wrap:wrap;">
-                            <!-- ✅ ƏVVƏL: id=${o.id} idi (global) — İNDİ: userOrderNo -->
                             <a class="btn btn-sm btn-primary"
                                th:href="@{/sifarislerim/{no}(no=${o.userOrderNo})}">
                                 Detallar
                             </a>
 
-                            <!-- ✅ Payment START mütləq global order id ilə getməlidir -->
                             <a class="btn btn-sm btn-success"
                                th:if="${o.status != null and (o.status.name() == 'PENDING' or o.status.name() == 'PAYMENT_FAILED')}"
-                               th:href="@{/payment/start/{id}(id=${o.id})}">
+                               th:href="@{/odenis/baslat/{orderId}(orderId=${o.id})}">
                                 İndi ödə
                             </a>
                         </td>
                     </tr>
-
                     </tbody>
                 </table>
             </div>

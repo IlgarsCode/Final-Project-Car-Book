@@ -43,7 +43,9 @@
       const box = document.getElementById('statusBox');
 
       async function poll(){
-        const res = await fetch(`/payment/api/${paymentId}`, { headers: { 'Accept': 'application/json' }});
+        const res = await fetch(`/odenis/api/${paymentId}`, {
+          headers: { 'Accept': 'application/json' }
+        });
         const data = await res.json();
 
         if (!data || !data.status) return;
@@ -51,7 +53,7 @@
         box.textContent = "Status: " + data.status;
 
         if (data.status !== 'PROCESSING'){
-          window.location.href = `/payment/result/${paymentId}`;
+          window.location.href = `/odenis/netice/${paymentId}`;
         }
       }
 

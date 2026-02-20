@@ -147,10 +147,10 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public Order getMyOrderDetail(String email, Long userOrderNo) {
+
         var user = userRepository.findByEmailIgnoreCase(email)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User tapılmadı"));
 
-        // ✅ əsas düzəliş: global id yox, userOrderNo
         return orderRepository.findWithItemsByUser_IdAndUserOrderNo(user.getId(), userOrderNo)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Sifariş tapılmadı"));
     }
