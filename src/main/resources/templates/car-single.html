@@ -54,7 +54,6 @@
                                 <span class="badge badge-info"
                                       th:text="${car.selectedRate != null ? car.selectedRate : 'DAILY'}">DAILY</span>
 
-                                <!-- ✅ discount badge for selected rate -->
                                 <span class="badge badge-success ml-2"
                                       th:if="${car.hasDiscount != null and car.hasDiscount and car.discountPercent != null and car.discountPercent.doubleValue() > 0}"
                                       th:text="${'-' + car.discountPercent + '%'}">-10%</span>
@@ -65,10 +64,10 @@
                                 </span>
                             </div>
 
-                            <!-- RATE SWITCH -->
+                            <!-- ✅ RATE SWITCH: /masinlar/{slug} -->
                             <div class="d-flex justify-content-center mt-3" style="gap:10px; flex-wrap:wrap;">
                                 <a class="btn btn-outline-primary btn-sm"
-                                   th:href="@{'/car/' + ${car.slug}(
+                                   th:href="@{'/masinlar/' + ${car.slug}(
                                         rate='HOURLY',
                                         pickupLoc=${trip != null ? trip.pickupLoc : null},
                                         dropoffLoc=${trip != null ? trip.dropoffLoc : null},
@@ -77,7 +76,7 @@
                                    )}">Saatlıq</a>
 
                                 <a class="btn btn-outline-primary btn-sm"
-                                   th:href="@{'/car/' + ${car.slug}(
+                                   th:href="@{'/masinlar/' + ${car.slug}(
                                         rate='DAILY',
                                         pickupLoc=${trip != null ? trip.pickupLoc : null},
                                         dropoffLoc=${trip != null ? trip.dropoffLoc : null},
@@ -86,7 +85,7 @@
                                    )}">Günlük</a>
 
                                 <a class="btn btn-outline-primary btn-sm"
-                                   th:href="@{'/car/' + ${car.slug}(
+                                   th:href="@{'/masinlar/' + ${car.slug}(
                                         rate='LEASING',
                                         pickupLoc=${trip != null ? trip.pickupLoc : null},
                                         dropoffLoc=${trip != null ? trip.dropoffLoc : null},
@@ -95,7 +94,7 @@
                                    )}">Lizinq</a>
                             </div>
 
-                            <!-- Availability block -->
+                            <!-- Availability block (saxlanıldı) -->
                             <div class="mt-4"
                                  th:if="${trip == null or trip.pickupLoc == null or trip.dropoffLoc == null or trip.pickupDate == null or trip.dropoffDate == null}">
                                 <div class="availability-card mx-auto" style="max-width:760px;">
@@ -126,10 +125,9 @@
 
                         </div>
 
-                        <!-- MAIN BOOK NOW -->
+                        <!-- ✅ MAIN BOOK NOW: /sebet/elave-et -->
                         <div class="d-flex justify-content-center mt-4" style="gap:10px; flex-wrap:wrap;">
-                            <form th:action="@{/cart/add}" method="post">
-                                <!-- ✅ CSRF -->
+                            <form th:action="@{/sebet/elave-et}" method="post">
                                 <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
 
                                 <input type="hidden" name="carId" th:value="${car.id}">
@@ -145,7 +143,8 @@
                                 <button type="submit" class="btn btn-primary py-2 px-4">İndi bron et</button>
                             </form>
 
-                            <a th:href="@{/cart}" class="btn btn-secondary py-2 px-4">Səbətə bax</a>
+                            <!-- ✅ /sebet -->
+                            <a th:href="@{/sebet}" class="btn btn-secondary py-2 px-4">Səbətə bax</a>
                         </div>
 
                     </div>
@@ -513,10 +512,7 @@
                                 <div class="review-form-card">
                                     <h5>Rəy yaz</h5>
 
-                                    <form th:action="@{'/car/' + ${car.slug} + '/review'}"
-                                          method="post"
-                                          th:object="${reviewForm}">
-                                        <!-- ✅ CSRF -->
+                                    <form th:action="@{'/masinlar/' + ${car.slug} + '/rey'}" method="post" th:object="${reviewForm}">
                                         <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
 
                                         <div class="form-group">
@@ -594,25 +590,16 @@
     <!-- RELATED CARS -->
     <section class="ftco-section ftco-no-pt">
         <div class="container">
-
-            <div class="row justify-content-center">
-                <div class="col-md-12 heading-section text-center ftco-animate mb-5">
-                    <span class="subheading">Maşın seç</span>
-                    <h2 class="mb-2">Oxşar maşınlar</h2>
-                </div>
-            </div>
-
             <div class="row">
                 <div class="col-md-4" th:each="rc : ${relatedCars}">
                     <div class="car-wrap rounded ftco-animate">
-
                         <div class="img rounded d-flex align-items-end"
                              th:style="|background-image: url('${rc.imageUrl != null ? rc.imageUrl : '/images/car-1.jpg'}');|">
                         </div>
 
                         <div class="text">
                             <h2 class="mb-0">
-                                <a th:href="@{'/car/' + ${rc.slug}(
+                                <a th:href="@{'/masinlar/' + ${rc.slug}(
                                        rate=${car.selectedRate != null ? car.selectedRate : 'DAILY'},
                                        pickupLoc=${trip != null ? trip.pickupLoc : null},
                                        dropoffLoc=${trip != null ? trip.dropoffLoc : null},
@@ -624,15 +611,13 @@
 
                             <div class="d-flex mb-3">
                                 <span class="cat" th:text="${rc.brand}">Brend</span>
-
                                 <p class="price ml-auto">
                                     $<span th:text="${rc.dailyRate != null ? rc.dailyRate : 0}">0</span> <span>/gün</span>
                                 </p>
                             </div>
 
                             <div class="d-flex mb-0 d-block" style="gap:10px; flex-wrap:wrap;">
-                                <form th:action="@{/cart/add}" method="post" class="mr-1">
-                                    <!-- ✅ CSRF -->
+                                <form th:action="@{/sebet/elave-et}" method="post" class="mr-1">
                                     <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
 
                                     <input type="hidden" name="carId" th:value="${rc.id}">
@@ -648,7 +633,7 @@
                                     <button type="submit" class="btn btn-primary py-2">İndi bron et</button>
                                 </form>
 
-                                <a th:href="@{'/car/' + ${rc.slug}(
+                                <a th:href="@{'/masinlar/' + ${rc.slug}(
                                        rate=${car.selectedRate != null ? car.selectedRate : 'DAILY'},
                                        pickupLoc=${trip != null ? trip.pickupLoc : null},
                                        dropoffLoc=${trip != null ? trip.dropoffLoc : null},
@@ -662,7 +647,6 @@
                     </div>
                 </div>
             </div>
-
         </div>
     </section>
 

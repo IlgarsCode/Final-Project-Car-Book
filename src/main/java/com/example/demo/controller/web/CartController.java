@@ -16,7 +16,7 @@ import java.time.LocalDate;
 
 @Controller
 @RequiredArgsConstructor
-@RequestMapping("/cart")
+@RequestMapping("/sebet")
 public class CartController {
 
     private final CartService cartService;
@@ -53,7 +53,7 @@ public class CartController {
         return "cart";
     }
 
-    @PostMapping("/add")
+    @PostMapping("/elave-et")
     public String addToCart(@AuthenticationPrincipal UserDetails user,
                             @RequestParam Long carId,
                             @RequestParam(name = "rateType", defaultValue = "DAILY") PricingRateType rateType,
@@ -79,21 +79,21 @@ public class CartController {
 
         session.setAttribute("TRIP_CTX", ctx);
 
-        return "redirect:" + (referer != null ? referer : "/cart");
+        return "redirect:" + (referer != null ? referer : "/sebet");
     }
 
-    @PostMapping("/remove/{itemId}")
+    @PostMapping("/sil/{itemId}")
     public String removeItem(@AuthenticationPrincipal UserDetails user,
                              @PathVariable Long itemId) {
         cartService.removeItem(user.getUsername(), itemId);
-        return "redirect:/cart";
+        return "redirect:/sebet";
     }
 
-    @PostMapping("/clear")
+    @PostMapping("/temizle")
     public String clear(@AuthenticationPrincipal UserDetails user,
                         HttpSession session) {
         cartService.clearCart(user.getUsername());
         session.removeAttribute("TRIP_CTX");
-        return "redirect:/cart";
+        return "redirect:/sebet";
     }
 }

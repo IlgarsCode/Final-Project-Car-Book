@@ -21,28 +21,44 @@ public class TestimonialController {
     private final TestimonialService testimonialService;
     private final BannerService bannerService;
 
-    @GetMapping("/testimonial")
+    // ✅ AZ slug: /reyler
+    @GetMapping("/reyler")
     public String testimonialPage(Model model) {
         model.addAttribute("banner", bannerService.getBanner(BannerType.TESTIMONIAL));
         model.addAttribute("testimonials", testimonialService.getActiveTestimonials());
         return "testimonial";
     }
 
-    @GetMapping("/testimonial/new")
-    public String newTestimonialPage(Model model) {
+    // ✅ AZ slug: /reyler/yeni
+    @GetMapping("/reyler/yeni")
+    public String newTestimonialPage(Model model, Authentication auth) {
+        // login yoxdursa yönləndir (yoxsa create-də partlayır)
+        if (auth == null || auth.getName() == null) {
+            return "redirect:/auth/login";
+        }
         model.addAttribute("form", new TestimonialCreateDto());
         return "testimonial-create";
     }
 
-    @PostMapping("/testimonial/new")
+    // ✅ POST: /reyler/yeni
+    @PostMapping("/reyler/yeni")
     public String createTestimonial(
             @Valid @ModelAttribute("form") TestimonialCreateDto form,
             BindingResult br,
-            Authentication auth
+            Authentication auth,
+            Model model
     ) {
-        if (br.hasErrors()) return "testimonial-create";
+        if (auth == null || auth.getName() == null) {
+            return "redirect:/auth/login";
+        }
+
+        if (br.hasErrors()) {
+            // səhv olanda form geri qayıtsın
+            model.addAttribute("form", form);
+            return "testimonial-create";
+        }
 
         testimonialService.create(auth.getName(), form);
-        return "redirect:/testimonial";
+        return "redirect:/reyler";
     }
 }

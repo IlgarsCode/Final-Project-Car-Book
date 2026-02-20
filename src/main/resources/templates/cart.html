@@ -32,7 +32,6 @@
     <section class="ftco-section">
         <div class="container">
 
-            <!-- ✅ Trip summary (SESSION-dan) -->
             <div th:if="${trip != null}" class="alert alert-secondary" style="border-radius:10px;">
                 <div class="row" style="row-gap:6px;">
                     <div class="col-md-6">
@@ -95,7 +94,6 @@
                                     <span class="badge badge-info" th:text="${it.rateType}">DAILY</span>
                                 </td>
 
-                                <!-- ✅ Unit Price (discount support) -->
                                 <td style="line-height:1.3;">
                                     <div style="display:flex; gap:8px; justify-content:center; align-items:baseline; flex-wrap:wrap;">
                                         <span th:if="${it.baseUnitPriceSnapshot != null and it.unitPriceSnapshot != null and it.baseUnitPriceSnapshot.compareTo(it.unitPriceSnapshot) > 0}"
@@ -124,7 +122,7 @@
                                 <td th:text="${it.quantity}">1</td>
 
                                 <td>
-                                    <form th:action="@{'/cart/remove/' + ${it.id}}" method="post">
+                                    <form th:action="@{/sebet/sil/{itemId}(itemId=${it.id})}" method="post">
                                         <button class="btn btn-danger btn-sm">Sil</button>
                                     </form>
                                 </td>
@@ -134,15 +132,15 @@
                     </div>
 
                     <div class="d-flex justify-content-between" style="gap:10px; flex-wrap:wrap;">
-                        <form th:action="@{/cart/clear}" method="post">
+                        <form th:action="@{/sebet/temizle}" method="post">
                             <button class="btn btn-outline-danger">Səbəti təmizlə</button>
                         </form>
 
-                        <a th:href="@{/checkout}" class="btn btn-primary">Ödənişə keç</a>
+                        <a th:href="@{/sifaris}" class="btn btn-primary">Sifarişi rəsmiləşdir</a>
                     </div>
 
                     <p class="mt-3 text-muted">
-                        Qeyd: Gün/saat/ay hesablanması checkout zamanı (götürmə/təhvil tarixləri seçiləndə) edilir.
+                        Qeyd: Gün/saat/ay hesablanması sifariş zamanı (götürmə/təhvil tarixləri seçiləndə) edilir.
                     </p>
 
                 </div>

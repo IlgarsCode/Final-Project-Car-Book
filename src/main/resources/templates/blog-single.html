@@ -16,7 +16,6 @@
             border-radius: 6px;
         }
 
-        /* ✅ testimonial kimi avatar */
         .comment-list .user-img{
             width: 60px;
             height: 60px;
@@ -31,7 +30,6 @@
 <body>
 <div layout:fragment="content">
 
-    <!-- ===== BANNER ===== -->
     <section class="hero-wrap hero-wrap-2 js-fullheight"
              th:if="${banner != null}"
              th:style="|background-image: url('${banner.photoUrl}');|"
@@ -46,7 +44,7 @@
                             <a th:href="@{/}">Ana səhifə <i class="ion-ios-arrow-forward"></i></a>
                         </span>
                         <span class="mr-2">
-                            <a th:href="@{/blog}">Bloq <i class="ion-ios-arrow-forward"></i></a>
+                            <a th:href="@{/bloq}">Bloq <i class="ion-ios-arrow-forward"></i></a>
                         </span>
                         <span>Bloq detalları <i class="ion-ios-arrow-forward"></i></span>
                     </p>
@@ -59,12 +57,10 @@
         </div>
     </section>
 
-    <!-- ===== CONTENT ===== -->
     <section class="ftco-section ftco-degree-bg">
         <div class="container">
             <div class="row">
 
-                <!-- LEFT -->
                 <div class="col-md-8 ftco-animate">
 
                     <h2 class="mb-3" th:text="${blog.title}">Bloq başlığı</h2>
@@ -96,7 +92,7 @@
                          th:if="${blog.tags != null and !blog.tags.empty}">
                         <div class="tagcloud">
                             <a th:each="t : ${blog.tags}"
-                               th:href="@{/blog(tag=${t.slug})}"
+                               th:href="@{/bloq(tag=${t.slug})}"
                                class="tag-cloud-link"
                                th:text="${t.name}">
                                 Teq
@@ -121,7 +117,7 @@
                         </div>
                     </div>
 
-                    <!-- ===== COMMENTS ===== -->
+                    <!-- COMMENTS -->
                     <div class="pt-5 mt-5">
 
                         <h3 class="mb-5" id="comments">
@@ -134,7 +130,6 @@
                                 Hələ şərh yazılmayıb.
                             </li>
 
-                            <!-- ✅ ROOT comments -->
                             <li class="comment" th:each="c : ${blog.comments}">
 
                                 <div class="vcard bio">
@@ -162,7 +157,6 @@
                                     </p>
                                 </div>
 
-                                <!-- ✅ REPLIES level 1 -->
                                 <ul class="children" th:if="${c.replies != null and !c.replies.empty}">
                                     <li class="comment" th:each="r : ${c.replies}">
 
@@ -191,7 +185,6 @@
                                             </p>
                                         </div>
 
-                                        <!-- ✅ level 2 -->
                                         <ul class="children" th:if="${r.replies != null and !r.replies.empty}">
                                             <li class="comment" th:each="r2 : ${r.replies}">
 
@@ -227,9 +220,8 @@
 
                             </li>
                         </ul>
-                        <!-- END comment-list -->
 
-                        <!-- ===== REPLY FORM (gizli) ===== -->
+                        <!-- REPLY FORM -->
                         <div class="comment-form-wrap pt-5" id="replyFormBlock" style="display:none;" th:if="${isLoggedIn}">
                             <h3 class="mb-4">Cavab yaz</h3>
 
@@ -238,7 +230,7 @@
                                 <a href="javascript:void(0)" class="ml-2" id="cancelReply">Ləğv et</a>
                             </div>
 
-                            <form th:action="@{/blog/{id}/reply(id=${blog.id})}"
+                            <form th:action="@{/bloq/{id}/cavab(id=${blog.id})}"
                                   th:object="${replyForm}"
                                   method="post"
                                   class="p-5 bg-light">
@@ -267,7 +259,6 @@
                             </form>
                         </div>
 
-                        <!-- Reply üçün login deyilsə -->
                         <div class="comment-form-wrap pt-5" th:if="${!isLoggedIn}">
                             <div class="alert alert-warning">
                                 Cavab yazmaq üçün giriş etməlisən.
@@ -275,7 +266,7 @@
                             </div>
                         </div>
 
-                        <!-- ===== COMMENT FORM (yalnız message) ===== -->
+                        <!-- COMMENT FORM -->
                         <div class="comment-form-wrap pt-5" id="commentForm">
                             <h3 class="mb-4">Şərh yaz</h3>
 
@@ -285,7 +276,7 @@
                             </div>
 
                             <form th:if="${isLoggedIn}"
-                                  th:action="@{/blog/{id}/comment(id=${blog.id})}"
+                                  th:action="@{/bloq/{id}/serh(id=${blog.id})}"
                                   th:object="${commentForm}"
                                   method="post"
                                   class="p-5 bg-light">
@@ -318,7 +309,7 @@
                 <div class="col-lg-4 sidebar ftco-animate">
 
                     <div class="sidebar-box">
-                        <form th:action="@{/blog}" method="get" class="search-form">
+                        <form th:action="@{/bloq}" method="get" class="search-form">
                             <div class="form-group">
                                 <span class="icon icon-search"></span>
                                 <input type="text" name="search" class="form-control"
@@ -335,8 +326,6 @@
                                 <li th:each="cc : ${carCategories}">
                                     <a th:href="@{/car(category=${cc.slug})}" class="cat-row">
                                         <div class="cat-left" th:text="${cc.name}">SUV</div>
-
-                                        <!-- ✅ FIX: cc.carCount YOX, cc.activeCarCount -->
                                         <div class="cat-right"
                                              th:text="'(' + ${cc.activeCarCount != null ? cc.activeCarCount : 0} + ')'">
                                             (0)
@@ -356,13 +345,13 @@
 
                         <div class="block-21 mb-4 d-flex" th:each="rb : ${recentBlogs}">
                             <a class="blog-img mr-4"
-                               th:href="@{/blog/{id}(id=${rb.id})}"
+                               th:href="@{/bloq/{id}(id=${rb.id})}"
                                th:style="|background-image: url('${rb.imageUrl != null ? rb.imageUrl : '/images/image_1.jpg'}');|">
                             </a>
 
                             <div class="text">
                                 <h3 class="heading">
-                                    <a th:href="@{/blog/{id}(id=${rb.id})}"
+                                    <a th:href="@{/bloq/{id}(id=${rb.id})}"
                                        th:text="${rb.title}">
                                         Bloq başlığı
                                     </a>
@@ -370,14 +359,14 @@
 
                                 <div class="meta">
                                     <div>
-                                        <a th:href="@{/blog/{id}(id=${rb.id})}">
+                                        <a th:href="@{/bloq/{id}(id=${rb.id})}">
                                             <span class="icon-calendar"></span>
                                             <span th:text="${#temporals.format(rb.createdAt, 'dd MMMM, yyyy')}">01 Fevral, 2026</span>
                                         </a>
                                     </div>
 
                                     <div>
-                                        <a th:href="@{/blog/{id}(id=${rb.id})}">
+                                        <a th:href="@{/bloq/{id}(id=${rb.id})}">
                                             <span class="icon-person"></span>
                                             <span th:text="${rb.author}">Admin</span>
                                         </a>
@@ -393,7 +382,6 @@
         </div>
     </section>
 
-    <!-- ✅ Reply JS -->
     <script>
         (function () {
             const replyBlock = document.getElementById('replyFormBlock');

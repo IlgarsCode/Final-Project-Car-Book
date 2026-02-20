@@ -5,7 +5,7 @@
       layout:decorate="~{layout}">
 <head>
     <meta charset="UTF-8">
-    <title>Ödəniş</title>
+    <title>Sifariş</title>
 
     <style>
         /* ===== Checkout location picker (custom dropdown) ===== */
@@ -36,9 +36,7 @@
             background: #fff;
         }
 
-        .loc-picker{
-            position: relative;
-        }
+        .loc-picker{ position: relative; }
         .loc-btn{
             width: 100%;
             text-align: left;
@@ -76,16 +74,8 @@
             box-shadow: 0 0 0 4px rgba(79,134,247,.12);
             flex: 0 0 auto;
         }
-        .loc-text{
-            display: flex;
-            flex-direction: column;
-            min-width: 0;
-        }
-        .loc-label{
-            font-size: 12px;
-            color: #6c757d;
-            line-height: 1.1;
-        }
+        .loc-text{ display:flex; flex-direction:column; min-width:0; }
+        .loc-label{ font-size:12px; color:#6c757d; line-height:1.1; }
         .loc-value{
             font-weight: 600;
             color: #111;
@@ -94,11 +84,7 @@
             text-overflow: ellipsis;
             line-height: 1.2;
         }
-        .loc-arrow{
-            color: #6c757d;
-            font-size: 16px;
-            flex: 0 0 auto;
-        }
+        .loc-arrow{ color:#6c757d; font-size:16px; flex:0 0 auto; }
 
         .loc-panel{
             position: absolute;
@@ -149,32 +135,16 @@
             justify-content: space-between;
             gap: 10px;
         }
-        .loc-item:hover{
-            background: rgba(79,134,247,.10);
-        }
-        .loc-item .name{
-            font-weight: 600;
-            color: #111;
-            line-height: 1.2;
-        }
-        .loc-item .hint{
-            font-size: 12px;
-            color: #6c757d;
-            white-space: nowrap;
-        }
-        .loc-empty{
-            padding: 14px 12px;
-            color: #6c757d;
-            text-align: center;
-        }
+        .loc-item:hover{ background: rgba(79,134,247,.10); }
+        .loc-item .name{ font-weight:600; color:#111; line-height:1.2; }
+        .loc-item .hint{ font-size:12px; color:#6c757d; white-space:nowrap; }
+        .loc-empty{ padding:14px 12px; color:#6c757d; text-align:center; }
 
-        /* Make the filter section sit slightly lower (not inside hero) */
         .checkout-section{
-            margin-top: -40px; /* hero overlap effect */
+            margin-top: -40px;
             position: relative;
             z-index: 2;
         }
-
         @media (max-width: 767px){
             .checkout-section{ margin-top: -20px; }
         }
@@ -192,9 +162,9 @@
                 <div class="col-md-9 ftco-animate pb-5">
                     <p class="breadcrumbs">
                         <span class="mr-2"><a th:href="@{/}">Ana səhifə <i class="ion-ios-arrow-forward"></i></a></span>
-                        <span>Ödəniş <i class="ion-ios-arrow-forward"></i></span>
+                        <span>Sifariş <i class="ion-ios-arrow-forward"></i></span>
                     </p>
-                    <h1 class="mb-3 bread">Ödəniş</h1>
+                    <h1 class="mb-3 bread">Sifariş</h1>
                 </div>
             </div>
         </div>
@@ -215,13 +185,11 @@
                         <div class="trip-card__body">
                             <div id="checkoutMsg" class="alert" style="display:none;"></div>
 
-                            <form id="checkoutForm" th:action="@{/checkout}" th:object="${checkoutForm}" method="post">
+                            <form id="checkoutForm" th:action="@{/sifaris}" th:object="${checkoutForm}" method="post">
 
-                                <!-- hidden ids (bind) -->
                                 <input type="hidden" th:field="*{pickupLocationId}" id="pickupLocationId">
                                 <input type="hidden" th:field="*{dropoffLocationId}" id="dropoffLocationId">
 
-                                <!-- Pick-up custom list -->
                                 <div class="form-group">
                                     <div class="loc-picker" data-target="pickup">
                                         <button type="button" class="loc-btn" data-open>
@@ -260,7 +228,6 @@
                                            th:errors="*{pickupLocationId}"></small>
                                 </div>
 
-                                <!-- Drop-off custom list -->
                                 <div class="form-group">
                                     <div class="loc-picker" data-target="dropoff">
                                         <button type="button" class="loc-btn" data-open>
@@ -323,7 +290,7 @@
 
                                 <div class="form-group" style="gap:10px; display:flex; flex-wrap:wrap;">
                                     <button id="placeOrderBtn" class="btn btn-primary" type="submit">Sifarişi təsdiqlə</button>
-                                    <a th:href="@{/cart}" class="btn btn-outline-secondary">Səbətə qayıt</a>
+                                    <a th:href="@{/sebet}" class="btn btn-outline-secondary">Səbətə qayıt</a>
                                 </div>
 
                                 <div class="text-danger" th:if="${#fields.hasGlobalErrors()}"
@@ -367,7 +334,7 @@
                             </div>
 
                             <p class="mt-3 text-muted">
-                                Yekun məbləğ checkout zamanı tarixlərə görə (saat/gün/ay) hesablanacaq və OrderItem-a yazılacaq.
+                                Yekun məbləğ sifariş zamanı tarixlərə görə (saat/gün/ay) hesablanacaq və OrderItem-a yazılacaq.
                             </p>
                         </div>
                     </div>
@@ -377,7 +344,6 @@
         </div>
     </section>
 
-    <!-- ===== JS: custom dropdown + date validation + availability check ===== -->
     <script th:inline="javascript">
         (function(){
             const form = document.getElementById('checkoutForm');
@@ -406,7 +372,6 @@
                 msg.textContent = text;
             }
 
-            // ===== date min sync =====
             const t = todayISO();
             pickup.min = t;
             dropoff.min = t;
@@ -422,9 +387,8 @@
                 }
             });
 
-            // ===== custom dropdown =====
             function setupPicker(pickerEl){
-                const target = pickerEl.getAttribute('data-target'); // pickup / dropoff
+                const target = pickerEl.getAttribute('data-target');
                 const btnOpen = pickerEl.querySelector('[data-open]');
                 const panel = pickerEl.querySelector('[data-panel]');
                 const search = pickerEl.querySelector('[data-search]');
@@ -485,7 +449,6 @@
                     close();
                 });
 
-                // prefill (if id already set from ctx / validation)
                 const currentId = idInput.value;
                 if (currentId){
                     const found = list.querySelector(`.loc-item[data-id="${currentId}"]`);
@@ -497,7 +460,6 @@
 
             document.querySelectorAll('.loc-picker').forEach(setupPicker);
 
-            // ===== availability check =====
             async function checkAllCarsAvailable(pickupDate, dropoffDate){
                 if (!Array.isArray(carIds) || carIds.length === 0) return { ok: true };
 

@@ -15,18 +15,11 @@ public class ServiceController {
     private final BannerService bannerService;
     private final ServicePageService servicePageService;
 
-    @GetMapping("/services")
-    public String services(Model model) {
+    @GetMapping("/xidmetler")
+    public String xidmetler(Model model) {
 
-        model.addAttribute(
-                "banner",
-                bannerService.getBanner(BannerType.SERVICE)
-        );
-
-        model.addAttribute(
-                "services",
-                servicePageService.getActiveServices()
-        );
+        model.addAttribute("banner", bannerService.getBanner(BannerType.SERVICE));
+        model.addAttribute("services", servicePageService.getActiveServices());
 
         return "services";
     }

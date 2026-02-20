@@ -22,7 +22,8 @@
                         <h2 class="mb-3">Rəyinizi yazın</h2>
                     </div>
 
-                    <form th:action="@{/testimonial/new}" th:object="${form}" method="post">
+                    <!-- ✅ AZ: /reyler/yeni -->
+                    <form th:action="@{/reyler/yeni}" th:object="${form}" method="post">
 
                         <div class="form-group">
                             <label>Vəzifə (istəyə görə)</label>

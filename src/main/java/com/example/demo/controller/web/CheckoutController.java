@@ -23,7 +23,7 @@ public class CheckoutController {
     private final OrderService orderService;
     private final LocationService locationService;
 
-    @GetMapping("/checkout")
+    @GetMapping("/sifaris")
     public String checkoutPage(@AuthenticationPrincipal UserDetails user,
                                HttpSession session,
                                Model model) {
@@ -34,7 +34,6 @@ public class CheckoutController {
         TripContext ctx = (TripContext) session.getAttribute("TRIP_CTX");
         model.addAttribute("trip", ctx);
 
-        // ✅ locations list
         model.addAttribute("locations", locationService.getActiveLocations());
 
         var checkoutForm = new CheckoutCreateDto();
@@ -50,7 +49,7 @@ public class CheckoutController {
         return "checkout";
     }
 
-    @PostMapping("/checkout")
+    @PostMapping("/sifaris")
     public String doCheckout(@AuthenticationPrincipal UserDetails user,
                              @Valid @ModelAttribute("checkoutForm") CheckoutCreateDto checkoutForm,
                              BindingResult br,
@@ -60,17 +59,16 @@ public class CheckoutController {
         var cart = cartService.getCartForUser(user.getUsername());
 
         if (cart.getItems() == null || cart.getItems().isEmpty()) {
-            br.reject("cart.empty", "Cart boşdur");
+            br.reject("cart.empty", "Səbət boşdur");
         }
 
         if (br.hasErrors()) {
             model.addAttribute("cart", cart);
             model.addAttribute("trip", session.getAttribute("TRIP_CTX"));
-            model.addAttribute("locations", locationService.getActiveLocations()); // ✅ unutma
+            model.addAttribute("locations", locationService.getActiveLocations());
             return "checkout";
         }
 
-        // ✅ orderService checkout artıq ID-lərlə işləməlidir
         var order = orderService.checkout(user.getUsername(), checkoutForm);
         session.removeAttribute("TRIP_CTX");
 

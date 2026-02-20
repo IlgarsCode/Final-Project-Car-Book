@@ -29,14 +29,19 @@ public class CarController {
     private final CarCategoryRepository carCategoryRepository;
     private final CarSegmentRepository carSegmentRepository;
 
-    @GetMapping("/car")
+    // =========================
+    // ✅ AZ ROUTES
+    // =========================
+
+    // /car -> /masinlar
+    @GetMapping("/masinlar")
     public String carPage(@RequestParam(name = "category", required = false) String categorySlug,
                           @RequestParam(name = "segment", required = false) String segmentSlug,
                           Model model) {
+
         model.addAttribute("banner", bannerService.getBanner(BannerType.CAR));
         model.addAttribute("cars", carService.getActiveCars(categorySlug, segmentSlug));
 
-        // frontend dropdown üçün hazır saxla
         model.addAttribute("carCategories", carCategoryRepository.findAllWithActiveCarCount());
         model.addAttribute("segments", carSegmentRepository.findAllWithActiveCarCount());
         model.addAttribute("selectedCategory", categorySlug);
@@ -45,7 +50,8 @@ public class CarController {
         return "car";
     }
 
-    @GetMapping("/car/{slug}")
+    // /car/{slug} -> /masinlar/{slug}
+    @GetMapping("/masinlar/{slug}")
     public String carSingle(@PathVariable String slug,
                             @RequestParam(name = "rate", required = false) PricingRateType rate,
 
@@ -88,7 +94,8 @@ public class CarController {
         return "car-single";
     }
 
-    @PostMapping("/car/{slug}/review")
+    // /car/{slug}/review -> /masinlar/{slug}/rey
+    @PostMapping("/masinlar/{slug}/rey")
     public String addReview(@PathVariable String slug,
                             @RequestParam(name = "rpage", defaultValue = "0") int rpage,
                             @Valid @ModelAttribute("reviewForm") CarReviewCreateDto form,
@@ -114,6 +121,56 @@ public class CarController {
         }
 
         carReviewService.create(slug, form);
-        return "redirect:/car/" + slug + "?rpage=0#pills-review";
+        return "redirect:/masinlar/" + slug + "?rpage=0#pills-review";
+    }
+
+    // =========================
+    // ✅ OLD ROUTES -> REDIRECT
+    // =========================
+
+    @GetMapping("/car")
+    public String oldCarsRedirect(@RequestParam(name = "category", required = false) String categorySlug,
+                                  @RequestParam(name = "segment", required = false) String segmentSlug) {
+
+        String url = "redirect:/masinlar";
+        boolean hasQ = false;
+
+        if (categorySlug != null && !categorySlug.isBlank()) {
+            url += (hasQ ? "&" : "?") + "category=" + categorySlug;
+            hasQ = true;
+        }
+        if (segmentSlug != null && !segmentSlug.isBlank()) {
+            url += (hasQ ? "&" : "?") + "segment=" + segmentSlug;
+        }
+        return url;
+    }
+
+    @GetMapping("/car/{slug}")
+    public String oldCarSingleRedirect(@PathVariable String slug,
+                                       @RequestParam(name = "rate", required = false) PricingRateType rate,
+                                       @RequestParam(name = "pickupLoc", required = false) Long pickupLoc,
+                                       @RequestParam(name = "dropoffLoc", required = false) Long dropoffLoc,
+                                       @RequestParam(name = "pickupDate", required = false) LocalDate pickupDate,
+                                       @RequestParam(name = "dropoffDate", required = false) LocalDate dropoffDate,
+                                       @RequestParam(name = "rpage", defaultValue = "0") int rpage) {
+
+        // query-ni qoruyuruq
+        String url = "redirect:/masinlar/" + slug;
+
+        String q = "";
+        if (rate != null) q += (q.isEmpty() ? "?" : "&") + "rate=" + rate.name();
+        if (pickupLoc != null) q += (q.isEmpty() ? "?" : "&") + "pickupLoc=" + pickupLoc;
+        if (dropoffLoc != null) q += (q.isEmpty() ? "?" : "&") + "dropoffLoc=" + dropoffLoc;
+        if (pickupDate != null) q += (q.isEmpty() ? "?" : "&") + "pickupDate=" + pickupDate;
+        if (dropoffDate != null) q += (q.isEmpty() ? "?" : "&") + "dropoffDate=" + dropoffDate;
+        if (rpage != 0) q += (q.isEmpty() ? "?" : "&") + "rpage=" + rpage;
+
+        return url + q;
+    }
+
+    @PostMapping("/car/{slug}/review")
+    public String oldReviewRedirect(@PathVariable String slug) {
+        // POST-u birbaşa redirect etmək yetər; form action-u da düzəltmək daha doğrudur (aşağıda yazıram)
+        return "redirect:/masinlar/" + slug + "?rpage=0#pills-review";
     }
 }

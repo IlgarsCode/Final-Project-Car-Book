@@ -21,8 +21,8 @@ public class ContactController {
     private final BannerService bannerService;
     private final EmailService emailService;
 
-    // ✅ CONTACT PAGE (GET)
-    @GetMapping("/contact")
+    // ✅ CONTACT PAGE (GET) -> /elaqe
+    @GetMapping("/elaqe")
     public String contactPage(Model model) {
 
         ContactInfo contactInfo = contactInfoService.getActiveForWeb();
@@ -39,10 +39,11 @@ public class ContactController {
         return "contact";
     }
 
-    @PostMapping("/contact")
+    // ✅ CONTACT PAGE (POST) -> /elaqe
+    @PostMapping("/elaqe")
     public String sendMessage(@ModelAttribute("contact") ContactDto dto) {
         contactMessageService.saveMessage(dto);
         emailService.sendContactMail(dto);
-        return "redirect:/contact?success";
+        return "redirect:/elaqe?success";
     }
 }

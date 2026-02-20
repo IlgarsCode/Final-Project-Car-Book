@@ -14,6 +14,7 @@ import com.example.demo.services.BlogService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -23,7 +24,6 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
-import org.springframework.security.authentication.AnonymousAuthenticationToken;
 
 import java.time.LocalDateTime;
 
@@ -41,9 +41,11 @@ public class BlogController {
     private final UserRepository userRepository;
 
     // =========================
-    // PUBLIC LIST
+    // ✅ AZ ROUTES (Bloq)
     // =========================
-    @GetMapping("/blog")
+
+    // PUBLIC LIST
+    @GetMapping("/bloq")
     public String blogPage(
             @RequestParam(name = "page", defaultValue = "1") int page,
             @RequestParam(name = "search", required = false) String search,
@@ -65,25 +67,17 @@ public class BlogController {
         return "blog";
     }
 
-    // =========================
     // BLOG CREATE (USER)
-    // =========================
-    @GetMapping("/blog/new")
-    public String newBlogPage(
-            @AuthenticationPrincipal UserDetails user,
-            Model model
-    ) {
-        if (user == null) {
-            // normalda security redirect edəcək, bu sadəcə safety
-            return "redirect:/auth/login";
-        }
+    @GetMapping("/bloq/yeni")
+    public String newBlogPage(@AuthenticationPrincipal UserDetails user, Model model) {
+        if (user == null) return "redirect:/auth/login";
 
         model.addAttribute("banner", bannerService.getBanner(BannerType.BLOGS));
         model.addAttribute("form", new BlogCreateDto());
         return "blog-create";
     }
 
-    @PostMapping("/blog/new")
+    @PostMapping("/bloq/yeni")
     public String createBlog(
             @AuthenticationPrincipal UserDetails user,
             @Valid @ModelAttribute("form") BlogCreateDto form,
@@ -100,17 +94,14 @@ public class BlogController {
             return "blog-create";
         }
 
-        // ✅ burda EMAIL göndər
-        String authorEmail = user.getUsername(); // səndə login usernameParameter=email
+        String authorEmail = user.getUsername();
         Long id = blogService.createBlog(authorEmail, form, image);
 
-        return "redirect:/blog/" + id;
+        return "redirect:/bloq/" + id;
     }
 
-    // =========================
     // MY BLOGS (USER)
-    // =========================
-    @GetMapping("/my-blogs")
+    @GetMapping("/menim-bloqlarim")
     public String myBlogs(
             @AuthenticationPrincipal UserDetails user,
             @RequestParam(name = "page", defaultValue = "1") int page,
@@ -122,7 +113,6 @@ public class BlogController {
         int pageIndex = Math.max(page - 1, 0);
 
         String myEmail = user.getUsername();
-
         var blogsPage = blogService.getMyBlogs(myEmail, pageIndex, size);
 
         model.addAttribute("banner", bannerService.getBanner(BannerType.BLOGS));
@@ -133,20 +123,17 @@ public class BlogController {
         return "my-blogs";
     }
 
-    @PostMapping("/my-blogs/{id}/delete")
+    @PostMapping("/menim-bloqlarim/{id}/sil")
     public String deleteMyBlog(@PathVariable Long id, Authentication auth) {
         if (auth == null || auth.getName() == null) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Giriş et");
         }
         blogService.deleteMyBlog(auth.getName(), id);
-        return "redirect:/my-blogs?deleted=1";
+        return "redirect:/menim-bloqlarim?deleted=1";
     }
 
-
-    // =========================
     // BLOG DETAIL
-    // =========================
-    @GetMapping("/blog/{id}")
+    @GetMapping("/bloq/{id}")
     public String blogSingle(@PathVariable Long id, Model model, Authentication auth) {
         boolean isLoggedIn = auth != null
                 && auth.isAuthenticated()
@@ -156,8 +143,8 @@ public class BlogController {
         return "blog-single";
     }
 
-    // ✅ Top-level comment (anonymous allowed)
-    @PostMapping("/blog/{id}/comment")
+    // Top-level comment (login required)
+    @PostMapping("/bloq/{id}/serh")
     public String addComment(
             @PathVariable Long id,
             @AuthenticationPrincipal UserDetails user,
@@ -196,22 +183,19 @@ public class BlogController {
         BlogComment comment = new BlogComment();
         comment.setBlog(blog);
         comment.setParent(null);
-
-        // ✅ profildən avtomatik
         comment.setFullName(fullName);
         comment.setEmail(u.getEmail());
-
         comment.setMessage(form.getMessage().trim());
         comment.setCreatedAt(LocalDateTime.now());
         comment.setIsActive(true);
 
         blogCommentRepository.save(comment);
 
-        return "redirect:/blog/" + id + "#comments";
+        return "redirect:/bloq/" + id + "#comments";
     }
 
-    // ✅ Reply (login required)
-    @PostMapping("/blog/{id}/reply")
+    // Reply (login required)
+    @PostMapping("/bloq/{id}/cavab")
     public String addReply(
             @PathVariable Long id,
             @AuthenticationPrincipal UserDetails user,
@@ -261,7 +245,7 @@ public class BlogController {
 
         blogCommentRepository.save(reply);
 
-        return "redirect:/blog/" + id + "#comments";
+        return "redirect:/bloq/" + id + "#comments";
     }
 
     private void fillBlogSingleModel(
@@ -282,8 +266,56 @@ public class BlogController {
 
         model.addAttribute("search", search);
         model.addAttribute("tag", tag);
-
-        // ✅ UI üçün
         model.addAttribute("isLoggedIn", isLoggedIn);
+    }
+
+    // =========================
+    // ✅ OLD ROUTES -> REDIRECT
+    // =========================
+
+    @GetMapping("/blog")
+    public String oldBlogListRedirect(
+            @RequestParam(name = "page", defaultValue = "1") int page,
+            @RequestParam(name = "search", required = false) String search,
+            @RequestParam(name = "tag", required = false) String tag
+    ) {
+        return "redirect:/bloq?page=" + page
+                + (search != null ? "&search=" + search : "")
+                + (tag != null ? "&tag=" + tag : "");
+    }
+
+    @GetMapping("/blog/new")
+    public String oldBlogNewRedirect() {
+        return "redirect:/bloq/yeni";
+    }
+
+    @PostMapping("/blog/new")
+    public String oldBlogNewPostRedirect() {
+        return "redirect:/bloq/yeni";
+    }
+
+    @GetMapping("/blog/{id}")
+    public String oldBlogDetailRedirect(@PathVariable Long id) {
+        return "redirect:/bloq/" + id;
+    }
+
+    @PostMapping("/blog/{id}/comment")
+    public String oldBlogCommentRedirect(@PathVariable Long id) {
+        return "redirect:/bloq/" + id;
+    }
+
+    @PostMapping("/blog/{id}/reply")
+    public String oldBlogReplyRedirect(@PathVariable Long id) {
+        return "redirect:/bloq/" + id;
+    }
+
+    @GetMapping("/my-blogs")
+    public String oldMyBlogsRedirect(@RequestParam(name = "page", defaultValue = "1") int page) {
+        return "redirect:/menim-bloqlarim?page=" + page;
+    }
+
+    @PostMapping("/my-blogs/{id}/delete")
+    public String oldDeleteRedirect(@PathVariable Long id) {
+        return "redirect:/menim-bloqlarim/" + id + "/sil";
     }
 }

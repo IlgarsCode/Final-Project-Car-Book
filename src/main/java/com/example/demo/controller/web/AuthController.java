@@ -13,32 +13,32 @@ import org.springframework.web.server.ResponseStatusException;
 
 @Controller
 @RequiredArgsConstructor
-@RequestMapping("/auth")
 public class AuthController {
 
     private final RegisterOtpService registerOtpService;
 
-    @GetMapping("/login")
-    public String loginPage(
-            @RequestParam(value = "error", required = false) String error,
-            @RequestParam(value = "logout", required = false) String logout,
-            @RequestParam(value = "registered", required = false) String registered,
-            Model model
-    ) {
-        model.addAttribute("error", error != null);
-        model.addAttribute("logout", logout != null);
-        model.addAttribute("registered", registered != null);
+    // ✅ /giris
+    @GetMapping("/giris")
+    public String loginPage(@RequestParam(value = "xeta", required = false) String xeta,
+                            @RequestParam(value = "cixis", required = false) String cixis,
+                            @RequestParam(value = "qeydiyyat", required = false) String qeydiyyat,
+                            Model model) {
+
+        model.addAttribute("error", xeta != null);
+        model.addAttribute("logout", cixis != null);
+        model.addAttribute("registered", qeydiyyat != null);
         return "auth/login";
     }
 
-    @GetMapping("/register")
+    // ✅ /qeydiyyat
+    @GetMapping("/qeydiyyat")
     public String registerPage(Model model) {
         model.addAttribute("form", new RegisterDto());
         return "auth/register";
     }
 
-    // ✅ dəyişdi: indi OTP göndərir
-    @PostMapping("/register")
+    // ✅ /qeydiyyat (OTP göndərir)
+    @PostMapping("/qeydiyyat")
     public String doRegister(@Valid @ModelAttribute("form") RegisterDto form,
                              BindingResult br,
                              Model model) {
@@ -55,11 +55,11 @@ public class AuthController {
             return "auth/register";
         }
 
-        return "redirect:/auth/register-verify?email=" + form.getEmail().trim().toLowerCase();
+        return "redirect:/qeydiyyat-tesdiq?email=" + form.getEmail().trim().toLowerCase();
     }
 
-    // ✅ yeni səhifə
-    @GetMapping("/register-verify")
+    // ✅ /qeydiyyat-tesdiq
+    @GetMapping("/qeydiyyat-tesdiq")
     public String registerVerifyPage(@RequestParam("email") String email,
                                      Model model) {
         VerifyRegisterOtpDto dto = new VerifyRegisterOtpDto();
@@ -68,8 +68,8 @@ public class AuthController {
         return "auth/register-verify";
     }
 
-    // ✅ yeni post
-    @PostMapping("/register-verify")
+    // ✅ /qeydiyyat-tesdiq
+    @PostMapping("/qeydiyyat-tesdiq")
     public String registerVerify(@Valid @ModelAttribute("form") VerifyRegisterOtpDto form,
                                  BindingResult br,
                                  Model model) {
@@ -78,7 +78,10 @@ public class AuthController {
 
         try {
             registerOtpService.verifyRegisterOtpAndCreateUser(form.getEmail(), form.getCode());
-            return "redirect:/auth/login?registered=1";
+
+            // ✅ əvvəl: /auth/login?registered=1
+            return "redirect:/giris?qeydiyyat=1";
+
         } catch (ResponseStatusException ex) {
             model.addAttribute("serverError", ex.getReason());
             return "auth/register-verify";

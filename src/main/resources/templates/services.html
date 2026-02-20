@@ -1,8 +1,7 @@
 <!DOCTYPE html>
-<html
-        xmlns:th="http://www.thymeleaf.org"
-        xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-        layout:decorate="~{layout}">
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
 <head>
     <meta charset="UTF-8">
     <title>Xidmətlər</title>
@@ -13,7 +12,7 @@
 
     <section class="hero-wrap hero-wrap-2 js-fullheight"
              th:if="${banner != null}"
-             th:style="'background-image: url(' + ${banner.photoUrl} + ');'">
+             th:style="|background-image: url('${banner.photoUrl}');|">
 
         <div class="overlay"></div>
 
@@ -22,21 +21,19 @@
                 <div class="col-md-9 ftco-animate pb-5">
 
                     <p class="breadcrumbs">
-                    <span class="mr-2">
-                        <a th:href="@{/}">
-                            Ana səhifə <i class="ion-ios-arrow-forward"></i>
-                        </a>
-                    </span>
+                        <span class="mr-2">
+                            <a th:href="@{/}">
+                                Ana səhifə <i class="ion-ios-arrow-forward"></i>
+                            </a>
+                        </span>
                         <span>Xidmətlər</span>
                     </p>
 
-                    <!-- 🔽 Banner Title -->
                     <h1 class="mb-3 bread"
                         th:text="${banner.title != null ? banner.title : 'Xidmətlərimiz'}">
                         Xidmətlərimiz
                     </h1>
 
-                    <!-- 🔽 Banner Description (istəyə bağlı) -->
                     <p class="text-white"
                        th:if="${banner.description != null}"
                        th:text="${banner.description}">
@@ -60,17 +57,14 @@
 
             <div class="row">
 
-                <div class="col-md-3"
-                     th:each="service : ${services}">
-
+                <div class="col-md-3" th:each="service : ${services}">
                     <div class="services services-2 w-100 text-center">
                         <div class="icon d-flex align-items-center justify-content-center">
                             <span th:class="${service.icon}"></span>
                         </div>
 
                         <div class="text w-100">
-                            <h3 class="heading mb-2"
-                                th:text="${service.title}">
+                            <h3 class="heading mb-2" th:text="${service.title}">
                                 Xidmət başlığı
                             </h3>
 
@@ -79,6 +73,10 @@
                             </p>
                         </div>
                     </div>
+                </div>
+
+                <div class="col-12" th:if="${services == null or #lists.isEmpty(services)}">
+                    <div class="alert alert-info">Hazırda xidmət yoxdur.</div>
                 </div>
 
             </div>

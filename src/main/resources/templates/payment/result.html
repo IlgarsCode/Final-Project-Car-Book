@@ -27,13 +27,13 @@
 
             <a class="btn btn-primary"
                th:if="${orderId != null}"
-               th:href="@{/order/{id}(id=${orderId})}">
+               th:href="@{/sifarislerim/{id}(id=${orderId})}">
                 Sifarişi göstər
             </a>
 
             <a class="btn btn-outline-secondary ml-2"
                th:if="${orderId == null}"
-               th:href="@{/order}">
+               th:href="@{/sifarislerim}">
                 Sifarişlərim
             </a>
         </div>

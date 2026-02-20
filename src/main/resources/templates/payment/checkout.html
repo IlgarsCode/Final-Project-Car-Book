@@ -6,29 +6,13 @@
     <meta charset="UTF-8">
     <title>Ödəniş</title>
     <style>
-        .pay-card{
-            border-radius: 16px;
-            box-shadow: 0 12px 34px rgba(0,0,0,.08);
-            border: 1px solid rgba(0,0,0,.06);
-            overflow: hidden;
-        }
-        .pay-head{
-            padding: 18px 18px;
-            background: linear-gradient(135deg, rgba(79,134,247,.18), rgba(79,134,247,.06));
-            border-bottom: 1px solid rgba(0,0,0,.06);
-        }
-        .pay-title{ margin:0; font-weight:800; }
-        .pay-sub{ margin:6px 0 0 0; color:#6c757d; font-size:13px; }
-        .pay-body{ padding: 18px; background:#fff; }
-        .test-cards{
-            background: rgba(0,0,0,.03);
-            border: 1px dashed rgba(0,0,0,.15);
-            padding: 12px;
-            border-radius: 12px;
-            font-size: 13px;
-            color:#333;
-        }
-        .mono{ font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; }
+        .pay-card{border-radius:16px;box-shadow:0 12px 34px rgba(0,0,0,.08);border:1px solid rgba(0,0,0,.06);overflow:hidden;}
+        .pay-head{padding:18px;background:linear-gradient(135deg, rgba(79,134,247,.18), rgba(79,134,247,.06));border-bottom:1px solid rgba(0,0,0,.06);}
+        .pay-title{margin:0;font-weight:800;}
+        .pay-sub{margin:6px 0 0;color:#6c757d;font-size:13px;}
+        .pay-body{padding:18px;background:#fff;}
+        .test-cards{background:rgba(0,0,0,.03);border:1px dashed rgba(0,0,0,.15);padding:12px;border-radius:12px;font-size:13px;color:#333;}
+        .mono{font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace;}
     </style>
 </head>
 <body>
@@ -45,8 +29,7 @@
                             <h3 class="pay-title">Təhlükəsiz ödəniş (Simulyasiya)</h3>
                             <p class="pay-sub">
                                 Sifariş #<span th:text="${payment.order.id}">0</span>
-                                • Məbləğ:
-                                <strong>$<span th:text="${payment.amount}">0</span></strong>
+                                • Məbləğ: <strong>$<span th:text="${payment.amount}">0</span></strong>
                             </p>
                         </div>
 
@@ -59,11 +42,16 @@
                                 <div class="text-muted mt-1">Bitmə tarixi: 12/30 • CVC: 123</div>
                             </div>
 
-                            <form th:action="@{'/payment/checkout/' + ${payment.id}}"
+                            <form th:action="@{'/odenis/kassa/' + ${payment.id}}"
                                   th:object="${form}"
                                   method="post"
                                   class="p-3 bg-light"
                                   style="border-radius:14px;">
+
+                                <!-- CSRF -->
+                                <input type="hidden" th:if="${_csrf != null}"
+                                       th:name="${_csrf.parameterName}"
+                                       th:value="${_csrf.token}"/>
 
                                 <div class="form-group">
                                     <label>Kart sahibi</label>
@@ -94,7 +82,10 @@
                                     <button class="btn btn-primary" type="submit">
                                         Ödə $<span th:text="${payment.amount}">0</span>
                                     </button>
-                                    <a class="btn btn-outline-secondary" th:href="@{'/order/' + ${payment.order.id}}">
+
+                                    <!-- Sifarişə qayıt -->
+                                    <a class="btn btn-outline-secondary"
+                                       th:href="@{/sifarislerim/{id}(id=${payment.order.id})}">
                                         Sifarişə qayıt
                                     </a>
                                 </div>

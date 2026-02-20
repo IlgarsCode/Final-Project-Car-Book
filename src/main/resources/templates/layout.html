@@ -44,26 +44,34 @@
             <ul class="navbar-nav ml-auto">
 
                 <li class="nav-item"><a th:href="@{/}" class="nav-link">Ana səhifə</a></li>
-                <li class="nav-item"><a th:href="@{/about}" class="nav-link">Haqqımızda</a></li>
-                <li class="nav-item"><a th:href="@{/services}" class="nav-link">Xidmətlər</a></li>
-                <li class="nav-item"><a th:href="@{/pricing}" class="nav-link">Qiymətlər</a></li>
-                <li class="nav-item"><a th:href="@{/car}" class="nav-link">Maşınlar</a></li>
+                <li class="nav-item">
+                    <a th:href="@{/haqqimizda}" class="nav-link">Haqqımızda</a>
+                </li>
+                <li class="nav-item">
+                    <a th:href="@{/xidmetler}" class="nav-link">Xidmətlər</a>
+                </li>
+                <li class="nav-item"><a th:href="@{/qiymetler}" class="nav-link">Qiymətlər</a></li>
+                <li class="nav-item"><a th:href="@{/masinlar}" class="nav-link">Maşınlar</a></li>
 
-                <li class="nav-item"><a th:href="@{/blog}" class="nav-link">Bloq</a></li>
-                <li class="nav-item"><a th:href="@{/testimonial}" class="nav-link">Rəylər</a></li>
-                <li class="nav-item"><a th:href="@{/contact}" class="nav-link">Əlaqə</a></li>
+                <li class="nav-item"><a th:href="@{/bloq}" class="nav-link">Bloq</a></li>
+                <li class="nav-item">
+                    <a th:href="@{/reyler}" class="nav-link">Rəylər</a>
+                </li>
+                <li class="nav-item">
+                    <a th:href="@{/elaqe}" class="nav-link">Əlaqə</a>
+                </li>
 
                 <!-- ✅ Profil yalnız logged-in -->
                 <li class="nav-item" sec:authorize="isAuthenticated()">
-                    <a th:href="@{/profile}" class="nav-link">Profil</a>
+                    <a th:href="@{/profil}" class="nav-link">Profil</a>
                 </li>
 
-                <!-- ✅ Login/Qeydiyyat yalnız anonymous -->
+                <!-- ✅ Giriş/Qeydiyyat yalnız anonymous -->
                 <li class="nav-item" sec:authorize="isAnonymous()">
-                    <a th:href="@{/auth/login}" class="nav-link">Giriş</a>
+                    <a th:href="@{/giris}" class="nav-link">Giriş</a>
                 </li>
                 <li class="nav-item" sec:authorize="isAnonymous()">
-                    <a th:href="@{/auth/register}" class="nav-link">Qeydiyyat</a>
+                    <a th:href="@{/qeydiyyat}" class="nav-link">Qeydiyyat</a>
                 </li>
 
                 <!-- ✅ Digərləri dropdown (Logout-dan əvvəl) -->
@@ -81,7 +89,7 @@
                     <div class="dropdown-menu dropdown-menu-right" aria-labelledby="othersDropdown">
 
                         <!-- My Orders: yalnız USER -->
-                        <a class="dropdown-item" th:href="@{/my-orders}" sec:authorize="hasRole('USER')">
+                        <a class="dropdown-item" th:href="@{/sifarislerim}" sec:authorize="hasRole('USER')">
                             Sifarişlərim
                         </a>
 
@@ -100,7 +108,7 @@
 
                 <!-- ✅ Çıxış (POST) -->
                 <li class="nav-item" sec:authorize="isAuthenticated()">
-                    <form th:action="@{/auth/logout}" method="post" style="margin:0;">
+                    <form th:action="@{/giris/cixis}" method="post" style="margin:0;">
                         <button type="submit" class="nav-link btn btn-link"
                                 style="padding-top:.9rem; padding-bottom:.9rem; color: rgba(255,255,255,.7); text-decoration:none;">
                             Çıxış

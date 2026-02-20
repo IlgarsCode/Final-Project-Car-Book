@@ -17,7 +17,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 @Controller
 @RequiredArgsConstructor
-@RequestMapping("/profile")
+@RequestMapping("/profil") // ✅ AZ URL
 public class ProfileController {
 
     private final ProfileService profileService;
@@ -70,24 +70,23 @@ public class ProfileController {
 
         profileService.updateProfile(currentEmail, form);
 
-        // email dəyişibsə session-da #authentication.name köhnə qalır → ən təmiz yol logout edib yenidən login etdirməkdir
         String newEmail = form.getEmail().trim().toLowerCase();
         if (!newEmail.equals(oldEmail)) {
             new SecurityContextLogoutHandler().logout(request, response, auth);
             return "redirect:/auth/login?logout=true";
         }
 
-        return "redirect:/profile?ok=1";
+        return "redirect:/profil?ok=1"; // ✅ AZ URL
     }
 
     @PostMapping("/avatar")
     public String updateAvatar(@RequestParam("avatar") MultipartFile avatar,
                                Authentication auth) {
         profileService.updateAvatar(auth.getName(), avatar);
-        return "redirect:/profile?avatarOk=1";
+        return "redirect:/profil?avatarOk=1"; // ✅ AZ URL
     }
 
-    @PostMapping("/password")
+    @PostMapping("/sifre") // ✅ AZ URL (əvvəl /password idi)
     public String changePassword(@Valid @ModelAttribute("pwdForm") PasswordChangeDto pwdForm,
                                  BindingResult br,
                                  Authentication auth,
@@ -95,10 +94,12 @@ public class ProfileController {
 
         if (br.hasErrors()) {
             var me = profileService.getMe(auth.getName());
+
             ProfileUpdateDto form = new ProfileUpdateDto();
             form.setEmail(me.getEmail());
             form.setFullName(me.getFullName());
             form.setPhone(me.getPhone());
+            form.setBio(me.getBio()); // ✅ səndə bio da var, burada da doldurdum ki boş qalmasın
 
             model.addAttribute("me", me);
             model.addAttribute("form", form);
@@ -106,6 +107,6 @@ public class ProfileController {
         }
 
         profileService.changePassword(auth.getName(), pwdForm);
-        return "redirect:/profile?pwdOk=1";
+        return "redirect:/profil?pwdOk=1"; // ✅ AZ URL
     }
 }

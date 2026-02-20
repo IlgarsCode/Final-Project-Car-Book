@@ -14,40 +14,40 @@ import org.springframework.web.bind.annotation.*;
 
 @Controller
 @RequiredArgsConstructor
-@RequestMapping("/payment")
+@RequestMapping("/odenis")
 public class PaymentController {
 
     private final PaymentService paymentService;
 
-    @GetMapping("/start/{orderId}")
-    public String start(@AuthenticationPrincipal UserDetails user,
-                        @PathVariable Long orderId) {
+    @GetMapping("/baslat/{orderId}")
+    public String baslat(@AuthenticationPrincipal UserDetails user,
+                         @PathVariable Long orderId) {
 
         var payment = paymentService.startPayment(user.getUsername(), orderId);
-        return "redirect:/payment/checkout/" + payment.getId();
+        return "redirect:/odenis/kassa/" + payment.getId();
     }
 
-    @GetMapping("/checkout/{paymentId}")
-    public String checkout(@AuthenticationPrincipal UserDetails user,
-                           @PathVariable Long paymentId,
-                           Model model,
-                           @RequestParam(value = "err", required = false) String err) {
+    @GetMapping("/kassa/{paymentId}")
+    public String kassa(@AuthenticationPrincipal UserDetails user,
+                        @PathVariable Long paymentId,
+                        Model model,
+                        @RequestParam(value = "xeta", required = false) String xeta) {
 
         var payment = paymentService.getPaymentForUser(user.getUsername(), paymentId);
 
         model.addAttribute("payment", payment);
         model.addAttribute("form", new PaymentConfirmDto());
-        model.addAttribute("err", err != null);
+        model.addAttribute("xeta", xeta != null);
 
         return "payment/checkout";
     }
 
-    @PostMapping("/checkout/{paymentId}")
-    public String confirm(@AuthenticationPrincipal UserDetails user,
-                          @PathVariable Long paymentId,
-                          @Valid @ModelAttribute("form") PaymentConfirmDto form,
-                          BindingResult br,
-                          Model model) {
+    @PostMapping("/kassa/{paymentId}")
+    public String tesdiqle(@AuthenticationPrincipal UserDetails user,
+                           @PathVariable Long paymentId,
+                           @Valid @ModelAttribute("form") PaymentConfirmDto form,
+                           BindingResult br,
+                           Model model) {
 
         var payment = paymentService.getPaymentForUser(user.getUsername(), paymentId);
 
@@ -56,16 +56,15 @@ public class PaymentController {
             return "payment/checkout";
         }
 
-        // ✅ outcome qərarı + save service-də olmalıdır (controller-də set edib saxlamırsan)
         paymentService.confirmAndProcess(user.getUsername(), paymentId, form);
 
-        return "redirect:/payment/processing/" + paymentId;
+        return "redirect:/odenis/emal/" + paymentId;
     }
 
-    @GetMapping("/processing/{paymentId}")
-    public String processing(@AuthenticationPrincipal UserDetails user,
-                             @PathVariable Long paymentId,
-                             Model model) {
+    @GetMapping("/emal/{paymentId}")
+    public String emal(@AuthenticationPrincipal UserDetails user,
+                       @PathVariable Long paymentId,
+                       Model model) {
 
         var payment = paymentService.getPaymentForUser(user.getUsername(), paymentId);
         model.addAttribute("payment", payment);
@@ -89,8 +88,8 @@ public class PaymentController {
         );
     }
 
-    @GetMapping("/result/{paymentId}")
-    public String result(@AuthenticationPrincipal UserDetails user,
+    @GetMapping("/netice/{paymentId}")
+    public String netice(@AuthenticationPrincipal UserDetails user,
                          @PathVariable Long paymentId,
                          Model model) {
 

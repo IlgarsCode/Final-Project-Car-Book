@@ -113,18 +113,17 @@
 
         <div class="title">
             <h1>Səhifə tapılmadı</h1>
-            <p>
-                Axtardığın səhifə silinmiş, adı dəyişmiş və ya müvəqqəti əlçatan olmaya bilər.
-            </p>
+            <p>Axtardığın səhifə silinmiş, adı dəyişmiş və ya müvəqqəti əlçatan olmaya bilər.</p>
         </div>
 
         <div class="hero">
             <div class="pane">
                 <p class="code">404</p>
                 <div class="btns">
-                    <a class="btn primary" th:href="@{/}">🏠 Ana səhifə</a>
-                    <a class="btn" th:href="@{/car}">🚗 Avtomobillər</a>
-                    <a class="btn" th:href="@{/contact}">💬 Dəstək</a>
+                    <a class="btn" th:href="@{/}">🏠 Ana səhifə</a>
+                    <a class="btn" th:href="@{/masinlar}">🚗 Maşınlar</a>
+                    <a class="btn" th:href="@{/qiymetler}">💳 Qiymətlər</a>
+                    <a class="btn" th:href="@{/elaqe}">💬 Dəstək</a>
                 </div>
             </div>
 
@@ -132,7 +131,7 @@
                 <div class="tag" style="margin-bottom:12px;">Tez tapmaq üçün</div>
                 <div class="search">
                     🔎
-                    <input id="q" placeholder="Məsələn: /dashboard/orders və ya /car" />
+                    <input id="q" placeholder="Məsələn: /panel/sifarisler və ya /masinlar" />
                     <span class="kbd">Enter</span>
                 </div>
                 <p style="margin-top:10px;">
@@ -149,7 +148,6 @@
       if(e.key === 'Enter'){
         const v = (input.value || '').trim();
         if(!v) return;
-        // sadə davranış: yazdığını route kimi açır
         window.location.href = v.startsWith('/') ? v : '/' + v;
       }
     });

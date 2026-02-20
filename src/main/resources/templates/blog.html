@@ -7,36 +7,30 @@
     <meta charset="UTF-8">
     <title>Bloq</title>
 
-    <!-- ✅ Page-specific fixes (square images + less whitespace + sidebar top) -->
     <style>
-        /* azalt boşluqları (çox “ağ” görünməsin) */
         .ftco-section {
             padding-top: 40px !important;
             padding-bottom: 40px !important;
         }
 
-        /* blog kartlarının şəkli KVADRAT olsun */
         .blog-grid .block-20 {
-            height: auto !important;      /* temanın height-ını söndürür */
-            padding-top: 100% !important; /* 1:1 ratio */
+            height: auto !important;
+            padding-top: 100% !important;
             background-size: cover !important;
             background-position: center center !important;
-            border-radius: 6px; /* istəyirsənsə sil */
+            border-radius: 6px;
         }
 
-        /* kartın içi tam en tutsun, ortalanma effekti olmasın */
         .blog-grid .blog-entry {
             width: 100%;
             margin: 0;
         }
 
-        /* sağ sidebar yuxarıda dursun */
         .blog-sidebar {
             position: sticky;
             top: 20px;
         }
 
-        /* search box yuxarıdan boşluq yığmasın */
         .blog-sidebar .sidebar-box {
             margin-top: 0 !important;
             padding-top: 0 !important;
@@ -76,18 +70,14 @@
     <section class="ftco-section">
         <div class="container">
 
-            <!-- ✅ İKİ SÜTUN: solda bloqlar, sağda axtarış -->
             <div class="row align-items-start">
 
-                <!-- ✅ LEFT: BLOG GRID -->
                 <div class="col-lg-9">
 
-                    <!-- boş nəticə -->
                     <div class="alert alert-info" th:if="${blogs == null or blogs.empty}">
                         Heç bir bloq tapılmadı.
                     </div>
 
-                    <!-- ✅ 1 sətirdə 3 bloq -->
                     <div class="row blog-grid" th:if="${blogs != null and !blogs.empty}">
 
                         <div class="col-md-4 d-flex ftco-animate mb-4"
@@ -95,7 +85,7 @@
 
                             <div class="blog-entry justify-content-end w-100">
 
-                                <a th:href="@{'/blog/' + ${blog.id}}"
+                                <a th:href="@{'/bloq/' + ${blog.id}}"
                                    class="block-20 img"
                                    th:style="'background-image: url(' + ${blog.imageUrl} + ');'">
                                 </a>
@@ -114,7 +104,7 @@
                                         </div>
 
                                         <div>
-                                            <a th:href="@{'/blog/' + ${blog.id} + '#comments'}" class="meta-chat">
+                                            <a th:href="@{'/bloq/' + ${blog.id} + '#comments'}" class="meta-chat">
                                                 <span class="icon-chat"></span>
                                                 <span th:text="${blog.commentCount}">0</span>
                                             </a>
@@ -123,7 +113,7 @@
                                     </div>
 
                                     <h3 class="heading mt-2">
-                                        <a th:href="@{'/blog/' + ${blog.id}}"
+                                        <a th:href="@{'/bloq/' + ${blog.id}}"
                                            th:text="${blog.title}">
                                             Bloq başlığı
                                         </a>
@@ -134,7 +124,7 @@
                                     </p>
 
                                     <p class="mb-0">
-                                        <a th:href="@{'/blog/' + ${blog.id}}"
+                                        <a th:href="@{'/bloq/' + ${blog.id}}"
                                            class="btn btn-primary">
                                             Davamını oxu <span class="icon-long-arrow-right"></span>
                                         </a>
@@ -146,32 +136,29 @@
 
                     </div>
 
-                    <!-- ===== PAGINATION (DYNAMIC) ===== -->
+                    <!-- PAGINATION -->
                     <div class="row mt-4" th:if="${totalPages != null and totalPages > 1}">
                         <div class="col text-center">
                             <div class="block-27">
                                 <ul>
 
-                                    <!-- Prev -->
                                     <li th:classappend="${currentPage == 1} ? 'disabled'">
                                         <a th:if="${currentPage > 1}"
-                                           th:href="@{/blog(page=${currentPage - 1}, search=${search}, tag=${tag})}">&lt;</a>
+                                           th:href="@{/bloq(page=${currentPage - 1}, search=${search}, tag=${tag})}">&lt;</a>
                                         <span th:if="${currentPage == 1}">&lt;</span>
                                     </li>
 
-                                    <!-- Page numbers -->
                                     <li th:each="i : ${#numbers.sequence(1, totalPages)}"
                                         th:classappend="${i == currentPage} ? 'active'">
                                         <a th:if="${i != currentPage}"
-                                           th:href="@{/blog(page=${i}, search=${search}, tag=${tag})}"
+                                           th:href="@{/bloq(page=${i}, search=${search}, tag=${tag})}"
                                            th:text="${i}">1</a>
                                         <span th:if="${i == currentPage}" th:text="${i}">1</span>
                                     </li>
 
-                                    <!-- Next -->
                                     <li th:classappend="${currentPage == totalPages} ? 'disabled'">
                                         <a th:if="${currentPage < totalPages}"
-                                           th:href="@{/blog(page=${currentPage + 1}, search=${search}, tag=${tag})}">&gt;</a>
+                                           th:href="@{/bloq(page=${currentPage + 1}, search=${search}, tag=${tag})}">&gt;</a>
                                         <span th:if="${currentPage == totalPages}">&gt;</span>
                                     </li>
 
@@ -182,11 +169,11 @@
 
                 </div>
 
-                <!-- ✅ RIGHT: SEARCH (yuxarıda, boşluqsuz) -->
+                <!-- RIGHT: SEARCH -->
                 <div class="col-lg-3 sidebar ftco-animate blog-sidebar">
 
                     <div class="sidebar-box">
-                        <form th:action="@{/blog}" method="get" class="search-form">
+                        <form th:action="@{/bloq}" method="get" class="search-form">
                             <div class="form-group">
                                 <span class="icon icon-search"></span>
 
@@ -194,7 +181,6 @@
                                        th:value="${search}"
                                        placeholder="Açar sözü yaz və Enter-ə bas">
 
-                                <!-- ✅ tag filter itirməsin -->
                                 <input type="hidden" name="tag" th:value="${tag}">
                             </div>
                         </form>

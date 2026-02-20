@@ -62,7 +62,8 @@
       <!-- WRITE REVIEW BUTTON -->
       <div class="row justify-content-center mb-5">
         <div class="col-md-7 text-center">
-          <a th:href="@{/testimonial/new}" class="btn btn-primary">
+          <!-- ✅ AZ: /reyler/yeni -->
+          <a th:href="@{/reyler/yeni}" class="btn btn-primary">
             Rəy yaz
           </a>
         </div>
@@ -83,7 +84,7 @@
 
           <div class="testimony-wrap rounded text-center py-4 pb-5 ftco-animate h-100">
 
-            <!-- ✅ AVATAR -->
+            <!-- AVATAR -->
             <div class="user-img mb-4"
                  th:style="|background-image:url('${t.photoUrl != null ? t.photoUrl : '/images/person_1.jpg'}')|">
             </div>

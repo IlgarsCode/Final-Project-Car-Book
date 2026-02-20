@@ -16,7 +16,7 @@
                         Çıxış edildi.
                     </div>
 
-                    <form th:action="@{/auth/login}" method="post" class="p-4 bg-light">
+                    <form th:action="@{/giris}" method="post" class="p-4 bg-light">
                         <div class="form-group">
                             <label>E-poçt</label>
                             <input name="email" type="email" class="form-control" required>
@@ -32,8 +32,8 @@
                         </div>
 
                         <button type="submit" class="btn btn-primary py-2 px-4">Daxil ol</button>
-                        <a th:href="@{/auth/register}" class="btn btn-link">Qeydiyyat</a>
-                        <a th:href="@{/auth/forgot-password}" class="btn btn-link">Şifrəni unutdum</a>
+                        <a th:href="@{/qeydiyyat}" class="btn btn-link">Qeydiyyat</a>
+                        <a th:href="@{/sifreni-unutdum}" class="btn btn-link">Şifrəni unutdum</a>
                     </form>
                 </div>
             </div>

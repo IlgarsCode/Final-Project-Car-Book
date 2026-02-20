@@ -24,7 +24,8 @@ public class PricingController {
     private final CarCategoryRepository carCategoryRepository;
     private final CarSegmentRepository carSegmentRepository;
 
-    @GetMapping("/pricing")
+    // ✅ slug AZ: /qiymetler
+    @GetMapping("/qiymetler")
     public String pricingPage(
             @RequestParam(name = "category", required = false) String categorySlug,
             @RequestParam(name = "pickupLoc", required = false) Long pickupLoc,
@@ -39,14 +40,20 @@ public class PricingController {
 
         // ✅ tarixlərlə çağır
         if (segmentSlug != null && !segmentSlug.isBlank()) {
-            model.addAttribute("rows", pricingService.getPricingRows(categorySlug, segmentSlug, pickupDate, dropoffDate));
+            model.addAttribute("rows",
+                    pricingService.getPricingRows(categorySlug, segmentSlug, pickupDate, dropoffDate));
         } else {
-            model.addAttribute("rows", pricingService.getPricingRows(categorySlug, pickupDate, dropoffDate));
+            model.addAttribute("rows",
+                    pricingService.getPricingRows(categorySlug, pickupDate, dropoffDate));
         }
 
         model.addAttribute("carCategories", carCategoryRepository.findAllWithActiveCarCount());
-        model.addAttribute("selectedCategory", categorySlug);
+        model.addAttribute("segments", carSegmentRepository.findAllWithActiveCarCount());
 
+        model.addAttribute("selectedCategory", categorySlug);
+        model.addAttribute("selectedSegment", segmentSlug);
+
+        // ✅ TripContext session
         TripContext ctx = (TripContext) session.getAttribute("TRIP_CTX");
         if (ctx == null) ctx = new TripContext();
 
@@ -57,8 +64,6 @@ public class PricingController {
 
         session.setAttribute("TRIP_CTX", ctx);
         model.addAttribute("trip", ctx);
-        model.addAttribute("segments", carSegmentRepository.findAllWithActiveCarCount());
-        model.addAttribute("selectedSegment", segmentSlug);
 
         return "pricing";
     }

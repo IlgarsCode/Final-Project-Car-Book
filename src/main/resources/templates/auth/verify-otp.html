@@ -28,7 +28,7 @@
 
                         <div class="alert alert-danger" th:if="${serverError != null}" th:text="${serverError}"></div>
 
-                        <form th:action="@{/auth/verify-otp}" th:object="${form}" method="post">
+                        <form th:action="@{/otp-tesdiq}" th:object="${form}" method="post">
                             <input type="hidden" th:field="*{email}"/>
 
                             <div class="form-group">
@@ -50,7 +50,7 @@
                                 <button class="btn btn-primary" type="submit">Təsdiqlə</button>
 
                                 <a class="btn btn-outline-secondary"
-                                   th:href="@{/auth/forgot-password}">
+                                   th:href="@{/sifreni-unutdum}">
                                     Yenidən göndər
                                 </a>
                             </div>

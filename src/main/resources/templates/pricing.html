@@ -47,7 +47,7 @@
 
                     <h3 class="mb-0">Qiymətlər</h3>
 
-                    <form th:action="@{/pricing}" method="get"
+                    <form th:action="@{/qiymetler}" method="get"
                           class="d-flex align-items-center flex-wrap"
                           style="gap:10px;">
 
@@ -69,12 +69,10 @@
 
                         <select name="category" class="form-control" style="max-width:260px;">
                             <option value="">Bütün kateqoriyalar</option>
-
                             <option th:each="c : ${carCategories}"
                                     th:value="${c.slug}"
                                     th:text="${c.name + ' (' + c.activeCarCount + ')'}"
                                     th:selected="${selectedCategory != null and selectedCategory == c.slug}">
-                                Kateqoriya
                             </option>
                         </select>
 
@@ -90,13 +88,13 @@
                         <button class="btn btn-primary" type="submit">Filtrlə</button>
 
                         <a class="btn btn-outline-secondary"
-                           th:href="@{/pricing(
+                           th:href="@{/qiymetler(
                                 pickupLoc=${trip != null ? trip.pickupLoc : null},
                                 dropoffLoc=${trip != null ? trip.dropoffLoc : null},
                                 pickupDate=${trip != null ? trip.pickupDate : null},
                                 dropoffDate=${trip != null ? trip.dropoffDate : null}
                            )}"
-                           th:if="${selectedCategory != null and selectedCategory != ''}">
+                           th:if="${(selectedCategory != null and selectedCategory != '') or (selectedSegment != null and selectedSegment != '')}">
                             Sıfırla
                         </a>
                     </form>
@@ -146,7 +144,7 @@
                                 <!-- HOURLY -->
                                 <td class="price">
                                     <p class="btn-custom">
-                                        <a th:href="@{'/car/' + ${row.carSlug}(
+                                        <a th:href="@{'/masinlar/' + ${row.carSlug}(
                                                 rate='HOURLY',
                                                 pickupLoc=${trip != null ? trip.pickupLoc : null},
                                                 dropoffLoc=${trip != null ? trip.dropoffLoc : null},
@@ -155,7 +153,8 @@
                                         )}">Ətraflı</a>
                                     </p>
 
-                                    <form th:action="@{/cart/add}" method="post" style="margin:0 0 10px 0;">
+                                    <!-- ✅ /sebet/elave-et -->
+                                    <form th:action="@{/sebet/elave-et}" method="post" style="margin:0 0 10px 0;">
                                         <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
 
                                         <input type="hidden" name="carId" th:value="${row.carId}">
@@ -198,7 +197,7 @@
                                 <!-- DAILY -->
                                 <td class="price">
                                     <p class="btn-custom">
-                                        <a th:href="@{'/car/' + ${row.carSlug}(
+                                        <a th:href="@{'/masinlar/' + ${row.carSlug}(
                                                 rate='DAILY',
                                                 pickupLoc=${trip != null ? trip.pickupLoc : null},
                                                 dropoffLoc=${trip != null ? trip.dropoffLoc : null},
@@ -207,7 +206,8 @@
                                         )}">Ətraflı</a>
                                     </p>
 
-                                    <form th:action="@{/cart/add}" method="post" style="margin:0 0 10px 0;">
+                                    <!-- ✅ /sebet/elave-et -->
+                                    <form th:action="@{/sebet/elave-et}" method="post" style="margin:0 0 10px 0;">
                                         <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
 
                                         <input type="hidden" name="carId" th:value="${row.carId}">
@@ -246,7 +246,7 @@
                                 <!-- LEASING -->
                                 <td class="price">
                                     <p class="btn-custom">
-                                        <a th:href="@{'/car/' + ${row.carSlug}(
+                                        <a th:href="@{'/masinlar/' + ${row.carSlug}(
                                                 rate='LEASING',
                                                 pickupLoc=${trip != null ? trip.pickupLoc : null},
                                                 dropoffLoc=${trip != null ? trip.dropoffLoc : null},
@@ -255,7 +255,8 @@
                                         )}">Ətraflı</a>
                                     </p>
 
-                                    <form th:action="@{/cart/add}" method="post" style="margin:0 0 10px 0;">
+                                    <!-- ✅ /sebet/elave-et -->
+                                    <form th:action="@{/sebet/elave-et}" method="post" style="margin:0 0 10px 0;">
                                         <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
 
                                         <input type="hidden" name="carId" th:value="${row.carId}">

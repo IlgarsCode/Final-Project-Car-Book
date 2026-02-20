@@ -50,8 +50,11 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
         http
+                // ⚠️ indi səndə belədir. işləyir, amma sonra CSRF-i açmaq daha yaxşıdır.
                 .csrf(csrf -> csrf.disable())
+
                 .authenticationProvider(authenticationProvider(passwordEncoder()))
+
                 .authorizeHttpRequests(auth -> auth
 
                         // ✅ STATIC
@@ -62,66 +65,80 @@ public class SecurityConfig {
                                 "/images/**", "/img/**",
                                 "/scss/**", "/lib/**", "/plugins/**",
                                 "/webjars/**",
-                                "/uploads/**",
-                                "/admin/**"
+                                "/uploads/**"
                         ).permitAll()
 
-                        // ✅ Error page-lər hamıya açıq olmalıdır
+                        // ✅ Error page-lər
                         .requestMatchers("/error", "/error/**").permitAll()
 
-                        // ✅ Auth pages
-                        .requestMatchers("/auth/**").permitAll()
-
-                        // ✅ Public pages
+                        // ✅ AUTH (AZ route-lar)
                         .requestMatchers(
-                                "/", "/index",
-                                "/about", "/services", "/contact",
-                                "/pricing", "/pricing/**",
-                                "/car", "/car/**",
-                                "/blog", "/blog/**",
-                                "/testimonial"
+                                "/giris",
+                                "/qeydiyyat",
+                                "/qeydiyyat-tesdiq",
+                                "/sifreni-unutdum",
+                                "/otp-tesdiq",
+                                "/sifre-yenile"
                         ).permitAll()
 
-                        // ✅ SUPER ADMIN (spesifik)
+                        // ✅ Public pages (AZ route-lar)
+                        .requestMatchers(
+                                "/", "/index",
+                                "/haqqimizda",
+                                "/xidmetler",
+                                "/elaqe",
+                                "/qiymetler", "/qiymetler/**",
+                                "/masinlar", "/masinlar/**",
+                                "/masin", "/masin/**",          // rəy post-u kimi route-lar üçün
+                                "/bloq", "/bloq/**",
+                                "/reyler"
+                        ).permitAll()
+
+                        // ✅ SUPER ADMIN
                         .requestMatchers("/dashboard/users/**").hasRole("SUPER_ADMIN")
 
                         // ✅ ADMIN PANEL
                         .requestMatchers("/dashboard/**").hasRole("ADMIN")
 
-                        // ✅ USER pages
+                        // ✅ USER pages (AZ route-lar)
                         .requestMatchers(
-                                "/blog/new",
-                                "/my-blogs",
-                                "/my-blogs/**",
-                                "/blog/*/comment",
-                                "/blog/*/reply",
-                                "/profile/**",
-                                "/cart/**",
-                                "/booking/**",
-                                "/checkout/**",
-                                "/payment/**",
-                                "/order/**",
-                                "/testimonial/new"
+                                "/bloq/yeni",
+                                "/menim-bloqlarim",
+                                "/menim-bloqlarim/**",
+                                "/bloq/*/serh",
+                                "/bloq/*/cavab",
+                                "/profil/**",
+
+                                "/sebet/**",
+                                "/rezerv/**",
+                                "/sifaris",           // checkout page route
+                                "/payment/**",        // hələ /payment saxlamısan, istəsən /odenis edək (aşağıda izah var)
+                                "/sifarislerim/**"    // order controller səndə /sifarislerim idi
                         ).hasRole("USER")
 
                         .anyRequest().authenticated()
                 )
+
+                // ✅ LOGIN: /giris
                 .formLogin(form -> form
-                        .loginPage("/auth/login")
-                        .loginProcessingUrl("/auth/login")
+                        .loginPage("/giris")
+                        .loginProcessingUrl("/giris")
                         .usernameParameter("email")
                         .passwordParameter("password")
                         .defaultSuccessUrl("/", true)
-                        .failureUrl("/auth/login?error=true")
+                        .failureUrl("/giris?xeta=1")
                         .permitAll()
                 )
-                // ✅ 403 handling düzgün: status 403 saxlayır, view 403 açır
+
+                // ✅ 403 handling
                 .exceptionHandling(ex -> ex
                         .accessDeniedHandler(accessDeniedHandler)
                 )
+
+                // ✅ LOGOUT: /cixis
                 .logout(logout -> logout
-                        .logoutUrl("/auth/logout")
-                        .logoutSuccessUrl("/auth/login?logout=true")
+                        .logoutUrl("/cixis")
+                        .logoutSuccessUrl("/giris?cixis=1")
                         .permitAll()
                 );
 

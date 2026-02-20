@@ -22,7 +22,7 @@
               <a th:href="@{/}">Ana səhifə <i class="ion-ios-arrow-forward"></i></a>
             </span>
             <span>
-              <a th:href="@{/blog}">Bloq</a> <i class="ion-ios-arrow-forward"></i>
+              <a th:href="@{/bloq}">Bloq</a> <i class="ion-ios-arrow-forward"></i>
             </span>
             <span>Yarat</span>
           </p>
@@ -40,7 +40,7 @@
           <div class="card shadow p-4">
             <h3 class="mb-4">Yeni bloq yaz</h3>
 
-            <form th:action="@{/blog/new}"
+            <form th:action="@{/bloq/yeni}"
                   th:object="${form}"
                   method="post"
                   enctype="multipart/form-data">
@@ -85,7 +85,7 @@
 
               <div class="d-flex" style="gap:10px;">
                 <button class="btn btn-primary" type="submit">Yayımla</button>
-                <a class="btn btn-secondary" th:href="@{/blog}">Geri</a>
+                <a class="btn btn-secondary" th:href="@{/bloq}">Geri</a>
               </div>
 
             </form>

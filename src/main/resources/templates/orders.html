@@ -21,7 +21,7 @@
                         <span class="mr-2">
                             <a th:href="@{/}">Ana səhifə <i class="ion-ios-arrow-forward"></i></a>
                         </span>
-                        <span>Sifarişlər <i class="ion-ios-arrow-forward"></i></span>
+                        <span>Sifarişlərim <i class="ion-ios-arrow-forward"></i></span>
                     </p>
                     <h1 class="mb-3 bread">Mənim sifarişlərim</h1>
                 </div>
@@ -82,11 +82,12 @@
                         <td>$<span th:text="${o.totalAmount}">0</span></td>
 
                         <td style="display:flex; gap:8px; justify-content:center; flex-wrap:wrap;">
-                            <a class="btn btn-sm btn-primary" th:href="@{'/order/' + ${o.id}}">Detallar</a>
+                            <a class="btn btn-sm btn-primary"
+                               th:href="@{/sifarislerim/{id}(id=${o.id})}">Detallar</a>
 
                             <a class="btn btn-sm btn-success"
                                th:if="${o.status != null and (o.status.name() == 'PENDING' or o.status.name() == 'PAYMENT_FAILED')}"
-                               th:href="@{'/payment/start/' + ${o.id}}">
+                               th:href="@{/payment/start/{id}(id=${o.id})}">
                                 İndi ödə
                             </a>
                         </td>

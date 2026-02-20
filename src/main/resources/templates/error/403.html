@@ -4,7 +4,6 @@
     <meta charset="UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>403 — Giriş Qadağandır</title>
-
     <style>
         :root{
           --bg1:#0b1220; --bg2:#1b0b2f; --glass: rgba(255,255,255,.08);
@@ -162,14 +161,12 @@
 
             <div class="code">403</div>
             <h1>Bu səhifəyə giriş qadağandır</h1>
-            <p>
-                Bu resurs üçün sənin rolun/icazən yetərli deyil.
-            </p>
+            <p>Bu resurs üçün sənin rolun/icazən yetərli deyil.</p>
 
             <div class="actions">
                 <a class="btn primary" th:href="@{/}">🏠 Ana səhifə</a>
-                <a class="btn" th:href="@{/auth/login}">🔐 Yenidən daxil ol</a>
-                <a class="btn success" th:href="@{/contact}">💬 Dəstək</a>
+                <a class="btn" th:href="@{/giris}">🔐 Yenidən daxil ol</a>
+                <a class="btn success" th:href="@{/elaqe}">💬 Dəstək</a>
             </div>
 
             <p style="margin-top:14px; font-size:12px; opacity:.8;">
@@ -194,10 +191,10 @@
             <div class="mini">
                 <div class="k">Sürətli keçidlər</div>
                 <div style="display:flex; gap:10px; flex-wrap:wrap;">
-                    <a class="btn" th:href="@{/}">🚗 Home</a>
-                    <a class="btn" th:href="@{/car}">🚗 Cars</a>
-                    <a class="btn" th:href="@{/pricing}">💳 Pricing</a>
-                    <a class="btn" th:href="@{/blog}">📝 Blog</a>
+                    <a class="btn" th:href="@{/}">🏠 Ana səhifə</a>
+                    <a class="btn" th:href="@{/masinlar}">🚗 Maşınlar</a>
+                    <a class="btn" th:href="@{/qiymetler}">💳 Qiymətlər</a>
+                    <a class="btn" th:href="@{/bloq}">📝 Bloq</a>
                 </div>
             </div>
         </aside>

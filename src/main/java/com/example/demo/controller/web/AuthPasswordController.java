@@ -6,7 +6,6 @@ import com.example.demo.dto.auth.VerifyOtpDto;
 import com.example.demo.services.PasswordResetService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -15,20 +14,21 @@ import org.springframework.web.server.ResponseStatusException;
 
 @Controller
 @RequiredArgsConstructor
-@RequestMapping("/auth")
 public class AuthPasswordController {
 
     private final PasswordResetService passwordResetService;
 
-    @GetMapping("/forgot-password")
-    public String forgotPage(@RequestParam(value = "sent", required = false) String sent,
+    // ✅ /sifreni-unutdum
+    @GetMapping("/sifreni-unutdum")
+    public String forgotPage(@RequestParam(value = "gonderildi", required = false) String gonderildi,
                              Model model) {
         model.addAttribute("form", new ForgotPasswordDto());
-        model.addAttribute("sent", sent != null);
+        model.addAttribute("sent", gonderildi != null);
         return "auth/forgot-password";
     }
 
-    @PostMapping("/forgot-password")
+    // ✅ /sifreni-unutdum
+    @PostMapping("/sifreni-unutdum")
     public String forgot(@Valid @ModelAttribute("form") ForgotPasswordDto form,
                          BindingResult br,
                          Model model) {
@@ -38,7 +38,6 @@ public class AuthPasswordController {
         try {
             passwordResetService.requestOtp(form.getEmail());
         } catch (ResponseStatusException ex) {
-            // 429 və s. mesajı göstərək
             model.addAttribute("serverError", ex.getReason());
             return "auth/forgot-password";
         } catch (Exception ex) {
@@ -46,22 +45,24 @@ public class AuthPasswordController {
             return "auth/forgot-password";
         }
 
-        // təhlükəsizlik: hər halda “göndərildi” deyirik
-        return "redirect:/auth/verify-otp?email=" + form.getEmail().trim().toLowerCase();
+        // ✅ əvvəl: /auth/verify-otp?email=...
+        return "redirect:/otp-tesdiq?email=" + form.getEmail().trim().toLowerCase();
     }
 
-    @GetMapping("/verify-otp")
+    // ✅ /otp-tesdiq
+    @GetMapping("/otp-tesdiq")
     public String verifyPage(@RequestParam("email") String email,
-                             @RequestParam(value = "err", required = false) String err,
+                             @RequestParam(value = "xeta", required = false) String xeta,
                              Model model) {
         VerifyOtpDto dto = new VerifyOtpDto();
         dto.setEmail(email);
         model.addAttribute("form", dto);
-        model.addAttribute("err", err != null);
+        model.addAttribute("err", xeta != null);
         return "auth/verify-otp";
     }
 
-    @PostMapping("/verify-otp")
+    // ✅ /otp-tesdiq
+    @PostMapping("/otp-tesdiq")
     public String verify(@Valid @ModelAttribute("form") VerifyOtpDto form,
                          BindingResult br,
                          Model model) {
@@ -70,7 +71,10 @@ public class AuthPasswordController {
 
         try {
             String token = passwordResetService.verifyOtp(form.getEmail(), form.getCode());
-            return "redirect:/auth/reset-password?token=" + token;
+
+            // ✅ əvvəl: /auth/reset-password?token=...
+            return "redirect:/sifre-yenile?token=" + token;
+
         } catch (ResponseStatusException ex) {
             model.addAttribute("serverError", ex.getReason());
             return "auth/verify-otp";
@@ -80,7 +84,8 @@ public class AuthPasswordController {
         }
     }
 
-    @GetMapping("/reset-password")
+    // ✅ /sifre-yenile
+    @GetMapping("/sifre-yenile")
     public String resetPage(@RequestParam("token") String token,
                             @RequestParam(value = "ok", required = false) String ok,
                             Model model) {
@@ -91,7 +96,8 @@ public class AuthPasswordController {
         return "auth/reset-password";
     }
 
-    @PostMapping("/reset-password")
+    // ✅ /sifre-yenile
+    @PostMapping("/sifre-yenile")
     public String reset(@Valid @ModelAttribute("form") ResetPasswordDto form,
                         BindingResult br,
                         Model model) {
@@ -99,9 +105,15 @@ public class AuthPasswordController {
         if (br.hasErrors()) return "auth/reset-password";
 
         try {
-            passwordResetService.resetPassword(form.getToken(), form.getNewPassword(), form.getConfirmNewPassword());
-            // loginə yönləndir
-            return "redirect:/auth/login?logout=true";
+            passwordResetService.resetPassword(
+                    form.getToken(),
+                    form.getNewPassword(),
+                    form.getConfirmNewPassword()
+            );
+
+            // ✅ əvvəl: /auth/login?logout=true
+            return "redirect:/giris?cixis=true";
+
         } catch (ResponseStatusException ex) {
             model.addAttribute("serverError", ex.getReason());
             return "auth/reset-password";
