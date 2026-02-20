@@ -24,7 +24,9 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
+import org.springframework.web.util.UriUtils;
 
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 
 @Controller
@@ -70,7 +72,7 @@ public class BlogController {
     // BLOG CREATE (USER)
     @GetMapping("/bloq/yeni")
     public String newBlogPage(@AuthenticationPrincipal UserDetails user, Model model) {
-        if (user == null) return "redirect:/auth/login";
+        if (user == null) return "redirect:/giris";
 
         model.addAttribute("banner", bannerService.getBanner(BannerType.BLOGS));
         model.addAttribute("form", new BlogCreateDto());
@@ -86,7 +88,7 @@ public class BlogController {
             Model model
     ) {
         if (user == null) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Blog yaratmaq üçün giriş etməlisən");
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Bloq yaratmaq üçün giriş etməlisən");
         }
 
         if (br.hasErrors()) {
@@ -102,12 +104,10 @@ public class BlogController {
 
     // MY BLOGS (USER)
     @GetMapping("/menim-bloqlarim")
-    public String myBlogs(
-            @AuthenticationPrincipal UserDetails user,
-            @RequestParam(name = "page", defaultValue = "1") int page,
-            Model model
-    ) {
-        if (user == null) return "redirect:/auth/login";
+    public String myBlogs(@AuthenticationPrincipal UserDetails user,
+                          @RequestParam(name = "page", defaultValue = "1") int page,
+                          Model model) {
+        if (user == null) return "redirect:/giris";
 
         int size = 9;
         int pageIndex = Math.max(page - 1, 0);
@@ -123,6 +123,7 @@ public class BlogController {
         return "my-blogs";
     }
 
+    // ✅ AZ delete endpoint (HTML bununla işləməlidir)
     @PostMapping("/menim-bloqlarim/{id}/sil")
     public String deleteMyBlog(@PathVariable Long id, Authentication auth) {
         if (auth == null || auth.getName() == null) {
@@ -135,11 +136,21 @@ public class BlogController {
     // BLOG DETAIL
     @GetMapping("/bloq/{id}")
     public String blogSingle(@PathVariable Long id, Model model, Authentication auth) {
+
         boolean isLoggedIn = auth != null
                 && auth.isAuthenticated()
                 && !(auth instanceof AnonymousAuthenticationToken);
 
-        fillBlogSingleModel(id, model, new BlogCommentCreateDto(), new BlogReplyCreateDto(), null, null, isLoggedIn);
+        fillBlogSingleModel(
+                id,
+                model,
+                new BlogCommentCreateDto(),
+                new BlogReplyCreateDto(),
+                null,
+                null,
+                isLoggedIn
+        );
+
         return "blog-single";
     }
 
@@ -157,24 +168,24 @@ public class BlogController {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Şərh üçün giriş etməlisən");
         }
 
-        if (br.hasErrors()) {
-            boolean isLoggedIn = auth != null
-                    && auth.isAuthenticated()
-                    && !(auth instanceof AnonymousAuthenticationToken);
+        boolean isLoggedIn = auth != null
+                && auth.isAuthenticated()
+                && !(auth instanceof AnonymousAuthenticationToken);
 
+        if (br.hasErrors()) {
             fillBlogSingleModel(id, model, form, new BlogReplyCreateDto(), null, null, isLoggedIn);
             return "blog-single";
         }
 
         var blog = blogRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Blog tapılmadı"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Bloq tapılmadı"));
 
         if (Boolean.FALSE.equals(blog.getIsActive())) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Blog aktiv deyil");
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Bloq aktiv deyil");
         }
 
         var u = userRepository.findByEmailIgnoreCase(user.getUsername())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User tapılmadı"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "İstifadəçi tapılmadı"));
 
         String fullName = (u.getFullName() != null && !u.getFullName().isBlank())
                 ? u.getFullName().trim()
@@ -205,7 +216,7 @@ public class BlogController {
             Authentication auth
     ) {
         if (user == null) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Reply üçün giriş etməlisən");
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Cavab yazmaq üçün giriş etməlisən");
         }
 
         boolean isLoggedIn = auth != null
@@ -218,17 +229,17 @@ public class BlogController {
         }
 
         var blog = blogRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Blog tapılmadı"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Bloq tapılmadı"));
 
         if (Boolean.FALSE.equals(blog.getIsActive())) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Blog aktiv deyil");
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Bloq aktiv deyil");
         }
 
         var parent = blogCommentRepository.findByIdAndBlog_IdAndIsActiveTrue(form.getParentId(), id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Reply üçün parent comment tapılmadı"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Cavab üçün əsas şərh tapılmadı"));
 
         var u = userRepository.findByEmailIgnoreCase(user.getUsername())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User tapılmadı"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "İstifadəçi tapılmadı"));
 
         String fullName = (u.getFullName() != null && !u.getFullName().isBlank())
                 ? u.getFullName().trim()
@@ -270,7 +281,7 @@ public class BlogController {
     }
 
     // =========================
-    // ✅ OLD ROUTES -> REDIRECT
+    // ✅ OLD ROUTES -> REDIRECT / COMPAT
     // =========================
 
     @GetMapping("/blog")
@@ -279,9 +290,12 @@ public class BlogController {
             @RequestParam(name = "search", required = false) String search,
             @RequestParam(name = "tag", required = false) String tag
     ) {
+        String s = (search != null) ? UriUtils.encode(search, StandardCharsets.UTF_8) : null;
+        String t = (tag != null) ? UriUtils.encode(tag, StandardCharsets.UTF_8) : null;
+
         return "redirect:/bloq?page=" + page
-                + (search != null ? "&search=" + search : "")
-                + (tag != null ? "&tag=" + tag : "");
+                + (s != null ? "&search=" + s : "")
+                + (t != null ? "&tag=" + t : "");
     }
 
     @GetMapping("/blog/new")
@@ -301,12 +315,12 @@ public class BlogController {
 
     @PostMapping("/blog/{id}/comment")
     public String oldBlogCommentRedirect(@PathVariable Long id) {
-        return "redirect:/bloq/" + id;
+        return "redirect:/bloq/" + id + "#comments";
     }
 
     @PostMapping("/blog/{id}/reply")
     public String oldBlogReplyRedirect(@PathVariable Long id) {
-        return "redirect:/bloq/" + id;
+        return "redirect:/bloq/" + id + "#comments";
     }
 
     @GetMapping("/my-blogs")
@@ -314,8 +328,13 @@ public class BlogController {
         return "redirect:/menim-bloqlarim?page=" + page;
     }
 
+    // ✅ köhnə delete endpoint işləsin deyə: service-i burda da çağırırıq
     @PostMapping("/my-blogs/{id}/delete")
-    public String oldDeleteRedirect(@PathVariable Long id) {
-        return "redirect:/menim-bloqlarim/" + id + "/sil";
+    public String oldDeleteCompat(@PathVariable Long id, Authentication auth) {
+        if (auth == null || auth.getName() == null) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Giriş et");
+        }
+        blogService.deleteMyBlog(auth.getName(), id);
+        return "redirect:/menim-bloqlarim?deleted=1";
     }
 }

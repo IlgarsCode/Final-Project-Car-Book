@@ -5,7 +5,7 @@
         layout:decorate="~{layout}">
 <head>
   <meta charset="UTF-8">
-  <title>Bloglarım</title>
+  <title>Bloqlarım</title>
 </head>
 <body>
 <div layout:fragment="content">
@@ -18,12 +18,12 @@
       <div class="row no-gutters slider-text js-fullheight align-items-end justify-content-start">
         <div class="col-md-9 ftco-animate pb-5">
           <p class="breadcrumbs">
-                        <span class="mr-2">
-                            <a th:href="@{/}">Ana səhifə <i class="ion-ios-arrow-forward"></i></a>
-                        </span>
-            <span>Bloglarım</span>
+            <span class="mr-2">
+              <a th:href="@{/}">Ana səhifə <i class="ion-ios-arrow-forward"></i></a>
+            </span>
+            <span>Bloqlarım</span>
           </p>
-          <h1 class="mb-3 bread">Bloglarım</h1>
+          <h1 class="mb-3 bread">Bloqlarım</h1>
         </div>
       </div>
     </div>
@@ -34,17 +34,20 @@
 
       <div class="d-flex justify-content-between align-items-center mb-4">
         <h3 class="mb-0">Yazdıqlarım</h3>
-        <a class="btn btn-primary" th:href="@{/blog/new}">Yeni yarat</a>
+        <!-- ✅ /bloq/yeni -->
+        <a class="btn btn-primary" th:href="@{/bloq/yeni}">Yeni yarat</a>
       </div>
 
       <div class="alert alert-info" th:if="${blogs == null or #lists.isEmpty(blogs)}">
-        Hələ blog yazmamısan.
+        Hələ bloq yazmamısan.
       </div>
 
       <div class="row" th:if="${blogs != null and !#lists.isEmpty(blogs)}">
         <div class="col-md-4 d-flex ftco-animate mb-4" th:each="b : ${blogs}">
           <div class="blog-entry justify-content-end w-100">
-            <a th:href="@{'/blog/' + ${b.id}}"
+
+            <!-- ✅ /bloq/{id} -->
+            <a th:href="@{'/bloq/' + ${b.id}}"
                class="block-20 img"
                th:style="'background-image: url(' + ${b.imageUrl} + ');'"></a>
 
@@ -56,20 +59,21 @@
               </div>
 
               <h3 class="heading mt-2">
-                <a th:href="@{'/blog/' + ${b.id}}" th:text="${b.title}">Başlıq</a>
+                <a th:href="@{'/bloq/' + ${b.id}}" th:text="${b.title}">Başlıq</a>
               </h3>
 
               <p th:text="${b.shortDescription}"></p>
 
               <p class="mb-0">
-                <a th:href="@{'/blog/' + ${b.id}}" class="btn btn-primary">
+                <a th:href="@{'/bloq/' + ${b.id}}" class="btn btn-primary">
                   Oxu <span class="icon-long-arrow-right"></span>
                 </a>
 
-              <form th:action="@{'/my-blogs/' + ${b.id} + '/delete'}"
+                <!-- ✅ /menim-bloqlarim/{id}/sil -->
+              <form th:action="@{'/menim-bloqlarim/' + ${b.id} + '/sil'}"
                     method="post"
                     style="display:inline;"
-                    onsubmit="return confirm('Bu blog silinsin?');">
+                    onsubmit="return confirm('Bu bloq silinsin?');">
                 <button class="btn btn-sm btn-danger" type="submit">Sil</button>
               </form>
               </p>
@@ -84,18 +88,18 @@
           <div class="block-27">
             <ul>
               <li th:classappend="${currentPage == 1} ? 'disabled'">
-                <a th:if="${currentPage > 1}" th:href="@{/my-blogs(page=${currentPage - 1})}">&lt;</a>
+                <a th:if="${currentPage > 1}" th:href="@{/menim-bloqlarim(page=${currentPage - 1})}">&lt;</a>
                 <span th:if="${currentPage == 1}">&lt;</span>
               </li>
 
               <li th:each="i : ${#numbers.sequence(1, totalPages)}"
                   th:classappend="${i == currentPage} ? 'active'">
-                <a th:if="${i != currentPage}" th:href="@{/my-blogs(page=${i})}" th:text="${i}">1</a>
+                <a th:if="${i != currentPage}" th:href="@{/menim-bloqlarim(page=${i})}" th:text="${i}">1</a>
                 <span th:if="${i == currentPage}" th:text="${i}">1</span>
               </li>
 
               <li th:classappend="${currentPage == totalPages} ? 'disabled'">
-                <a th:if="${currentPage < totalPages}" th:href="@{/my-blogs(page=${currentPage + 1})}">&gt;</a>
+                <a th:if="${currentPage < totalPages}" th:href="@{/menim-bloqlarim(page=${currentPage + 1})}">&gt;</a>
                 <span th:if="${currentPage == totalPages}">&gt;</span>
               </li>
             </ul>
