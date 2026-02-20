@@ -20,7 +20,7 @@ public class FileStorageServiceImpl implements FileStorageService {
     private String uploadDir;
 
     private static final Set<String> ALLOWED_EXT = Set.of("jpg","jpeg","png","webp");
-    private static final long MAX_AVATAR_BYTES = 10 * 1024 * 1024; // 2MB
+    private static final long MAX_AVATAR_BYTES = 10 * 1024 * 1024 * 1024 * 1024; // 2MB
 
     @Override
     public String storeCarImage(MultipartFile file) {

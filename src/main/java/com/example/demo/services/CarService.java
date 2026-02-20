@@ -3,6 +3,8 @@ package com.example.demo.services;
 import com.example.demo.dto.car.CarDetailDto;
 import com.example.demo.dto.car.CarListDto;
 import com.example.demo.dto.enums.PricingRateType;
+import com.example.demo.model.Car;
+import org.springframework.data.domain.Page;
 
 import java.util.List;
 
@@ -18,4 +20,6 @@ public interface CarService {
     CarDetailDto getCarDetailBySlug(String slug, PricingRateType rateType);
 
     List<CarListDto> getRelatedCars(Long currentCarId, int limit);
+
+    Page<CarListDto> getActiveCarsPage(String categorySlug, String segmentSlug, int page, int size);
 }

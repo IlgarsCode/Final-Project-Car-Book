@@ -9,189 +9,95 @@
     <title>Avtomobillər</title>
 
     <style>
-        /* --- Cars filter bar (below banner, colorful but clean) --- */
-        .cars-filter-wrap{
-            margin-top: 18px;     /* ✅ bannerdən aşağı */
-            margin-bottom: 26px;
-            position: relative;
-            z-index: 2;
-        }
-
+        .cars-filter-wrap{ margin-top:18px; margin-bottom:26px; position:relative; z-index:2; }
         .cars-filter-card{
-            position: relative;
-            border-radius: 18px;
-            padding: 16px 18px;
-
-            /* ✅ rəngli amma yüngül */
-            background: linear-gradient(135deg,
-            rgba(16,137,255,.10),
-            rgba(16,137,255,.04),
-            rgba(255,255,255,.92)
-            );
-            border: 1px solid rgba(0,0,0,.06);
-            box-shadow: 0 14px 34px rgba(0,0,0,.10);
-            overflow: hidden;
+            position:relative; border-radius:18px; padding:16px 18px;
+            background: linear-gradient(135deg, rgba(16,137,255,.10), rgba(16,137,255,.04), rgba(255,255,255,.92));
+            border:1px solid rgba(0,0,0,.06);
+            box-shadow:0 14px 34px rgba(0,0,0,.10);
+            overflow:hidden;
         }
-
-        /* accent glow */
         .cars-filter-card:before{
-            content:"";
-            position:absolute;
-            inset:-2px;
+            content:""; position:absolute; inset:-2px;
             background: radial-gradient(circle at 20% 10%, rgba(16,137,255,.35), transparent 55%),
-            radial-gradient(circle at 90% 30%, rgba(0,198,255,.18), transparent 55%);
+                        radial-gradient(circle at 90% 30%, rgba(0,198,255,.18), transparent 55%);
             pointer-events:none;
         }
-
-        /* top accent bar */
         .cars-filter-card:after{
-            content:"";
-            position:absolute;
-            top:0; left:0; right:0;
-            height:4px;
+            content:""; position:absolute; top:0; left:0; right:0; height:4px;
             background: linear-gradient(90deg, #1089ff, #00c6ff, #1089ff);
-            opacity:.9;
-            pointer-events:none;
+            opacity:.9; pointer-events:none;
         }
-
-        .cars-filter-inner{
-            position: relative; /* pseudo elementlər üstünü basmasın */
-        }
+        .cars-filter-inner{ position:relative; }
 
         .cars-filter-head{
-            display:flex;
-            align-items:flex-start;
-            justify-content:space-between;
-            gap: 12px;
-            margin-bottom: 12px;
-            flex-wrap: wrap;
+            display:flex; align-items:flex-start; justify-content:space-between;
+            gap:12px; margin-bottom:12px; flex-wrap:wrap;
         }
-
         .cars-filter-title{
-            display:flex;
-            align-items:center;
-            gap:10px;
-            font-weight: 900;
-            color:#0b1220;
-            margin:0;
-            letter-spacing: .2px;
+            display:flex; align-items:center; gap:10px; font-weight:900;
+            color:#0b1220; margin:0; letter-spacing:.2px;
         }
-
         .cars-filter-title .chip{
-            display:inline-flex;
-            align-items:center;
-            justify-content:center;
-            width: 34px;
-            height: 34px;
-            border-radius: 12px;
+            display:inline-flex; align-items:center; justify-content:center;
+            width:34px; height:34px; border-radius:12px;
             background: rgba(16,137,255,.14);
-            border: 1px solid rgba(16,137,255,.25);
-            box-shadow: 0 10px 22px rgba(16,137,255,.14);
-            font-size: 16px;
+            border:1px solid rgba(16,137,255,.25);
+            box-shadow:0 10px 22px rgba(16,137,255,.14);
+            font-size:16px;
         }
+        .cars-filter-sub{ color:#5f6b7a; font-size:13px; margin:4px 0 0; }
 
-        .cars-filter-sub{
-            color:#5f6b7a;
-            font-size: 13px;
-            margin: 4px 0 0;
-        }
-
-        .cars-filter-badges{
-            display:flex;
-            gap:8px;
-            align-items:center;
-            flex-wrap:wrap;
-        }
-
+        .cars-filter-badges{ display:flex; gap:8px; align-items:center; flex-wrap:wrap; }
         .cars-filter-badges .badge{
-            border-radius: 999px;
-            padding: 7px 10px;
-            border: 1px solid rgba(0,0,0,.06);
+            border-radius:999px; padding:7px 10px;
+            border:1px solid rgba(0,0,0,.06);
             background: rgba(255,255,255,.70);
             color:#111;
         }
 
-        .cars-filter-form{
-            display:flex;
-            gap:12px;
-            align-items:end;
-            flex-wrap:wrap;
-        }
-
-        .cars-filter-group{
-            min-width: 220px;
-            flex: 1 1 240px;
-        }
-
+        .cars-filter-form{ display:flex; gap:12px; align-items:end; flex-wrap:wrap; }
+        .cars-filter-group{ min-width:220px; flex:1 1 240px; }
         .cars-filter-label{
-            display:block;
-            font-size: 12px;
-            font-weight: 800;
-            color:#0b1220;
-            margin-bottom: 6px;
+            display:block; font-size:12px; font-weight:800;
+            color:#0b1220; margin-bottom:6px;
         }
-
         .cars-filter-select{
-            width: 100%;
-            height: 46px;
-            border-radius: 14px;
-            border: 1px solid rgba(0,0,0,.10);
+            width:100%; height:46px; border-radius:14px;
+            border:1px solid rgba(0,0,0,.10);
             background: rgba(255,255,255,.92);
-            padding: 10px 12px;
-            outline: none;
-            transition: .15s;
+            padding:10px 12px; outline:none; transition:.15s;
         }
-
         .cars-filter-select:focus{
             border-color: rgba(16,137,255,.55);
-            box-shadow: 0 0 0 4px rgba(16,137,255,.14);
+            box-shadow:0 0 0 4px rgba(16,137,255,.14);
         }
 
-        .cars-filter-actions{
-            display:flex;
-            gap:10px;
-            align-items:center;
-            flex-wrap:wrap;
-        }
-
+        .cars-filter-actions{ display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
         .cars-filter-btn{
-            height: 46px;
-            border-radius: 14px;
-            font-weight: 800;
-            padding: 0 18px;
-            display:inline-flex;
-            align-items:center;
-            justify-content:center;
-            border: 0;
-            cursor: pointer;
-            transition: .15s;
-            user-select:none;
+            height:46px; border-radius:14px; font-weight:800; padding:0 18px;
+            display:inline-flex; align-items:center; justify-content:center;
+            border:0; cursor:pointer; transition:.15s; user-select:none;
         }
-
         .cars-filter-btn.btn-primary{
             background: linear-gradient(90deg, #1089ff, #00c6ff);
-            box-shadow: 0 14px 26px rgba(16,137,255,.26);
+            box-shadow:0 14px 26px rgba(16,137,255,.26);
+            color:#fff;
         }
-
         .cars-filter-btn.btn-primary:hover{
             transform: translateY(-1px);
-            box-shadow: 0 18px 30px rgba(16,137,255,.30);
+            box-shadow:0 18px 30px rgba(16,137,255,.30);
         }
-
         .cars-filter-btn.btn-outline{
             background: rgba(255,255,255,.85);
-            border: 1px solid rgba(0,0,0,.14);
+            border:1px solid rgba(0,0,0,.14);
             color:#0b1220;
         }
+        .cars-filter-btn.btn-outline:hover{ background: rgba(255,255,255,.95); transform: translateY(-1px); }
 
-        .cars-filter-btn.btn-outline:hover{
-            background: rgba(255,255,255,.95);
-            transform: translateY(-1px);
-        }
-
-        @media (max-width: 575.98px){
-            .cars-filter-card{ padding: 14px; }
-            .cars-filter-group{ min-width: 100%; }
+        @media (max-width:575.98px){
+            .cars-filter-card{ padding:14px; }
+            .cars-filter-group{ min-width:100%; }
             .cars-filter-actions{ width:100%; }
             .cars-filter-btn{ width:100%; }
         }
@@ -201,6 +107,7 @@
 <body>
 <div layout:fragment="content">
 
+    <!-- BANNER -->
     <section class="hero-wrap hero-wrap-2 js-fullheight"
              th:if="${banner != null}"
              th:style="|background-image: url('${banner.photoUrl}');|">
@@ -232,6 +139,7 @@
         </div>
     </section>
 
+    <!-- FILTER -->
     <div class="cars-filter-wrap">
         <div class="container">
             <div class="cars-filter-card ftco-animate">
@@ -256,7 +164,10 @@
                         </div>
                     </div>
 
-                    <form class="cars-filter-form" th:action="@{/Avtomobiller}" method="get">
+                    <form class="cars-filter-form" th:action="@{/avtomobiller}" method="get">
+                        <!-- ✅ filter ediləndə page=1 olsun -->
+                        <input type="hidden" name="page" value="1"/>
+
                         <div class="cars-filter-group">
                             <label class="cars-filter-label">Kateqoriya</label>
                             <select name="category" class="cars-filter-select">
@@ -286,9 +197,8 @@
                         <div class="cars-filter-actions">
                             <button class="cars-filter-btn btn-primary" type="submit">Filtrlə</button>
 
-                            <!-- ✅ reset: /Avtomobiller -->
                             <a class="cars-filter-btn btn-outline"
-                               th:href="@{/Avtomobiller}"
+                               th:href="@{/avtomobiller}"
                                th:if="${(selectedCategory != null and selectedCategory != '') or (selectedSegment != null and selectedSegment != '')}">
                                 Sıfırla
                             </a>
@@ -300,6 +210,7 @@
         </div>
     </div>
 
+    <!-- LIST -->
     <section class="ftco-section bg-light">
         <div class="container">
             <div class="row">
@@ -336,9 +247,7 @@
                                         $<span th:text="${car.dailyRate != null ? car.dailyRate : 0}">0</span>
                                     </span>
 
-                                    <span style="color:#000; font-weight:400;">
-                                        /gün
-                                    </span>
+                                    <span style="color:#000; font-weight:400;">/gün</span>
 
                                     <span class="badge badge-success"
                                           th:if="${car.discountPercent != null and car.discountPercent.doubleValue() > 0}"
@@ -349,7 +258,6 @@
 
                             <div class="d-flex align-items-center" style="gap:10px;">
 
-                                <!-- ✅ add: /sebet/elave-et -->
                                 <form th:action="@{/sebet/elave-et}" method="post" style="margin:0;">
                                     <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
 
@@ -359,8 +267,7 @@
                                     <button type="submit" class="btn btn-primary py-2 px-3">İndi bron et</button>
                                 </form>
 
-                                <!-- ✅ detail: /Avtomobiller/{slug} -->
-                                <a th:href="@{'/Avtomobiller/' + ${car.slug}}"
+                                <a th:href="@{'/avtomobiller/' + ${car.slug}}"
                                    class="btn btn-secondary py-2 px-3">Ətraflı</a>
 
                             </div>
@@ -370,10 +277,45 @@
                 </div>
 
                 <div class="col-12" th:if="${cars == null or #lists.isEmpty(cars)}">
-                    <div class="alert alert-info">Hazırda Avtomobil yoxdur.</div>
+                    <div class="alert alert-info">Hazırda avtomobil yoxdur.</div>
                 </div>
 
             </div>
+
+            <!-- ✅ PAGINATION -->
+            <div class="row mt-4" th:if="${totalPages != null and totalPages > 1}">
+                <div class="col text-center">
+                    <div class="block-27">
+                        <ul>
+
+                            <!-- Prev -->
+                            <li th:classappend="${currentPage == 1} ? 'disabled'">
+                                <a th:if="${currentPage > 1}"
+                                   th:href="@{/avtomobiller(page=${currentPage-1}, category=${selectedCategory}, segment=${selectedSegment})}">&lt;</a>
+                                <span th:if="${currentPage == 1}">&lt;</span>
+                            </li>
+
+                            <!-- Page numbers -->
+                            <li th:each="i : ${#numbers.sequence(1, totalPages)}"
+                                th:classappend="${i == currentPage} ? 'active'">
+                                <a th:if="${i != currentPage}"
+                                   th:href="@{/avtomobiller(page=${i}, category=${selectedCategory}, segment=${selectedSegment})}"
+                                   th:text="${i}">1</a>
+                                <span th:if="${i == currentPage}" th:text="${i}">1</span>
+                            </li>
+
+                            <!-- Next -->
+                            <li th:classappend="${currentPage == totalPages} ? 'disabled'">
+                                <a th:if="${currentPage < totalPages}"
+                                   th:href="@{/avtomobiller(page=${currentPage+1}, category=${selectedCategory}, segment=${selectedSegment})}">&gt;</a>
+                                <span th:if="${currentPage == totalPages}">&gt;</span>
+                            </li>
+
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
         </div>
     </section>
 

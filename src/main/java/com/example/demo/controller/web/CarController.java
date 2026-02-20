@@ -35,12 +35,22 @@ public class CarController {
 
     // /car -> /avtomobiller
     @GetMapping("/avtomobiller")
-    public String carPage(@RequestParam(name = "category", required = false) String categorySlug,
-                          @RequestParam(name = "segment", required = false) String segmentSlug,
-                          Model model) {
+    public String carPage(
+            @RequestParam(name = "category", required = false) String categorySlug,
+            @RequestParam(name = "segment", required = false) String segmentSlug,
+            @RequestParam(name = "page", defaultValue = "1") int page,   // UI 1-dən başlasın
+            Model model
+    ) {
+        int size = 9;
+        int pageIndex = Math.max(page - 1, 0);
+
+        var carsPage = carService.getActiveCarsPage(categorySlug, segmentSlug, pageIndex, size);
 
         model.addAttribute("banner", bannerService.getBanner(BannerType.CAR));
-        model.addAttribute("cars", carService.getActiveCars(categorySlug, segmentSlug));
+
+        model.addAttribute("cars", carsPage.getContent());
+        model.addAttribute("currentPage", carsPage.getNumber() + 1);
+        model.addAttribute("totalPages", carsPage.getTotalPages());
 
         model.addAttribute("carCategories", carCategoryRepository.findAllWithActiveCarCount());
         model.addAttribute("segments", carSegmentRepository.findAllWithActiveCarCount());

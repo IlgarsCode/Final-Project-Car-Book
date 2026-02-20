@@ -2,12 +2,16 @@ package com.example.demo.services.impl;
 
 import com.example.demo.dto.car.*;
 import com.example.demo.dto.enums.PricingRateType;
+import com.example.demo.model.Car;
 import com.example.demo.repository.CarPricingRepository;
 import com.example.demo.repository.CarRepository;
 import com.example.demo.repository.CarReviewRepository;
 import com.example.demo.services.CarService;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -291,6 +295,71 @@ public class CarServiceImpl implements CarService {
             }
             return dto;
         }).toList();
+    }
+
+    @Override
+    public Page<CarListDto> getActiveCarsPage(String categorySlug, String segmentSlug, int page, int size) {
+
+        // ✅ Car entity-də createdAt yoxdur deyə "id" ilə sort edirik
+        var pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id"));
+
+        Page<Car> carsPage = carRepository.findActiveCars(categorySlug, segmentSlug, pageable);
+
+        List<Long> carIds = carsPage.getContent().stream().map(Car::getId).toList();
+
+        Map<Long, com.example.demo.model.CarPricing> pricingMap = new HashMap<>();
+        if (!carIds.isEmpty()) {
+            var pricings = carPricingRepository.findActiveByCarIds(carIds);
+            for (var cp : pricings) {
+                if (cp.getCar() != null && cp.getCar().getId() != null) {
+                    pricingMap.put(cp.getCar().getId(), cp);
+                }
+            }
+        }
+
+        return carsPage.map(car -> {
+            CarListDto dto = new CarListDto();
+            dto.setId(car.getId());
+            dto.setTitle(car.getTitle());
+            dto.setBrand(car.getBrand());
+            dto.setYear(car.getYear());
+            dto.setEngineVolume(car.getEngineVolume());
+            dto.setImageUrl(car.getImageUrl());
+            dto.setSlug(car.getSlug());
+
+            var cp = pricingMap.get(car.getId());
+            if (cp != null) {
+
+                dto.setHourlyRate(safe(cp.getEffectiveHourlyRate()));
+                dto.setDailyRate(safe(cp.getEffectiveDailyRate()));
+                dto.setMonthlyLeasingRate(safe(cp.getEffectiveMonthlyLeasingRate()));
+
+                dto.setBaseHourlyRate(safe(cp.getHourlyRate()));
+                dto.setBaseDailyRate(safe(cp.getDailyRate()));
+                dto.setBaseMonthlyLeasingRate(safe(cp.getMonthlyLeasingRate()));
+
+                boolean hasDailyDiscount = Boolean.TRUE.equals(cp.getDailyDiscountActive())
+                        && cp.getDailyDiscountPercent() != null
+                        && cp.getDailyDiscountPercent().compareTo(BigDecimal.ZERO) > 0;
+
+                dto.setHasDiscount(hasDailyDiscount);
+                dto.setDiscountPercent(hasDailyDiscount ? cp.getDailyDiscountPercent() : null);
+
+            } else {
+                dto.setHourlyRate(BigDecimal.ZERO);
+                dto.setDailyRate(BigDecimal.ZERO);
+                dto.setMonthlyLeasingRate(BigDecimal.ZERO);
+
+                dto.setBaseHourlyRate(BigDecimal.ZERO);
+                dto.setBaseDailyRate(BigDecimal.ZERO);
+                dto.setBaseMonthlyLeasingRate(BigDecimal.ZERO);
+
+                dto.setHasDiscount(false);
+                dto.setDiscountPercent(null);
+            }
+
+            return dto;
+        });
     }
 
     private static List<String> splitFeatures(String s) {

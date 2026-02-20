@@ -67,7 +67,7 @@
                             <!-- ✅ RATE SWITCH: /Avtomobiller/{slug} -->
                             <div class="d-flex justify-content-center mt-3" style="gap:10px; flex-wrap:wrap;">
                                 <a class="btn btn-outline-primary btn-sm"
-                                   th:href="@{'/Avtomobiller/' + ${car.slug}(
+                                   th:href="@{'/avtomobiller/' + ${car.slug}(
                                         rate='HOURLY',
                                         pickupLoc=${trip != null ? trip.pickupLoc : null},
                                         dropoffLoc=${trip != null ? trip.dropoffLoc : null},
@@ -76,7 +76,7 @@
                                    )}">Saatlıq</a>
 
                                 <a class="btn btn-outline-primary btn-sm"
-                                   th:href="@{'/Avtomobiller/' + ${car.slug}(
+                                   th:href="@{'/avtomobiller/' + ${car.slug}(
                                         rate='DAILY',
                                         pickupLoc=${trip != null ? trip.pickupLoc : null},
                                         dropoffLoc=${trip != null ? trip.dropoffLoc : null},
@@ -85,7 +85,7 @@
                                    )}">Günlük</a>
 
                                 <a class="btn btn-outline-primary btn-sm"
-                                   th:href="@{'/Avtomobiller/' + ${car.slug}(
+                                   th:href="@{'/avtomobiller/' + ${car.slug}(
                                         rate='LEASING',
                                         pickupLoc=${trip != null ? trip.pickupLoc : null},
                                         dropoffLoc=${trip != null ? trip.dropoffLoc : null},
@@ -512,7 +512,7 @@
                                 <div class="review-form-card">
                                     <h5>Rəy yaz</h5>
 
-                                    <form th:action="@{'/Avtomobiller/' + ${car.slug} + '/rey'}" method="post" th:object="${reviewForm}">
+                                    <form th:action="@{'/avtomobiller/' + ${car.slug} + '/rey'}" method="post" th:object="${reviewForm}">
                                         <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
 
                                         <div class="form-group">
@@ -599,7 +599,7 @@
 
                         <div class="text">
                             <h2 class="mb-0">
-                                <a th:href="@{'/Avtomobiller/' + ${rc.slug}(
+                                <a th:href="@{'/avtomobiller/' + ${rc.slug}(
                                        rate=${car.selectedRate != null ? car.selectedRate : 'DAILY'},
                                        pickupLoc=${trip != null ? trip.pickupLoc : null},
                                        dropoffLoc=${trip != null ? trip.dropoffLoc : null},
@@ -633,7 +633,7 @@
                                     <button type="submit" class="btn btn-primary py-2">İndi bron et</button>
                                 </form>
 
-                                <a th:href="@{'/Avtomobiller/' + ${rc.slug}(
+                                <a th:href="@{'/avtomobiller/' + ${rc.slug}(
                                        rate=${car.selectedRate != null ? car.selectedRate : 'DAILY'},
                                        pickupLoc=${trip != null ? trip.pickupLoc : null},
                                        dropoffLoc=${trip != null ? trip.dropoffLoc : null},
