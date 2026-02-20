@@ -1,21 +1,21 @@
 <!DOCTYPE html>
 <html
-        lang="en"
+        lang="az"
         xmlns:th="http://www.thymeleaf.org"
         xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
         layout:decorate="~{dashboard/layout}">
 
 <head>
-  <title>Edit Pricing</title>
+  <title>Qiymətlənmə - Redaktə</title>
 </head>
 
 <body>
 <div layout:fragment="content">
 
   <div class="d-sm-flex align-items-center justify-content-between mb-4">
-    <h1 class="h3 mb-0 text-gray-800">Edit Pricing</h1>
+    <h1 class="h3 mb-0 text-gray-800">Qiymətlənməni redaktə et</h1>
     <a class="btn btn-secondary btn-sm" th:href="@{/dashboard/car-pricings}">
-      <i class="fas fa-arrow-left"></i> Back
+      <i class="fas fa-arrow-left"></i> Geri
     </a>
   </div>
 
@@ -34,24 +34,24 @@
 
         <div class="form-row">
           <div class="form-group col-md-3">
-            <label>Hourly</label>
+            <label>Saatlıq</label>
             <input type="number" step="0.01" min="0" class="form-control" th:field="*{hourlyRate}" required>
           </div>
           <div class="form-group col-md-3">
-            <label>Daily</label>
+            <label>Günlük</label>
             <input type="number" step="0.01" min="0" class="form-control" th:field="*{dailyRate}" required>
           </div>
           <div class="form-group col-md-3">
-            <label>Leasing</label>
+            <label>Lizinqlə</label>
             <input type="number" step="0.01" min="0" class="form-control" th:field="*{monthlyLeasingRate}" required>
           </div>
           <div class="form-group col-md-3">
-            <label>Fuel surcharge</label>
+            <label>Yanacaq əlavəsi</label>
             <input type="number" step="0.01" min="0" class="form-control" th:field="*{fuelSurchargePerHour}">
           </div>
         </div>
 
-        <!-- ✅ DISCOUNTS (separate) -->
+        <!-- ✅ ENDİRİMLƏR (ayrı) -->
         <div class="form-row">
           <div class="form-group col-md-4">
             <div class="border rounded p-3">
@@ -60,14 +60,14 @@
                        class="custom-control-input"
                        id="editHourlyDiscountActivePage"
                        th:field="*{hourlyDiscountActive}">
-                <label class="custom-control-label" for="editHourlyDiscountActivePage">Hourly discount active</label>
+                <label class="custom-control-label" for="editHourlyDiscountActivePage">Saatlıq endirim aktiv</label>
               </div>
               <div class="mt-2">
-                <label class="mb-1">Hourly discount % (0..100)</label>
+                <label class="mb-1">Saatlıq endirim % (0..100)</label>
                 <input type="number" step="0.01" min="0" max="100"
                        class="form-control"
                        th:field="*{hourlyDiscountPercent}"
-                       placeholder="e.g. 10">
+                       placeholder="məs: 10">
               </div>
             </div>
           </div>
@@ -79,14 +79,14 @@
                        class="custom-control-input"
                        id="editDailyDiscountActivePage"
                        th:field="*{dailyDiscountActive}">
-                <label class="custom-control-label" for="editDailyDiscountActivePage">Daily discount active</label>
+                <label class="custom-control-label" for="editDailyDiscountActivePage">Günlük endirim aktiv</label>
               </div>
               <div class="mt-2">
-                <label class="mb-1">Daily discount % (0..100)</label>
+                <label class="mb-1">Günlük endirim % (0..100)</label>
                 <input type="number" step="0.01" min="0" max="100"
                        class="form-control"
                        th:field="*{dailyDiscountPercent}"
-                       placeholder="e.g. 15">
+                       placeholder="məs: 15">
               </div>
             </div>
           </div>
@@ -98,21 +98,21 @@
                        class="custom-control-input"
                        id="editLeasingDiscountActivePage"
                        th:field="*{leasingDiscountActive}">
-                <label class="custom-control-label" for="editLeasingDiscountActivePage">Leasing discount active</label>
+                <label class="custom-control-label" for="editLeasingDiscountActivePage">Lizinqlə endirim aktiv</label>
               </div>
               <div class="mt-2">
-                <label class="mb-1">Leasing discount % (0..100)</label>
+                <label class="mb-1">Lizinqlə endirim % (0..100)</label>
                 <input type="number" step="0.01" min="0" max="100"
                        class="form-control"
                        th:field="*{leasingDiscountPercent}"
-                       placeholder="e.g. 5">
+                       placeholder="məs: 5">
               </div>
             </div>
           </div>
         </div>
 
         <button class="btn btn-primary" type="submit">
-          <i class="fas fa-save"></i> Save
+          <i class="fas fa-save"></i> Yadda saxla
         </button>
 
       </form>

@@ -3,14 +3,14 @@
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{dashboard/layout}">
 <head>
-  <title>Blog Comments</title>
+  <title>Bloq şərhləri</title>
 </head>
 <body>
 <div layout:fragment="content">
 
   <div class="d-flex justify-content-between align-items-center mb-3">
-    <h1 class="h3 mb-0 text-gray-800">Blog Comments</h1>
-    <div class="text-muted" th:text="'Total: ' + (${totalItems} != null ? ${totalItems} : 0)">Total: 0</div>
+    <h1 class="h3 mb-0 text-gray-800">Bloq şərhləri</h1>
+    <div class="text-muted" th:text="'Cəmi: ' + (${totalItems} != null ? ${totalItems} : 0)">Cəmi: 0</div>
   </div>
 
   <div class="card shadow mb-4">
@@ -19,19 +19,19 @@
         <div class="form-row">
 
           <div class="form-group col-md-6">
-            <label>Search</label>
-            <input class="form-control" name="q" th:value="${q}" placeholder="name, email, message, blog title...">
+            <label>Axtarış</label>
+            <input class="form-control" name="q" th:value="${q}" placeholder="ad, e-poçt, mesaj, bloq başlığı...">
           </div>
 
           <div class="form-group col-md-6">
-            <label>Blog</label>
+            <label>Bloq</label>
             <select class="form-control" name="blogId">
-              <option value="" th:selected="${blogId == null}">All blogs</option>
+              <option value="" th:selected="${blogId == null}">Bütün bloqlar</option>
               <option th:each="b : ${blogs}"
                       th:value="${b.id}"
                       th:selected="${blogId != null and b.id.toString() == blogId.toString()}"
                       th:text="${b.title}">
-                Blog
+                Bloq
               </option>
             </select>
           </div>
@@ -39,22 +39,22 @@
           <div class="form-group col-md-3">
             <label>Status</label>
             <select class="form-control" name="active">
-              <option value="" th:selected="${active == null}">All</option>
-              <option value="true" th:selected="${active != null and active == true}">Active</option>
-              <option value="false" th:selected="${active != null and active == false}">Inactive</option>
+              <option value="" th:selected="${active == null}">Hamısı</option>
+              <option value="true" th:selected="${active != null and active == true}">Aktiv</option>
+              <option value="false" th:selected="${active != null and active == false}">Deaktiv</option>
             </select>
           </div>
 
           <div class="form-group col-md-3">
-            <label>Root only</label>
+            <label>Yalnız kök</label>
             <select class="form-control" name="rootOnly">
-              <option value="false" th:selected="${rootOnly == false}">All</option>
-              <option value="true" th:selected="${rootOnly == true}">Only root comments</option>
+              <option value="false" th:selected="${rootOnly == false}">Hamısı</option>
+              <option value="true" th:selected="${rootOnly == true}">Yalnız kök şərhlər</option>
             </select>
           </div>
 
           <div class="form-group col-md-3">
-            <label>Page size</label>
+            <label>Səhifə ölçüsü</label>
             <select class="form-control" name="size">
               <option value="10" th:selected="${size == 10}">10</option>
               <option value="20" th:selected="${size == 20}">20</option>
@@ -64,7 +64,7 @@
           </div>
 
           <div class="form-group col-md-3 d-flex align-items-end">
-            <button class="btn btn-primary w-100" type="submit">Filter</button>
+            <button class="btn btn-primary w-100" type="submit">Filtrlə</button>
           </div>
 
         </div>
@@ -79,19 +79,19 @@
         <thead>
         <tr>
           <th style="width:70px;">#</th>
-          <th>Blog</th>
-          <th>User</th>
-          <th>Message</th>
-          <th style="width:170px;">Created</th>
-          <th style="width:110px;">Type</th>
-          <th style="width:110px;">Active</th>
-          <th style="width:220px;">Actions</th>
+          <th>Bloq</th>
+          <th>İstifadəçi</th>
+          <th>Mesaj</th>
+          <th style="width:170px;">Yaradılma</th>
+          <th style="width:110px;">Tip</th>
+          <th style="width:110px;">Aktiv</th>
+          <th style="width:220px;">Əməliyyatlar</th>
         </tr>
         </thead>
 
         <tbody>
         <tr th:if="${rows == null or #lists.isEmpty(rows)}">
-          <td colspan="8" class="text-center">No comments found.</td>
+          <td colspan="8" class="text-center">Şərh tapılmadı.</td>
         </tr>
 
         <tr th:each="r, i : ${rows}">
@@ -112,14 +112,14 @@
           <td th:text="${r.createdAt != null ? #temporals.format(r.createdAt, 'dd MMM yyyy HH:mm') : '-'}">-</td>
 
           <td>
-            <span class="badge badge-info" th:if="${r.parentId == null}">ROOT</span>
-            <span class="badge badge-secondary" th:if="${r.parentId != null}">REPLY</span>
+            <span class="badge badge-info" th:if="${r.parentId == null}">KÖK</span>
+            <span class="badge badge-secondary" th:if="${r.parentId != null}">CAVAB</span>
           </td>
 
           <td>
             <span class="badge"
                   th:classappend="${r.isActive == true} ? ' badge-success' : ' badge-secondary'"
-                  th:text="${r.isActive == true} ? 'ACTIVE' : 'INACTIVE'">ACTIVE</span>
+                  th:text="${r.isActive == true} ? 'AKTİV' : 'DEAKTİV'">AKTİV</span>
           </td>
 
           <td>
@@ -129,7 +129,7 @@
               <input type="hidden" name="redirect"
                      th:value="@{/dashboard/blog-comment(page=${currentPage},size=${size},q=${q},blogId=${blogId},active=${active},rootOnly=${rootOnly})}"/>
               <button class="btn btn-sm btn-warning"
-                      onclick="return confirm('Deactivate this comment?')">Deactivate</button>
+                      onclick="return confirm('Bu şərh deaktiv edilsin?')">Deaktiv et</button>
             </form>
 
             <form th:if="${r.isActive != true}"
@@ -138,7 +138,7 @@
               <input type="hidden" name="redirect"
                      th:value="@{/dashboard/blog-comment(page=${currentPage},size=${size},q=${q},blogId=${blogId},active=${active},rootOnly=${rootOnly})}"/>
               <button class="btn btn-sm btn-success"
-                      onclick="return confirm('Activate this comment?')">Activate</button>
+                      onclick="return confirm('Bu şərh aktiv edilsin?')">Aktiv et</button>
             </form>
 
             <form th:action="@{/dashboard/blog-comment/hard-delete/{id}(id=${r.id})}"
@@ -146,7 +146,7 @@
               <input type="hidden" name="redirect"
                      th:value="@{/dashboard/blog-comment(page=${currentPage},size=${size},q=${q},blogId=${blogId},active=${active},rootOnly=${rootOnly})}"/>
               <button class="btn btn-sm btn-danger"
-                      onclick="return confirm('HARD DELETE? Geri qaytarılmır!')">Hard Delete</button>
+                      onclick="return confirm('SƏRT SİLİNSİN? Geri qaytarılmır!')">Sərt sil</button>
             </form>
           </td>
         </tr>

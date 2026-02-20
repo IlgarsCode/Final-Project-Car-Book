@@ -4,36 +4,36 @@
       layout:decorate="~{dashboard/layout}">
 <head>
     <meta charset="UTF-8">
-    <title>Blogs</title>
+    <title>Bloqlar</title>
 </head>
 <body>
 <div layout:fragment="content">
 
-    <h3 class="mb-3">Blogs</h3>
+    <h3 class="mb-3">Bloqlar</h3>
 
     <!-- Filters -->
     <form th:action="@{/dashboard/blogs}" method="get" class="row g-2 mb-3">
         <div class="col-md-4">
-            <input class="form-control" name="search" placeholder="Search..."
+            <input class="form-control" name="search" placeholder="Axtar..."
                    th:value="${search}">
         </div>
 
         <div class="col-md-4">
-            <input class="form-control" name="tag" placeholder="Tag slug (məs: java)"
+            <input class="form-control" name="tag" placeholder="Teq slug (məs: java)"
                    th:value="${tag}">
         </div>
 
         <div class="col-md-4">
             <select class="form-control" name="active">
-                <option value="" th:selected="${active == null}">All</option>
-                <option value="true" th:selected="${active != null and active}">Active</option>
-                <option value="false" th:selected="${active != null and !active}">Inactive</option>
+                <option value="" th:selected="${active == null}">Hamısı</option>
+                <option value="true" th:selected="${active != null and active}">Aktiv</option>
+                <option value="false" th:selected="${active != null and !active}">Deaktiv</option>
             </select>
         </div>
 
         <div class="col-12 mt-2">
-            <button class="btn btn-primary">Filter</button>
-            <a class="btn btn-outline-secondary" th:href="@{/dashboard/blogs}">Reset</a>
+            <button class="btn btn-primary">Filtrlə</button>
+            <a class="btn btn-outline-secondary" th:href="@{/dashboard/blogs}">Sıfırla</a>
         </div>
     </form>
 
@@ -48,10 +48,10 @@
             <thead>
             <tr>
                 <th style="width:60px">#</th>
-                <th>Title</th>
-                <th style="width:180px">Author</th>
-                <th style="width:140px">Date</th>
-                <th style="width:120px">Active</th>
+                <th>Başlıq</th>
+                <th style="width:180px">Müəllif</th>
+                <th style="width:140px">Tarix</th>
+                <th style="width:120px">Aktiv</th>
                 <th style="width:260px"></th>
             </tr>
             </thead>
@@ -72,37 +72,37 @@
                 <td th:text="${b.createdAt}">2026-02-13</td>
 
                 <td>
-                    <span class="badge bg-success" th:if="${b.isActive}">YES</span>
-                    <span class="badge bg-secondary" th:if="${!b.isActive}">NO</span>
+                    <span class="badge bg-success" th:if="${b.isActive}">BƏLİ</span>
+                    <span class="badge bg-secondary" th:if="${!b.isActive}">XEYR</span>
                 </td>
 
                 <td class="text-end">
                     <a class="btn btn-sm btn-outline-primary"
                        th:href="@{'/blog/' + ${b.id}}"
-                       target="_blank">Open</a>
+                       target="_blank">Aç</a>
 
                     <a class="btn btn-sm btn-outline-warning"
-                       th:href="@{'/dashboard/blogs/' + ${b.id} + '/edit'}">Edit</a>
+                       th:href="@{'/dashboard/blogs/' + ${b.id} + '/edit'}">Redaktə et</a>
 
                     <form th:if="${!b.isActive}"
                           th:action="@{'/dashboard/blogs/' + ${b.id} + '/activate'}"
                           method="post"
                           style="display:inline;">
-                        <button class="btn btn-sm btn-success" type="submit">Activate</button>
+                        <button class="btn btn-sm btn-success" type="submit">Aktiv et</button>
                     </form>
 
                     <form th:if="${b.isActive}"
                           th:action="@{'/dashboard/blogs/' + ${b.id} + '/deactivate'}"
                           method="post"
                           style="display:inline;">
-                        <button class="btn btn-sm btn-secondary" type="submit">Deactivate</button>
+                        <button class="btn btn-sm btn-secondary" type="submit">Deaktiv et</button>
                     </form>
 
                     <form th:action="@{'/dashboard/blogs/' + ${b.id} + '/delete'}"
                           method="post"
                           style="display:inline;"
                           onsubmit="return confirm('Silinsin?');">
-                        <button class="btn btn-sm btn-danger" type="submit">Delete</button>
+                        <button class="btn btn-sm btn-danger" type="submit">Sil</button>
                     </form>
                 </td>
             </tr>
@@ -116,7 +116,7 @@
 
             <li class="page-item" th:classappend="${currentPage == 1} ? 'disabled'">
                 <a class="page-link"
-                   th:href="@{/dashboard/blogs(page=${currentPage-1},search=${search},tag=${tag},active=${active})}">Prev</a>
+                   th:href="@{/dashboard/blogs(page=${currentPage-1},search=${search},tag=${tag},active=${active})}">Əvvəlki</a>
             </li>
 
             <li class="page-item"
@@ -129,7 +129,7 @@
 
             <li class="page-item" th:classappend="${currentPage == totalPages} ? 'disabled'">
                 <a class="page-link"
-                   th:href="@{/dashboard/blogs(page=${currentPage+1},search=${search},tag=${tag},active=${active})}">Next</a>
+                   th:href="@{/dashboard/blogs(page=${currentPage+1},search=${search},tag=${tag},active=${active})}">Növbəti</a>
             </li>
 
         </ul>

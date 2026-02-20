@@ -3,42 +3,42 @@
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{dashboard/layout}">
 <head>
-  <title>Review Detail</title>
+  <title>Rəy detalları</title>
 </head>
 <body>
 <div layout:fragment="content">
 
   <div class="d-flex justify-content-between align-items-center mb-3">
-    <h1 class="h3 mb-0 text-gray-800">Review Detail</h1>
-    <a class="btn btn-secondary" th:href="@{/dashboard/car-reviews}">Back</a>
+    <h1 class="h3 mb-0 text-gray-800">Rəy detalları</h1>
+    <a class="btn btn-secondary" th:href="@{/dashboard/car-reviews}">Geri</a>
   </div>
 
   <div class="card shadow">
     <div class="card-body">
 
       <p>
-        <b>Car:</b>
+        <b>Maşın:</b>
         <span th:text="${review.carBrand + ' ' + review.carTitle}">Brand Title</span>
       </p>
 
-      <p><b>User:</b> <span th:text="${review.fullName}">Name</span></p>
-      <p><b>Email:</b> <span th:text="${review.email != null ? review.email : '-'}">-</span></p>
-      <p><b>Rating:</b> <span th:text="${review.rating}">5</span>/5</p>
+      <p><b>İstifadəçi:</b> <span th:text="${review.fullName}">Name</span></p>
+      <p><b>E-poçt:</b> <span th:text="${review.email != null ? review.email : '-'}">-</span></p>
+      <p><b>Reytinq:</b> <span th:text="${review.rating}">5</span>/5</p>
 
       <p><b>Status:</b>
         <span class="badge"
               th:classappend="${review.isActive} ? ' badge-success' : ' badge-secondary'"
-              th:text="${review.isActive} ? 'ACTIVE' : 'INACTIVE'">
+              th:text="${review.isActive} ? 'AKTİV' : 'DEAKTİV'">
         </span>
       </p>
 
-      <p><b>Date:</b>
+      <p><b>Tarix:</b>
         <span th:text="${review.createdAt != null ? #temporals.format(review.createdAt, 'yyyy-MM-dd HH:mm') : '-'}">-</span>
       </p>
 
       <hr>
 
-      <p><b>Message</b></p>
+      <p><b>Mesaj</b></p>
       <div class="p-3"
            style="border:1px solid rgba(0,0,0,.08); border-radius:10px; white-space:pre-wrap;"
            th:text="${review.message != null ? review.message : '-'}">
@@ -50,15 +50,15 @@
       <div class="d-flex gap-2">
         <form th:action="@{/dashboard/car-reviews/{id}/toggle(id=${review.id})}" method="post">
           <button class="btn btn-warning" type="submit"
-                  th:text="${review.isActive} ? 'Deactivate' : 'Activate'">
+                  th:text="${review.isActive} ? 'Deaktiv et' : 'Aktiv et'">
             Toggle
           </button>
         </form>
 
         <form th:action="@{/dashboard/car-reviews/{id}/delete(id=${review.id})}" method="post">
           <button class="btn btn-danger" type="submit"
-                  onclick="return confirm('Delete this review permanently?')">
-            Delete
+                  onclick="return confirm('Bu rəyi daimi silmək istəyirsən?')">
+            Sil
           </button>
         </form>
       </div>

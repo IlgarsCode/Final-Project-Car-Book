@@ -3,45 +3,45 @@
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{dashboard/layout}">
 <head>
-  <title>Order Detail</title>
+  <title>Sifariş detalları</title>
 </head>
 <body>
 <div layout:fragment="content">
 
   <div class="d-flex justify-content-between align-items-center mb-3">
-    <h1 class="h3 text-gray-800">Order Detail</h1>
-    <a class="btn btn-secondary" th:href="@{/dashboard/orders}">Back</a>
+    <h1 class="h3 text-gray-800">Sifariş detalları</h1>
+    <a class="btn btn-secondary" th:href="@{/dashboard/orders}">Geri</a>
   </div>
 
   <div class="card shadow mb-3">
     <div class="card-body">
-      <div><b>Order ID:</b> <span th:text="${order.id}">1</span></div>
-      <div><b>User:</b> <span th:text="${order.userEmail}">mail</span></div>
+      <div><b>Sifariş ID:</b> <span th:text="${order.id}">1</span></div>
+      <div><b>İstifadəçi:</b> <span th:text="${order.userEmail}">mail</span></div>
       <div><b>Status:</b> <span th:text="${order.status}">PENDING</span></div>
 
       <hr/>
 
-      <div><b>Pickup:</b> <span th:text="${order.pickupLocation}">pickup</span></div>
-      <div><b>Dropoff:</b> <span th:text="${order.dropoffLocation}">drop</span></div>
-      <div><b>Pickup Date:</b> <span th:text="${order.pickupDate}">-</span></div>
-      <div><b>Dropoff Date:</b> <span th:text="${order.dropoffDate}">-</span></div>
-      <div><b>Pickup Time:</b> <span th:text="${order.pickupTime != null ? order.pickupTime : '-'}">-</span></div>
-      <div><b>Rental Days:</b> <span th:text="${order.rentalDays}">1</span></div>
+      <div><b>Götürmə:</b> <span th:text="${order.pickupLocation}">pickup</span></div>
+      <div><b>Təhvil:</b> <span th:text="${order.dropoffLocation}">drop</span></div>
+      <div><b>Götürmə tarixi:</b> <span th:text="${order.pickupDate}">-</span></div>
+      <div><b>Təhvil tarixi:</b> <span th:text="${order.dropoffDate}">-</span></div>
+      <div><b>Götürmə saatı:</b> <span th:text="${order.pickupTime != null ? order.pickupTime : '-'}">-</span></div>
+      <div><b>Gün sayı:</b> <span th:text="${order.rentalDays}">1</span></div>
 
       <hr/>
 
-      <div><b>Total:</b> <span th:text="${order.totalAmount}">0</span></div>
-      <div><b>Created:</b>
+      <div><b>Cəmi:</b> <span th:text="${order.totalAmount}">0</span></div>
+      <div><b>Yaradıldı:</b>
         <span th:text="${order.createdAt != null ? #temporals.format(order.createdAt,'yyyy-MM-dd HH:mm') : '-'}">-</span>
       </div>
 
       <hr/>
 
-      <!-- ✅ PAYMENT INFO (NEW) -->
+      <!-- PAYMENT INFO -->
       <div class="card border-left-info mt-3">
         <div class="card-body">
           <div class="d-flex justify-content-between align-items-center">
-            <h5 class="mb-0">Payment</h5>
+            <h5 class="mb-0">Ödəniş</h5>
 
             <span th:if="${payment != null}"
                   class="badge"
@@ -54,11 +54,11 @@
               PROCESSING
             </span>
 
-            <span th:if="${payment == null}" class="badge badge-secondary">NO PAYMENT</span>
+            <span th:if="${payment == null}" class="badge badge-secondary">ÖDƏNİŞ YOXDUR</span>
           </div>
 
           <div th:if="${payment == null}" class="text-muted mt-2">
-            Bu order üçün payment yaradılmayıb.
+            Bu sifariş üçün ödəniş yaradılmayıb.
           </div>
 
           <div th:if="${payment != null}" class="mt-3">
@@ -66,7 +66,7 @@
             <div><b>Provider:</b> <span th:text="${payment.provider}">FAKE</span></div>
 
             <div class="mt-2">
-              <b>Amount:</b>
+              <b>Məbləğ:</b>
               <span th:text="${payment.amount}">0</span>
               <span th:text="${payment.currency}">USD</span>
             </div>
@@ -77,22 +77,22 @@
             </div>
 
             <div class="mt-2">
-              <b>Created:</b>
+              <b>Yaradıldı:</b>
               <span th:text="${payment.createdAt != null ? #temporals.format(payment.createdAt,'yyyy-MM-dd HH:mm') : '-'}">-</span>
             </div>
 
             <div class="mt-2">
-              <b>Completed:</b>
+              <b>Tamamlandı:</b>
               <span th:text="${payment.completedAt != null ? #temporals.format(payment.completedAt,'yyyy-MM-dd HH:mm') : '-'}">-</span>
             </div>
 
             <div class="mt-2" th:if="${payment.failureReason != null and !payment.failureReason.isBlank()}">
-              <b>Failure reason:</b> <span class="text-danger" th:text="${payment.failureReason}">Card declined</span>
+              <b>Uğursuz səbəb:</b> <span class="text-danger" th:text="${payment.failureReason}">Card declined</span>
             </div>
           </div>
         </div>
       </div>
-      <!-- ✅ /PAYMENT INFO -->
+      <!-- /PAYMENT INFO -->
 
       <hr class="mt-4"/>
 
@@ -107,11 +107,11 @@
             </option>
           </select>
         </div>
-        <button class="btn btn-primary" type="submit">Update</button>
+        <button class="btn btn-primary" type="submit">Yenilə</button>
       </form>
 
       <form class="mt-3" th:action="@{/dashboard/orders/{id}/delete(id=${order.id})}" method="post">
-        <button class="btn btn-danger" type="submit" onclick="return confirm('Order silinsin?');">
+        <button class="btn btn-danger" type="submit" onclick="return confirm('Sifariş silinsin?');">
           Hard Delete
         </button>
       </form>
@@ -123,20 +123,20 @@
     <div class="card-body table-responsive">
 
       <div class="text-muted" th:if="${order.items == null or #lists.isEmpty(order.items)}">
-        Order items yoxdur.
+        Sifariş item-ləri yoxdur.
       </div>
 
       <table class="table table-bordered table-hover" th:if="${order.items != null and !#lists.isEmpty(order.items)}">
         <thead>
         <tr>
           <th>ID</th>
-          <th>Car</th>
-          <th>Rate</th>
-          <th>Unit Price</th>
-          <th>Surcharge/hr</th>
-          <th>Units</th>
-          <th>Qty</th>
-          <th>Line Total</th>
+          <th>Maşın</th>
+          <th>Tarif</th>
+          <th>Vahid qiymət</th>
+          <th>Əlavə haqq / saat</th>
+          <th>Vahid</th>
+          <th>Miqdar</th>
+          <th>Sətir cəmi</th>
         </tr>
         </thead>
         <tbody>

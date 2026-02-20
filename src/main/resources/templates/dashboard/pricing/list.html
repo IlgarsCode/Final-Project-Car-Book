@@ -1,12 +1,12 @@
 <!DOCTYPE html>
 <html
-        lang="en"
+        lang="az"
         xmlns:th="http://www.thymeleaf.org"
         xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
         layout:decorate="~{dashboard/layout}">
 
 <head>
-  <title>Car Pricings</title>
+  <title>Avto Qiymətləri</title>
 </head>
 
 <body>
@@ -14,13 +14,13 @@
 <div layout:fragment="content">
 
   <div class="d-sm-flex align-items-center justify-content-between mb-4">
-    <h1 class="h3 mb-0 text-gray-800">Car Pricings</h1>
+    <h1 class="h3 mb-0 text-gray-800">Avto qiymətləri</h1>
   </div>
 
-  <!-- CREATE CARD -->
+  <!-- YARATMA KARTI -->
   <div class="card shadow mb-4">
     <div class="card-header py-3">
-      <h6 class="m-0 font-weight-bold text-primary">Create Pricing (for a car)</h6>
+      <h6 class="m-0 font-weight-bold text-primary">Qiymət yarat (avto üçün)</h6>
     </div>
     <div class="card-body">
 
@@ -33,9 +33,9 @@
         <div class="form-row">
 
           <div class="form-group col-md-4">
-            <label>Car</label>
+            <label>Avtomobil</label>
             <select class="form-control" th:field="*{carId}" required>
-              <option value="" th:selected="${createForm.carId == null}" disabled>Choose a car</option>
+              <option value="" th:selected="${createForm.carId == null}" disabled>Avtomobil seç</option>
               <option th:each="c : ${cars}"
                       th:value="${c.id}"
                       th:text="${c.brand + ' - ' + c.title}">
@@ -44,29 +44,29 @@
           </div>
 
           <div class="form-group col-md-2">
-            <label>Hourly</label>
+            <label>Saatlıq</label>
             <input type="number" step="0.01" min="0" class="form-control" th:field="*{hourlyRate}" required>
           </div>
 
           <div class="form-group col-md-2">
-            <label>Daily</label>
+            <label>Günlük</label>
             <input type="number" step="0.01" min="0" class="form-control" th:field="*{dailyRate}" required>
           </div>
 
           <div class="form-group col-md-2">
-            <label>Leasing</label>
+            <label>Lizinqlə</label>
             <input type="number" step="0.01" min="0" class="form-control" th:field="*{monthlyLeasingRate}" required>
           </div>
 
           <div class="form-group col-md-2">
-            <label>Fuel surcharge</label>
+            <label>Yanacaq əlavəsi</label>
             <input type="number" step="0.01" min="0" class="form-control" th:field="*{fuelSurchargePerHour}">
-            <small class="text-muted">optional</small>
+            <small class="text-muted">istəyə bağlı</small>
           </div>
 
         </div>
 
-        <!-- ✅ DISCOUNTS (separate) -->
+        <!-- ✅ ENDİRİMLƏR (ayrı) -->
         <div class="form-row">
           <div class="form-group col-md-4">
             <div class="border rounded p-3">
@@ -74,14 +74,14 @@
                 <input type="checkbox" class="custom-control-input"
                        id="createHourlyDiscountActive"
                        th:field="*{hourlyDiscountActive}">
-                <label class="custom-control-label" for="createHourlyDiscountActive">Hourly discount active</label>
+                <label class="custom-control-label" for="createHourlyDiscountActive">Saatlıq endirim aktiv</label>
               </div>
               <div class="mt-2">
-                <label class="mb-1">Hourly discount % (0..100)</label>
+                <label class="mb-1">Saatlıq endirim % (0..100)</label>
                 <input type="number" step="0.01" min="0" max="100"
                        class="form-control"
                        th:field="*{hourlyDiscountPercent}"
-                       placeholder="e.g. 10">
+                       placeholder="məs: 10">
               </div>
             </div>
           </div>
@@ -92,14 +92,14 @@
                 <input type="checkbox" class="custom-control-input"
                        id="createDailyDiscountActive"
                        th:field="*{dailyDiscountActive}">
-                <label class="custom-control-label" for="createDailyDiscountActive">Daily discount active</label>
+                <label class="custom-control-label" for="createDailyDiscountActive">Günlük endirim aktiv</label>
               </div>
               <div class="mt-2">
-                <label class="mb-1">Daily discount % (0..100)</label>
+                <label class="mb-1">Günlük endirim % (0..100)</label>
                 <input type="number" step="0.01" min="0" max="100"
                        class="form-control"
                        th:field="*{dailyDiscountPercent}"
-                       placeholder="e.g. 15">
+                       placeholder="məs: 15">
               </div>
             </div>
           </div>
@@ -110,21 +110,21 @@
                 <input type="checkbox" class="custom-control-input"
                        id="createLeasingDiscountActive"
                        th:field="*{leasingDiscountActive}">
-                <label class="custom-control-label" for="createLeasingDiscountActive">Leasing discount active</label>
+                <label class="custom-control-label" for="createLeasingDiscountActive">Lizinqlə endirim aktiv</label>
               </div>
               <div class="mt-2">
-                <label class="mb-1">Leasing discount % (0..100)</label>
+                <label class="mb-1">Lizinqlə endirim % (0..100)</label>
                 <input type="number" step="0.01" min="0" max="100"
                        class="form-control"
                        th:field="*{leasingDiscountPercent}"
-                       placeholder="e.g. 5">
+                       placeholder="məs: 5">
               </div>
             </div>
           </div>
         </div>
 
         <button class="btn btn-primary" type="submit">
-          <i class="fas fa-plus"></i> Create
+          <i class="fas fa-plus"></i> Yarat
         </button>
 
       </form>
@@ -132,10 +132,10 @@
     </div>
   </div>
 
-  <!-- LIST TABLE -->
+  <!-- SİYAHI CƏDVƏLİ -->
   <div class="card shadow mb-4">
     <div class="card-header py-3 d-flex align-items-center justify-content-between">
-      <h6 class="m-0 font-weight-bold text-primary">Pricing Rows</h6>
+      <h6 class="m-0 font-weight-bold text-primary">Qiymət sətirləri</h6>
     </div>
 
     <div class="card-body">
@@ -145,20 +145,20 @@
           <thead>
           <tr>
             <th>#</th>
-            <th>Car</th>
-            <th>Hourly</th>
-            <th>Daily</th>
-            <th>Leasing</th>
-            <th>Fuel</th>
-            <th>Discounts</th>
+            <th>Avtomobil</th>
+            <th>Saatlıq</th>
+            <th>Günlük</th>
+            <th>Lizinqlə</th>
+            <th>Yanacaq</th>
+            <th>Endirimlər</th>
             <th>Status</th>
-            <th style="width: 180px;">Actions</th>
+            <th style="width: 180px;">Əməliyyatlar</th>
           </tr>
           </thead>
 
           <tbody>
           <tr th:if="${rows == null || #lists.isEmpty(rows)}">
-            <td colspan="9" class="text-center">No pricing rows yet.</td>
+            <td colspan="9" class="text-center">Hələ qiymət sətri yoxdur.</td>
           </tr>
 
           <tr th:each="cp, i : ${rows}">
@@ -183,15 +183,15 @@
             <td th:text="${cp.monthlyLeasingRate}">0</td>
             <td th:text="${cp.fuelSurchargePerHour != null ? cp.fuelSurchargePerHour : '-'}">-</td>
 
-            <!-- ✅ DISCOUNTS BADGES -->
+            <!-- ✅ ENDİRİM BADGELƏRİ -->
             <td style="white-space:nowrap;">
               <span class="badge badge-success mr-1"
                     th:if="${cp.hourlyDiscountActive != null and cp.hourlyDiscountActive and cp.hourlyDiscountPercent != null and cp.hourlyDiscountPercent.doubleValue() > 0}"
-                    th:text="${'H: -' + cp.hourlyDiscountPercent + '%'}">H: -10%</span>
+                    th:text="${'S: -' + cp.hourlyDiscountPercent + '%'}">S: -10%</span>
 
               <span class="badge badge-success mr-1"
                     th:if="${cp.dailyDiscountActive != null and cp.dailyDiscountActive and cp.dailyDiscountPercent != null and cp.dailyDiscountPercent.doubleValue() > 0}"
-                    th:text="${'D: -' + cp.dailyDiscountPercent + '%'}">D: -15%</span>
+                    th:text="${'G: -' + cp.dailyDiscountPercent + '%'}">G: -15%</span>
 
               <span class="badge badge-success"
                     th:if="${cp.leasingDiscountActive != null and cp.leasingDiscountActive and cp.leasingDiscountPercent != null and cp.leasingDiscountPercent.doubleValue() > 0}"
@@ -206,8 +206,8 @@
             </td>
 
             <td>
-              <span class="badge badge-success" th:if="${cp.isActive}">ACTIVE</span>
-              <span class="badge badge-secondary" th:unless="${cp.isActive}">INACTIVE</span>
+              <span class="badge badge-success" th:if="${cp.isActive}">AKTİV</span>
+              <span class="badge badge-secondary" th:unless="${cp.isActive}">PASSİV</span>
             </td>
 
             <td>
@@ -229,13 +229,13 @@
 
                                data-ldiscactive=${cp.leasingDiscountActive},
                                data-ldiscpercent=${cp.leasingDiscountPercent}">
-                <i class="fas fa-edit"></i> Edit
+                <i class="fas fa-edit"></i> Redaktə
               </button>
 
               <form th:action="@{/dashboard/car-pricings/deactivate/{carId}(carId=${cp.car.id})}"
                     method="post"
                     class="d-inline"
-                    onsubmit="return confirm('Deactivate this pricing?');">
+                    onsubmit="return confirm('Bu qiymətlənmə passiv edilsin?');">
 
                 <th:block th:if="${_csrf != null}">
                   <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
@@ -255,7 +255,7 @@
     </div>
   </div>
 
-  <!-- EDIT MODAL -->
+  <!-- REDAKTƏ MODALI -->
   <div class="modal fade" id="editPricingModal" tabindex="-1" role="dialog" aria-hidden="true">
     <div class="modal-dialog modal-lg" role="document">
       <div class="modal-content">
@@ -269,7 +269,7 @@
           </th:block>
 
           <div class="modal-header">
-            <h5 class="modal-title">Edit Pricing</h5>
+            <h5 class="modal-title">Qiymətlənməni redaktə et</h5>
             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
               <span aria-hidden="true">×</span>
             </button>
@@ -281,25 +281,25 @@
 
             <div class="form-row">
               <div class="form-group col-md-3">
-                <label>Hourly</label>
+                <label>Saatlıq</label>
                 <input type="number" step="0.01" min="0" class="form-control" th:field="*{hourlyRate}" id="editHourly" required>
               </div>
               <div class="form-group col-md-3">
-                <label>Daily</label>
+                <label>Günlük</label>
                 <input type="number" step="0.01" min="0" class="form-control" th:field="*{dailyRate}" id="editDaily" required>
               </div>
               <div class="form-group col-md-3">
-                <label>Leasing</label>
+                <label>Lizinqlə</label>
                 <input type="number" step="0.01" min="0" class="form-control" th:field="*{monthlyLeasingRate}" id="editLeasing" required>
               </div>
               <div class="form-group col-md-3">
-                <label>Fuel surcharge</label>
+                <label>Yanacaq əlavəsi</label>
                 <input type="number" step="0.01" min="0" class="form-control" th:field="*{fuelSurchargePerHour}" id="editFuel">
-                <small class="text-muted">optional</small>
+                <small class="text-muted">istəyə bağlı</small>
               </div>
             </div>
 
-            <!-- ✅ DISCOUNTS -->
+            <!-- ✅ ENDİRİMLƏR -->
             <div class="form-row">
               <div class="form-group col-md-4">
                 <div class="border rounded p-3">
@@ -308,15 +308,15 @@
                            class="custom-control-input"
                            id="editHourlyDiscountActive"
                            th:field="*{hourlyDiscountActive}">
-                    <label class="custom-control-label" for="editHourlyDiscountActive">Hourly discount active</label>
+                    <label class="custom-control-label" for="editHourlyDiscountActive">Saatlıq endirim aktiv</label>
                   </div>
                   <div class="mt-2">
-                    <label class="mb-1">Hourly discount %</label>
+                    <label class="mb-1">Saatlıq endirim %</label>
                     <input type="number" step="0.01" min="0" max="100"
                            class="form-control"
                            th:field="*{hourlyDiscountPercent}"
                            id="editHourlyDiscountPercent"
-                           placeholder="e.g. 10">
+                           placeholder="məs: 10">
                   </div>
                 </div>
               </div>
@@ -328,15 +328,15 @@
                            class="custom-control-input"
                            id="editDailyDiscountActive"
                            th:field="*{dailyDiscountActive}">
-                    <label class="custom-control-label" for="editDailyDiscountActive">Daily discount active</label>
+                    <label class="custom-control-label" for="editDailyDiscountActive">Günlük endirim aktiv</label>
                   </div>
                   <div class="mt-2">
-                    <label class="mb-1">Daily discount %</label>
+                    <label class="mb-1">Günlük endirim %</label>
                     <input type="number" step="0.01" min="0" max="100"
                            class="form-control"
                            th:field="*{dailyDiscountPercent}"
                            id="editDailyDiscountPercent"
-                           placeholder="e.g. 15">
+                           placeholder="məs: 15">
                   </div>
                 </div>
               </div>
@@ -348,15 +348,15 @@
                            class="custom-control-input"
                            id="editLeasingDiscountActive"
                            th:field="*{leasingDiscountActive}">
-                    <label class="custom-control-label" for="editLeasingDiscountActive">Leasing discount active</label>
+                    <label class="custom-control-label" for="editLeasingDiscountActive">Lizinqlə endirim aktiv</label>
                   </div>
                   <div class="mt-2">
-                    <label class="mb-1">Leasing discount %</label>
+                    <label class="mb-1">Lizinqlə endirim %</label>
                     <input type="number" step="0.01" min="0" max="100"
                            class="form-control"
                            th:field="*{leasingDiscountPercent}"
                            id="editLeasingDiscountPercent"
-                           placeholder="e.g. 5">
+                           placeholder="məs: 5">
                   </div>
                 </div>
               </div>
@@ -365,9 +365,9 @@
           </div>
 
           <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Ləğv et</button>
             <button type="submit" class="btn btn-primary">
-              <i class="fas fa-save"></i> Save
+              <i class="fas fa-save"></i> Yadda saxla
             </button>
           </div>
 
@@ -392,19 +392,19 @@
       const fuel = btn.data('fuel');
       $('#editFuel').val(fuel != null ? fuel : '');
 
-      // Hourly
+      // Saatlıq
       const hA = btn.data('hdiscactive');
       const hP = btn.data('hdiscpercent');
       $('#editHourlyDiscountActive').prop('checked', hA === true || hA === 'true');
       $('#editHourlyDiscountPercent').val(hP != null ? hP : '');
 
-      // Daily
+      // Günlük
       const dA = btn.data('ddiscactive');
       const dP = btn.data('ddiscpercent');
       $('#editDailyDiscountActive').prop('checked', dA === true || dA === 'true');
       $('#editDailyDiscountPercent').val(dP != null ? dP : '');
 
-      // Leasing
+      // Lizinqlə
       const lA = btn.data('ldiscactive');
       const lP = btn.data('ldiscpercent');
       $('#editLeasingDiscountActive').prop('checked', lA === true || lA === 'true');

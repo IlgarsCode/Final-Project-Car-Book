@@ -13,7 +13,7 @@
 
                     <form th:action="@{/auth/register-verify}" th:object="${form}" method="post" class="p-4 bg-light">
                         <div class="form-group">
-                            <label>Email</label>
+                            <label>E-poçt</label>
                             <input type="email" class="form-control" th:field="*{email}" readonly>
                             <small class="text-danger" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></small>
                         </div>
@@ -29,7 +29,7 @@
                     </form>
 
                     <p class="text-muted mt-3" style="font-size:13px;">
-                        OTP 10 dəqiqə etibarlıdır. Kod gəlməyibsə, register səhifəsindən yenidən göndərə bilərsən.
+                        OTP 10 dəqiqə etibarlıdır. Kod gəlməyibsə, qeydiyyat səhifəsindən yenidən göndərə bilərsən.
                     </p>
 
                 </div>

@@ -4,7 +4,7 @@
       layout:decorate="~{layout}">
 <head>
   <meta charset="UTF-8">
-  <title>Processing</title>
+  <title>Emal olunur</title>
 </head>
 <body>
 <div layout:fragment="content">
@@ -17,17 +17,17 @@
           <div class="p-4 bg-white border"
                style="border-radius:16px; box-shadow:0 12px 34px rgba(0,0,0,.08);">
 
-            <h3 class="mb-2">Processing payment...</h3>
+            <h3 class="mb-2">Ödəniş emal olunur...</h3>
             <p class="text-muted mb-4">
-              Please wait. We are confirming the transaction.
+              Zəhmət olmasa gözləyin. Əməliyyatı təsdiqləyirik.
             </p>
 
             <div class="alert alert-info" id="statusBox">
-              Status: PROCESSING
+              Status: EMAL OLUNUR
             </div>
 
             <div class="text-muted" style="font-size:13px;">
-              Payment ID: <span th:text="${payment.id}">0</span>
+              Ödəniş ID: <span th:text="${payment.id}">0</span>
             </div>
 
           </div>

@@ -26,12 +26,12 @@
         <li class="nav-item">
             <a class="nav-link" th:href="@{/dashboard}">
                 <i class="fas fa-fw fa-tachometer-alt"></i>
-                <span>Dashboard</span>
+                <span>İdarə paneli</span>
             </a>
         </li>
 
         <hr class="sidebar-divider">
-        <div class="sidebar-heading">Content</div>
+        <div class="sidebar-heading">Məzmun</div>
 
         <li class="nav-item active">
             <a class="nav-link" th:href="@{/dashboard/banner}">
@@ -61,13 +61,13 @@
                 <div class="d-sm-flex align-items-center justify-content-between mb-4">
                     <h1 class="h3 mb-0 text-gray-800">Banner</h1>
                     <a class="btn btn-primary btn-sm shadow-sm" th:href="@{/dashboard/banner/create}">
-                        <i class="fas fa-plus fa-sm text-white-50"></i> Create
+                        <i class="fas fa-plus fa-sm text-white-50"></i> Yarat
                     </a>
                 </div>
 
                 <div class="card shadow mb-4">
                     <div class="card-header py-3">
-                        <h6 class="m-0 font-weight-bold text-primary">Banner List</h6>
+                        <h6 class="m-0 font-weight-bold text-primary">Banner siyahısı</h6>
                     </div>
 
                     <div class="card-body">
@@ -76,11 +76,11 @@
                                 <thead>
                                 <tr>
                                     <th>ID</th>
-                                    <th>Type</th>
-                                    <th>Title</th>
-                                    <th>Photo</th>
-                                    <th>Active</th>
-                                    <th style="width:180px;">Actions</th>
+                                    <th>Tip</th>
+                                    <th>Başlıq</th>
+                                    <th>Foto</th>
+                                    <th>Aktivlik</th>
+                                    <th style="width:180px;">Əməliyyatlar</th>
                                 </tr>
                                 </thead>
 
@@ -94,15 +94,15 @@
                                         <span th:if="${b.photoUrl == null}">-</span>
                                     </td>
                                     <td>
-                                        <span class="badge badge-success" th:if="${b.active}">Active</span>
-                                        <span class="badge badge-secondary" th:unless="${b.active}">Passive</span>
+                                        <span class="badge badge-success" th:if="${b.active}">Aktiv</span>
+                                        <span class="badge badge-secondary" th:unless="${b.active}">Passiv</span>
                                     </td>
                                     <td>
                                         <a class="btn btn-sm btn-warning" th:href="@{/dashboard/banner/update/{id}(id=${b.id})}">
-                                            Update
+                                            Yenilə
                                         </a>
                                         <a class="btn btn-sm btn-danger" th:href="@{/dashboard/banner/delete/{id}(id=${b.id})}">
-                                            Delete
+                                            Sil
                                         </a>
                                     </td>
                                 </tr>

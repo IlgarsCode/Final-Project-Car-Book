@@ -4,7 +4,7 @@
       layout:decorate="~{layout}">
 <head>
     <meta charset="UTF-8">
-    <title>Verify OTP</title>
+    <title>OTP-ni təsdiqlə</title>
 
     <style>
         .auth-card { border-radius: 14px; border:1px solid rgba(0,0,0,.06); }
@@ -23,7 +23,7 @@
                     <div class="card shadow p-4 auth-card">
                         <h4 class="mb-2">OTP təsdiqi</h4>
                         <p class="muted mb-4">
-                            Email-ə gələn 6 rəqəmli kodu daxil et.
+                            E-poçta gələn 6 rəqəmli kodu daxil et.
                         </p>
 
                         <div class="alert alert-danger" th:if="${serverError != null}" th:text="${serverError}"></div>
@@ -32,12 +32,12 @@
                             <input type="hidden" th:field="*{email}"/>
 
                             <div class="form-group">
-                                <label>Email</label>
+                                <label>E-poçt</label>
                                 <input class="form-control" th:value="${form.email}" disabled>
                             </div>
 
                             <div class="form-group">
-                                <label>OTP Code</label>
+                                <label>OTP kodu</label>
                                 <input class="form-control otp-input"
                                        maxlength="6"
                                        inputmode="numeric"

@@ -3,12 +3,12 @@
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{dashboard/layout}">
 <head>
-    <title>Users</title>
+    <title>İstifadəçilər</title>
 </head>
 <body>
 <div layout:fragment="content">
 
-    <h1 class="h3 mb-4 text-gray-800">Users</h1>
+    <h1 class="h3 mb-4 text-gray-800">İstifadəçilər</h1>
 
     <div class="card shadow mb-4">
         <div class="card-body">
@@ -18,10 +18,10 @@
                     <tr>
                         <th>ID</th>
                         <th>Email</th>
-                        <th>Full name</th>
-                        <th>Active</th>
-                        <th>Roles</th>
-                        <th>Actions</th>
+                        <th>Ad Soyad</th>
+                        <th>Aktiv</th>
+                        <th>Rollar</th>
+                        <th>Əməliyyatlar</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -30,7 +30,7 @@
                         <td th:text="${u.email}">email</td>
                         <td th:text="${u.fullName}">name</td>
                         <td>
-                            <span th:text="${u.isActive} ? 'Yes' : 'No'"
+                            <span th:text="${u.isActive} ? 'Bəli' : 'Xeyr'"
                                   th:classappend="${u.isActive} ? 'badge badge-success' : 'badge badge-secondary'">
                             </span>
                         </td>
@@ -43,13 +43,13 @@
                         <td class="d-flex" style="gap:8px;">
                             <form th:action="@{/dashboard/users/{id}/toggle(id=${u.id})}" method="post">
                                 <button class="btn btn-sm btn-warning" type="submit">
-                                    Toggle Active
+                                    Aktivliyi dəyiş
                                 </button>
                             </form>
 
                             <a class="btn btn-sm btn-primary"
                                th:href="@{/dashboard/users/{id}/roles(id=${u.id})}">
-                                Edit Roles
+                                Rollari redaktə et
                             </a>
                         </td>
                     </tr>

@@ -2,13 +2,13 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <body style="font-family:Arial,sans-serif; background:#f6f7fb; padding:24px;">
 <div style="max-width:640px;margin:0 auto;background:#fff;border-radius:10px;padding:24px;border:1px solid #eee;">
-    <h2 style="margin:0 0 10px;">Yeni PAID order 🟢</h2>
+    <h2 style="margin:0 0 10px;">Yeni ödənilmiş sifariş 🟢</h2>
 
     <div style="background:#fafafa;border:1px solid #eee;border-radius:10px;padding:14px;margin:14px 0;">
-        <div><b>Order No:</b> <span th:text="${order.userOrderNo}"></span></div>
-        <div><b>User:</b> <span th:text="${order.user.email}"></span></div>
-        <div><b>Total:</b> <span th:text="${payment.amount}"></span> <span th:text="${payment.currency}"></span></div>
-        <div><b>Payment ID:</b> <span th:text="${payment.intentId}"></span></div>
+        <div><b>Sifariş №:</b> <span th:text="${order.userOrderNo}"></span></div>
+        <div><b>İstifadəçi:</b> <span th:text="${order.user.email}"></span></div>
+        <div><b>Cəmi:</b> <span th:text="${payment.amount}"></span> <span th:text="${payment.currency}"></span></div>
+        <div><b>Ödəniş ID:</b> <span th:text="${payment.intentId}"></span></div>
     </div>
 
     <p>

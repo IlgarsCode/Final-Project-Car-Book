@@ -4,15 +4,15 @@
       layout:decorate="~{dashboard/layout}">
 <head>
   <meta charset="UTF-8">
-  <title>Services</title>
+  <title>Xidmətlər</title>
 </head>
 
 <body>
 <div layout:fragment="content">
 
   <div class="d-flex justify-content-between align-items-center mb-3">
-    <h3 class="mb-0">Services</h3>
-    <a class="btn btn-primary" th:href="@{/dashboard/services/create}">+ Add Service</a>
+    <h3 class="mb-0">Xidmətlər</h3>
+    <a class="btn btn-primary" th:href="@{/dashboard/services/create}">+ Xidmət əlavə et</a>
   </div>
 
   <div class="table-responsive">
@@ -20,10 +20,10 @@
       <thead>
       <tr>
         <th style="width: 70px;">ID</th>
-        <th style="width: 220px;">Icon</th>
-        <th>Title</th>
-        <th style="width: 110px;">Active</th>
-        <th style="width: 160px;">Actions</th>
+        <th style="width: 220px;">İkon</th>
+        <th>Başlıq</th>
+        <th style="width: 110px;">Aktiv</th>
+        <th style="width: 160px;">Əməliyyatlar</th>
       </tr>
       </thead>
 
@@ -36,17 +36,17 @@
         </td>
         <td th:text="${s.title}">Title</td>
         <td>
-          <span class="badge bg-success" th:if="${s.isActive}">true</span>
-          <span class="badge bg-secondary" th:if="${!s.isActive}">false</span>
+          <span class="badge bg-success" th:if="${s.isActive}">bəli</span>
+          <span class="badge bg-secondary" th:if="${!s.isActive}">xeyr</span>
         </td>
         <td>
-          <a class="btn btn-sm btn-warning" th:href="@{/dashboard/services/edit/{id}(id=${s.id})}">Edit</a>
+          <a class="btn btn-sm btn-warning" th:href="@{/dashboard/services/edit/{id}(id=${s.id})}">Redaktə</a>
 
           <form th:action="@{/dashboard/services/delete/{id}(id=${s.id})}"
                 method="post" class="d-inline">
             <button class="btn btn-sm btn-danger"
                     type="submit"
-                    onclick="return confirm('Silinsin?')">Delete</button>
+                    onclick="return confirm('Silinsin?')">Sil</button>
           </form>
         </td>
       </tr>

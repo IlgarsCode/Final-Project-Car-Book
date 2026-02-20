@@ -4,7 +4,7 @@
       layout:decorate="~{layout}">
 <head>
     <meta charset="UTF-8">
-    <title>My Orders</title>
+    <title>Sifarişlərim</title>
 </head>
 <body>
 <div layout:fragment="content">
@@ -15,10 +15,10 @@
             <div class="row no-gutters slider-text js-fullheight align-items-end justify-content-start">
                 <div class="col-md-9 ftco-animate pb-5">
                     <p class="breadcrumbs">
-                        <span class="mr-2"><a th:href="@{/}">Home <i class="ion-ios-arrow-forward"></i></a></span>
-                        <span>My Orders <i class="ion-ios-arrow-forward"></i></span>
+                        <span class="mr-2"><a th:href="@{/}">Ana səhifə <i class="ion-ios-arrow-forward"></i></a></span>
+                        <span>Sifarişlərim <i class="ion-ios-arrow-forward"></i></span>
                     </p>
-                    <h1 class="mb-3 bread">My Orders</h1>
+                    <h1 class="mb-3 bread">Sifarişlərim</h1>
                 </div>
             </div>
         </div>
@@ -35,12 +35,12 @@
                 <table class="table table-bordered table-hover">
                     <thead>
                     <tr>
-                        <th>Order No</th>
+                        <th>Sifariş №</th>
                         <th>Status</th>
-                        <th>Pickup</th>
-                        <th>Dropoff</th>
-                        <th>Dates</th>
-                        <th>Total</th>
+                        <th>Götürmə</th>
+                        <th>Təhvil vermə</th>
+                        <th>Tarixlər</th>
+                        <th>Cəmi</th>
                         <th></th>
                     </tr>
                     </thead>
@@ -57,7 +57,7 @@
                         </td>
                         <td>$<span th:text="${o.totalAmount}">0</span></td>
                         <td>
-                            <a class="btn btn-sm btn-primary" th:href="@{/my-orders/{id}(id=${o.id})}">Detail</a>
+                            <a class="btn btn-sm btn-primary" th:href="@{/my-orders/{id}(id=${o.id})}">Detallar</a>
 
                         </td>
                     </tr>

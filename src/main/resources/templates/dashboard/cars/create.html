@@ -3,12 +3,12 @@
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{dashboard/layout}">
 <head>
-    <title>Create Car</title>
+    <title>Maşın yarat</title>
 </head>
 <body>
 <div layout:fragment="content">
 
-    <h1 class="h3 mb-3 text-gray-800">Create Car</h1>
+    <h1 class="h3 mb-3 text-gray-800">Maşın yarat</h1>
 
     <form th:action="@{/dashboard/cars/create}"
           th:object="${form}"
@@ -22,13 +22,13 @@
 
         <div class="form-row">
             <div class="form-group col-md-6">
-                <label>Brand</label>
+                <label>Brend</label>
                 <input class="form-control" th:field="*{brand}">
                 <div class="text-danger" th:if="${#fields.hasErrors('brand')}" th:errors="*{brand}"></div>
             </div>
 
             <div class="form-group col-md-6">
-                <label>Title</label>
+                <label>Model</label>
                 <input class="form-control" th:field="*{title}">
                 <div class="text-danger" th:if="${#fields.hasErrors('title')}" th:errors="*{title}"></div>
             </div>
@@ -36,9 +36,9 @@
 
         <!-- ✅ CATEGORY -->
         <div class="form-group">
-            <label>Category</label>
+            <label>Kateqoriya</label>
             <select class="form-control" th:field="*{categoryId}" required>
-                <option value="" th:selected="${form.categoryId == null}" disabled>Choose category</option>
+                <option value="" th:selected="${form.categoryId == null}" disabled>Kateqoriya seç</option>
                 <option th:each="cat : ${categories}"
                         th:value="${cat.id}"
                         th:text="${cat.name}">
@@ -49,7 +49,7 @@
 
         <!-- ✅ SEGMENT (Econom/Comfort/Sport/Premium) -->
         <select class="form-control" th:field="*{segmentId}" required>
-            <option value="" disabled>Choose segment</option>
+            <option value="" disabled>Seqment seç</option>
             <option th:each="s : ${segments}"
                     th:value="${s.id}"
                     th:text="${s.name}"
@@ -58,52 +58,52 @@
         </select>
 
         <div class="form-group">
-            <label>Image (optional)</label>
+            <label>Şəkil (istəyə görə)</label>
             <input type="file" class="form-control" name="image" accept="image/*">
         </div>
 
         <div class="form-group">
-            <label>Description</label>
+            <label>Təsvir</label>
             <textarea class="form-control" rows="4" th:field="*{description}"></textarea>
         </div>
 
         <div class="form-row">
             <div class="form-group col-md-2">
-                <label>Year</label>
+                <label>İl</label>
                 <input class="form-control" th:field="*{year}">
                 <div class="text-danger" th:if="${#fields.hasErrors('year')}" th:errors="*{year}"></div>
             </div>
 
             <div class="form-group col-md-2">
-                <label>Engine volume</label>
+                <label>Mühərrik həcmi</label>
                 <input class="form-control" th:field="*{engineVolume}" placeholder="2.0">
                 <div class="text-danger" th:if="${#fields.hasErrors('engineVolume')}" th:errors="*{engineVolume}"></div>
             </div>
 
-            <div class="form-group col-md-2"><label>Mileage</label><input class="form-control" th:field="*{mileage}"></div>
-            <div class="form-group col-md-2"><label>Transmission</label><input class="form-control" th:field="*{transmission}"></div>
-            <div class="form-group col-md-2"><label>Seats</label><input class="form-control" th:field="*{seats}"></div>
-            <div class="form-group col-md-2"><label>Fuel</label><input class="form-control" th:field="*{fuel}"></div>
+            <div class="form-group col-md-2"><label>Yürüş</label><input class="form-control" th:field="*{mileage}"></div>
+            <div class="form-group col-md-2"><label>Transmissiya</label><input class="form-control" th:field="*{transmission}"></div>
+            <div class="form-group col-md-2"><label>Oturacaq sayı</label><input class="form-control" th:field="*{seats}"></div>
+            <div class="form-group col-md-2"><label>Yanacaq</label><input class="form-control" th:field="*{fuel}"></div>
         </div>
 
         <div class="form-row">
-            <div class="form-group col-md-2"><label>Luggage</label><input class="form-control" th:field="*{luggage}"></div>
+            <div class="form-group col-md-2"><label>Bağaj</label><input class="form-control" th:field="*{luggage}"></div>
         </div>
 
         <div class="form-row">
-            <div class="form-group col-md-4"><label>Features Col 1</label><textarea class="form-control" rows="3" th:field="*{featuresCol1}"></textarea></div>
-            <div class="form-group col-md-4"><label>Features Col 2</label><textarea class="form-control" rows="3" th:field="*{featuresCol2}"></textarea></div>
-            <div class="form-group col-md-4"><label>Features Col 3</label><textarea class="form-control" rows="3" th:field="*{featuresCol3}"></textarea></div>
+            <div class="form-group col-md-4"><label>Xüsusiyyətlər Sütun 1</label><textarea class="form-control" rows="3" th:field="*{featuresCol1}"></textarea></div>
+            <div class="form-group col-md-4"><label>Xüsusiyyətlər Sütun 2</label><textarea class="form-control" rows="3" th:field="*{featuresCol2}"></textarea></div>
+            <div class="form-group col-md-4"><label>Xüsusiyyətlər Sütun 3</label><textarea class="form-control" rows="3" th:field="*{featuresCol3}"></textarea></div>
         </div>
 
         <div class="form-group form-check">
             <input class="form-check-input" type="checkbox" th:field="*{isActive}">
-            <label class="form-check-label">Active</label>
+            <label class="form-check-label">Aktiv</label>
         </div>
 
         <div class="d-flex" style="gap:10px;">
-            <button class="btn btn-primary" type="submit">Save</button>
-            <a class="btn btn-secondary" th:href="@{/dashboard/cars}">Back</a>
+            <button class="btn btn-primary" type="submit">Yadda saxla</button>
+            <a class="btn btn-secondary" th:href="@{/dashboard/cars}">Geri</a>
         </div>
     </form>
 

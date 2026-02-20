@@ -6,39 +6,39 @@
 
 <div layout:fragment="content" class="container-fluid">
 
-    <h3 class="mb-4">About - Edit</h3>
+    <h3 class="mb-4">Haqqında - Redaktə</h3>
 
     <form th:action="@{/dashboard/about}" method="post" enctype="multipart/form-data">
 
         <div class="form-group mb-3">
-            <label>Page Title</label>
+            <label>Səhifə başlığı</label>
             <input type="text" class="form-control" th:field="${dto.pageTitle}">
         </div>
 
         <div class="form-group mb-3">
-            <label>Section Title</label>
+            <label>Bölmə başlığı</label>
             <input type="text" class="form-control" th:field="${dto.sectionTitle}">
         </div>
 
         <div class="form-group mb-3">
-            <label>Description</label>
+            <label>Açıqlama</label>
             <textarea class="form-control" rows="6" th:field="${dto.description}"></textarea>
         </div>
 
         <div class="form-group mb-3">
-            <label>Current Image</label><br/>
+            <label>Mövcud şəkil</label><br/>
             <img th:if="${currentImage != null}"
                  th:src="${currentImage}"
                  style="max-height:120px;border-radius:6px;">
         </div>
 
         <div class="form-group mb-4">
-            <label>Upload New Image</label>
+            <label>Yeni şəkil yüklə</label>
             <input type="file" class="form-control" name="image">
             <small class="text-muted">Şəkil seçməsən, əvvəlki şəkil qalacaq.</small>
         </div>
 
-        <button type="submit" class="btn btn-primary">Save</button>
+        <button type="submit" class="btn btn-primary">Yadda saxla</button>
     </form>
 
 </div>

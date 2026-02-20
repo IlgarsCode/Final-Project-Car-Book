@@ -4,15 +4,15 @@
       layout:decorate="~{dashboard/layout}">
 <head>
     <meta charset="UTF-8">
-    <title>Edit Service</title>
+    <title>Xidməti redaktə et</title>
 </head>
 
 <body>
 <div layout:fragment="content">
 
     <div class="d-flex justify-content-between align-items-center mb-3">
-        <h3 class="mb-0">Edit Service</h3>
-        <a class="btn btn-outline-secondary" th:href="@{/dashboard/services}">Back</a>
+        <h3 class="mb-0">Xidməti redaktə et</h3>
+        <a class="btn btn-outline-secondary" th:href="@{/dashboard/services}">Geri</a>
     </div>
 
     <div class="card">
@@ -22,26 +22,26 @@
                   th:object="${service}" method="post">
 
                 <div class="mb-3">
-                    <label class="form-label">Icon class</label>
+                    <label class="form-label">İkon sinfi</label>
                     <input type="text" class="form-control" th:field="*{icon}" required>
                 </div>
 
                 <div class="mb-3">
-                    <label class="form-label">Title</label>
+                    <label class="form-label">Başlıq</label>
                     <input type="text" class="form-control" th:field="*{title}" required>
                 </div>
 
                 <div class="mb-3">
-                    <label class="form-label">Description</label>
+                    <label class="form-label">Təsvir</label>
                     <textarea class="form-control" th:field="*{description}" rows="5" required></textarea>
                 </div>
 
                 <div class="form-check mb-3">
                     <input class="form-check-input" type="checkbox" th:field="*{isActive}" id="activeCheck">
-                    <label class="form-check-label" for="activeCheck">Active</label>
+                    <label class="form-check-label" for="activeCheck">Aktiv</label>
                 </div>
 
-                <button type="submit" class="btn btn-warning">Update</button>
+                <button type="submit" class="btn btn-warning">Yenilə</button>
             </form>
 
         </div>

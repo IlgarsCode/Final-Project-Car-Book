@@ -12,7 +12,7 @@
                     <form th:action="@{/auth/register}" th:object="${form}" method="post" class="p-4 bg-light">
 
                         <div class="form-group">
-                            <label>Email</label>
+                            <label>E-poçt</label>
                             <input type="email" class="form-control" th:field="*{email}">
                             <small class="text-danger" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></small>
                         </div>
@@ -30,7 +30,7 @@
                         </div>
 
                         <div class="form-group">
-                            <label>Şifrə təkrarı</label>
+                            <label>Şifrənin təkrarı</label>
                             <input type="password" class="form-control" th:field="*{confirmPassword}">
                             <small class="text-danger" th:if="${#fields.hasErrors('confirmPassword')}" th:errors="*{confirmPassword}"></small>
                         </div>
@@ -38,7 +38,7 @@
                         <div class="alert alert-danger" th:if="${serverError}" th:text="${serverError}"></div>
 
                         <button type="submit" class="btn btn-primary py-2 px-4">Qeydiyyat</button>
-                        <a th:href="@{/auth/login}" class="btn btn-link">Login</a>
+                        <a th:href="@{/auth/login}" class="btn btn-link">Daxil ol</a>
 
                     </form>
 

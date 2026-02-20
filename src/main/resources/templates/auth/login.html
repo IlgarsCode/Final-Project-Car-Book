@@ -7,10 +7,10 @@
         <div class="container">
             <div class="row justify-content-center">
                 <div class="col-md-6">
-                    <h3 class="mb-4">Login</h3>
+                    <h3 class="mb-4">Daxil ol</h3>
 
                     <div class="alert alert-danger" th:if="${error}">
-                        Email və ya şifrə yanlışdır.
+                        E-poçt və ya şifrə yanlışdır.
                     </div>
                     <div class="alert alert-success" th:if="${logout}">
                         Çıxış edildi.
@@ -18,7 +18,7 @@
 
                     <form th:action="@{/auth/login}" method="post" class="p-4 bg-light">
                         <div class="form-group">
-                            <label>Email</label>
+                            <label>E-poçt</label>
                             <input name="email" type="email" class="form-control" required>
                         </div>
 

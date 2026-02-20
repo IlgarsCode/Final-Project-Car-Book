@@ -4,16 +4,16 @@
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{dashboard/layout}">
 <head>
-    <title>Edit Car Segment</title>
+    <title>Avtomobil seqmentini redaktə et</title>
 </head>
 <body>
 
 <div layout:fragment="content">
 
     <div class="d-sm-flex align-items-center justify-content-between mb-4">
-        <h1 class="h3 mb-0 text-gray-800">Edit Segment</h1>
+        <h1 class="h3 mb-0 text-gray-800">Seqmenti redaktə et</h1>
         <a class="btn btn-secondary" th:href="@{/dashboard/car-segments}">
-            Back
+            Geri
         </a>
     </div>
 
@@ -25,7 +25,7 @@
                   method="post">
 
                 <div class="form-group col-md-6 p-0">
-                    <label>Name</label>
+                    <label>Ad</label>
                     <input class="form-control" th:field="*{name}" />
                     <small class="text-danger"
                            th:if="${#fields.hasErrors('name')}"
@@ -33,7 +33,7 @@
                 </div>
 
                 <button class="btn btn-primary" type="submit">
-                    <i class="fas fa-save"></i> Save
+                    <i class="fas fa-save"></i> Yadda saxla
                 </button>
 
             </form>

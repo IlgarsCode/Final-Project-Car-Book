@@ -4,7 +4,7 @@
       layout:decorate="~{layout}">
 <head>
     <meta charset="UTF-8">
-    <title>Payment</title>
+    <title>Ödəniş</title>
     <style>
         .pay-card{
             border-radius: 16px;
@@ -42,10 +42,10 @@
                     <div class="pay-card">
 
                         <div class="pay-head">
-                            <h3 class="pay-title">Secure Payment (Simulation)</h3>
+                            <h3 class="pay-title">Təhlükəsiz ödəniş (Simulyasiya)</h3>
                             <p class="pay-sub">
-                                Order #<span th:text="${payment.order.id}">0</span>
-                                • Amount:
+                                Sifariş #<span th:text="${payment.order.id}">0</span>
+                                • Məbləğ:
                                 <strong>$<span th:text="${payment.amount}">0</span></strong>
                             </p>
                         </div>
@@ -53,10 +53,10 @@
                         <div class="pay-body">
 
                             <div class="test-cards mb-4">
-                                <div><strong>Test cards:</strong></div>
-                                <div>✅ Success: <span class="mono">4242 4242 4242 4242</span></div>
-                                <div>❌ Fail: <span class="mono">4000 0000 0000 0002</span></div>
-                                <div class="text-muted mt-1">Exp: 12/30 • CVC: 123</div>
+                                <div><strong>Test kartları:</strong></div>
+                                <div>✅ Uğurlu: <span class="mono">4242 4242 4242 4242</span></div>
+                                <div>❌ Uğursuz: <span class="mono">4000 0000 0000 0002</span></div>
+                                <div class="text-muted mt-1">Bitmə tarixi: 12/30 • CVC: 123</div>
                             </div>
 
                             <form th:action="@{'/payment/checkout/' + ${payment.id}}"
@@ -66,20 +66,20 @@
                                   style="border-radius:14px;">
 
                                 <div class="form-group">
-                                    <label>Card holder</label>
+                                    <label>Kart sahibi</label>
                                     <input class="form-control" th:field="*{cardHolder}" placeholder="John Doe">
                                     <small class="text-danger" th:if="${#fields.hasErrors('cardHolder')}" th:errors="*{cardHolder}"></small>
                                 </div>
 
                                 <div class="form-group">
-                                    <label>Card number</label>
+                                    <label>Kart nömrəsi</label>
                                     <input class="form-control" th:field="*{cardNumber}" placeholder="4242 4242 4242 4242">
                                     <small class="text-danger" th:if="${#fields.hasErrors('cardNumber')}" th:errors="*{cardNumber}"></small>
                                 </div>
 
                                 <div class="form-row">
                                     <div class="form-group col-md-6">
-                                        <label>Exp (MM/YY)</label>
+                                        <label>Bitmə tarixi (AA/İİ)</label>
                                         <input class="form-control" th:field="*{exp}" placeholder="12/30">
                                         <small class="text-danger" th:if="${#fields.hasErrors('exp')}" th:errors="*{exp}"></small>
                                     </div>
@@ -92,10 +92,10 @@
 
                                 <div class="d-flex" style="gap:10px; flex-wrap:wrap;">
                                     <button class="btn btn-primary" type="submit">
-                                        Pay $<span th:text="${payment.amount}">0</span>
+                                        Ödə $<span th:text="${payment.amount}">0</span>
                                     </button>
                                     <a class="btn btn-outline-secondary" th:href="@{'/order/' + ${payment.order.id}}">
-                                        Back to order
+                                        Sifarişə qayıt
                                     </a>
                                 </div>
 

@@ -4,19 +4,19 @@
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{dashboard/layout}">
 <head>
-  <title>Car Segments</title>
+  <title>Avtomobil seqmentləri</title>
 </head>
 <body>
 <div layout:fragment="content">
 
   <div class="d-sm-flex align-items-center justify-content-between mb-4">
-    <h1 class="h3 mb-0 text-gray-800">Car Segments</h1>
+    <h1 class="h3 mb-0 text-gray-800">Avtomobil seqmentləri</h1>
   </div>
 
   <!-- CREATE -->
   <div class="card shadow mb-4">
     <div class="card-header py-3">
-      <h6 class="m-0 font-weight-bold text-primary">Create Segment</h6>
+      <h6 class="m-0 font-weight-bold text-primary">Seqment yarat</h6>
     </div>
     <div class="card-body">
 
@@ -27,7 +27,7 @@
         <div class="form-row align-items-end">
 
           <div class="form-group col-md-6">
-            <label>Name</label>
+            <label>Ad</label>
             <input class="form-control" th:field="*{name}" placeholder="Economy, Comfort, Premium..." />
             <small class="text-danger"
                    th:if="${#fields.hasErrors('name')}"
@@ -36,7 +36,7 @@
 
           <div class="form-group col-md-3">
             <button class="btn btn-primary" type="submit">
-              <i class="fas fa-plus"></i> Create
+              <i class="fas fa-plus"></i> Yarat
             </button>
           </div>
 
@@ -50,7 +50,7 @@
   <!-- LIST -->
   <div class="card shadow mb-4">
     <div class="card-header py-3 d-flex align-items-center justify-content-between">
-      <h6 class="m-0 font-weight-bold text-primary">Segments</h6>
+      <h6 class="m-0 font-weight-bold text-primary">Seqmentlər</h6>
     </div>
 
     <div class="card-body">
@@ -59,15 +59,15 @@
           <thead>
           <tr>
             <th>#</th>
-            <th>Name</th>
+            <th>Ad</th>
             <th>Slug</th>
-            <th style="width: 180px;">Actions</th>
+            <th style="width: 180px;">Əməliyyatlar</th>
           </tr>
           </thead>
 
           <tbody>
           <tr th:if="${rows == null || #lists.isEmpty(rows)}">
-            <td colspan="4" class="text-center">No segments.</td>
+            <td colspan="4" class="text-center">Seqment yoxdur.</td>
           </tr>
 
           <tr th:each="r, i : ${rows}">
@@ -77,15 +77,15 @@
             <td>
               <a class="btn btn-sm btn-warning"
                  th:href="@{/dashboard/car-segments/edit/{id}(id=${r.id})}">
-                <i class="fas fa-edit"></i> Edit
+                <i class="fas fa-edit"></i> Redaktə et
               </a>
 
               <form th:action="@{/dashboard/car-segments/delete/{id}(id=${r.id})}"
                     method="post"
                     class="d-inline"
-                    onsubmit="return confirm('Delete segment? (Only possible if no cars are linked)');">
+                    onsubmit="return confirm('Seqment silinsin? (Yalnız maşın bağlı deyilsə mümkündür)');">
                 <button type="submit" class="btn btn-sm btn-danger">
-                  <i class="fas fa-trash"></i> Delete
+                  <i class="fas fa-trash"></i> Sil
                 </button>
               </form>
             </td>

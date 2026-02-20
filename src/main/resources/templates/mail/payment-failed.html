@@ -5,16 +5,16 @@
     <h2 style="margin:0 0 10px;">Ödəniş alınmadı ❌</h2>
 
     <div style="background:#fff3f3;border:1px solid #ffd0d0;border-radius:10px;padding:14px;margin:14px 0;">
-        <div><b>Order No:</b> <span th:text="${order.userOrderNo}"></span></div>
-        <div><b>Reason:</b> <span th:text="${payment.failureReason}">-</span></div>
-        <div><b>Payment ID:</b> <span th:text="${payment.intentId}"></span></div>
+        <div><b>Sifariş №:</b> <span th:text="${order.userOrderNo}"></span></div>
+        <div><b>Səbəb:</b> <span th:text="${payment.failureReason}">-</span></div>
+        <div><b>Ödəniş ID:</b> <span th:text="${payment.intentId}"></span></div>
     </div>
 
     <p>
         <a th:href="${retryUrl}" style="display:inline-block;padding:12px 18px;background:#ff3b30;color:#fff;border-radius:8px;text-decoration:none;">
             Yenidən ödə
         </a>
-        <a th:href="${orderUrl}" style="margin-left:10px;color:#333;">Order-a bax</a>
+        <a th:href="${orderUrl}" style="margin-left:10px;color:#333;">Sifarişə bax</a>
     </p>
 
     <p style="color:#777;margin:18px 0 0;font-size:12px;">Bu mail avtomatik göndərilib.</p>

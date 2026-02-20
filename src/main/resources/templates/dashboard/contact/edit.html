@@ -4,14 +4,14 @@
       layout:decorate="~{dashboard/layout}">
 <head>
     <meta charset="UTF-8">
-    <title>Contact Info</title>
+    <title>Əlaqə məlumatları</title>
 </head>
 
 <body>
 <div layout:fragment="content" class="container-fluid">
 
     <div class="d-flex align-items-center justify-content-between mb-3">
-        <h1 class="h3 mb-0 text-gray-800">Contact Info</h1>
+        <h1 class="h3 mb-0 text-gray-800">Əlaqə məlumatları</h1>
     </div>
 
     <!-- success message -->
@@ -31,19 +31,19 @@
                 <div class="form-row">
 
                     <div class="form-group col-md-6">
-                        <label for="address" class="font-weight-bold">Address</label>
+                        <label for="address" class="font-weight-bold">Ünvan</label>
                         <input id="address"
                                type="text"
                                class="form-control"
                                placeholder="Məs: Bakı, Nizami küç. 123"
                                th:field="*{address}">
                         <small class="form-text text-muted">
-                            Saytda “Address” hissəsində görünəcək.
+                            Saytda “Ünvan” hissəsində görünəcək.
                         </small>
                     </div>
 
                     <div class="form-group col-md-3">
-                        <label for="phone" class="font-weight-bold">Phone</label>
+                        <label for="phone" class="font-weight-bold">Telefon</label>
                         <input id="phone"
                                type="text"
                                class="form-control"
@@ -76,17 +76,17 @@
                                    class="custom-control-input"
                                    th:field="*{active}">
                             <label class="custom-control-label" for="active">
-                                Active (saytda göstər)
+                                Aktiv (saytda göstər)
                             </label>
                         </div>
                     </div>
 
                     <div class="form-group col-md-6 mb-0 text-right">
                         <button type="submit" class="btn btn-primary px-4">
-                            <i class="fas fa-save mr-1"></i> Save
+                            <i class="fas fa-save mr-1"></i> Yadda saxla
                         </button>
                         <a class="btn btn-light ml-2" th:href="@{/dashboard}">
-                            Cancel
+                            Ləğv et
                         </a>
                     </div>
                 </div>

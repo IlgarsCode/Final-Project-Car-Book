@@ -3,16 +3,16 @@
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{dashboard/layout}">
 <head>
-    <title>Edit User Roles</title>
+    <title>İstifadəçi rollarını redaktə et</title>
 </head>
 <body>
 <div layout:fragment="content">
 
-    <h1 class="h3 mb-4 text-gray-800">Edit Roles</h1>
+    <h1 class="h3 mb-4 text-gray-800">Rolları redaktə et</h1>
 
     <div class="card shadow mb-4">
         <div class="card-body">
-            <p class="mb-2"><b>User:</b> <span th:text="${user.email}"></span></p>
+            <p class="mb-2"><b>İstifadəçi:</b> <span th:text="${user.email}"></span></p>
 
             <form th:action="@{/dashboard/users/{id}/roles(id=${user.id})}" method="post">
                 <div class="form-group">
@@ -28,8 +28,8 @@
                     </div>
                 </div>
 
-                <button class="btn btn-success" type="submit">Save</button>
-                <a class="btn btn-secondary" th:href="@{/dashboard/users}">Back</a>
+                <button class="btn btn-success" type="submit">Yadda saxla</button>
+                <a class="btn btn-secondary" th:href="@{/dashboard/users}">Geri</a>
             </form>
         </div>
     </div>

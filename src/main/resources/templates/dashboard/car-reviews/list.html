@@ -3,12 +3,12 @@
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{dashboard/layout}">
 <head>
-    <title>Car Reviews</title>
+    <title>Avtomobil rəyləri</title>
 </head>
 <body>
 <div layout:fragment="content">
 
-    <h1 class="h3 mb-3 text-gray-800">Reviews</h1>
+    <h1 class="h3 mb-3 text-gray-800">Rəylər</h1>
 
     <!-- FILTER -->
     <form class="card shadow p-3 mb-4" th:action="@{/dashboard/car-reviews}" method="get">
@@ -20,9 +20,9 @@
         <div class="form-row">
 
             <div class="form-group col-md-4">
-                <label>Car</label>
+                <label>Maşın</label>
                 <select class="form-control" name="carId">
-                    <option value="">All</option>
+                    <option value="">Hamısı</option>
                     <option th:each="c : ${cars}"
                             th:value="${c.id}"
                             th:selected="${filter != null and filter.carId != null and filter.carId == c.id}"
@@ -32,18 +32,18 @@
             </div>
 
             <div class="form-group col-md-3">
-                <label>Active</label>
+                <label>Aktiv</label>
                 <select class="form-control" name="active">
-                    <option value="" th:selected="${filter == null or filter.active == null}">All</option>
-                    <option value="true" th:selected="${filter != null and filter.active != null and filter.active}">Active</option>
-                    <option value="false" th:selected="${filter != null and filter.active != null and !filter.active}">Inactive</option>
+                    <option value="" th:selected="${filter == null or filter.active == null}">Hamısı</option>
+                    <option value="true" th:selected="${filter != null and filter.active != null and filter.active}">Aktiv</option>
+                    <option value="false" th:selected="${filter != null and filter.active != null and !filter.active}">Deaktiv</option>
                 </select>
             </div>
 
             <div class="form-group col-md-2">
-                <label>Rating</label>
+                <label>Reytinq</label>
                 <select class="form-control" name="rating">
-                    <option value="" th:selected="${filter == null or filter.rating == null}">All</option>
+                    <option value="" th:selected="${filter == null or filter.rating == null}">Hamısı</option>
                     <option th:each="r : ${#numbers.sequence(1,5)}"
                             th:value="${r}"
                             th:selected="${filter != null and filter.rating != null and filter.rating == r}"
@@ -53,17 +53,17 @@
             </div>
 
             <div class="form-group col-md-3">
-                <label>Search</label>
+                <label>Axtarış</label>
                 <input class="form-control" name="q"
                        th:value="${filter != null ? filter.q : ''}"
-                       placeholder="name/email/message">
+                       placeholder="ad/e-poçt/mesaj">
             </div>
 
         </div>
 
         <div class="d-flex gap-2">
-            <button class="btn btn-primary" type="submit">Filter</button>
-            <a class="btn btn-secondary" th:href="@{/dashboard/car-reviews}">Reset</a>
+            <button class="btn btn-primary" type="submit">Filtrlə</button>
+            <a class="btn btn-secondary" th:href="@{/dashboard/car-reviews}">Sıfırla</a>
         </div>
     </form>
 
@@ -72,20 +72,20 @@
         <div class="card-body table-responsive">
 
             <div class="text-muted" th:if="${page == null or page.totalElements == 0}">
-                Review yoxdur.
+                Rəy yoxdur.
             </div>
 
             <table class="table table-bordered table-hover" th:if="${page != null and page.totalElements > 0}">
                 <thead>
                 <tr>
                     <th>#</th>
-                    <th>Car</th>
-                    <th>Full name</th>
-                    <th>Email</th>
-                    <th>Rating</th>
-                    <th>Active</th>
-                    <th>Created</th>
-                    <th style="width: 260px;">Actions</th>
+                    <th>Maşın</th>
+                    <th>Ad Soyad</th>
+                    <th>E-poçt</th>
+                    <th>Reytinq</th>
+                    <th>Aktiv</th>
+                    <th>Yaradılma</th>
+                    <th style="width: 260px;">Əməliyyatlar</th>
                 </tr>
                 </thead>
 
@@ -108,7 +108,7 @@
                     <td>
                         <span class="badge"
                               th:classappend="${r.isActive} ? ' badge-success' : ' badge-secondary'"
-                              th:text="${r.isActive} ? 'ACTIVE' : 'INACTIVE'">
+                              th:text="${r.isActive} ? 'AKTİV' : 'DEAKTİV'">
                         </span>
                     </td>
 
@@ -118,7 +118,7 @@
                         <!-- ✅ VIEW -->
                         <a class="btn btn-sm btn-secondary"
                            th:href="@{/dashboard/car-reviews/{id}(id=${r.id})}">
-                            View
+                            Bax
                         </a>
 
                         <!-- ✅ TOGGLE -->
@@ -131,7 +131,7 @@
                             <input type="hidden" name="rating" th:value="${filter != null ? filter.rating : ''}">
                             <input type="hidden" name="q" th:value="${filter != null ? filter.q : ''}">
                             <button class="btn btn-sm btn-warning"
-                                    th:text="${r.isActive} ? 'Deactivate' : 'Activate'">
+                                    th:text="${r.isActive} ? 'Deaktiv et' : 'Aktiv et'">
                             </button>
                         </form>
 
@@ -145,8 +145,8 @@
                             <input type="hidden" name="rating" th:value="${filter != null ? filter.rating : ''}">
                             <input type="hidden" name="q" th:value="${filter != null ? filter.q : ''}">
                             <button class="btn btn-sm btn-danger"
-                                    onclick="return confirm('Delete review permanently?')">
-                                Delete
+                                    onclick="return confirm('Rəyi daimi silmək istəyirsən?')">
+                                Sil
                             </button>
                         </form>
                     </td>
@@ -160,7 +160,7 @@
                  th:if="${page != null and page.totalPages > 1}">
 
                 <div class="text-muted">
-                    Total: <span th:text="${page.totalElements}">0</span>
+                    Cəmi: <span th:text="${page.totalElements}">0</span>
                 </div>
 
                 <div class="d-flex gap-2">
@@ -174,11 +174,11 @@
                             rating=${filter != null ? filter.rating : ''},
                             q=${filter != null ? filter.q : ''}
                        )}">
-                        Prev
+                        Əvvəlki
                     </a>
 
                     <span class="text-muted">
-                        Page <span th:text="${page.number + 1}">1</span> / <span th:text="${page.totalPages}">1</span>
+                        Səhifə <span th:text="${page.number + 1}">1</span> / <span th:text="${page.totalPages}">1</span>
                     </span>
 
                     <a class="btn btn-sm btn-outline-primary"
@@ -191,7 +191,7 @@
                             rating=${filter != null ? filter.rating : ''},
                             q=${filter != null ? filter.q : ''}
                        )}">
-                        Next
+                        Növbəti
                     </a>
                 </div>
             </div>

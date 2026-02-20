@@ -1,11 +1,11 @@
 <!DOCTYPE html>
-<html lang="en"
+<html lang="az"
       xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{dashboard/layout}">
 
 <head>
-    <title>Dashboard</title>
+    <title>İdarə Paneli</title>
 
     <!-- ✅ chart container fix + daha yaxşı görünüş -->
     <th:block layout:fragment="css">
@@ -42,10 +42,10 @@
 <div layout:fragment="content">
 
     <div class="d-sm-flex align-items-center justify-content-between mb-4">
-        <h1 class="h3 mb-0 text-gray-800">Dashboard</h1>
+        <h1 class="h3 mb-0 text-gray-800">İdarə Paneli</h1>
         <a class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"
            th:href="@{/dashboard/orders}">
-            <i class="fas fa-shopping-cart fa-sm text-white-50"></i> Orders Panel
+            <i class="fas fa-shopping-cart fa-sm text-white-50"></i> Sifarişlər Paneli
         </a>
     </div>
 
@@ -58,7 +58,7 @@
                     <div class="row no-gutters align-items-center">
                         <div class="col mr-2">
                             <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
-                                Today Revenue
+                                Bugünkü Gəlir
                             </div>
                             <div class="h5 mb-0 font-weight-bold text-gray-800">
                                 $<span th:text="${stats != null ? stats.todayRevenue : 0}">0</span>
@@ -78,7 +78,7 @@
                     <div class="row no-gutters align-items-center">
                         <div class="col mr-2">
                             <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
-                                Month Revenue
+                                Bu Ayın Gəliri
                             </div>
                             <div class="h5 mb-0 font-weight-bold text-gray-800">
                                 $<span th:text="${stats != null ? stats.monthRevenue : 0}">0</span>
@@ -100,7 +100,7 @@
                         <div class="row no-gutters align-items-center">
                             <div class="col mr-2">
                                 <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
-                                    Approval Waiting (PAID)
+                                    Təsdiq Gözləyən (PAID)
                                 </div>
                                 <div class="h5 mb-0 font-weight-bold text-gray-800"
                                      th:text="${stats != null ? stats.approvalWaiting : 0}">
@@ -124,14 +124,14 @@
                         <div class="row no-gutters align-items-center">
                             <div class="col mr-2">
                                 <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
-                                    Pending Orders
+                                    Gözləyən Sifarişlər
                                 </div>
                                 <div class="h5 mb-0 font-weight-bold text-gray-800"
                                      th:text="${stats != null ? stats.pendingOrders : 0}">
                                     0
                                 </div>
                                 <div class="text-muted small mt-1">
-                                    Failed:
+                                    Uğursuz:
                                     <b th:text="${stats != null ? stats.paymentFailedOrders : 0}">0</b>
                                 </div>
                             </div>
@@ -152,7 +152,7 @@
         <div class="col-xl-8 col-lg-7">
             <div class="card shadow mb-4">
                 <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                    <h6 class="m-0 font-weight-bold text-primary">Revenue (Last 7 Days)</h6>
+                    <h6 class="m-0 font-weight-bold text-primary">Gəlir (Son 7 Gün)</h6>
                 </div>
                 <div class="card-body">
                     <div class="chart-area">
@@ -165,14 +165,14 @@
         <div class="col-xl-4 col-lg-5">
             <div class="card shadow mb-4">
                 <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                    <h6 class="m-0 font-weight-bold text-primary">Orders by Status</h6>
+                    <h6 class="m-0 font-weight-bold text-primary">Statusa görə Sifarişlər</h6>
                 </div>
                 <div class="card-body">
                     <div class="chart-pie pt-2 pb-2">
                         <canvas id="statusPie"></canvas>
                     </div>
                     <div class="mt-3 text-center small text-muted">
-                        Chart shows current distribution
+                        Qrafik cari paylanmanı göstərir
                     </div>
                 </div>
             </div>
@@ -186,22 +186,22 @@
         <div class="col-lg-7 mb-4">
             <div class="card shadow">
                 <div class="card-header py-3 d-flex justify-content-between align-items-center">
-                    <h6 class="m-0 font-weight-bold text-primary">Latest Orders</h6>
-                    <a class="btn btn-sm btn-outline-primary" th:href="@{/dashboard/orders}">View all</a>
+                    <h6 class="m-0 font-weight-bold text-primary">Ən Son Sifarişlər</h6>
+                    <a class="btn btn-sm btn-outline-primary" th:href="@{/dashboard/orders}">Hamısına bax</a>
                 </div>
                 <div class="card-body table-responsive">
                     <div class="text-muted" th:if="${latestOrders == null or #lists.isEmpty(latestOrders)}">
-                        No orders yet.
+                        Hələ sifariş yoxdur.
                     </div>
 
                     <table class="table table-sm table-hover" th:if="${latestOrders != null and !#lists.isEmpty(latestOrders)}">
                         <thead>
                         <tr>
                             <th>ID</th>
-                            <th>User</th>
+                            <th>İstifadəçi</th>
                             <th>Status</th>
-                            <th>Total</th>
-                            <th>Created</th>
+                            <th>Cəmi</th>
+                            <th>Yaradılma</th>
                             <th></th>
                         </tr>
                         </thead>
@@ -213,7 +213,7 @@
                             <td>$<span th:text="${o.totalAmount}">0</span></td>
                             <td th:text="${o.createdAt != null ? #temporals.format(o.createdAt,'yyyy-MM-dd HH:mm') : '-'}">-</td>
                             <td>
-                                <a class="btn btn-sm btn-info" th:href="@{/dashboard/orders/{id}(id=${o.id})}">Detail</a>
+                                <a class="btn btn-sm btn-info" th:href="@{/dashboard/orders/{id}(id=${o.id})}">Detallar</a>
                             </td>
                         </tr>
                         </tbody>
@@ -226,20 +226,20 @@
         <div class="col-lg-5 mb-4">
             <div class="card shadow">
                 <div class="card-header py-3 d-flex justify-content-between align-items-center">
-                    <h6 class="m-0 font-weight-bold text-primary">Latest Paid Payments</h6>
+                    <h6 class="m-0 font-weight-bold text-primary">Ən Son Ödənilmiş Ödənişlər</h6>
                 </div>
                 <div class="card-body table-responsive">
                     <div class="text-muted" th:if="${latestPayments == null or #lists.isEmpty(latestPayments)}">
-                        No paid payments yet.
+                        Hələ ödənilmiş ödəniş yoxdur.
                     </div>
 
                     <table class="table table-sm table-hover" th:if="${latestPayments != null and !#lists.isEmpty(latestPayments)}">
                         <thead>
                         <tr>
-                            <th>Pay ID</th>
-                            <th>Order</th>
-                            <th>Amount</th>
-                            <th>Done</th>
+                            <th>Ödəniş ID</th>
+                            <th>Sifariş</th>
+                            <th>Məbləğ</th>
+                            <th>Tamamlandı</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -293,7 +293,7 @@
                     data: {
                         labels: revLabels,
                         datasets: [{
-                            label: 'Revenue',
+                            label: 'Gəlir',
                             data: revValues,
                             fill: true,
                             tension: 0.35,

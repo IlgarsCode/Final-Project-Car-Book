@@ -4,24 +4,24 @@
       layout:decorate="~{dashboard/layout}">
 <head>
     <meta charset="UTF-8">
-    <title>Testimonials</title>
+    <title>Testimoniallar</title>
 </head>
 <body>
 <div layout:fragment="content">
 
-    <h3 class="mb-3">Testimonials</h3>
+    <h3 class="mb-3">Testimoniallar</h3>
 
     <form class="form-inline mb-3" method="get" th:action="@{/dashboard/testimonial}">
-        <input class="form-control mr-2" type="text" name="q" placeholder="Search..."
+        <input class="form-control mr-2" type="text" name="q" placeholder="Axtar..."
                th:value="${q}"/>
 
         <select class="form-control mr-2" name="active">
-            <option th:selected="${active == null}" value="">All</option>
-            <option th:selected="${active != null and active == true}" value="true">Active</option>
-            <option th:selected="${active != null and active == false}" value="false">Passive</option>
+            <option th:selected="${active == null}" value="">Hamısı</option>
+            <option th:selected="${active != null and active == true}" value="true">Aktiv</option>
+            <option th:selected="${active != null and active == false}" value="false">Passiv</option>
         </select>
 
-        <button class="btn btn-primary" type="submit">Filter</button>
+        <button class="btn btn-primary" type="submit">Filtrlə</button>
     </form>
 
     <div th:if="${items == null or #lists.isEmpty(items)}" class="alert alert-info">
@@ -33,10 +33,10 @@
             <thead>
             <tr>
                 <th>Avatar</th>
-                <th>FullName</th>
-                <th>Position</th>
-                <th>Active</th>
-                <th style="width:260px;">Actions</th>
+                <th>Ad Soyad</th>
+                <th>Vəzifə</th>
+                <th>Aktiv</th>
+                <th style="width:260px;">Əməliyyatlar</th>
             </tr>
             </thead>
             <tbody>
@@ -51,11 +51,11 @@
 
                 <td th:text="${t.fullName}">Name</td>
                 <td th:text="${t.position}">Position</td>
-                <td th:text="${t.isActive} ? 'Yes' : 'No'">Yes</td>
+                <td th:text="${t.isActive} ? 'Bəli' : 'Xeyr'">Bəli</td>
 
                 <td>
                     <a class="btn btn-sm btn-outline-primary"
-                       th:href="@{'/dashboard/testimonial/' + ${t.id} + '/edit'}">Edit</a>
+                       th:href="@{'/dashboard/testimonial/' + ${t.id} + '/edit'}">Redaktə</a>
 
                     <form th:action="@{'/dashboard/testimonial/' + ${t.id} + '/active'}"
                           method="post" style="display:inline;">
@@ -67,7 +67,7 @@
                         <button class="btn btn-sm"
                                 th:classappend="${t.isActive} ? ' btn-warning' : ' btn-success'"
                                 type="submit"
-                                th:text="${t.isActive} ? 'Deactivate' : 'Activate'">
+                                th:text="${t.isActive} ? 'Deaktiv et' : 'Aktiv et'">
                             Toggle
                         </button>
                     </form>
@@ -75,7 +75,7 @@
                     <form th:action="@{'/dashboard/testimonial/' + ${t.id} + '/delete'}"
                           method="post" style="display:inline;"
                           onsubmit="return confirm('Silinsin?');">
-                        <button class="btn btn-sm btn-danger" type="submit">Delete</button>
+                        <button class="btn btn-sm btn-danger" type="submit">Sil</button>
                     </form>
                 </td>
             </tr>
@@ -87,7 +87,7 @@
         <ul class="pagination">
             <li class="page-item" th:classappend="${currentPage == 1} ? 'disabled'">
                 <a class="page-link"
-                   th:href="@{/dashboard/testimonial(page=${currentPage-1}, q=${q}, active=${active})}">Prev</a>
+                   th:href="@{/dashboard/testimonial(page=${currentPage-1}, q=${q}, active=${active})}">Əvvəlki</a>
             </li>
 
             <li class="page-item" th:each="i : ${#numbers.sequence(1, totalPages)}"
@@ -99,7 +99,7 @@
 
             <li class="page-item" th:classappend="${currentPage == totalPages} ? 'disabled'">
                 <a class="page-link"
-                   th:href="@{/dashboard/testimonial(page=${currentPage+1}, q=${q}, active=${active})}">Next</a>
+                   th:href="@{/dashboard/testimonial(page=${currentPage+1}, q=${q}, active=${active})}">Növbəti</a>
             </li>
         </ul>
     </nav>

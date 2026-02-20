@@ -4,7 +4,7 @@
       layout:decorate="~{layout}">
 <head>
     <meta charset="UTF-8">
-    <title>Profile</title>
+    <title>Profil</title>
 
     <style>
         .profile-card { border: 1px solid rgba(0,0,0,.06); border-radius: 14px; }
@@ -53,11 +53,11 @@
             <div class="row justify-content-center">
                 <div class="col-md-9">
 
-                    <h3 class="mb-4">My Profile</h3>
+                    <h3 class="mb-4">Profilim</h3>
 
                     <div class="alert alert-success" th:if="${ok}">Profil yeniləndi.</div>
                     <div class="alert alert-success" th:if="${avatarOk}">Avatar yeniləndi.</div>
-                    <div class="alert alert-success" th:if="${pwdOk}">Şifrə dəyişdi.</div>
+                    <div class="alert alert-success" th:if="${pwdOk}">Şifrə dəyişdirildi.</div>
 
                     <!-- PROFILE CARD -->
                     <div class="card shadow p-4 mb-4 profile-card">
@@ -71,7 +71,7 @@
 
                                 <form th:action="@{/profile/avatar}" method="post" enctype="multipart/form-data" class="mt-3">
                                     <input type="file" name="avatar" accept="image/*" class="form-control form-control-sm" required>
-                                    <button class="btn btn-primary btn-sm mt-2" type="submit">Update Avatar</button>
+                                    <button class="btn btn-primary btn-sm mt-2" type="submit">Avatarı yenilə</button>
                                 </form>
                             </div>
 
@@ -80,35 +80,35 @@
 
                                     <div class="form-row">
                                         <div class="form-group col-md-6">
-                                            <label>Full Name</label>
+                                            <label>Ad və soyad</label>
                                             <input class="form-control" th:field="*{fullName}">
                                             <small class="text-danger" th:if="${#fields.hasErrors('fullName')}" th:errors="*{fullName}"></small>
                                         </div>
 
                                         <div class="form-group col-md-6">
-                                            <label>Email</label>
+                                            <label>E-poçt</label>
                                             <input class="form-control" th:field="*{email}">
                                             <small class="text-danger" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></small>
                                         </div>
                                     </div>
 
                                     <div class="form-group">
-                                        <label>Phone</label>
+                                        <label>Telefon</label>
                                         <input class="form-control" th:field="*{phone}" placeholder="+994...">
                                         <small class="text-danger" th:if="${#fields.hasErrors('phone')}" th:errors="*{phone}"></small>
                                     </div>
 
                                     <div class="form-group">
-                                        <label>Bio</label>
+                                        <label>Haqqımda</label>
                                         <textarea class="form-control" th:field="*{bio}" rows="4"
                                                   placeholder="Özünüz haqqında qısa məlumat..."></textarea>
                                         <small class="text-danger" th:if="${#fields.hasErrors('bio')}" th:errors="*{bio}"></small>
                                         <small class="text-muted" style="font-size:12px;">
-                                            Bu məlumat blog və rəylərdə “author bio” kimi görünəcək.
+                                            Bu məlumat blog və rəylərdə “müəllif bio” kimi görünəcək.
                                         </small>
                                     </div>
 
-                                    <button class="btn btn-primary" type="submit">Save Changes</button>
+                                    <button class="btn btn-primary" type="submit">Dəyişiklikləri yadda saxla</button>
                                 </form>
                             </div>
                         </div>
@@ -117,12 +117,12 @@
                     <!-- PASSWORD CARD -->
                     <div class="card shadow p-4 profile-card">
                         <div class="d-flex justify-content-between align-items-center flex-wrap" style="gap:10px;">
-                            <h5 class="mb-0">Change Password</h5>
+                            <h5 class="mb-0">Şifrəni dəyiş</h5>
 
                             <!-- ✅ forgot link -->
                             <a class="link-soft text-primary"
                                th:href="@{/auth/forgot-password}"
-                               title="Şifrənizi unutmusunuzsa email ilə yeniləyin">
+                               title="Şifrənizi unutmusunuzsa e-poçt ilə yeniləyin">
                                 <span class="icon ion-ios-help-circle-outline"></span>
                                 Şifrəni unutdum?
                             </a>
@@ -133,29 +133,29 @@
                         <form th:action="@{/profile/password}" th:object="${pwdForm}" method="post">
 
                             <div class="form-group">
-                                <label>Old Password</label>
+                                <label>Köhnə şifrə</label>
                                 <input type="password" class="form-control" th:field="*{oldPassword}">
                                 <small class="text-danger" th:if="${#fields.hasErrors('oldPassword')}" th:errors="*{oldPassword}"></small>
                             </div>
 
                             <div class="form-row">
                                 <div class="form-group col-md-6">
-                                    <label>New Password</label>
+                                    <label>Yeni şifrə</label>
                                     <input type="password" class="form-control" th:field="*{newPassword}">
                                     <small class="text-danger" th:if="${#fields.hasErrors('newPassword')}" th:errors="*{newPassword}"></small>
                                 </div>
 
                                 <div class="form-group col-md-6">
-                                    <label>Confirm New Password</label>
+                                    <label>Yeni şifrəni təsdiqlə</label>
                                     <input type="password" class="form-control" th:field="*{confirmNewPassword}">
                                     <small class="text-danger" th:if="${#fields.hasErrors('confirmNewPassword')}" th:errors="*{confirmNewPassword}"></small>
                                 </div>
                             </div>
 
                             <div class="pwd-actions">
-                                <button class="btn btn-secondary" type="submit">Update Password</button>
+                                <button class="btn btn-secondary" type="submit">Şifrəni yenilə</button>
                                 <small class="text-muted" style="font-size:12px;">
-                                    Old password yadında deyilsə, “Şifrəni unutdum?” ilə email OTP istifadə et.
+                                    Köhnə şifrən yadında deyilsə, “Şifrəni unutdum?” ilə e-poçt OTP istifadə et.
                                 </small>
                             </div>
 
@@ -164,7 +164,7 @@
                         <div class="hint-box">
                             <div class="title">Təhlükəsizlik qeydi</div>
                             <p class="text">
-                                “Şifrəni unutdum” prosesi email-ə OTP göndərir. Email hesabına giriş səndə deyilsə, şifrə yenilənməyəcək.
+                                “Şifrəni unutdum” prosesi e-poçta OTP göndərir. E-poçt hesabına giriş səndə deyilsə, şifrə yenilənməyəcək.
                             </p>
                         </div>
 

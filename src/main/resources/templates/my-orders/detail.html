@@ -4,7 +4,7 @@
       layout:decorate="~{layout}">
 <head>
     <meta charset="UTF-8">
-    <title>Order Detail</title>
+    <title>Sifariş Detalları</title>
 </head>
 <body>
 <div layout:fragment="content">
@@ -15,11 +15,11 @@
             <div class="row no-gutters slider-text js-fullheight align-items-end justify-content-start">
                 <div class="col-md-9 ftco-animate pb-5">
                     <p class="breadcrumbs">
-                        <span class="mr-2"><a th:href="@{/}">Home <i class="ion-ios-arrow-forward"></i></a></span>
-                        <span class="mr-2"><a th:href="@{/my-orders}">My Orders <i class="ion-ios-arrow-forward"></i></a></span>
-                        <span>Order Detail <i class="ion-ios-arrow-forward"></i></span>
+                        <span class="mr-2"><a th:href="@{/}">Ana səhifə <i class="ion-ios-arrow-forward"></i></a></span>
+                        <span class="mr-2"><a th:href="@{/my-orders}">Sifarişlərim <i class="ion-ios-arrow-forward"></i></a></span>
+                        <span>Sifariş detalları <i class="ion-ios-arrow-forward"></i></span>
                     </p>
-                    <h1 class="mb-3 bread">Order #<span th:text="${order.userOrderNo}">1</span></h1>
+                    <h1 class="mb-3 bread">Sifariş #<span th:text="${order.userOrderNo}">1</span></h1>
 
                 </div>
             </div>
@@ -30,33 +30,33 @@
         <div class="container">
 
             <div class="mb-3">
-                <a class="btn btn-outline-secondary" th:href="@{/my-orders}">Back</a>
+                <a class="btn btn-outline-secondary" th:href="@{/my-orders}">Geri</a>
             </div>
 
             <div class="row">
                 <div class="col-md-6">
                     <div class="p-4 bg-light">
-                        <h4 class="mb-3">Trip Details</h4>
+                        <h4 class="mb-3">Səfər detalları</h4>
                         <p><b>Status:</b> <span th:text="${order.status}">PENDING</span></p>
-                        <p><b>Pickup:</b> <span th:text="${order.pickupLocation}">---</span></p>
-                        <p><b>Dropoff:</b> <span th:text="${order.dropoffLocation}">---</span></p>
-                        <p><b>Dates:</b>
+                        <p><b>Götürmə:</b> <span th:text="${order.pickupLocation}">---</span></p>
+                        <p><b>Təhvil vermə:</b> <span th:text="${order.dropoffLocation}">---</span></p>
+                        <p><b>Tarixlər:</b>
                             <span th:text="${order.pickupDate}">2026-01-01</span> -
                             <span th:text="${order.dropoffDate}">2026-01-02</span>
                         </p>
                         <p th:if="${order.pickupTime != null and !order.pickupTime.isBlank()}">
-                            <b>Pickup time:</b> <span th:text="${order.pickupTime}">09:00</span>
+                            <b>Götürmə vaxtı:</b> <span th:text="${order.pickupTime}">09:00</span>
                         </p>
-                        <p><b>Total:</b> $<span th:text="${order.totalAmount}">0</span></p>
+                        <p><b>Cəmi:</b> $<span th:text="${order.totalAmount}">0</span></p>
                     </div>
                 </div>
 
                 <div class="col-md-6">
                     <div class="p-4 bg-white border">
-                        <h4 class="mb-3">Items</h4>
+                        <h4 class="mb-3">Məhsullar</h4>
 
                         <div class="alert alert-info" th:if="${order.items == null or order.items.empty}">
-                            Item yoxdur.
+                            Məhsul yoxdur.
                         </div>
 
                         <div th:if="${order.items != null and !order.items.empty}">
@@ -69,10 +69,10 @@
                                         <span th:if="${it.rateType != null and it.rateType.name() == 'HOURLY'
                                    and it.fuelSurchargePerHourSnapshot != null
                                    and it.fuelSurchargePerHourSnapshot.doubleValue() > 0}">
-                      (+$<span th:text="${it.fuelSurchargePerHourSnapshot}">0</span>/hour)
+                      (+$<span th:text="${it.fuelSurchargePerHourSnapshot}">0</span>/saat)
                     </span>
-                                        × units: <span th:text="${it.unitCountSnapshot}">1</span>
-                                        × qty: <span th:text="${it.quantity}">1</span>
+                                        × vahid: <span th:text="${it.unitCountSnapshot}">1</span>
+                                        × say: <span th:text="${it.quantity}">1</span>
                                     </small>
                                 </div>
                                 <div class="text-right">
