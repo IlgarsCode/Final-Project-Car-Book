@@ -87,8 +87,8 @@ public class SecurityConfig {
                                 "/xidmetler",
                                 "/elaqe",
                                 "/qiymetler", "/qiymetler/**",
-                                "/masinlar", "/masinlar/**",
-                                "/masin", "/masin/**",          // rəy post-u kimi route-lar üçün
+                                "/avtomobiller", "/avtomobiller/**",
+                                "/avtomobil", "/avtomobil/**",
                                 "/bloq", "/bloq/**",
                                 "/reyler"
                         ).permitAll()
