@@ -13,6 +13,7 @@ public class BlogListDto {
     private String shortDescription;
     private String imageUrl;
     private String author;
+    private String authorName;
     private LocalDate createdAt;
     private long commentCount;
 }

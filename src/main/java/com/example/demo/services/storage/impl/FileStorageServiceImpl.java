@@ -24,8 +24,8 @@ public class FileStorageServiceImpl implements FileStorageService {
     private static final Set<String> ALLOWED_EXT = Set.of("jpg", "jpeg", "png", "webp");
 
     // ✅ Normal limitlər
-    private static final long MAX_AVATAR_BYTES = 2L * 1024 * 1024;       // 2 MB
-    private static final long MAX_IMAGE_BYTES  = 5L * 1024 * 1024;       // 5 MB (car/blog üçün)
+    private static final long MAX_AVATAR_BYTES = 2L * 1024 * 1024;
+    private static final long MAX_IMAGE_BYTES  = 5L * 1024 * 1024;
 
     @Override
     public String storeCarImage(MultipartFile file) {

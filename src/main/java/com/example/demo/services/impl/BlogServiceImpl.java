@@ -28,7 +28,6 @@ public class BlogServiceImpl implements BlogService {
     private final TagRepository tagRepository;
     private final UserRepository userRepository;
 
-
     @Override
     public Page<BlogListDto> getActiveBlogs(int page, int size, String search) {
         return getActiveBlogs(page, size, search, null);
@@ -48,13 +47,24 @@ public class BlogServiceImpl implements BlogService {
             blogsPage = blogRepository.searchActive(search.trim(), pageable);
         }
 
-        return blogsPage.map(this::toListDto);
+        // ✅ sadə cache (səhifəlik)
+        Map<Long, com.example.demo.model.User> userByIdCache = new HashMap<>();
+        Map<String, com.example.demo.model.User> userByEmailCache = new HashMap<>();
+
+        return blogsPage.map(b -> toListDto(b, userByIdCache, userByEmailCache));
     }
 
     @Override
     public List<BlogListDto> getActiveBlogs() {
         var pageable = PageRequest.of(0, 3);
-        return blogRepository.findRecentActiveBlogs(pageable).stream().map(this::toListDto).toList();
+
+        Map<Long, com.example.demo.model.User> userByIdCache = new HashMap<>();
+        Map<String, com.example.demo.model.User> userByEmailCache = new HashMap<>();
+
+        return blogRepository.findRecentActiveBlogs(pageable)
+                .stream()
+                .map(b -> toListDto(b, userByIdCache, userByEmailCache))
+                .toList();
     }
 
     @Override
@@ -83,9 +93,15 @@ public class BlogServiceImpl implements BlogService {
 
         if (uOpt.isPresent()) {
             var u = uOpt.get();
-            dto.setAuthorName((u.getFullName() != null && !u.getFullName().isBlank()) ? u.getFullName().trim() : u.getEmail());
-            dto.setAuthorAvatarUrl((u.getPhotoUrl() != null && !u.getPhotoUrl().isBlank()) ? u.getPhotoUrl() : "/images/person_1.jpg");
-            dto.setAuthorBio((u.getBio() != null && !u.getBio().isBlank()) ? u.getBio().trim() : "CarBook istifadəçisi");
+            dto.setAuthorName((u.getFullName() != null && !u.getFullName().isBlank())
+                    ? u.getFullName().trim()
+                    : u.getEmail());
+            dto.setAuthorAvatarUrl((u.getPhotoUrl() != null && !u.getPhotoUrl().isBlank())
+                    ? u.getPhotoUrl()
+                    : "/images/person_1.jpg");
+            dto.setAuthorBio((u.getBio() != null && !u.getBio().isBlank())
+                    ? u.getBio().trim()
+                    : "CarBook istifadəçisi");
             dto.setAuthor(u.getEmail());
         } else {
             dto.setAuthorName("CarBook istifadəçisi");
@@ -186,14 +202,23 @@ public class BlogServiceImpl implements BlogService {
                 ? blogRepository.findRecentActiveBlogs(pageable)
                 : blogRepository.findRecentActiveBlogsExclude(excludeId, pageable);
 
-        return list.stream().map(this::toListDto).toList();
+        Map<Long, com.example.demo.model.User> userByIdCache = new HashMap<>();
+        Map<String, com.example.demo.model.User> userByEmailCache = new HashMap<>();
+
+        return list.stream()
+                .map(b -> toListDto(b, userByIdCache, userByEmailCache))
+                .toList();
     }
 
     @Override
     public Page<BlogListDto> getMyBlogs(String authorEmail, int page, int size) {
         var pageable = PageRequest.of(page, size);
+
+        Map<Long, com.example.demo.model.User> userByIdCache = new HashMap<>();
+        Map<String, com.example.demo.model.User> userByEmailCache = new HashMap<>();
+
         return blogRepository.findAllByAuthorOrderByCreatedAtDesc(authorEmail.trim(), pageable)
-                .map(this::toListDto);
+                .map(b -> toListDto(b, userByIdCache, userByEmailCache));
     }
 
     @Override
@@ -211,11 +236,12 @@ public class BlogServiceImpl implements BlogService {
             b.setShortDescription(dto.getShortDescription().trim());
             b.setContent(dto.getContent().trim());
 
-            // ✅ owner data
             b.setAuthor(authorEmail.trim().toLowerCase());
             b.setAuthorId(me.getId());
 
+            // ⚠️ Əgər Blog.createdAt LocalDateTime-dırsa -> LocalDateTime.now() olmalıdır
             b.setCreatedAt(LocalDate.now());
+
             b.setImageUrl(imageUrl);
             b.setIsActive(true);
 
@@ -344,7 +370,6 @@ public class BlogServiceImpl implements BlogService {
         var me = userRepository.findByEmailIgnoreCase(authorEmail.trim())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User tapılmadı"));
 
-        // ✅ ownership
         if (blog.getAuthorId() == null || !blog.getAuthorId().equals(me.getId())) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Bu blogu silməyə icazən yoxdur");
         }
@@ -354,7 +379,11 @@ public class BlogServiceImpl implements BlogService {
         fileStorageService.deleteIfExists(img);
     }
 
-    private BlogListDto toListDto(Blog blog) {
+    // ✅ AUTHOR NAME-li list dto
+    private BlogListDto toListDto(Blog blog,
+                                  Map<Long, com.example.demo.model.User> userByIdCache,
+                                  Map<String, com.example.demo.model.User> userByEmailCache) {
+
         BlogListDto dto = new BlogListDto();
         dto.setId(blog.getId());
         dto.setTitle(blog.getTitle());
@@ -363,6 +392,33 @@ public class BlogServiceImpl implements BlogService {
         dto.setAuthor(blog.getAuthor());
         dto.setCreatedAt(blog.getCreatedAt());
         dto.setCommentCount(blogCommentRepository.countByBlog_IdAndIsActiveTrue(blog.getId()));
+
+        com.example.demo.model.User u = null;
+
+        if (blog.getAuthorId() != null) {
+            u = userByIdCache.get(blog.getAuthorId());
+            if (u == null) {
+                u = userRepository.findById(blog.getAuthorId()).orElse(null);
+                if (u != null) userByIdCache.put(blog.getAuthorId(), u);
+            }
+        } else if (blog.getAuthor() != null && !blog.getAuthor().isBlank()) {
+            String key = blog.getAuthor().trim().toLowerCase();
+            u = userByEmailCache.get(key);
+            if (u == null) {
+                u = userRepository.findByEmailIgnoreCase(key).orElse(null);
+                if (u != null) userByEmailCache.put(key, u);
+            }
+        }
+
+        if (u != null) {
+            String name = (u.getFullName() != null && !u.getFullName().isBlank())
+                    ? u.getFullName().trim()
+                    : u.getEmail();
+            dto.setAuthorName(name);
+        } else {
+            dto.setAuthorName(blog.getAuthor());
+        }
+
         return dto;
     }
 

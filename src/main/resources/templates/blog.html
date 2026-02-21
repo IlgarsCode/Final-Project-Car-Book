@@ -94,23 +94,25 @@
 
                                     <div class="meta mb-2">
 
-                                        <div style="color:#007bff;"
-                                             th:text="${#temporals.format(blog.createdAt, 'dd MMMM yyyy')}">
-                                            29 Yanvar 2026
-                                        </div>
+                                        <div class="meta mb-2">
+                                            <div style="color:#007bff;"
+                                                 th:text="${#temporals.format(blog.createdAt, 'dd MMMM yyyy')}">
+                                                29 Yanvar 2026
+                                            </div>
 
-                                        <div style="color:#007bff;" th:text="${blog.author}">
-                                            Müəllif
-                                        </div>
+                                            <!-- ✅ burda artıq email yox, ad çıxacaq -->
+                                            <div style="color:#007bff;"
+                                                 th:text="${blog.authorName != null ? blog.authorName : blog.author}">
+                                                Müəllif
+                                            </div>
 
-                                        <div>
-                                            <a th:href="@{'/bloq/' + ${blog.id} + '#comments'}" class="meta-chat">
-                                                <span class="icon-chat"></span>
-                                                <span th:text="${blog.commentCount}">0</span>
-                                            </a>
+                                            <div>
+                                                <a th:href="@{'/bloq/' + ${blog.id} + '#comments'}" class="meta-chat">
+                                                    <span class="icon-chat"></span>
+                                                    <span th:text="${blog.commentCount}">0</span>
+                                                </a>
+                                            </div>
                                         </div>
-
-                                    </div>
 
                                     <h3 class="heading mt-2">
                                         <a th:href="@{'/bloq/' + ${blog.id}}"
