@@ -13,7 +13,6 @@ public interface CarService {
     List<CarListDto> getActiveCars();
     List<CarListDto> getActiveCars(String categorySlug);
 
-    // ✅ NEW
     List<CarListDto> getActiveCars(String categorySlug, String segmentSlug);
 
     CarDetailDto getCarDetailBySlug(String slug);

@@ -7,6 +7,6 @@ public interface BlogCommentAdminService {
     Page<BlogCommentAdminRowDto> getComments(int page, int size, String q, Long blogId, Boolean active, boolean rootOnly);
 
     void setActive(Long id, boolean active);
-    void delete(Long id);      // soft
-    void hardDelete(Long id);  // hard
+    void delete(Long id);
+    void hardDelete(Long id);
 }

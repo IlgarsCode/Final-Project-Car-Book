@@ -16,8 +16,6 @@ import org.springframework.web.server.ResponseStatusException;
 public class AuthController {
 
     private final RegisterOtpService registerOtpService;
-
-    // ✅ /giris
     @GetMapping("/giris")
     public String loginPage(@RequestParam(value = "xeta", required = false) String xeta,
                             @RequestParam(value = "cixis", required = false) String cixis,
@@ -30,14 +28,11 @@ public class AuthController {
         return "auth/login";
     }
 
-    // ✅ /qeydiyyat
     @GetMapping("/qeydiyyat")
     public String registerPage(Model model) {
         model.addAttribute("form", new RegisterDto());
         return "auth/register";
     }
-
-    // ✅ /qeydiyyat (OTP göndərir)
     @PostMapping("/qeydiyyat")
     public String doRegister(@Valid @ModelAttribute("form") RegisterDto form,
                              BindingResult br,
@@ -58,7 +53,6 @@ public class AuthController {
         return "redirect:/qeydiyyat-tesdiq?email=" + form.getEmail().trim().toLowerCase();
     }
 
-    // ✅ /qeydiyyat-tesdiq
     @GetMapping("/qeydiyyat-tesdiq")
     public String registerVerifyPage(@RequestParam("email") String email,
                                      Model model) {
@@ -68,7 +62,6 @@ public class AuthController {
         return "auth/register-verify";
     }
 
-    // ✅ /qeydiyyat-tesdiq
     @PostMapping("/qeydiyyat-tesdiq")
     public String registerVerify(@Valid @ModelAttribute("form") VerifyRegisterOtpDto form,
                                  BindingResult br,
@@ -79,7 +72,6 @@ public class AuthController {
         try {
             registerOtpService.verifyRegisterOtpAndCreateUser(form.getEmail(), form.getCode());
 
-            // ✅ əvvəl: /auth/login?registered=1
             return "redirect:/giris?qeydiyyat=1";
 
         } catch (ResponseStatusException ex) {

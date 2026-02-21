@@ -24,7 +24,6 @@ public class PricingController {
     private final CarCategoryRepository carCategoryRepository;
     private final CarSegmentRepository carSegmentRepository;
 
-    // ✅ slug AZ: /qiymetler
     @GetMapping("/qiymetler")
     public String pricingPage(
             @RequestParam(name = "category", required = false) String categorySlug,
@@ -38,7 +37,6 @@ public class PricingController {
     ) {
         model.addAttribute("banner", bannerService.getBanner(BannerType.PRICING));
 
-        // ✅ tarixlərlə çağır
         if (segmentSlug != null && !segmentSlug.isBlank()) {
             model.addAttribute("rows",
                     pricingService.getPricingRows(categorySlug, segmentSlug, pickupDate, dropoffDate));
@@ -53,7 +51,6 @@ public class PricingController {
         model.addAttribute("selectedCategory", categorySlug);
         model.addAttribute("selectedSegment", segmentSlug);
 
-        // ✅ TripContext session
         TripContext ctx = (TripContext) session.getAttribute("TRIP_CTX");
         if (ctx == null) ctx = new TripContext();
 

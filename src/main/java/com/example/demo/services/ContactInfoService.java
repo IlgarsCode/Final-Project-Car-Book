@@ -5,9 +5,9 @@ import com.example.demo.model.ContactInfo;
 
 public interface ContactInfoService {
 
-    ContactInfo getOrCreateSingleton();   // ADMIN üçün: heç vaxt null deyil
+    ContactInfo getOrCreateSingleton();
 
-    ContactInfo getActiveForWeb();        // WEB üçün
+    ContactInfo getActiveForWeb();
 
     void update(ContactInfoUpdateDto dto);
 }

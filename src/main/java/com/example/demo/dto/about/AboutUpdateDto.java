@@ -7,5 +7,5 @@ public class AboutUpdateDto {
     private String pageTitle;
     private String sectionTitle;
     private String description;
-    private String imageUrl; // DB-də saxlanacaq URL ("/uploads/about/..")
+    private String imageUrl;
 }

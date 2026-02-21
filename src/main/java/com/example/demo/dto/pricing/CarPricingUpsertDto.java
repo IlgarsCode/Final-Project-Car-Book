@@ -26,7 +26,6 @@ public class CarPricingUpsertDto {
     @DecimalMin(value = "0.0", inclusive = true)
     private BigDecimal monthlyLeasingRate;
 
-    // optional
     @DecimalMin(value = "0.0", inclusive = true)
     private BigDecimal fuelSurchargePerHour;
 }

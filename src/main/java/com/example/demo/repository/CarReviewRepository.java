@@ -46,7 +46,6 @@ public interface CarReviewRepository extends JpaRepository<CarReview, Long> {
             Pageable pageable
     );
 
-    // ✅ Pricing üçün: carId-lərə görə average rating (bulk, N+1 yox)
     @Query("""
         select r.car.id as carId, coalesce(avg(r.rating), 0) as avgRating
         from CarReview r
@@ -60,7 +59,6 @@ public interface CarReviewRepository extends JpaRepository<CarReview, Long> {
         Double getAvgRating();
     }
 
-    // ✅ Pricing üçün: carId-lərə görə review count (bulk)
     @Query("""
         select r.car.id as carId, count(r.id) as reviewCount
         from CarReview r

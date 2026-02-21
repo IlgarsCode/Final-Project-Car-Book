@@ -16,6 +16,5 @@ public class BlogCommentDto {
 
     private String avatarUrl;
 
-    // ✅ reply-lar
     private List<BlogCommentDto> replies;
 }

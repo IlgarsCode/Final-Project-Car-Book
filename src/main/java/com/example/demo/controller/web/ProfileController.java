@@ -76,17 +76,17 @@ public class ProfileController {
             return "redirect:/auth/login?logout=true";
         }
 
-        return "redirect:/profil?ok=1"; // ✅ AZ URL
+        return "redirect:/profil?ok=1";
     }
 
     @PostMapping("/avatar")
     public String updateAvatar(@RequestParam("avatar") MultipartFile avatar,
                                Authentication auth) {
         profileService.updateAvatar(auth.getName(), avatar);
-        return "redirect:/profil?avatarOk=1"; // ✅ AZ URL
+        return "redirect:/profil?avatarOk=1";
     }
 
-    @PostMapping("/sifre") // ✅ AZ URL (əvvəl /password idi)
+    @PostMapping("/sifre")
     public String changePassword(@Valid @ModelAttribute("pwdForm") PasswordChangeDto pwdForm,
                                  BindingResult br,
                                  Authentication auth,
@@ -99,7 +99,7 @@ public class ProfileController {
             form.setEmail(me.getEmail());
             form.setFullName(me.getFullName());
             form.setPhone(me.getPhone());
-            form.setBio(me.getBio()); // ✅ səndə bio da var, burada da doldurdum ki boş qalmasın
+            form.setBio(me.getBio());
 
             model.addAttribute("me", me);
             model.addAttribute("form", form);
@@ -107,6 +107,6 @@ public class ProfileController {
         }
 
         profileService.changePassword(auth.getName(), pwdForm);
-        return "redirect:/profil?pwdOk=1"; // ✅ AZ URL
+        return "redirect:/profil?pwdOk=1";
     }
 }

@@ -65,7 +65,6 @@ public class OrderServiceImpl implements OrderService {
         order.setUser(user);
         order.setStatus(OrderStatus.PENDING);
 
-        // ✅ userOrderNo düzgün
         long nextUserNo = orderRepository.findMaxUserOrderNo(user.getId()) + 1;
         order.setUserOrderNo(nextUserNo);
 

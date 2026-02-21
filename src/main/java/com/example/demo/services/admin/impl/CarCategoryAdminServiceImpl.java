@@ -68,14 +68,12 @@ public class CarCategoryAdminServiceImpl implements CarCategoryAdminService {
 
         String name = clean(dto.getName());
 
-        // ad dəyişibsə duplicate yoxla
         if (!cc.getName().equalsIgnoreCase(name) && carCategoryRepository.existsByNameIgnoreCase(name)) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Bu adla category artıq var");
         }
 
         cc.setName(name);
 
-        // slug-u da name-ə görə yenilə (istəsən sabit saxlayarıq, amma admin panel üçün bu daha məntiqlidir)
         String newBase = SlugUtil.slugify(name);
         String newSlug = uniqueSlug(newBase, cc.getSlug());
         cc.setSlug(newSlug);
@@ -87,7 +85,6 @@ public class CarCategoryAdminServiceImpl implements CarCategoryAdminService {
     public void delete(Long id) {
         CarCategory cc = getById(id);
 
-        // Bu category-də car varsa silmək olmaz (yoxsa FK constraint və ya data itir)
         long activeCars = carRepository.countByCategory_IdAndIsActiveTrue(cc.getId());
         long allCars = carRepository.countByCategory_Id(cc.getId());
 

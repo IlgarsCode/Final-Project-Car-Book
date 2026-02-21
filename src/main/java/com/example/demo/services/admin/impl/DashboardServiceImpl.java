@@ -46,12 +46,10 @@ public class DashboardServiceImpl implements DashboardService {
         long approvalWaiting = orderRepository.countByStatus(OrderStatus.PAID);
         long failed = orderRepository.countByStatus(OrderStatus.PAYMENT_FAILED);
 
-        // ---- last 7 days revenue chart
-        LocalDate startDay = today.minusDays(6); // today daxil 7 gün
+        LocalDate startDay = today.minusDays(6);
         LocalDateTime from = startDay.atStartOfDay();
         LocalDateTime to = today.atTime(LocalTime.MAX);
 
-        // map day -> sum
         Map<LocalDate, BigDecimal> sumMap = new HashMap<>();
         for (var v : paymentRepository.sumSucceededByDayBetween(from, to)) {
             LocalDate d = v.getDay().toLocalDate();
@@ -62,11 +60,10 @@ public class DashboardServiceImpl implements DashboardService {
         List<BigDecimal> values = new ArrayList<>();
         for (int i = 0; i < 7; i++) {
             LocalDate d = startDay.plusDays(i);
-            labels.add(d.toString()); // 2026-02-20 kimi
+            labels.add(d.toString());
             values.add(sumMap.getOrDefault(d, BigDecimal.ZERO));
         }
 
-        // ---- status pie
         var statusViews = orderRepository.countByStatusGroup();
         List<String> statusLabels = new ArrayList<>();
         List<Long> statusCounts = new ArrayList<>();

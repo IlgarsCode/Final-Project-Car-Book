@@ -39,7 +39,6 @@ public class EmailServiceImpl implements EmailService {
 
     private static final DateTimeFormatter DATE_FMT = DateTimeFormatter.ofPattern("dd.MM.yyyy");
 
-    // ---------------- CONTACT ----------------
     @Override
     public void sendContactMail(String name, String email, String subject, String message) {
         ContactDto dto = new ContactDto();
@@ -56,7 +55,6 @@ public class EmailServiceImpl implements EmailService {
             SimpleMailMessage mailMessage = new SimpleMailMessage();
             mailMessage.setTo(adminEmail);
 
-            // SimpleMailMessage’de personal name bazen sorun çıkarır; ama çoğu zaman çalışır.
             mailMessage.setFrom(fromName + " <" + fromEmail + ">");
 
             mailMessage.setReplyTo(dto.getEmail());
@@ -75,11 +73,10 @@ public class EmailServiceImpl implements EmailService {
         }
     }
 
-    // ---------------- OTP ----------------
     @Override
     public void sendOtpMail(String toEmail, String subject, String text) {
         try {
-            // OTP’yi de MIME ile atmak daha stabil (From name garantili)
+
             MimeMessage mime = mailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(
                     mime, MimeMessageHelper.MULTIPART_MODE_MIXED_RELATED, StandardCharsets.UTF_8.name()
@@ -97,7 +94,6 @@ public class EmailServiceImpl implements EmailService {
         }
     }
 
-    // ---------------- ORDER CREATED (PENDING) ----------------
     @Override
     public void sendOrderCreatedPending(Order order) {
         String to = order.getUser().getEmail();
@@ -116,7 +112,6 @@ public class EmailServiceImpl implements EmailService {
         sendHtml(to, subject, "mail/order-created", ctx);
     }
 
-    // ---------------- PAYMENT SUCCEEDED ----------------
     @Override
     public void sendPaymentSucceeded(Payment payment) {
         Order order = payment.getOrder();
@@ -133,7 +128,6 @@ public class EmailServiceImpl implements EmailService {
         sendHtml(to, subject, "mail/payment-succeeded", ctx);
     }
 
-    // ---------------- PAYMENT FAILED ----------------
     @Override
     public void sendPaymentFailed(Payment payment) {
         Order order = payment.getOrder();
@@ -152,7 +146,6 @@ public class EmailServiceImpl implements EmailService {
         sendHtml(to, subject, "mail/payment-failed", ctx);
     }
 
-    // ---------------- ADMIN STATUS CHANGED ----------------
     @Override
     public void sendOrderStatusChanged(Order order, OrderStatus oldStatus) {
         if (order.getStatus() == null) return;
@@ -192,7 +185,6 @@ public class EmailServiceImpl implements EmailService {
         sendHtml(to, subject, template, ctx);
     }
 
-    // ---------------- ADMIN NOTIFY NEW PAID ORDER ----------------
     @Override
     public void notifyAdminNewPaidOrder(Payment payment) {
         Order order = payment.getOrder();
@@ -208,7 +200,6 @@ public class EmailServiceImpl implements EmailService {
         sendHtml(adminEmail, subject, "mail/admin-new-paid-order", ctx);
     }
 
-    // ---------------- helper (kritik) ----------------
     private void sendHtml(String to, String subject, String templateName, Context ctx) {
         try {
             String html = templateEngine.process(templateName, ctx);
@@ -229,7 +220,6 @@ public class EmailServiceImpl implements EmailService {
 
             log.info("✅ HTML mail SENT. to={}, subject='{}', template={}", to, subject, templateName);
         } catch (Exception e) {
-            // BURASI ÖNEMLİ: artık neden gitmediğini göreceksin
             log.error("❌ HTML mail FAILED. to={}, subject='{}', template={}", to, subject, templateName, e);
         }
     }

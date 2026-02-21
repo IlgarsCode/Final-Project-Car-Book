@@ -21,7 +21,6 @@ public class TestimonialController {
     private final TestimonialService testimonialService;
     private final BannerService bannerService;
 
-    // ✅ AZ slug: /reyler
     @GetMapping("/reyler")
     public String testimonialPage(Model model) {
         model.addAttribute("banner", bannerService.getBanner(BannerType.TESTIMONIAL));
@@ -29,10 +28,8 @@ public class TestimonialController {
         return "testimonial";
     }
 
-    // ✅ AZ slug: /reyler/yeni
     @GetMapping("/reyler/yeni")
     public String newTestimonialPage(Model model, Authentication auth) {
-        // login yoxdursa yönləndir (yoxsa create-də partlayır)
         if (auth == null || auth.getName() == null) {
             return "redirect:/auth/login";
         }
@@ -40,7 +37,6 @@ public class TestimonialController {
         return "testimonial-create";
     }
 
-    // ✅ POST: /reyler/yeni
     @PostMapping("/reyler/yeni")
     public String createTestimonial(
             @Valid @ModelAttribute("form") TestimonialCreateDto form,
@@ -53,7 +49,6 @@ public class TestimonialController {
         }
 
         if (br.hasErrors()) {
-            // səhv olanda form geri qayıtsın
             model.addAttribute("form", form);
             return "testimonial-create";
         }

@@ -35,12 +35,10 @@ public class CarDetailDto {
     private List<String> features2;
     private List<String> features3;
 
-    // ✅ effective prices
     private BigDecimal hourlyRate;
     private BigDecimal dailyRate;
     private BigDecimal monthlyLeasingRate;
 
-    // ✅ base prices
     private BigDecimal baseHourlyRate;
     private BigDecimal baseDailyRate;
     private BigDecimal baseMonthlyLeasingRate;

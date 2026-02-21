@@ -17,7 +17,7 @@ public class Car {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String title;        // Mercedes Grand Sedan
+    private String title;
     private String brand;
 
     private Integer year;

@@ -8,7 +8,6 @@ import java.util.Optional;
 
 public interface PasswordResetOtpRepository extends JpaRepository<PasswordResetOtp, Long> {
 
-    // ən son yaradılan aktiv OTP-ni götür
     Optional<PasswordResetOtp> findTopByEmailIgnoreCaseOrderByIdDesc(String email);
 
     Optional<PasswordResetOtp> findByToken(String token);

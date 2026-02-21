@@ -25,10 +25,8 @@ public class ContactInfoAdminController {
         dto.setEmail(info.getEmail());
         dto.setActive(info.isActive());
 
-        // Template th:object="${contactInfo}" olacaqsa bu ad düz gəlir
         model.addAttribute("contactInfo", dto);
 
-        // SƏNDƏKİ REAL YOL: templates/dashboard/contact/edit.html
         return "dashboard/contact/edit";
     }
 

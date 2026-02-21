@@ -18,7 +18,6 @@ public class AuthPasswordController {
 
     private final PasswordResetService passwordResetService;
 
-    // ✅ /sifreni-unutdum
     @GetMapping("/sifreni-unutdum")
     public String forgotPage(@RequestParam(value = "gonderildi", required = false) String gonderildi,
                              Model model) {
@@ -27,7 +26,6 @@ public class AuthPasswordController {
         return "auth/forgot-password";
     }
 
-    // ✅ /sifreni-unutdum
     @PostMapping("/sifreni-unutdum")
     public String forgot(@Valid @ModelAttribute("form") ForgotPasswordDto form,
                          BindingResult br,
@@ -45,11 +43,9 @@ public class AuthPasswordController {
             return "auth/forgot-password";
         }
 
-        // ✅ əvvəl: /auth/verify-otp?email=...
         return "redirect:/otp-tesdiq?email=" + form.getEmail().trim().toLowerCase();
     }
 
-    // ✅ /otp-tesdiq
     @GetMapping("/otp-tesdiq")
     public String verifyPage(@RequestParam("email") String email,
                              @RequestParam(value = "xeta", required = false) String xeta,
@@ -61,7 +57,6 @@ public class AuthPasswordController {
         return "auth/verify-otp";
     }
 
-    // ✅ /otp-tesdiq
     @PostMapping("/otp-tesdiq")
     public String verify(@Valid @ModelAttribute("form") VerifyOtpDto form,
                          BindingResult br,
@@ -72,7 +67,6 @@ public class AuthPasswordController {
         try {
             String token = passwordResetService.verifyOtp(form.getEmail(), form.getCode());
 
-            // ✅ əvvəl: /auth/reset-password?token=...
             return "redirect:/sifre-yenile?token=" + token;
 
         } catch (ResponseStatusException ex) {
@@ -84,7 +78,6 @@ public class AuthPasswordController {
         }
     }
 
-    // ✅ /sifre-yenile
     @GetMapping("/sifre-yenile")
     public String resetPage(@RequestParam("token") String token,
                             @RequestParam(value = "ok", required = false) String ok,
@@ -96,7 +89,6 @@ public class AuthPasswordController {
         return "auth/reset-password";
     }
 
-    // ✅ /sifre-yenile
     @PostMapping("/sifre-yenile")
     public String reset(@Valid @ModelAttribute("form") ResetPasswordDto form,
                         BindingResult br,
@@ -111,7 +103,6 @@ public class AuthPasswordController {
                     form.getConfirmNewPassword()
             );
 
-            // ✅ əvvəl: /auth/login?logout=true
             return "redirect:/giris?cixis=true";
 
         } catch (ResponseStatusException ex) {

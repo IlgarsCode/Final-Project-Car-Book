@@ -9,10 +9,10 @@ import java.util.List;
 
 public interface CarCategoryAdminService {
 
-    List<CarCategoryDashboardRowDto> getAllRows(); // list üçün (car count ilə)
+    List<CarCategoryDashboardRowDto> getAllRows();
     CarCategory getById(Long id);
 
     void create(CarCategoryCreateDto dto);
     void update(Long id, CarCategoryUpdateDto dto);
-    void delete(Long id); // hard delete (çünki CarCategory-də isActive yoxdur)
+    void delete(Long id);
 }

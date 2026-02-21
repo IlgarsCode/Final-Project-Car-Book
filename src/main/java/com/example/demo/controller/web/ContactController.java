@@ -21,7 +21,6 @@ public class ContactController {
     private final BannerService bannerService;
     private final EmailService emailService;
 
-    // ✅ CONTACT PAGE (GET) -> /elaqe
     @GetMapping("/elaqe")
     public String contactPage(Model model) {
 
@@ -33,13 +32,11 @@ public class ContactController {
         model.addAttribute("banner", bannerService.getBanner(BannerType.CONTACT));
         model.addAttribute("contactInfo", contactInfo);
 
-        // form üçün boş dto
         model.addAttribute("contact", new ContactDto());
 
         return "contact";
     }
 
-    // ✅ CONTACT PAGE (POST) -> /elaqe
     @PostMapping("/elaqe")
     public String sendMessage(@ModelAttribute("contact") ContactDto dto) {
         contactMessageService.saveMessage(dto);

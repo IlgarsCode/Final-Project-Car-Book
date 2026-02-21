@@ -16,7 +16,7 @@ public interface CarCategoryRepository extends JpaRepository<CarCategory, Long> 
         Long getId();
         String getName();
         String getSlug();
-        Long getActiveCarCount();  // təkcə bu
+        Long getActiveCarCount();
     }
 
     @Query("""

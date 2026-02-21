@@ -11,6 +11,5 @@ public interface OrderService {
 
     List<Order> getMyOrders(String email);
 
-    // ✅ artıq orderId yox, userOrderNo
     Order getMyOrderDetail(String email, Long userOrderNo);
 }

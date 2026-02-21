@@ -72,8 +72,6 @@ public class CarReviewAdminServiceImpl implements CarReviewAdminService {
         dto.setIsActive(r.getIsActive());
         dto.setCreatedAt(r.getCreatedAt());
 
-        // car lazy-dir, amma burada controller view render edəcək — transaction xaricində N+1 risk var.
-        // Ona görə adminSearch query join ilə gəlir, problem olmur.
         dto.setCarId(r.getCar().getId());
         dto.setCarTitle(r.getCar().getTitle());
         dto.setCarSlug(r.getCar().getSlug());

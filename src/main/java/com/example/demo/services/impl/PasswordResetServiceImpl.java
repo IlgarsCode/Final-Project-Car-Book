@@ -28,17 +28,15 @@ public class PasswordResetServiceImpl implements PasswordResetService {
 
     private static final int OTP_EXPIRE_MIN = 5;
     private static final int MAX_ATTEMPTS = 5;
-    private static final int RATE_LIMIT_SECONDS = 60; // eyni email üçün 60 san tez-tez olmasın
-    private static final int DAILY_LIMIT = 10; // sadə limit
+    private static final int RATE_LIMIT_SECONDS = 60;
+    private static final int DAILY_LIMIT = 10;
 
     @Override
     public void requestOtp(String emailRaw) {
         String email = normalizeEmail(emailRaw);
 
-        // təhlükəsizlik: “user var/yox” demirik, amma mail göndərməyə yalnız user varsa gedirik
         boolean exists = userRepository.existsByEmailIgnoreCase(email);
 
-        // rate limit (user yoxdursa belə eyni davranış)
         LocalDateTime now = LocalDateTime.now();
 
         otpRepository.findTopByEmailIgnoreCaseOrderByIdDesc(email)
@@ -53,7 +51,6 @@ public class PasswordResetServiceImpl implements PasswordResetService {
             throw new ResponseStatusException(HttpStatus.TOO_MANY_REQUESTS, "Bu gün üçün limit dolub");
         }
 
-        // user yoxdursa - yenə də “OK” kimi davran, amma mail göndərmə
         if (!exists) return;
 
         String otp = generate6DigitOtp();
@@ -69,7 +66,6 @@ public class PasswordResetServiceImpl implements PasswordResetService {
 
         otpRepository.save(row);
 
-        // mail göndər
         authMailService.sendPasswordResetOtp(email, otp, OTP_EXPIRE_MIN);
     }
 
@@ -92,7 +88,6 @@ public class PasswordResetServiceImpl implements PasswordResetService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Çox cəhd etdin, yeni OTP istə");
         }
 
-        // attempt artır
         row.setAttempts((row.getAttempts() == null ? 0 : row.getAttempts()) + 1);
 
         boolean ok = passwordEncoder.matches(code, row.getOtpHash());
@@ -101,7 +96,6 @@ public class PasswordResetServiceImpl implements PasswordResetService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "OTP yanlışdır");
         }
 
-        // verify ok
         row.setVerifiedAt(LocalDateTime.now());
         otpRepository.save(row);
 
@@ -124,7 +118,6 @@ public class PasswordResetServiceImpl implements PasswordResetService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Token artıq istifadə olunub");
         }
 
-        // token üçün də expiry yoxlaya bilərik: OTP expiry-dən sonra reset etməyə icazə verməyək
         if (row.getExpiresAt() == null || row.getExpiresAt().isBefore(LocalDateTime.now())) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Token vaxtı bitib, yenidən OTP istə");
         }

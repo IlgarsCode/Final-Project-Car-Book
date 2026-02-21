@@ -32,7 +32,6 @@ public class AuthServiceImpl implements AuthService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Bu email artıq mövcuddur");
         }
 
-        // ROLE_USER yoxdursa yarad
         Role userRole = roleRepository.findByName(RoleName.ROLE_USER)
                 .orElseGet(() -> {
                     Role r = new Role();

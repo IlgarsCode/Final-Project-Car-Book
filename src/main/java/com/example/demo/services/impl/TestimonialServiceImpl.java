@@ -56,10 +56,6 @@ public class TestimonialServiceImpl implements TestimonialService {
         testimonialRepository.save(t);
     }
 
-    // =========================
-    // ✅ ADMIN
-    // =========================
-
     @Override
     public Page<TestimonialAdminListDto> adminGet(int page, int size, String q, Boolean active) {
         var pageable = PageRequest.of(Math.max(page, 0), Math.min(Math.max(size, 1), 50));
@@ -100,7 +96,6 @@ public class TestimonialServiceImpl implements TestimonialService {
         t.setPosition(dto.getPosition() != null ? dto.getPosition().trim() : null);
         t.setComment(dto.getComment() != null ? dto.getComment().trim() : t.getComment());
 
-        // photoUrl boşdursa köhnə qalsın
         if (dto.getPhotoUrl() != null && !dto.getPhotoUrl().isBlank()) {
             t.setPhotoUrl(dto.getPhotoUrl().trim());
         }

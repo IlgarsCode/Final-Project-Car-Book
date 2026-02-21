@@ -50,14 +50,13 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
         http
-                // ⚠️ indi səndə belədir. işləyir, amma sonra CSRF-i açmaq daha yaxşıdır.
                 .csrf(csrf -> csrf.disable())
 
                 .authenticationProvider(authenticationProvider(passwordEncoder()))
 
                 .authorizeHttpRequests(auth -> auth
 
-                        // ✅ STATIC
+                        // STATIC
                         .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()
                         .requestMatchers(
                                 "/fonts/**",
@@ -68,10 +67,10 @@ public class SecurityConfig {
                                 "/uploads/**"
                         ).permitAll()
 
-                        // ✅ Error page-lər
+                        //  Error page-lər
                         .requestMatchers("/error", "/error/**").permitAll()
 
-                        // ✅ AUTH (AZ route-lar)
+                        // AUTH (AZ route-lar)
                         .requestMatchers(
                                 "/giris",
                                 "/qeydiyyat",
@@ -81,7 +80,7 @@ public class SecurityConfig {
                                 "/sifre-yenile"
                         ).permitAll()
 
-                        // ✅ Public pages (AZ route-lar)
+                        // Public pages (AZ route-lar)
                         .requestMatchers(
                                 "/", "/index",
                                 "/haqqimizda",
@@ -94,13 +93,13 @@ public class SecurityConfig {
                                 "/reyler"
                         ).permitAll()
 
-                        // ✅ SUPER ADMIN
+                        // SUPER ADMIN
                         .requestMatchers("/dashboard/users/**").hasRole("SUPER_ADMIN")
 
-                        // ✅ ADMIN PANEL
+                        // ADMIN PANEL
                         .requestMatchers("/dashboard/**").hasRole("ADMIN")
 
-                        // ✅ USER pages (AZ route-lar)
+                        // USER pages (AZ route-lar)
                         .requestMatchers(
                                 "/bloq/yeni",
                                 "/menim-bloqlarim",
@@ -119,7 +118,7 @@ public class SecurityConfig {
                         .anyRequest().authenticated()
                 )
 
-                // ✅ LOGIN: /giris
+                // LOGIN: /giris
                 .formLogin(form -> form
                         .loginPage("/giris")
                         .loginProcessingUrl("/giris")
@@ -130,12 +129,12 @@ public class SecurityConfig {
                         .permitAll()
                 )
 
-                // ✅ 403 handling
+                // 403 handling
                 .exceptionHandling(ex -> ex
                         .accessDeniedHandler(accessDeniedHandler)
                 )
 
-                // ✅ LOGOUT: /cixis
+                // LOGOUT: /cixis
                 .logout(logout -> logout
                         .logoutUrl("/cixis")
                         .logoutSuccessUrl("/giris?cixis=1")

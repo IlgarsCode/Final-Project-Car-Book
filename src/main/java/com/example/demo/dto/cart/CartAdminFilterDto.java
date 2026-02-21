@@ -6,5 +6,5 @@ import lombok.Setter;
 @Getter
 @Setter
 public class CartAdminFilterDto {
-    private String q; // user email axtar
+    private String q;
 }

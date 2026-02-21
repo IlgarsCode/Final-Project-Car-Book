@@ -13,8 +13,7 @@ public class BlogCommentAdminRowDto {
     private Long blogId;
     private String blogTitle;
 
-    private Long parentId; // null = root comment
-
+    private Long parentId;
     private String fullName;
     private String email;
 

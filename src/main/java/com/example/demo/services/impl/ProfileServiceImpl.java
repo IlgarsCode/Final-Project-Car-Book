@@ -57,10 +57,8 @@ public class ProfileServiceImpl implements ProfileService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Avatar seçilməyib");
         }
 
-        // köhnəni sil
         fileStorageService.deleteIfExists(user.getPhotoUrl());
 
-        // yenini saxla
         String path = fileStorageService.storeUserAvatar(avatar);
         user.setPhotoUrl(path);
 

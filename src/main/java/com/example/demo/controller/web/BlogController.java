@@ -42,11 +42,6 @@ public class BlogController {
 
     private final UserRepository userRepository;
 
-    // =========================
-    // ✅ AZ ROUTES (Bloq)
-    // =========================
-
-    // PUBLIC LIST
     @GetMapping("/bloq")
     public String blogPage(
             @RequestParam(name = "page", defaultValue = "1") int page,
@@ -69,7 +64,6 @@ public class BlogController {
         return "blog";
     }
 
-    // BLOG CREATE (USER)
     @GetMapping("/bloq/yeni")
     public String newBlogPage(@AuthenticationPrincipal UserDetails user, Model model) {
         if (user == null) return "redirect:/giris";
@@ -102,7 +96,6 @@ public class BlogController {
         return "redirect:/bloq/" + id;
     }
 
-    // MY BLOGS (USER)
     @GetMapping("/menim-bloqlarim")
     public String myBlogs(@AuthenticationPrincipal UserDetails user,
                           @RequestParam(name = "page", defaultValue = "1") int page,
@@ -123,7 +116,6 @@ public class BlogController {
         return "my-blogs";
     }
 
-    // ✅ AZ delete endpoint (HTML bununla işləməlidir)
     @PostMapping("/menim-bloqlarim/{id}/sil")
     public String deleteMyBlog(@PathVariable Long id, Authentication auth) {
         if (auth == null || auth.getName() == null) {
@@ -133,7 +125,6 @@ public class BlogController {
         return "redirect:/menim-bloqlarim?deleted=1";
     }
 
-    // BLOG DETAIL
     @GetMapping("/bloq/{id}")
     public String blogSingle(@PathVariable Long id, Model model, Authentication auth) {
 
@@ -154,7 +145,6 @@ public class BlogController {
         return "blog-single";
     }
 
-    // Top-level comment (login required)
     @PostMapping("/bloq/{id}/serh")
     public String addComment(
             @PathVariable Long id,
@@ -205,7 +195,6 @@ public class BlogController {
         return "redirect:/bloq/" + id + "#comments";
     }
 
-    // Reply (login required)
     @PostMapping("/bloq/{id}/cavab")
     public String addReply(
             @PathVariable Long id,
@@ -280,10 +269,6 @@ public class BlogController {
         model.addAttribute("isLoggedIn", isLoggedIn);
     }
 
-    // =========================
-    // ✅ OLD ROUTES -> REDIRECT / COMPAT
-    // =========================
-
     @GetMapping("/blog")
     public String oldBlogListRedirect(
             @RequestParam(name = "page", defaultValue = "1") int page,
@@ -328,7 +313,6 @@ public class BlogController {
         return "redirect:/menim-bloqlarim?page=" + page;
     }
 
-    // ✅ köhnə delete endpoint işləsin deyə: service-i burda da çağırırıq
     @PostMapping("/my-blogs/{id}/delete")
     public String oldDeleteCompat(@PathVariable Long id, Authentication auth) {
         if (auth == null || auth.getName() == null) {

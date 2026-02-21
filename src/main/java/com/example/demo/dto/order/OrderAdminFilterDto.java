@@ -10,7 +10,7 @@ import java.time.LocalDate;
 @Setter
 public class OrderAdminFilterDto {
     private OrderStatus status;
-    private LocalDate from;   // createdAt üçün start (date)
-    private LocalDate to;     // createdAt üçün end (date)
-    private String q;         // email/pickup/dropoff axtarış
+    private LocalDate from;
+    private LocalDate to;
+    private String q;
 }

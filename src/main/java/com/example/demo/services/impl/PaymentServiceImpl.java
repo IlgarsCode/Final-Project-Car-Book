@@ -45,7 +45,6 @@ public class PaymentServiceImpl implements PaymentService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Bu order üçün payment mümkün deyil");
         }
 
-        // aynı order için PROCESSING varsa reuse
         var last = paymentRepository.findTopByOrder_IdOrderByIdDesc(order.getId()).orElse(null);
         if (last != null && last.getStatus() == PaymentStatus.PROCESSING) {
             return last;
@@ -70,12 +69,10 @@ public class PaymentServiceImpl implements PaymentService {
 
         Payment p = getPaymentForUser(userEmail, paymentId);
 
-        // zaten final ise dokunma
         if (p.getStatus() != PaymentStatus.PROCESSING) return p;
 
         String clean = dto.getCardNumber() == null ? "" : dto.getCardNumber().replace(" ", "").trim();
 
-        // 4000000000000002 -> fail, diğerleri -> success
         if ("4000000000000002".equals(clean)) {
             p.setFailureReason("WILL_FAIL");
         } else {
@@ -118,25 +115,20 @@ public class PaymentServiceImpl implements PaymentService {
         boolean success = !"WILL_FAIL".equalsIgnoreCase(p.getFailureReason());
 
         if (success) {
-            // 1) payment success
             p.setStatus(PaymentStatus.SUCCEEDED);
             p.setCompletedAt(LocalDateTime.now());
             paymentRepository.save(p);
 
-            // 2) order paid
             Order o = p.getOrder();
             o.setStatus(OrderStatus.PAID);
             orderRepository.save(o);
 
-            // 3) cart temizle
             cartService.clearCart(userEmail);
 
-            // 4) mail tetikle
             try {
                 emailService.sendPaymentSucceeded(p);
                 emailService.notifyAdminNewPaidOrder(p);
             } catch (Exception ex) {
-                // EmailServiceImpl içinde zaten log var ama ekstra güven
                 log.error("❌ Mail trigger error (SUCCEEDED). paymentId={}, orderId={}", p.getId(), o.getId(), ex);
             }
 
@@ -144,19 +136,15 @@ public class PaymentServiceImpl implements PaymentService {
             return p;
 
         } else {
-            // 1) payment failed
             p.setStatus(PaymentStatus.FAILED);
-            // burada gerçek sebebi yaz
             p.setFailureReason("Card declined");
             p.setCompletedAt(LocalDateTime.now());
             paymentRepository.save(p);
 
-            // 2) order payment_failed
             Order o = p.getOrder();
             o.setStatus(OrderStatus.PAYMENT_FAILED);
             orderRepository.save(o);
 
-            // 3) mail tetikle
             try {
                 emailService.sendPaymentFailed(p);
             } catch (Exception ex) {

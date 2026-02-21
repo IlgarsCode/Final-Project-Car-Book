@@ -53,7 +53,6 @@ public class PricingServiceImpl implements PricingService {
 
         if (rows == null || rows.isEmpty()) return List.of();
 
-        // ✅ availability filter
         if (pickupDate != null && dropoffDate != null) {
             if (dropoffDate.isBefore(pickupDate)) return List.of();
 
@@ -72,7 +71,6 @@ public class PricingServiceImpl implements PricingService {
                     .toList();
         }
 
-        // rating stats
         Map<Long, Long> countMap = new HashMap<>();
         Map<Long, Double> avgMap = new HashMap<>();
 

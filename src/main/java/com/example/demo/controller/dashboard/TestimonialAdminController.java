@@ -1,4 +1,4 @@
-package com.example.demo.controller.admin;
+package com.example.demo.controller.dashboard;
 
 import com.example.demo.dto.testimonial.TestimonialAdminUpdateDto;
 import com.example.demo.services.TestimonialService;
@@ -62,7 +62,7 @@ public class TestimonialAdminController {
                             @RequestParam(required = false) String q,
                             @RequestParam(required = false) Boolean filterActive) {
         testimonialService.adminSetActive(id, active);
-        // filterlər itməsin:
+        // filterlər
         String qs = (q != null && !q.isBlank()) ? "&q=" + q : "";
         String as = (filterActive != null) ? "&active=" + filterActive : "";
         return "redirect:/dashboard/testimonial?page=" + page + qs + as;

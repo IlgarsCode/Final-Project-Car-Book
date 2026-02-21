@@ -10,7 +10,6 @@ import java.util.List;
 
 public interface BlogRepository extends JpaRepository<Blog, Long> {
 
-    // ========= PUBLIC =========
     Page<Blog> findAllByIsActiveTrueOrderByCreatedAtDesc(Pageable pageable);
     Page<Blog> findAllByAuthorOrderByCreatedAtDesc(String author, Pageable pageable);
 
@@ -54,7 +53,7 @@ public interface BlogRepository extends JpaRepository<Blog, Long> {
     """)
     Page<Blog> findActiveByTagSlug(@Param("slug") String slug, Pageable pageable);
 
-    // ========= ADMIN =========
+    // ADMIN
 
     Page<Blog> findAllByOrderByCreatedAtDesc(Pageable pageable);
 

@@ -43,5 +43,4 @@ public class CarCreateDto {
 
     private Long categoryId;
 
-    // category hələ əlavə etmirik (sənin dediyin kimi)
 }

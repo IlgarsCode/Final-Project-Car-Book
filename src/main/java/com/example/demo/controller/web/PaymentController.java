@@ -71,7 +71,6 @@ public class PaymentController {
         return "payment/processing";
     }
 
-    // polling endpoint
     @GetMapping("/api/{paymentId}")
     @ResponseBody
     public Object poll(@AuthenticationPrincipal UserDetails user,

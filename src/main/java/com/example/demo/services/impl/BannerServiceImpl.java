@@ -91,11 +91,6 @@ public class BannerServiceImpl implements BannerService {
         if (savedPhotoUrl != null) b.setPhotoUrl(savedPhotoUrl);
         else b.setPhotoUrl(dto.getPhotoUrl());
 
-        // ❌ BUNU SİLİRİK (artıq digərlərini passive etməsin)
-        // if (b.isActive()) {
-        //     deactivateOthers(dto.getBannerType(), null);
-        // }
-
         bannerRepository.save(b);
     }
 
@@ -116,11 +111,6 @@ public class BannerServiceImpl implements BannerService {
         if (savedPhotoUrl != null) b.setPhotoUrl(savedPhotoUrl);
         else if (org.springframework.util.StringUtils.hasText(dto.getPhotoUrl())) b.setPhotoUrl(dto.getPhotoUrl());
 
-        // ❌ BUNU SİLİRİK (artıq digərlərini passive etməsin)
-        // if (b.isActive()) {
-        //     deactivateOthers(b.getBannerType(), b.getId());
-        // }
-
         bannerRepository.save(b);
     }
 
@@ -132,7 +122,6 @@ public class BannerServiceImpl implements BannerService {
         if (dto.isHardDelete()) {
             bannerRepository.delete(b);
         } else {
-            // soft delete: sadəcə aktivliyi söndür
             b.setActive(false);
             bannerRepository.save(b);
         }
@@ -149,13 +138,6 @@ public class BannerServiceImpl implements BannerService {
         bannerRepository.saveAll(actives);
     }
 
-    /**
-     * ƏN VACİB HİSSƏ:
-     * Faylı diskə yazır:
-     * {uploadDir}/banners/{uuid}.{ext}
-     * DB-ə URL saxlayır:
-     * /uploads/banners/{uuid}.{ext}
-     */
     private String saveBannerPhoto(MultipartFile file) {
         if (file == null || file.isEmpty()) return null;
 

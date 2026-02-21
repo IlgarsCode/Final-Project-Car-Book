@@ -30,7 +30,6 @@ public class OrderAdminServiceImpl implements OrderAdminService {
     private final OrderRepository orderRepository;
     private final OrderItemRepository orderItemRepository;
 
-    // ✅ NEW
     private final EmailService emailService;
 
     @Override
@@ -137,12 +136,11 @@ public class OrderAdminServiceImpl implements OrderAdminService {
 
         OrderStatus old = o.getStatus();
 
-        if (old == status) return; // duplicate mail göndərmə
+        if (old == status) return;
 
         o.setStatus(status);
         orderRepository.save(o);
 
-        // ✅ (4) APPROVED/CANCELED mail
         emailService.sendOrderStatusChanged(o, old);
     }
 

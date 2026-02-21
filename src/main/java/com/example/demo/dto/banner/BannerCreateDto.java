@@ -8,11 +8,8 @@ import lombok.Data;
 public class BannerCreateDto {
     private String title;
     private String description;
-
-    // file upload ilə gələcək, amma fallback üçün saxlayırıq
     private String photoUrl;
 
-    // yalnız HOME üçün lazım ola bilər (sən dedin frontend indexdə)
     private String videoUrl;
 
     private String buttonText;
@@ -21,6 +18,5 @@ public class BannerCreateDto {
     @NotNull
     private BannerType bannerType;
 
-    // default: true qoymaq rahatdır (istəsən false də edə bilərsən)
     private boolean active = true;
 }

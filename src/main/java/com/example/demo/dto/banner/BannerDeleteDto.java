@@ -8,6 +8,5 @@ public class BannerDeleteDto {
     @NotNull
     private Long id;
 
-    // default olaraq soft delete edirik
     private boolean hardDelete = false;
 }

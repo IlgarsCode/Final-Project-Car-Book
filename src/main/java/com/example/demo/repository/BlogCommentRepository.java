@@ -19,7 +19,7 @@ public interface BlogCommentRepository extends JpaRepository<BlogComment, Long> 
 
     Optional<BlogComment> findByIdAndBlog_IdAndIsActiveTrue(Long id, Long blogId);
 
-    // ✅ ADMIN SEARCH (FULL FILTER)
+    //  ADMIN SEARCH (FULL FILTER)
     @Query("""
         select c
         from BlogComment c

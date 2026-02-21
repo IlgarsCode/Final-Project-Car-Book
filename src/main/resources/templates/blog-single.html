@@ -24,6 +24,30 @@
             background-position: center;
             background-repeat: no-repeat;
         }
+
+        /* ==== BLOG DETAIL OXUNAQLILIQ ==== */
+        .blog-detail-image {
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0,0,0,.08);
+        }
+
+        .blog-content {
+            color: #343a40;          /* əsas mətn rəngi (tünd, oxunaqlı) */
+            font-size: 16.5px;       /* biraz böyütdüm ki, “solğun” görünməsin */
+            line-height: 1.85;       /* oxunaqlılığı artırır */
+            letter-spacing: .1px;
+            margin-top: 18px;
+        }
+
+        /* Əgər content bir paraqrafdan uzun olarsa da gözəl görünsün */
+        .blog-content p {
+            margin-bottom: 14px;
+        }
+
+        /* “məzmun yoxdur” mesajı yenə boz qalsın */
+        .blog-content-empty {
+            color:#6c757d;
+        }
     </style>
 </head>
 
@@ -77,13 +101,19 @@
                         </span>
                     </div>
 
-                    <p th:if="${blog.imageUrl != null}">
-                        <img th:src="${blog.imageUrl}" alt="" class="img-fluid">
+                    <!-- ŞƏKİL -->
+                    <p th:if="${blog.imageUrl != null}" class="mb-4">
+                        <img th:src="${blog.imageUrl}" alt="" class="img-fluid blog-detail-image">
                     </p>
 
-                    <p th:if="${blog.content != null}" th:text="${blog.content}">Bloq məzmunu</p>
+                    <!-- MƏZMUN (ŞƏKİLİN ALTINDAKI YAZI) -->
+                    <div th:if="${blog.content != null}"
+                         class="blog-content"
+                         th:text="${blog.content}">
+                        Bloq məzmunu
+                    </div>
 
-                    <p th:if="${blog.content == null}" style="color:#6c757d;">
+                    <p th:if="${blog.content == null}" class="blog-content-empty">
                         Bu bloq üçün məzmun əlavə edilməyib.
                     </p>
 

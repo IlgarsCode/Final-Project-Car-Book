@@ -11,7 +11,7 @@ import java.util.Optional;
 
 public interface CartItemRepository extends JpaRepository<CartItem, Long> {
 
-    List<CartItem> findAllByCart_IdOrderByIdDesc(Long cartId);  // ✅ əlavə olundu
+    List<CartItem> findAllByCart_IdOrderByIdDesc(Long cartId);
 
     Optional<CartItem> findByCart_IdAndCar_IdAndRateType(Long cartId, Long carId, PricingRateType rateType);
 

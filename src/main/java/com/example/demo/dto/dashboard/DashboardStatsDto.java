@@ -8,22 +8,19 @@ import java.util.List;
 @Data
 public class DashboardStatsDto {
 
-    // KPI
     private BigDecimal todayRevenue;
     private BigDecimal monthRevenue;
 
-    private long pendingOrders;        // PENDING
-    private long approvalWaiting;      // PAID (admin təsdiqi gözləyir)
-    private long paymentFailedOrders;  // PAYMENT_FAILED
+    private long pendingOrders;
+    private long approvalWaiting;
+    private long paymentFailedOrders;
 
-    // Charts
     private List<String> last7DaysLabels;
     private List<BigDecimal> last7DaysRevenue;
 
     private List<String> statusLabels;
     private List<Long> statusCounts;
 
-    // Latest tables
     private long latestOrdersCount;
     private long latestPaymentsCount;
 }

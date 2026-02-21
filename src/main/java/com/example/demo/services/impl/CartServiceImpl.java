@@ -74,21 +74,18 @@ public class CartServiceImpl implements CartService {
         var pricing = carPricingRepository.findActiveByCarId(carId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Bu car üçün pricing tapılmadı"));
 
-        // ✅ base (endirimdən əvvəl)
         BigDecimal baseUnitPrice = switch (rateType) {
             case HOURLY -> nz(pricing.getHourlyRate());
             case LEASING -> nz(pricing.getMonthlyLeasingRate());
             default -> nz(pricing.getDailyRate());
         };
 
-        // ✅ effective (endirim tətbiq olunmuş)
         BigDecimal effectiveUnitPrice = switch (rateType) {
             case HOURLY -> nz(pricing.getEffectiveHourlyRate());
             case LEASING -> nz(pricing.getEffectiveMonthlyLeasingRate());
             default -> nz(pricing.getEffectiveDailyRate());
         };
 
-        // ✅ discount snapshot: rateType-ə görə seç
         Boolean discountActiveSnapshot = switch (rateType) {
             case HOURLY -> pricing.getHourlyDiscountActive();
             case LEASING -> pricing.getLeasingDiscountActive();
@@ -105,7 +102,6 @@ public class CartServiceImpl implements CartService {
             discountPercentSnapshot = null;
         }
 
-        // hourly üçün ayrıca surcharge var (endirimə düşmür)
         BigDecimal surcharge = nz(pricing.getFuelSurchargePerHour());
 
         var existingOpt = cartItemRepository.findByCart_IdAndCar_IdAndRateType(cart.getId(), carId, rateType);
@@ -120,7 +116,6 @@ public class CartServiceImpl implements CartService {
                 item.setUnitCount(unitCount);
             }
 
-            // ✅ snapshot-ları yenilə
             item.setBaseUnitPriceSnapshot(baseUnitPrice);
             item.setUnitPriceSnapshot(effectiveUnitPrice);
             item.setDiscountPercentSnapshot(discountPercentSnapshot);

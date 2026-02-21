@@ -28,11 +28,9 @@ public class BlogServiceImpl implements BlogService {
     private final TagRepository tagRepository;
     private final UserRepository userRepository;
 
-    // ========= PUBLIC =========
 
     @Override
     public Page<BlogListDto> getActiveBlogs(int page, int size, String search) {
-        // ✅ səndə null idi -> düzəliş
         return getActiveBlogs(page, size, search, null);
     }
 
@@ -75,7 +73,6 @@ public class BlogServiceImpl implements BlogService {
         dto.setImageUrl(blog.getImageUrl());
         dto.setContent(blog.getContent());
 
-        // ✅ author məlumatları
         var uOpt = Optional.<com.example.demo.model.User>empty();
 
         if (blog.getAuthorId() != null) {
@@ -97,7 +94,6 @@ public class BlogServiceImpl implements BlogService {
             dto.setAuthor(blog.getAuthor());
         }
 
-        // ✅ tags
         var tags = (blog.getTags() == null) ? List.<TagDto>of()
                 : blog.getTags().stream()
                 .filter(t -> Boolean.TRUE.equals(t.getIsActive()))
@@ -111,7 +107,6 @@ public class BlogServiceImpl implements BlogService {
 
         var all = blogCommentRepository.findAllByBlog_IdAndIsActiveTrueOrderByCreatedAtAsc(id);
 
-// 1) comment-lər üçün email set
         Set<String> emails = new HashSet<>();
         for (var c : all) {
             if (c.getEmail() != null && !c.getEmail().isBlank()) {
@@ -119,7 +114,6 @@ public class BlogServiceImpl implements BlogService {
             }
         }
 
-// 2) email -> avatar xəritəsi (batch)
         Map<String, String> avatarByEmail = new HashMap<>();
         if (!emails.isEmpty()) {
             List<com.example.demo.model.User> users = userRepository.findAllByEmailLowerIn(emails);
@@ -135,7 +129,6 @@ public class BlogServiceImpl implements BlogService {
             }
         }
 
-// 3) id -> dto map (NULL element YOX)
         Map<Long, BlogCommentDto> map = new LinkedHashMap<>();
         for (var c : all) {
             if (c == null || c.getId() == null) continue;
@@ -156,7 +149,6 @@ public class BlogServiceImpl implements BlogService {
             map.put(c.getId(), cd);
         }
 
-// 4) tree yığ (NULL salma)
         List<BlogCommentDto> roots = new ArrayList<>();
         for (var c : all) {
             if (c == null || c.getId() == null) continue;
@@ -173,13 +165,11 @@ public class BlogServiceImpl implements BlogService {
                 if (parentDto != null) {
                     parentDto.getReplies().add(current);
                 } else {
-                    // parent tapılmadısa, root kimi atırıq (amma NULL yox)
                     roots.add(current);
                 }
             }
         }
 
-// sort
         roots.sort((a, b) -> b.getCreatedAt().compareTo(a.getCreatedAt()));
         dto.setComments(roots);
         dto.setCommentCount(all.size());
@@ -222,8 +212,8 @@ public class BlogServiceImpl implements BlogService {
             b.setContent(dto.getContent().trim());
 
             // ✅ owner data
-            b.setAuthor(authorEmail.trim().toLowerCase()); // email saxla
-            b.setAuthorId(me.getId());                      // id saxla
+            b.setAuthor(authorEmail.trim().toLowerCase());
+            b.setAuthorId(me.getId());
 
             b.setCreatedAt(LocalDate.now());
             b.setImageUrl(imageUrl);
@@ -238,8 +228,6 @@ public class BlogServiceImpl implements BlogService {
             throw ex;
         }
     }
-
-    // ========= ADMIN =========
 
     @Override
     public Page<BlogAdminListDto> adminGetBlogs(int page, int size, String search, String tag, Boolean isActive) {
@@ -284,7 +272,6 @@ public class BlogServiceImpl implements BlogService {
         dto.setContent(blog.getContent());
         dto.setIsActive(Boolean.TRUE.equals(blog.getIsActive()));
 
-        // tags -> "java, spring"
         String tags = (blog.getTags() == null) ? ""
                 : blog.getTags().stream()
                 .filter(t -> Boolean.TRUE.equals(t.getIsActive()))
@@ -320,13 +307,11 @@ public class BlogServiceImpl implements BlogService {
 
             blogRepository.save(blog);
 
-            // yeni şəkil yüklənibsə, köhnəni sil
             if (newImage != null) {
                 fileStorageService.deleteIfExists(oldImage);
             }
 
         } catch (RuntimeException ex) {
-            // yolda problem olduysa yüklənən yeni şəkli sil
             fileStorageService.deleteIfExists(newImage);
             throw ex;
         }
@@ -368,8 +353,6 @@ public class BlogServiceImpl implements BlogService {
         blogRepository.delete(blog);
         fileStorageService.deleteIfExists(img);
     }
-
-    // ========= helpers =========
 
     private BlogListDto toListDto(Blog blog) {
         BlogListDto dto = new BlogListDto();

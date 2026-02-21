@@ -1,4 +1,4 @@
-package com.example.demo.controller.admin;
+package com.example.demo.controller.dashboard;
 
 import com.example.demo.model.ServiceEntity;
 import com.example.demo.services.ServiceAdminService;

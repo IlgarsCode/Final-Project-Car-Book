@@ -23,7 +23,6 @@ public class AvailabilityServiceImpl implements AvailabilityService {
     @Override
     public boolean isCarAvailable(Long carId, LocalDate pickupDate, LocalDate dropoffDate) {
 
-        // ✅ minimal guard (controller artıq yoxlayır, amma service də təhlükəsiz olsun)
         if (carId == null || pickupDate == null || dropoffDate == null) return false;
         if (dropoffDate.isBefore(pickupDate)) return false;
 

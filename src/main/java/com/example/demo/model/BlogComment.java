@@ -18,17 +18,14 @@ public class BlogComment {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // hansı bloga aiddir
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "blog_id", nullable = false)
     private Blog blog;
 
-    // ✅ reply üçün parent comment (nullable)
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "parent_id")
     private BlogComment parent;
 
-    // ✅ children reply-lar (biz DTO yığacağıq, buranı UI-də birbaşa istifadə etməyəcəyik)
     @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL, orphanRemoval = false)
     @OrderBy("createdAt ASC")
     private List<BlogComment> replies = new ArrayList<>();

@@ -36,15 +36,12 @@ public class CartItem {
     @Column(name = "rate_type", nullable = false, length = 16)
     private PricingRateType rateType;
 
-    // ✅ FINAL price (endirim tətbiq olunmuş)
     @Column(nullable = false, precision = 12, scale = 2)
     private BigDecimal unitPriceSnapshot;
 
-    // ✅ NEW: base price (endirimdən əvvəl)
     @Column(precision = 12, scale = 2)
     private BigDecimal baseUnitPriceSnapshot;
 
-    // ✅ NEW: discount percent
     @Column(precision = 5, scale = 2)
     private BigDecimal discountPercentSnapshot;
 

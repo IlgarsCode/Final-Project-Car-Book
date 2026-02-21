@@ -36,7 +36,6 @@ public class AboutServiceImpl implements AboutService {
             about.setDescription("");
             about.setImageUrl(null);
 
-            // 1 dənə aktiv About konsepti
             about.setActive(true);
 
             aboutRepository.save(about);
@@ -50,7 +49,6 @@ public class AboutServiceImpl implements AboutService {
         About active = aboutRepository.findByIsActiveTrue();
         if (active != null) return active;
 
-        // fallback: heç olmasa bir record göstər
         return aboutRepository.findTopByOrderByIdAsc();
     }
 
@@ -66,13 +64,11 @@ public class AboutServiceImpl implements AboutService {
         if (savedImage != null) {
             about.setImageUrl(savedImage);
         } else {
-            // şəkil seçilməyibsə əvvəlki qalsın
             if (StringUtils.hasText(dto.getImageUrl())) {
                 about.setImageUrl(dto.getImageUrl());
             }
         }
 
-        // Bu səhifə 1 dənədir və aktiv qalmalıdır
         about.setActive(true);
 
         aboutRepository.save(about);
@@ -89,14 +85,12 @@ public class AboutServiceImpl implements AboutService {
 
             String filename = UUID.randomUUID() + ext;
 
-            // app.upload.dir/about/...
             Path dir = Paths.get(uploadDir, "about");
             Files.createDirectories(dir);
 
             Path target = dir.resolve(filename);
             file.transferTo(target.toFile());
 
-            // DB-də saxlanacaq URL
             return "/uploads/about/" + filename;
 
         } catch (Exception e) {

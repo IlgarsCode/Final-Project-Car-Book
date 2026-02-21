@@ -9,10 +9,8 @@ import java.util.List;
 
 public interface BannerService {
 
-    // frontend üçün (səndə var idi)
     Banner getBanner(BannerType bannerType);
 
-    // admin üçün
     List<BannerListDto> getAll();
 
     BannerUpdateDto getByIdForUpdate(Long id);

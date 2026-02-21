@@ -24,7 +24,6 @@ public class CarPricingAdminServiceImpl implements CarPricingAdminService {
 
     @Override
     public List<CarPricing> getAllActiveRows() {
-        // admin list üçün: hamısını göstərmək daha məntiqlidir (active+inactive)
         return carPricingRepository.findAll();
     }
 
@@ -51,8 +50,6 @@ public class CarPricingAdminServiceImpl implements CarPricingAdminService {
         cp.setMonthlyLeasingRate(nz(leasing));
         cp.setFuelSurchargePerHour(fuelSurcharge);
         cp.setIsActive(true);
-
-        // default: endirim yoxdur
         cp.setHourlyDiscountActive(false);
         cp.setHourlyDiscountPercent(null);
 
@@ -92,15 +89,12 @@ public class CarPricingAdminServiceImpl implements CarPricingAdminService {
         cp.setFuelSurchargePerHour(dto.getFuelSurchargePerHour());
         cp.setIsActive(true);
 
-        // ✅ Hourly discount
         cp.setHourlyDiscountActive(Boolean.TRUE.equals(dto.getHourlyDiscountActive()));
         cp.setHourlyDiscountPercent(Boolean.TRUE.equals(dto.getHourlyDiscountActive()) ? dto.getHourlyDiscountPercent() : null);
 
-        // ✅ Daily discount
         cp.setDailyDiscountActive(Boolean.TRUE.equals(dto.getDailyDiscountActive()));
         cp.setDailyDiscountPercent(Boolean.TRUE.equals(dto.getDailyDiscountActive()) ? dto.getDailyDiscountPercent() : null);
 
-        // ✅ Leasing discount
         cp.setLeasingDiscountActive(Boolean.TRUE.equals(dto.getLeasingDiscountActive()));
         cp.setLeasingDiscountPercent(Boolean.TRUE.equals(dto.getLeasingDiscountActive()) ? dto.getLeasingDiscountPercent() : null);
 

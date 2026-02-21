@@ -34,7 +34,6 @@ public class DashboardCarReviewController {
         return "dashboard/car-reviews/list";
     }
 
-    // ✅ DETAIL PAGE
     @GetMapping("/{id}")
     public String detail(@PathVariable Long id, Model model) {
         model.addAttribute("review", carReviewAdminService.getById(id));

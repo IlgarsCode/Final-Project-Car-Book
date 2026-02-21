@@ -13,6 +13,6 @@ public interface LocationAdminService {
     void create(LocationCreateDto dto);
     void update(Long id, LocationUpdateDto dto);
 
-    void softDelete(Long id);   // isActive=false
-    void activate(Long id);     // isActive=true
+    void softDelete(Long id);
+    void activate(Long id);
 }

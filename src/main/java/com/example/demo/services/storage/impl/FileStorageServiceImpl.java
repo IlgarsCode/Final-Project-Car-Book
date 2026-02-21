@@ -80,7 +80,6 @@ public class FileStorageServiceImpl implements FileStorageService {
         }
     }
 
-    // ✅ yeni
     @Override
     public String storeUserAvatar(MultipartFile file) {
         if (file == null || file.isEmpty()) return null;

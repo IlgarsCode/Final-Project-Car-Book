@@ -44,7 +44,6 @@ public class CartAdminServiceImpl implements CartAdminService {
                 predicates.add(cb.like(cb.lower(u.get("email")), like));
             }
 
-            // ✅ C VARIANT: yalnız içində item olan cart-ları göstər
             var sq = query.subquery(Long.class);
             var ci = sq.from(com.example.demo.model.CartItem.class);
             sq.select(cb.literal(1L));
@@ -57,7 +56,6 @@ public class CartAdminServiceImpl implements CartAdminService {
         var pageable = PageRequest.of(p, s, Sort.by(Sort.Direction.DESC, "updatedAt"));
         Page<Cart> cartPage = cartRepository.findAll(spec, pageable);
 
-        // ✅ itemCount-u bulk çıxar (N+1 yox)
         List<Long> cartIds = cartPage.getContent().stream().map(Cart::getId).toList();
         Map<Long, Long> countMap = cartIds.isEmpty()
                 ? Map.of()

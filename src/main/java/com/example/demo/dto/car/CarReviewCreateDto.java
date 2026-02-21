@@ -10,7 +10,6 @@ import lombok.Setter;
 @Setter
 public class CarReviewCreateDto {
 
-
     @NotBlank
     private String message;
 

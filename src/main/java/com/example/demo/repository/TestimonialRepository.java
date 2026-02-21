@@ -14,7 +14,6 @@ public interface TestimonialRepository extends JpaRepository<Testimonial, Long> 
 
     long countByIsActiveTrue();
 
-    // ✅ ADMIN: pageable + filter
     @Query("""
         select t
         from Testimonial t

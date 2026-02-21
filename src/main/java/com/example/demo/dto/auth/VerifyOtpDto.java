@@ -14,7 +14,6 @@ public class VerifyOtpDto {
     @Email
     private String email;
 
-    // 6 rəqəm
     @NotBlank
     @Pattern(regexp = "^[0-9]{6}$", message = "OTP 6 rəqəm olmalıdır")
     private String code;

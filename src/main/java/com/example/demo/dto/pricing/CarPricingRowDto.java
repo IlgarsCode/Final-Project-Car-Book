@@ -13,19 +13,16 @@ public class CarPricingRowDto {
     private String carImageUrl;
     private String carSlug;
 
-    // effective
     private BigDecimal hourlyRate;
     private BigDecimal dailyRate;
     private BigDecimal monthlyLeasingRate;
 
-    // base
     private BigDecimal baseHourlyRate;
     private BigDecimal baseDailyRate;
     private BigDecimal baseMonthlyLeasingRate;
 
     private BigDecimal fuelSurchargePerHour;
 
-    // ✅ discounts per rate (UI badges)
     private Boolean hourlyHasDiscount;
     private BigDecimal hourlyDiscountPercent;
 

@@ -49,7 +49,6 @@ public class HomeController {
         return "index";
     }
 
-    // ✅ /axtaris
     @PostMapping("/axtaris")
     public String axtaris(@Valid @ModelAttribute("bookingForm") BookingSearchDto form,
                           BindingResult br,
@@ -61,7 +60,6 @@ public class HomeController {
             return "index";
         }
 
-        // ✅ 1) TRIP_CTX-ni session-a yaz
         TripContext ctx = (TripContext) session.getAttribute("TRIP_CTX");
         if (ctx == null) ctx = new TripContext();
 
@@ -72,7 +70,6 @@ public class HomeController {
 
         session.setAttribute("TRIP_CTX", ctx);
 
-        // ✅ 2) PricingController-in gözlədiyi query adları ilə redirect et
         return "redirect:/qiymetler?pickupLoc=" + form.getPickupLocationId()
                 + "&dropoffLoc=" + form.getDropoffLocationId()
                 + "&pickupDate=" + form.getPickupDate()

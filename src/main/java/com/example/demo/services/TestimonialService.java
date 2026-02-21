@@ -11,7 +11,6 @@ public interface TestimonialService {
 
     void create(String userEmail, TestimonialCreateDto dto);
 
-    // ✅ ADMIN
     Page<TestimonialAdminListDto> adminGet(int page, int size, String q, Boolean active);
     TestimonialAdminUpdateDto adminGetEditForm(Long id);
     void adminUpdate(Long id, TestimonialAdminUpdateDto dto);

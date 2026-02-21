@@ -16,7 +16,7 @@ public class AboutController {
     private final AboutService aboutService;
     private final BannerService bannerService;
 
-    // ✅ Yeni Azərbaycan slug
+    // Azərbaycan slug
     @GetMapping("/haqqimizda")
     public String aboutAz(Model model) {
 
@@ -31,10 +31,9 @@ public class AboutController {
         return "about";
     }
 
-    // ✅ Köhnə slug -> yeni sluga redirect (SEO üçün yaxşıdır)
+    //Köhnə slug
     @GetMapping("/about")
     public String aboutOldRedirect() {
         return "redirect:/haqqimizda";
-        // əgər 301 istəyirsənsə aşağıdakı variantı deyəcəm (controllerdən asılı olur)
     }
 }

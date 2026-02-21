@@ -38,7 +38,7 @@ public class DashboardOrderController {
         model.addAttribute("order", order);
         model.addAttribute("statuses", OrderStatus.values());
 
-        // ✅ Order-a bağlı ən son payment (yoxdursa null)
+        // Ordera bağlı ən son payment
         var paymentOpt = paymentRepository.findTopByOrder_IdOrderByIdDesc(id);
         model.addAttribute("payment", paymentOpt.orElse(null));
 

@@ -20,15 +20,12 @@ public class PasswordResetOtp {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // email ilə də işləyirik (user_id də olar, amma səndə bu daha rahatdır)
     @Column(nullable = false, length = 190)
     private String email;
 
-    // OTP-ni plain saxlamırıq
     @Column(nullable = false, length = 255)
     private String otpHash;
 
-    // OTP verify ediləndən sonra reset üçün istifadə ediləcək token
     @Column(nullable = false, unique = true, length = 80)
     private String token;
 

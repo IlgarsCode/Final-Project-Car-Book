@@ -28,7 +28,7 @@ public class CarAdminServiceImpl implements CarAdminService {
     private final CarRepository carRepository;
     private final CarPricingRepository carPricingRepository;
     private final CarReviewRepository carReviewRepository;
-    private final CarCategoryRepository carCategoryRepository;// varsa
+    private final CarCategoryRepository carCategoryRepository;
     private final FileStorageService fileStorageService;
     private final com.example.demo.repository.CarSegmentRepository carSegmentRepository;
 
@@ -68,7 +68,6 @@ public class CarAdminServiceImpl implements CarAdminService {
 
         car.setIsActive(dto.getIsActive() != null ? dto.getIsActive() : true);
 
-        // ✅ category
         if (dto.getCategoryId() != null) {
             var category = carCategoryRepository.findById(dto.getCategoryId())
                     .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Category tapılmadı"));
@@ -76,7 +75,6 @@ public class CarAdminServiceImpl implements CarAdminService {
         } else {
             car.setCategory(null);
         }
-        // ✅ segment
         if (dto.getSegmentId() != null) {
             var segment = carSegmentRepository.findById(dto.getSegmentId())
                     .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Segment tapılmadı"));
@@ -85,7 +83,6 @@ public class CarAdminServiceImpl implements CarAdminService {
             car.setSegment(null);
         }
 
-        // ✅ slug auto
         String base = SlugUtil.slugify(dto.getBrand() + " " + dto.getTitle());
         String slug = base;
         int i = 2;
@@ -94,7 +91,6 @@ public class CarAdminServiceImpl implements CarAdminService {
         }
         car.setSlug(slug);
 
-        // ✅ image upload (optional)
         if (image != null && !image.isEmpty()) {
             String path = fileStorageService.storeCarImage(image);
             if (path != null) car.setImageUrl(path);
@@ -127,7 +123,6 @@ public class CarAdminServiceImpl implements CarAdminService {
 
         car.setIsActive(dto.getIsActive() != null ? dto.getIsActive() : true);
 
-        // ✅ category
         if (dto.getCategoryId() != null) {
             var category = carCategoryRepository.findById(dto.getCategoryId())
                     .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Category tapılmadı"));
@@ -136,7 +131,6 @@ public class CarAdminServiceImpl implements CarAdminService {
             car.setCategory(null);
         }
 
-        // ✅ segment
         if (dto.getSegmentId() != null) {
             var segment = carSegmentRepository.findById(dto.getSegmentId())
                     .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Segment tapılmadı"));
@@ -146,7 +140,6 @@ public class CarAdminServiceImpl implements CarAdminService {
         }
 
 
-        // ✅ slug yenilə
         String base = SlugUtil.slugify(dto.getBrand() + " " + dto.getTitle());
         String slug = base;
         int i = 2;
@@ -155,7 +148,6 @@ public class CarAdminServiceImpl implements CarAdminService {
         }
         car.setSlug(slug);
 
-        // ✅ image dəyişmək istəyirsə
         if (image != null && !image.isEmpty()) {
             fileStorageService.deleteIfExists(car.getImageUrl());
             String path = fileStorageService.storeCarImage(image);
@@ -167,7 +159,7 @@ public class CarAdminServiceImpl implements CarAdminService {
 
     @Override
     @Transactional
-    public void delete(Long id) { // soft
+    public void delete(Long id) {
         Car car = getById(id);
         car.setIsActive(false);
         carRepository.save(car);
@@ -178,10 +170,8 @@ public class CarAdminServiceImpl implements CarAdminService {
     public void hardDelete(Long id) {
         Car car = getById(id);
 
-        // (opsional) şəkli sil
         fileStorageService.deleteIfExists(car.getImageUrl());
 
-        // DB-də FK-lar ON DELETE CASCADE olduğu üçün bu bəs edir
         carRepository.deleteById(id);
 
     }

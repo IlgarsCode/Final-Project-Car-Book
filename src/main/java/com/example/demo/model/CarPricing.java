@@ -35,7 +35,6 @@ public class CarPricing {
     @Column(nullable = false)
     private Boolean isActive = true;
 
-    // ✅ NEW: separate discounts
     @Column(nullable = false)
     private Boolean hourlyDiscountActive = false;
     private BigDecimal hourlyDiscountPercent;
@@ -47,10 +46,6 @@ public class CarPricing {
     @Column(nullable = false)
     private Boolean leasingDiscountActive = false;
     private BigDecimal leasingDiscountPercent;
-
-    // ==========================
-    // ✅ Effective rate calculators
-    // ==========================
 
     public BigDecimal getEffectiveHourlyRate() {
         return applyDiscount(safe(hourlyRate), hourlyDiscountActive, hourlyDiscountPercent);
@@ -91,7 +86,6 @@ public class CarPricing {
     private static BigDecimal applyDiscount(BigDecimal base, Boolean active, BigDecimal percent) {
         if (!hasDiscount(active, percent)) return base;
 
-        // 0..100 clamp (safety)
         BigDecimal p = percent;
         if (p.compareTo(BigDecimal.ZERO) < 0) p = BigDecimal.ZERO;
         if (p.compareTo(new BigDecimal("100")) > 0) p = new BigDecimal("100");
@@ -99,7 +93,6 @@ public class CarPricing {
         BigDecimal multiplier = BigDecimal.ONE.subtract(p.divide(new BigDecimal("100"), 6, RoundingMode.HALF_UP));
         BigDecimal out = base.multiply(multiplier);
 
-        // currency-like
         return out.setScale(2, RoundingMode.HALF_UP);
     }
 

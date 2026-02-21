@@ -24,7 +24,6 @@ public interface OrderItemRepository extends JpaRepository<OrderItem, Long> {
     """)
     List<OrderCountView> countItemsByOrderIds(@Param("orderIds") List<Long> orderIds);
 
-    // ✅ availability üçün əsas query
     @Query("""
         select (count(oi) > 0)
         from OrderItem oi

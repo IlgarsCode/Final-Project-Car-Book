@@ -17,10 +17,10 @@ public class Tag {
     private Long id;
 
     @Column(nullable = false, unique = true, length = 60)
-    private String slug;   // məsələn: "java", "travel"
+    private String slug;
 
     @Column(nullable = false, length = 60)
-    private String name;   // ekranda görünən: "Java", "Travel"
+    private String name;
 
     @Column(nullable = false)
     private Boolean isActive = true;

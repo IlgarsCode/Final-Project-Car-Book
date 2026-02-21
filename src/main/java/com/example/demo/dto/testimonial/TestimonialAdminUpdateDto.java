@@ -20,7 +20,6 @@ public class TestimonialAdminUpdateDto {
     @Size(min = 10, max = 500)
     private String comment;
 
-    // admin istəsə dəyişə bilsin (boş buraxsa köhnə qalsın)
     @Size(max = 500)
     private String photoUrl;
 

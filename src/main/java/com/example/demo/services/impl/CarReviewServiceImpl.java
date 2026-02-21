@@ -25,7 +25,7 @@ public class CarReviewServiceImpl implements CarReviewService {
 
     private final CarRepository carRepository;
     private final CarReviewRepository carReviewRepository;
-    private final UserRepository userRepository; // ✅ əlavə olundu
+    private final UserRepository userRepository;
 
     @Override
     public void create(String carSlug, CarReviewCreateDto form) {
@@ -55,7 +55,6 @@ public class CarReviewServiceImpl implements CarReviewService {
         r.setFullName(fullName);
         r.setEmail(u.getEmail());
 
-        // ✅ User-də photoUrl var, ona uyğun yazırıq
         r.setPhotoUrl(u.getPhotoUrl());
 
         r.setMessage(form.getMessage() == null ? "" : form.getMessage().trim());

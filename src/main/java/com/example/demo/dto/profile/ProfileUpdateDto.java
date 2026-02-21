@@ -18,7 +18,6 @@ public class ProfileUpdateDto {
     @Size(min = 3, max = 60)
     private String fullName;
 
-    // istəsən @Pattern ilə daha sərt edə bilərsən
     @Size(max = 40)
     private String phone;
 

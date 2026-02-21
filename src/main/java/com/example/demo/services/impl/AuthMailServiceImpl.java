@@ -19,8 +19,6 @@ public class AuthMailServiceImpl implements AuthMailService {
         try {
             SimpleMailMessage msg = new SimpleMailMessage();
             msg.setTo(toEmail);
-            // from boş qalsa da olur, amma gmail username yazmaq daha stabil olur
-            // msg.setFrom("ilgartest77@gmail.com");
 
             msg.setSubject("Password Reset OTP");
             msg.setText(

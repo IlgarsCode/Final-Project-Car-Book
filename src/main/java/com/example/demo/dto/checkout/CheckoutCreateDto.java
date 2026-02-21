@@ -25,6 +25,6 @@ public class CheckoutCreateDto {
     @FutureOrPresent
     private LocalDate dropoffDate;
 
-    private String pickupTime;   // "HH:mm"
-    private String dropoffTime;  // "HH:mm"
+    private String pickupTime;
+    private String dropoffTime;
 }

@@ -23,7 +23,6 @@ public interface OrderRepository extends JpaRepository<Order, Long>, JpaSpecific
     @EntityGraph(attributePaths = {"user", "items", "items.car"})
     Optional<Order> findWithItemsById(Long id);
 
-    // ✅ SƏNƏ LAZIM OLAN: userId + userOrderNo ilə detail (items-larla)
     @EntityGraph(attributePaths = {"items", "items.car"})
     Optional<Order> findWithItemsByUser_IdAndUserOrderNo(Long userId, Long userOrderNo);
 

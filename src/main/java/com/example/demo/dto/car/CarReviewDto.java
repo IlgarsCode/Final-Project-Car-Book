@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 public class CarReviewDto {
     private Long id;
     private String fullName;
-    private String email;       // ✅ əlavə et
+    private String email;
     private String message;
     private Integer rating;
     private String photoUrl;

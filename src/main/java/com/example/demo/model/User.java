@@ -22,13 +22,11 @@ public class User {
 
     private String fullName;
 
-    // ✅ yeni
     private String phone;
 
     @Column(columnDefinition = "TEXT")
     private String bio;
 
-    // ✅ yeni (məs: /uploads/avatars/xxx.png)
     private String photoUrl;
 
     @Column(nullable = false)

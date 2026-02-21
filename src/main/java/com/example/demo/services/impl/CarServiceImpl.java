@@ -146,7 +146,6 @@ public class CarServiceImpl implements CarService {
 
             surcharge = safe(cp.getFuelSurchargePerHour());
 
-            // ✅ seçilmiş rateType-ə görə endirim
             switch (rateType) {
                 case HOURLY -> {
                     hasDiscount = Boolean.TRUE.equals(cp.getHourlyDiscountActive())
@@ -300,7 +299,6 @@ public class CarServiceImpl implements CarService {
     @Override
     public Page<CarListDto> getActiveCarsPage(String categorySlug, String segmentSlug, int page, int size) {
 
-        // ✅ Car entity-də createdAt yoxdur deyə "id" ilə sort edirik
         var pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id"));
 
         Page<Car> carsPage = carRepository.findActiveCars(categorySlug, segmentSlug, pageable);

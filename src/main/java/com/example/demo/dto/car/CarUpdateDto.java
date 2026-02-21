@@ -43,5 +43,4 @@ public class CarUpdateDto {
 
     private Long categoryId;
 
-    // şəkil ayrıca MultipartFile gələcək
 }

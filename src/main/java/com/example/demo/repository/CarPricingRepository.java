@@ -10,14 +10,11 @@ import java.util.Optional;
 
 public interface CarPricingRepository extends JpaRepository<CarPricing, Long> {
 
-    // ✅ Admin sync üçün (isActive filter YOX)
     Optional<CarPricing> findByCar_Id(Long carId);
 
     boolean existsByCar_Id(Long carId);
     void deleteByCar_Id(Long carId);
 
-
-    // Pricing page üçün (hamısı)
     @Query("""
         select cp
         from CarPricing cp
@@ -27,7 +24,6 @@ public interface CarPricingRepository extends JpaRepository<CarPricing, Long> {
     """)
     List<CarPricing> findActivePricingRows();
 
-    // Pricing page filter üçün (category)
     @Query("""
         select cp
         from CarPricing cp
@@ -40,7 +36,6 @@ public interface CarPricingRepository extends JpaRepository<CarPricing, Long> {
     """)
     List<CarPricing> findActivePricingRowsByCategorySlug(@Param("categorySlug") String categorySlug);
 
-    // ✅ Car list / related üçün bulk pricing (N+1 olmasın)
     @Query("""
         select cp
         from CarPricing cp
@@ -51,7 +46,6 @@ public interface CarPricingRepository extends JpaRepository<CarPricing, Long> {
     """)
     List<CarPricing> findActiveByCarIds(@Param("carIds") List<Long> carIds);
 
-    // ✅ Car detail üçün slug ilə pricing
     @Query("""
         select cp
         from CarPricing cp
@@ -62,7 +56,6 @@ public interface CarPricingRepository extends JpaRepository<CarPricing, Long> {
     """)
     Optional<CarPricing> findActiveByCarSlug(@Param("slug") String slug);
 
-    // ✅ Cart-a add edəndə carId ilə pricing
     @Query("""
         select cp
         from CarPricing cp

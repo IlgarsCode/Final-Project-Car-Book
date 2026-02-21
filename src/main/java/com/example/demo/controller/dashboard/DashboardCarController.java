@@ -76,12 +76,12 @@ public class DashboardCarController {
 
         dto.setCategoryId(car.getCategory() != null ? car.getCategory().getId() : null);
 
-        // ✅ SegmentId doldur (Car-da segment relation varsa)
+        // SegmentId doldur
         dto.setSegmentId(car.getSegment() != null ? car.getSegment().getId() : null);
 
         model.addAttribute("categories", carCategoryRepository.findAll());
 
-        // ✅ segments list göndər
+        // segments list göndər
         model.addAttribute("segments", carSegmentRepository.findAll());
 
         model.addAttribute("carId", id);

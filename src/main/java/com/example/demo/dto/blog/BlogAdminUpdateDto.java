@@ -17,9 +17,7 @@ public class BlogAdminUpdateDto {
     @NotBlank(message = "Content boş ola bilməz")
     private String content;
 
-    // "java, spring, travel"
     private String tags;
 
-    // publish/unpublish
     private Boolean isActive;
 }

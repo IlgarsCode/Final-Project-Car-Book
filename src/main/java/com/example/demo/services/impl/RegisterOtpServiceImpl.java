@@ -55,13 +55,11 @@ public class RegisterOtpServiceImpl implements RegisterOtpService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Bu email artıq mövcuddur");
         }
 
-        // köhnə exp olmuşları təmizlə (opsional amma yaxşıdır)
         registerOtpRepository.deleteByExpiresAtBefore(LocalDateTime.now());
 
         String otp = genOtp6();
         String otpHash = passwordEncoder.encode(otp);
 
-        // pending password hash (user yaradanda hazır olacaq)
         String pendingPasswordHash = passwordEncoder.encode(dto.getPassword());
 
         LocalDateTime expiresAt = LocalDateTime.now().plusMinutes(OTP_TTL_MINUTES);
@@ -73,7 +71,6 @@ public class RegisterOtpServiceImpl implements RegisterOtpService {
             record.setEmail(email);
         }
 
-        // hər request yeni OTP yazır (sadə və problemsiz)
         record.setOtpHash(otpHash);
         record.setExpiresAt(expiresAt);
         record.setAttempts(0);
@@ -87,7 +84,6 @@ public class RegisterOtpServiceImpl implements RegisterOtpService {
 
         registerOtpRepository.save(record);
 
-        // mail göndər
         String subject = "CarBook - Qeydiyyat OTP";
         String text = """
                 Salam!
@@ -133,9 +129,7 @@ public class RegisterOtpServiceImpl implements RegisterOtpService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "OTP yanlışdır");
         }
 
-        // OTP doğru -> user yarat
         if (userRepository.existsByEmailIgnoreCase(email)) {
-            // paralel request-lərdə ehtiyat
             otp.setUsed(true);
             otp.setUsedAt(LocalDateTime.now());
             otp.setVerifiedAt(LocalDateTime.now());

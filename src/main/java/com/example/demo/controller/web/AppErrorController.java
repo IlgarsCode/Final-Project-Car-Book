@@ -10,13 +10,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @Controller
 public class AppErrorController implements ErrorController {
 
-    // ✅ 403 üçün handler buraya forward edəcək
     @GetMapping("/error/403-view")
     public String forbidden() {
         return "error/403";
     }
 
-    // ✅ 404 / 500 buradan idarə olunacaq
     @RequestMapping("/error")
     public String handleError(HttpServletRequest request) {
 

@@ -10,7 +10,6 @@ public interface CartRepository extends JpaRepository<Cart, Long>, JpaSpecificat
 
     Optional<Cart> findByUser_Id(Long userId);
 
-    // detail üçün items + car da gəlsin (admin detail üçün)
     @Query("""
         select distinct c
         from Cart c

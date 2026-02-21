@@ -12,5 +12,5 @@ public interface OrderAdminService {
 
     void updateStatus(Long orderId, OrderStatus status);
 
-    void hardDelete(Long orderId); // istəsən aç
+    void hardDelete(Long orderId);
 }
