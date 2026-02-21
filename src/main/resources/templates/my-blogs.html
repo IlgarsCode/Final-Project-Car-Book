@@ -6,6 +6,22 @@
 <head>
   <meta charset="UTF-8">
   <title>Bloqlarım</title>
+
+  <style>
+    /* Blog kart şəkli: daha normal ölçü */
+    .blog-entry .block-20.img{
+      height: 180px;
+      background-size: cover;
+      background-position: center;
+      border-radius: 6px;
+    }
+
+    @media (max-width: 768px){
+      .blog-entry .block-20.img{
+        height: 150px;
+      }
+    }
+  </style>
 </head>
 <body>
 <div layout:fragment="content">
@@ -34,7 +50,6 @@
 
       <div class="d-flex justify-content-between align-items-center mb-4">
         <h3 class="mb-0">Yazdıqlarım</h3>
-        <!-- ✅ /bloq/yeni -->
         <a class="btn btn-primary" th:href="@{/bloq/yeni}">Yeni yarat</a>
       </div>
 
@@ -46,7 +61,6 @@
         <div class="col-md-4 d-flex ftco-animate mb-4" th:each="b : ${blogs}">
           <div class="blog-entry justify-content-end w-100">
 
-            <!-- ✅ /bloq/{id} -->
             <a th:href="@{'/bloq/' + ${b.id}}"
                class="block-20 img"
                th:style="'background-image: url(' + ${b.imageUrl} + ');'"></a>
@@ -69,7 +83,6 @@
                   Oxu <span class="icon-long-arrow-right"></span>
                 </a>
 
-                <!-- ✅ /menim-bloqlarim/{id}/sil -->
               <form th:action="@{'/menim-bloqlarim/' + ${b.id} + '/sil'}"
                     method="post"
                     style="display:inline;"

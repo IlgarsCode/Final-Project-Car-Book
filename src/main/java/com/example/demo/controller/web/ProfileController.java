@@ -59,7 +59,7 @@ public class ProfileController {
                                 HttpServletResponse response) {
 
         String currentEmail = auth.getName();
-        var oldEmail = currentEmail.toLowerCase();
+        String oldEmail = currentEmail.toLowerCase();
 
         if (br.hasErrors()) {
             var me = profileService.getMe(currentEmail);
@@ -73,7 +73,10 @@ public class ProfileController {
         String newEmail = form.getEmail().trim().toLowerCase();
         if (!newEmail.equals(oldEmail)) {
             new SecurityContextLogoutHandler().logout(request, response, auth);
-            return "redirect:/auth/login?logout=true";
+
+            // ✅ ƏVVƏL: /auth/login?logout=true
+            // ✅ İNDİ: /giris?logout=true  (səndə login AZ route necədirsə onu yaz)
+            return "redirect:/giris?logout=true";
         }
 
         return "redirect:/profil?ok=1";

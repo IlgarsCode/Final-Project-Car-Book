@@ -433,32 +433,33 @@
                 </div>
             </div>
 
-            <div class="row">
+            <!-- ✅ Boşdursa mesaj göstər -->
+            <div class="row" th:if="${testimonials == null or #lists.isEmpty(testimonials)}">
+                <div class="col-md-12 text-center">
+                    <div class="alert alert-info mb-0">Hələ rəy yoxdur.</div>
+                </div>
+            </div>
+
+            <!-- ✅ Dolu olanda carousel göstər -->
+            <div class="row" th:if="${testimonials != null and !#lists.isEmpty(testimonials)}">
                 <div class="col-md-12">
 
-                    <!-- ƏSAS YER -->
                     <div class="carousel-testimony owl-carousel">
 
-                        <div class="item"
-                             th:each="t : ${testimonials}">
-
+                        <div class="item" th:each="t : ${testimonials}" th:if="${t != null}">
                             <div class="testimony-wrap rounded text-center py-4 pb-5">
 
+                                <!-- ✅ PROFİL ŞƏKLİ (AVATAR) -->
+                                <div class="user-img mb-4"
+                                     th:style="|background-image:url('${t.photoUrl != null ? t.photoUrl : '/images/person_1.jpg'}')|">
+                                </div>
+
                                 <div class="text pt-4">
-                                    <p class="mb-4"
-                                       th:text="${t.comment}">
-                                        Rəy mətni
-                                    </p>
+                                    <p class="mb-4" th:text="${t.comment}">Rəy mətni</p>
 
-                                    <p class="name"
-                                       th:text="${t.fullName}">
-                                        Ad Soyad
-                                    </p>
+                                    <p class="name" th:text="${t.fullName}">Ad Soyad</p>
 
-                                    <span class="position"
-                                          th:text="${t.position}">
-                                        Vəzifə
-                                    </span>
+                                    <span class="position" th:text="${t.position}">Vəzifə</span>
                                 </div>
 
                             </div>
@@ -472,7 +473,6 @@
 
         </div>
     </section>
-
     <section class="ftco-section">
         <div class="container">
             <div class="row justify-content-center mb-5">
