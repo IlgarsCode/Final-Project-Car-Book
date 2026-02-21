@@ -25,14 +25,16 @@
                 <b>Ödəniş statusu:</b> <span th:text="${payment.status}">PROCESSING</span>
             </div>
 
+            <!-- ✅ order detail: /sifarislerim/{no}  (no = userOrderNo) -->
             <a class="btn btn-primary"
-               th:if="${orderId != null}"
-               th:href="@{/sifarislerim/{id}(id=${orderId})}">
+               th:if="${orderNo != null}"
+               th:href="@{/sifarislerim/{no}(no=${orderNo})}">
                 Sifarişi göstər
             </a>
 
+            <!-- ✅ order list: /sifarislerim -->
             <a class="btn btn-outline-secondary ml-2"
-               th:if="${orderId == null}"
+               th:if="${orderNo == null}"
                th:href="@{/sifarislerim}">
                 Sifarişlərim
             </a>

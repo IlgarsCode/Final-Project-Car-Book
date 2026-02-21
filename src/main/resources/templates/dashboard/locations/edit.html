@@ -1,110 +1,132 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org"
+<html lang="az"
+      xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{dashboard/layout}">
+
 <head>
-    <title>Orders</title>
+    <title>Məkan Redaktə</title>
+
+    <th:block layout:fragment="css">
+        <style>
+            .form-card{
+                border-radius:16px;
+                box-shadow:0 12px 34px rgba(0,0,0,.08);
+                border:1px solid rgba(0,0,0,.06);
+                overflow:hidden;
+                background:#fff;
+            }
+            .form-head{
+                padding:16px 18px;
+                border-bottom:1px solid rgba(0,0,0,.06);
+                background:rgba(0,0,0,.02);
+            }
+            .form-body{ padding:18px; }
+            .req{ color:#dc3545; font-weight:700; }
+        </style>
+    </th:block>
 </head>
+
 <body>
+
 <div layout:fragment="content">
 
-    <h1 class="h3 mb-3 text-gray-800">Orders</h1>
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">Məkan Redaktə</h1>
 
-    <form class="card shadow p-3 mb-4" th:action="@{/dashboard/orders}" method="get">
-        <div class="form-row">
-            <div class="form-group col-md-3">
-                <label>Status</label>
-                <select class="form-control" name="status">
-                    <option value="">All</option>
-                    <option th:each="s : ${statuses}"
-                            th:value="${s}"
-                            th:text="${s}"
-                            th:selected="${filter != null and filter.status != null and filter.status.name() == s.name()}">
-                    </option>
-                </select>
-            </div>
+        <a class="btn btn-sm btn-outline-secondary" th:href="@{/dashboard/locations}">
+            <i class="fas fa-arrow-left"></i> Geri
+        </a>
+    </div>
 
-            <div class="form-group col-md-3">
-                <label>From (date)</label>
-                <input type="date" class="form-control" name="from"
-                       th:value="${filter != null ? filter.from : ''}">
-            </div>
+    <div class="row">
+        <div class="col-lg-8 col-xl-7">
 
-            <div class="form-group col-md-3">
-                <label>To (date)</label>
-                <input type="date" class="form-control" name="to"
-                       th:value="${filter != null ? filter.to : ''}">
-            </div>
+            <div class="form-card">
 
-            <div class="form-group col-md-3">
-                <label>Search (email / pickup / dropoff)</label>
-                <input class="form-control" name="q" th:value="${filter != null ? filter.q : ''}">
-            </div>
-        </div>
+                <div class="form-head d-flex align-items-center justify-content-between">
+                    <div>
+                        <div class="font-weight-bold">Məlumatları yenilə</div>
+                        <div class="text-muted small">
+                            ID: <span th:text="${id}">0</span>
+                        </div>
+                    </div>
+                    <i class="fas fa-map-marker-alt text-primary"></i>
+                </div>
 
-        <div class="d-flex gap-2">
-            <button class="btn btn-primary" type="submit">Filter</button>
-            <a class="btn btn-secondary" th:href="@{/dashboard/orders}">Reset</a>
-        </div>
-    </form>
+                <div class="form-body">
 
-    <div class="card shadow">
-        <div class="card-body table-responsive">
+                    <form method="post"
+                          th:action="@{/dashboard/locations/edit/{id}(id=${id})}"
+                          th:object="${editForm}">
 
-            <div class="text-muted" th:if="${page == null or page.totalElements == 0}">
-                Order yoxdur.
-            </div>
+                        <!-- CSRF -->
+                        <input type="hidden" th:if="${_csrf != null}"
+                               th:name="${_csrf.parameterName}"
+                               th:value="${_csrf.token}"/>
 
-            <table class="table table-bordered table-hover" th:if="${page != null and page.totalElements > 0}">
-                <thead>
-                <tr>
-                    <th>#</th>
-                    <th>ID</th>
-                    <th>Status</th>
-                    <th>User</th>
-                    <th>Pickup</th>
-                    <th>Dropoff</th>
-                    <th>Items</th>
-                    <th>Total</th>
-                    <th>Created</th>
-                    <th>Actions</th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr th:each="o, i : ${page.content}">
-                    <td th:text="${i.count}">1</td>
-                    <td th:text="${o.id}">1</td>
-                    <td th:text="${o.status}">PENDING</td>
-                    <td th:text="${o.userEmail}">mail</td>
-                    <td th:text="${o.pickupLocation}">pickup</td>
-                    <td th:text="${o.dropoffLocation}">drop</td>
-                    <td th:text="${o.itemCount}">0</td>
-                    <td th:text="${o.totalAmount}">0</td>
-                    <td th:text="${o.createdAt != null ? #temporals.format(o.createdAt,'yyyy-MM-dd HH:mm') : '-'}">-</td>
-                    <td>
-                        <a class="btn btn-sm btn-info" th:href="@{/dashboard/orders/{id}(id=${o.id})}">Detail</a>
-                    </td>
-                </tr>
-                </tbody>
-            </table>
+                        <!-- ✅ GLOBAL ERRORLAR (mütləq formun içində olmalıdır) -->
+                        <div class="alert alert-danger"
+                             th:if="${#fields.hasGlobalErrors()}"
+                             role="alert">
+                            <div th:each="e : ${#fields.globalErrors()}" th:text="${e}">Xəta</div>
+                        </div>
 
-            <div class="d-flex justify-content-between align-items-center mt-3"
-                 th:if="${page != null and page.totalPages > 1}">
-                <div class="text-muted">Total: <span th:text="${page.totalElements}">0</span></div>
-                <div class="d-flex gap-2">
-                    <a class="btn btn-sm btn-outline-primary"
-                       th:if="${page.hasPrevious()}"
-                       th:href="@{/dashboard/orders(page=${page.number-1},size=${pageSize},status=${filter.status},from=${filter.from},to=${filter.to},q=${filter.q})}">
-                        Prev
-                    </a>
-                    <span class="text-muted">
-            Page <span th:text="${page.number + 1}">1</span> / <span th:text="${page.totalPages}">1</span>
-          </span>
-                    <a class="btn btn-sm btn-outline-primary"
-                       th:if="${page.hasNext()}"
-                       th:href="@{/dashboard/orders(page=${page.number+1},size=${pageSize},status=${filter.status},from=${filter.from},to=${filter.to},q=${filter.q})}">
-                        Next
-                    </a>
+                        <div class="form-group">
+                            <label>Ad <span class="req">*</span></label>
+                            <input type="text"
+                                   class="form-control"
+                                   th:field="*{name}"
+                                   placeholder="Məs: Bakı Hava Limanı">
+                            <small class="text-danger"
+                                   th:if="${#fields.hasErrors('name')}"
+                                   th:errors="*{name}">Name error</small>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Sıralama (Sort Order) <span class="req">*</span></label>
+                            <input type="number"
+                                   class="form-control"
+                                   th:field="*{sortOrder}"
+                                   min="0" step="1"
+                                   placeholder="0">
+                            <small class="text-danger"
+                                   th:if="${#fields.hasErrors('sortOrder')}"
+                                   th:errors="*{sortOrder}">Sort error</small>
+                            <small class="text-muted">
+                                Kiçik rəqəm = daha yuxarıda görünəcək.
+                            </small>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="custom-control custom-switch">
+                                <input type="checkbox"
+                                       class="custom-control-input"
+                                       id="isActiveSwitch"
+                                       th:field="*{isActive}">
+                                <label class="custom-control-label" for="isActiveSwitch">
+                                    Aktiv
+                                </label>
+                            </div>
+                            <small class="text-muted">
+                                Aktiv deyilsə, istifadəçi tərəfdə göstərilməyəcək.
+                            </small>
+                        </div>
+
+                        <hr>
+
+                        <div class="d-flex" style="gap:10px; flex-wrap:wrap;">
+                            <button class="btn btn-primary" type="submit">
+                                <i class="fas fa-save"></i> Yadda saxla
+                            </button>
+
+                            <a class="btn btn-outline-secondary" th:href="@{/dashboard/locations}">
+                                İmtina
+                            </a>
+                        </div>
+
+                    </form>
+
                 </div>
             </div>
 
@@ -112,5 +134,8 @@
     </div>
 
 </div>
+
+<th:block layout:fragment="js"></th:block>
+
 </body>
 </html>

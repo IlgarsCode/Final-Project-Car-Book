@@ -12,6 +12,8 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
+
 @Controller
 @RequiredArgsConstructor
 @RequestMapping("/odenis")
@@ -78,12 +80,13 @@ public class PaymentController {
 
         var p = paymentService.pollAndMaybeFinalize(user.getUsername(), paymentId);
 
-        Long orderId = (p.getOrder() != null ? p.getOrder().getId() : null);
+        // IMPORTANT: /sifarislerim/{no} userOrderNo gözləyir
+        Long orderNo = (p.getOrder() != null ? p.getOrder().getUserOrderNo() : null);
 
-        return java.util.Map.of(
+        return Map.of(
                 "id", p.getId(),
                 "status", p.getStatus().name(),
-                "orderId", orderId
+                "orderNo", orderNo
         );
     }
 
@@ -95,11 +98,13 @@ public class PaymentController {
         var payment = paymentService.getPaymentForUser(user.getUsername(), paymentId);
 
         boolean success = payment.getStatus() == PaymentStatus.SUCCEEDED;
-        Long orderId = payment.getOrder() != null ? payment.getOrder().getId() : null;
+
+        // IMPORTANT: /sifarislerim/{no} userOrderNo gözləyir
+        Long orderNo = payment.getOrder() != null ? payment.getOrder().getUserOrderNo() : null;
 
         model.addAttribute("payment", payment);
         model.addAttribute("success", success);
-        model.addAttribute("orderId", orderId);
+        model.addAttribute("orderNo", orderNo);
 
         return "payment/result";
     }

@@ -21,11 +21,11 @@ public class OrderController {
         return "orders";
     }
 
-    @GetMapping("/{no}")
+    @GetMapping("/{userOrderNo}")
     public String orderDetail(@AuthenticationPrincipal UserDetails user,
-                              @PathVariable("no") Long no,
+                              @PathVariable Long userOrderNo,
                               Model model) {
-        model.addAttribute("order", orderService.getMyOrderDetail(user.getUsername(), no));
+        model.addAttribute("order", orderService.getMyOrderDetail(user.getUsername(), userOrderNo));
         return "order-detail";
     }
 }

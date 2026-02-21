@@ -79,7 +79,7 @@
           <td th:text="${o.pickupLocation}">pickup</td>
           <td th:text="${o.dropoffLocation}">drop</td>
           <td th:text="${o.itemCount}">0</td>
-          <td th:text="${o.totalAmount}">0</td>
+          <td>₼<span th:text="${o.totalAmount}">0</span></td>
           <td th:text="${o.createdAt != null ? #temporals.format(o.createdAt,'yyyy-MM-dd HH:mm') : '-'}">-</td>
           <td>
             <a class="btn btn-sm btn-info" th:href="@{/dashboard/orders/{id}(id=${o.id})}">Detallar</a>

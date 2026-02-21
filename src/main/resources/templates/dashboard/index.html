@@ -61,11 +61,11 @@
                                 Bugünkü Gəlir
                             </div>
                             <div class="h5 mb-0 font-weight-bold text-gray-800">
-                                $<span th:text="${stats != null ? stats.todayRevenue : 0}">0</span>
+                                ₼<span th:text="${stats != null ? stats.todayRevenue : 0}">0</span>
                             </div>
                         </div>
                         <div class="col-auto">
-                            <i class="fas fa-dollar-sign fa-2x text-gray-300"></i>
+                            <i class="fas fa-money-bill-wave fa-2x text-gray-300"></i>
                         </div>
                     </div>
                 </div>
@@ -81,7 +81,7 @@
                                 Bu Ayın Gəliri
                             </div>
                             <div class="h5 mb-0 font-weight-bold text-gray-800">
-                                $<span th:text="${stats != null ? stats.monthRevenue : 0}">0</span>
+                                ₼<span th:text="${stats != null ? stats.monthRevenue : 0}">0</span>
                             </div>
                         </div>
                         <div class="col-auto">
@@ -210,7 +210,7 @@
                             <td th:text="${o.id}">1</td>
                             <td th:text="${o.user != null ? o.user.email : '-'}">mail</td>
                             <td><span class="badge badge-secondary" th:text="${o.status}">PENDING</span></td>
-                            <td>$<span th:text="${o.totalAmount}">0</span></td>
+                            <td>₼<span th:text="${o.totalAmount}">0</span></td>
                             <td th:text="${o.createdAt != null ? #temporals.format(o.createdAt,'yyyy-MM-dd HH:mm') : '-'}">-</td>
                             <td>
                                 <a class="btn btn-sm btn-info" th:href="@{/dashboard/orders/{id}(id=${o.id})}">Detallar</a>
@@ -251,8 +251,8 @@
                                 </a>
                             </td>
                             <td>
-                                <b>$<span th:text="${p.amount}">0</span></b>
-                                <span class="text-muted" th:text="${p.currency}">USD</span>
+                                <b>₼<span th:text="${p.amount}">0</span></b>
+                                <span class="text-muted">AZN</span>
                             </td>
                             <td th:text="${p.completedAt != null ? #temporals.format(p.completedAt,'MM-dd HH:mm') : '-'}">-</td>
                         </tr>
@@ -293,7 +293,7 @@
                     data: {
                         labels: revLabels,
                         datasets: [{
-                            label: 'Gəlir',
+                            label: 'Gəlir (₼)',
                             data: revValues,
                             fill: true,
                             tension: 0.35,

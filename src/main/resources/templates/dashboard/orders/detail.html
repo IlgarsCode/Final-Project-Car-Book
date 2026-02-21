@@ -30,7 +30,7 @@
 
       <hr/>
 
-      <div><b>Cəmi:</b> <span th:text="${order.totalAmount}">0</span></div>
+      <div><b>Cəmi:</b> ₼<span th:text="${order.totalAmount}">0</span></div>
       <div><b>Yaradıldı:</b>
         <span th:text="${order.createdAt != null ? #temporals.format(order.createdAt,'yyyy-MM-dd HH:mm') : '-'}">-</span>
       </div>
@@ -67,8 +67,8 @@
 
             <div class="mt-2">
               <b>Məbləğ:</b>
-              <span th:text="${payment.amount}">0</span>
-              <span th:text="${payment.currency}">USD</span>
+              ₼<span th:text="${payment.amount}">0</span>
+              <span>AZN</span>
             </div>
 
             <div class="mt-2">
@@ -147,11 +147,11 @@
             <div class="text-muted" th:text="${it.carImageUrlSnapshot}">img</div>
           </td>
           <td th:text="${it.rateType}">DAILY</td>
-          <td th:text="${it.unitPriceSnapshot}">0</td>
-          <td th:text="${it.fuelSurchargePerHourSnapshot}">0</td>
+          <td>₼<span th:text="${it.unitPriceSnapshot}">0</span></td>
+          <td>₼<span th:text="${it.fuelSurchargePerHourSnapshot}">0</span></td>
           <td th:text="${it.unitCountSnapshot}">1</td>
           <td th:text="${it.quantity}">1</td>
-          <td th:text="${it.lineTotal}">0</td>
+          <td>₼<span th:text="${it.lineTotal}">0</span></td>
         </tr>
         </tbody>
       </table>

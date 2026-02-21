@@ -6,6 +6,89 @@
 <head>
     <meta charset="UTF-8">
     <title th:text="${car.title}">Avtomobil detalları</title>
+
+    <style>
+        /* ==== CAR DETAIL: OXUNAQLILIQ OVERRIDE ==== */
+        .ftco-car-details{
+          color:#111; /* ümumi mətn */
+        }
+
+        /* Bu blok car-details içində çox şeyi tünd edir */
+        .ftco-car-details .car-details,
+        .ftco-car-details .car-details .text,
+        .ftco-car-details .car-details .text h1,
+        .ftco-car-details .car-details .text h2,
+        .ftco-car-details .car-details .text h3,
+        .ftco-car-details .car-details .text h4,
+        .ftco-car-details .car-details .text h5,
+        .ftco-car-details .car-details .text p,
+        .ftco-car-details .car-details .text span,
+        .ftco-car-details .car-details .text small,
+        .ftco-car-details .car-details .text label,
+        .ftco-car-details .car-details .text li{
+          color:#111 !important;
+        }
+
+        /* Açıq boz yerlər oxunaqlı boz olsun */
+        .ftco-car-details .text-muted{
+          color:#6c757d !important;
+        }
+
+        /* Linklər görünən olsun */
+        .ftco-car-details a{
+          color:#0d6efd !important;
+          text-decoration:none;
+        }
+        .ftco-car-details a:hover{
+          text-decoration:underline;
+        }
+
+        /* Subheading solğun olmasın */
+        .ftco-car-details .subheading{
+          color:#0b7285 !important; /* fərqli rəng istəyirdin deyə */
+          font-weight:700;
+          letter-spacing:.3px;
+        }
+
+        /* Qiymət hissəsi vurğulu */
+        .ftco-car-details .price{
+          color:#111 !important;
+          font-weight:800;
+        }
+        .ftco-car-details .price span:first-child{
+          color:#1089ff !important; /* ₼ mavi */
+          font-weight:900;
+        }
+
+        /* Təsvir mətnin (desc-text) daha tünd */
+        .ftco-car-details .desc-text{
+          color:#111 !important;
+          font-size:16.5px;
+          line-height:1.85;
+        }
+
+        /* Tab card içindəki mətnlər */
+        .ftco-car-details .car-tab-card .card-head h4{
+          color:#111 !important;
+        }
+        .ftco-car-details .car-tab-card .card-body{
+          color:#111 !important;
+        }
+
+        /* Feature list item text */
+        .ftco-car-details .feature-list li span{
+          color:#111 !important;
+        }
+
+        /* Review hissəsində yazılar */
+        .ftco-car-details .review-name,
+        .ftco-car-details .review-msg{
+          color:#111 !important;
+        }
+        .ftco-car-details .review-date{
+          color:#6c757d !important;
+        }
+    </style>
 </head>
 <body>
 <div layout:fragment="content">
