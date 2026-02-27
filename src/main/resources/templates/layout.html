@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="az"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <title>CarBook - Avtomobil icarəsi</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <link href="https://fonts.googleapis.com/css?family=Poppins:200,300,400,500,600,700,800&display=swap" rel="stylesheet">
+
+    <!-- CSS (MÜTLƏQ th:href) -->
+    <link rel="stylesheet" th:href="@{/css/open-iconic-bootstrap.min.css}">
+    <link rel="stylesheet" th:href="@{/css/animate.css}">
+
+    <link rel="stylesheet" th:href="@{/css/owl.carousel.min.css}">
+    <link rel="stylesheet" th:href="@{/css/owl.theme.default.min.css}">
+    <link rel="stylesheet" th:href="@{/css/magnific-popup.css}">
+
+    <link rel="stylesheet" th:href="@{/css/aos.css}">
+    <link rel="stylesheet" th:href="@{/css/ionicons.min.css}">
+
+    <link rel="stylesheet" th:href="@{/css/bootstrap-datepicker.css}">
+    <link rel="stylesheet" th:href="@{/css/jquery.timepicker.css}">
+
+    <link rel="stylesheet" th:href="@{/css/flaticon.css}">
+    <link rel="stylesheet" th:href="@{/css/icomoon.css}">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+
+<body>
+
+<nav class="navbar navbar-expand-lg navbar-dark ftco_navbar bg-dark ftco-navbar-light" id="ftco-navbar">
+    <div class="container">
+        <a class="navbar-brand" th:href="@{/}">Car<span>Book</span></a>
+
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#ftco-nav"
+                aria-controls="ftco-nav" aria-expanded="false" aria-label="Naviqasiya menyusu">
+            <span class="oi oi-menu"></span> Menyu
+        </button>
+
+        <div class="collapse navbar-collapse" id="ftco-nav">
+            <ul class="navbar-nav ml-auto">
+
+                <li class="nav-item"><a th:href="@{/}" class="nav-link">Ana səhifə</a></li>
+                <li class="nav-item">
+                    <a th:href="@{/haqqimizda}" class="nav-link">Haqqımızda</a>
+                </li>
+                <li class="nav-item">
+                    <a th:href="@{/xidmetler}" class="nav-link">Xidmətlər</a>
+                </li>
+                <li class="nav-item"><a th:href="@{/qiymetler}" class="nav-link">Qiymətlər</a></li>
+                <li class="nav-item"><a th:href="@{/avtomobiller}" class="nav-link">Avtomobillər</a></li>
+
+                <li class="nav-item"><a th:href="@{/bloq}" class="nav-link">Bloq</a></li>
+                <li class="nav-item">
+                    <a th:href="@{/reyler}" class="nav-link">Rəylər</a>
+                </li>
+                <li class="nav-item">
+                    <a th:href="@{/elaqe}" class="nav-link">Əlaqə</a>
+                </li>
+
+                <!-- ✅ Profil yalnız logged-in -->
+                <li class="nav-item" sec:authorize="isAuthenticated()">
+                    <a th:href="@{/profil}" class="nav-link">Profil</a>
+                </li>
+
+                <!-- ✅ Giriş/Qeydiyyat yalnız anonymous -->
+                <li class="nav-item" sec:authorize="isAnonymous()">
+                    <a th:href="@{/giris}" class="nav-link">Giriş</a>
+                </li>
+                <li class="nav-item" sec:authorize="isAnonymous()">
+                    <a th:href="@{/qeydiyyat}" class="nav-link">Qeydiyyat</a>
+                </li>
+
+                <!-- ✅ Digərləri dropdown (Logout-dan əvvəl) -->
+                <li class="nav-item dropdown" sec:authorize="isAuthenticated()">
+                    <a class="nav-link dropdown-toggle"
+                       href="#"
+                       id="othersDropdown"
+                       role="button"
+                       data-toggle="dropdown"
+                       aria-haspopup="true"
+                       aria-expanded="false">
+                        Digərləri
+                    </a>
+
+                    <div class="dropdown-menu dropdown-menu-right" aria-labelledby="othersDropdown">
+
+                        <!-- My Orders: yalnız USER -->
+                        <a class="dropdown-item" th:href="@{/sifarislerim}" sec:authorize="hasRole('USER')">
+                            Sifarişlərim
+                        </a>
+
+                        <!-- My Blogs: yalnız USER -->
+                        <a class="dropdown-item" th:href="@{/my-blogs}" sec:authorize="hasRole('USER')">
+                            Bloqlarım
+                        </a>
+
+                        <!-- Dashboard: yalnız ADMIN -->
+                        <a class="dropdown-item" th:href="@{/dashboard}" sec:authorize="hasRole('ADMIN')">
+                            Admin panel
+                        </a>
+
+                    </div>
+                </li>
+
+                <!-- ✅ Çıxış (POST) -->
+                <li class="nav-item" sec:authorize="isAuthenticated()">
+                    <form th:action="@{/cixis}" method="post" style="margin:0;">
+                        <button type="submit" class="nav-link btn btn-link"
+                                style="padding-top:.9rem; padding-bottom:.9rem; color: rgba(255,255,255,.7); text-decoration:none;">
+                            Çıxış
+                        </button>
+                    </form>
+                </li>
+
+            </ul>
+        </div>
+    </div>
+</nav>
+<!-- END nav -->
+
+<div layout:fragment="content"></div>
+
+<footer class="ftco-footer ftco-bg-dark ftco-section">
+    <div class="container">
+        <div class="row mb-5">
+            <div class="col-md">
+                <div class="ftco-footer-widget mb-4">
+                    <h2 class="ftco-heading-2"><a href="#" class="logo">Car<span>book</span></a></h2>
+                    <p>
+                        Biz, sürətli və rahat avtomobil icarəsi təcrübəsi təqdim edirik.
+                        Ehtiyacınıza uyğun avtomobili seçin və dərhal yola çıxın.
+                    </p>
+                    <ul class="ftco-footer-social list-unstyled float-md-left float-lft mt-5">
+                        <li class="ftco-animate"><a href="#"><span class="icon-twitter"></span></a></li>
+                        <li class="ftco-animate"><a href="#"><span class="icon-facebook"></span></a></li>
+                        <li class="ftco-animate"><a href="#"><span class="icon-instagram"></span></a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="col-md">
+                <div class="ftco-footer-widget mb-4 ml-md-5">
+                    <h2 class="ftco-heading-2">Məlumat</h2>
+                    <ul class="list-unstyled">
+                        <li><a th:href="@{/about}" class="py-2 d-block">Haqqımızda</a></li>
+                        <li><a th:href="@{/services}" class="py-2 d-block">Xidmətlər</a></li>
+                        <li><a href="#" class="py-2 d-block">Şərtlər və qaydalar</a></li>
+                        <li><a href="#" class="py-2 d-block">Ən yaxşı qiymət zəmanəti</a></li>
+                        <li><a href="#" class="py-2 d-block">Məxfilik və çərəz siyasəti</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="col-md">
+                <div class="ftco-footer-widget mb-4">
+                    <h2 class="ftco-heading-2">Müştəri dəstəyi</h2>
+                    <ul class="list-unstyled">
+                        <li><a href="#" class="py-2 d-block">Tez-tez verilən suallar</a></li>
+                        <li><a href="#" class="py-2 d-block">Ödəniş seçimləri</a></li>
+                        <li><a href="#" class="py-2 d-block">Rezerv məsləhətləri</a></li>
+                        <li><a href="#" class="py-2 d-block">Necə işləyir?</a></li>
+                        <li><a th:href="@{/contact}" class="py-2 d-block">Bizimlə əlaqə</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="col-md">
+                <div class="ftco-footer-widget mb-4">
+                    <h2 class="ftco-heading-2">Sualınız var?</h2>
+                    <div class="block-23 mb-3">
+                        <ul>
+                            <li>
+                                <span class="icon icon-map-marker"></span>
+                                <span class="text">Bakı, Azərbaycan</span>
+                            </li>
+                            <li>
+                                <a href="#"><span class="icon icon-phone"></span><span class="text">+994 70 843 23 05</span></a>
+                            </li>
+                            <li>
+                                <a href="#"><span class="icon icon-envelope"></span><span class="text">ilgartest77@gmail.com</span></a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="row">
+            <div class="col-md-12 text-center">
+                <p>
+                    Copyright &copy;<script>document.write(new Date().getFullYear());</script>
+                    Bütün hüquqlar qorunur.
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<div id="ftco-loader" class="show fullscreen">
+    <svg class="circular" width="48px" height="48px">
+        <circle class="path-bg" cx="24" cy="24" r="22" fill="none" stroke-width="4" stroke="#eeeeee"/>
+        <circle class="path" cx="24" cy="24" r="22" fill="none" stroke-width="4" stroke-miterlimit="10" stroke="#F96D00"/>
+    </svg>
+</div>
+
+<!-- JS (MÜTLƏQ th:src) -->
+<script th:src="@{/js/jquery.min.js}"></script>
+<script th:src="@{/js/jquery-migrate-3.0.1.min.js}"></script>
+<script th:src="@{/js/popper.min.js}"></script>
+<script th:src="@{/js/bootstrap.min.js}"></script>
+<script th:src="@{/js/jquery.easing.1.3.js}"></script>
+<script th:src="@{/js/jquery.waypoints.min.js}"></script>
+<script th:src="@{/js/jquery.stellar.min.js}"></script>
+<script th:src="@{/js/owl.carousel.min.js}"></script>
+<script th:src="@{/js/jquery.magnific-popup.min.js}"></script>
+<script th:src="@{/js/aos.js}"></script>
+<script th:src="@{/js/jquery.animateNumber.min.js}"></script>
+<script th:src="@{/js/bootstrap-datepicker.js}"></script>
+<script th:src="@{/js/jquery.timepicker.min.js}"></script>
+<script th:src="@{/js/scrollax.min.js}"></script>
+
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBVWaKrjvy3MaE7SQ74_uJiULgl1JY0H2s&sensor=false"></script>
+<script th:src="@{/js/google-map.js}"></script>
+<script th:src="@{/js/main.js}"></script>
+
+</body>
+</html>

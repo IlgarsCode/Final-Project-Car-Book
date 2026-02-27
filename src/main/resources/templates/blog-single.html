@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="az"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Bloq detalları</title>
+
+    <style>
+        .about-author .bio img.author-avatar{
+            width: 110px;
+            height: 110px;
+            object-fit: cover;
+            border-radius: 6px;
+        }
+
+        .comment-list .user-img{
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+
+        /* ==== BLOG DETAIL OXUNAQLILIQ ==== */
+        .blog-detail-image {
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0,0,0,.08);
+        }
+
+        .blog-content {
+            color: #343a40;          /* əsas mətn rəngi (tünd, oxunaqlı) */
+            font-size: 16.5px;       /* biraz böyütdüm ki, “solğun” görünməsin */
+            line-height: 1.85;       /* oxunaqlılığı artırır */
+            letter-spacing: .1px;
+            margin-top: 18px;
+        }
+
+        /* Əgər content bir paraqrafdan uzun olarsa da gözəl görünsün */
+        .blog-content p {
+            margin-bottom: 14px;
+        }
+
+        /* “məzmun yoxdur” mesajı yenə boz qalsın */
+        .blog-content-empty {
+            color:#6c757d;
+        }
+    </style>
+</head>
+
+<body>
+<div layout:fragment="content">
+
+    <section class="hero-wrap hero-wrap-2 js-fullheight"
+             th:if="${banner != null}"
+             th:style="|background-image: url('${banner.photoUrl}');|"
+             data-stellar-background-ratio="0.5">
+        <div class="overlay"></div>
+        <div class="container">
+            <div class="row no-gutters slider-text js-fullheight align-items-end justify-content-start">
+                <div class="col-md-9 ftco-animate pb-5">
+
+                    <p class="breadcrumbs">
+                        <span class="mr-2">
+                            <a th:href="@{/}">Ana səhifə <i class="ion-ios-arrow-forward"></i></a>
+                        </span>
+                        <span class="mr-2">
+                            <a th:href="@{/bloq}">Bloq <i class="ion-ios-arrow-forward"></i></a>
+                        </span>
+                        <span>Bloq detalları <i class="ion-ios-arrow-forward"></i></span>
+                    </p>
+
+                    <h1 class="mb-3 bread" th:text="${banner.title}">Bloqu oxu</h1>
+                    <p th:text="${banner.description}"></p>
+
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="ftco-section ftco-degree-bg">
+        <div class="container">
+            <div class="row">
+
+                <div class="col-md-8 ftco-animate">
+
+                    <h2 class="mb-3" th:text="${blog.title}">Bloq başlığı</h2>
+
+                    <div class="mb-4" style="color:#6c757d; font-size:14px;">
+                        <span class="mr-3">
+                            <i class="icon-calendar"></i>
+                            <span th:text="${#temporals.format(blog.createdAt, 'dd MMMM, yyyy')}">29 oktyabr, 2019</span>
+                        </span>
+
+                        <span>
+                            <i class="icon-person"></i>
+                            <span th:text="${blog.authorName != null ? blog.authorName : blog.author}">Müəllif</span>
+                        </span>
+                    </div>
+
+                    <!-- ŞƏKİL -->
+                    <p th:if="${blog.imageUrl != null}" class="mb-4">
+                        <img th:src="${blog.imageUrl}" alt="" class="img-fluid blog-detail-image">
+                    </p>
+
+                    <!-- MƏZMUN (ŞƏKİLİN ALTINDAKI YAZI) -->
+                    <div th:if="${blog.content != null}"
+                         class="blog-content"
+                         th:text="${blog.content}">
+                        Bloq məzmunu
+                    </div>
+
+                    <p th:if="${blog.content == null}" class="blog-content-empty">
+                        Bu bloq üçün məzmun əlavə edilməyib.
+                    </p>
+
+                    <!-- TAGS -->
+                    <div class="tag-widget post-tag-container mb-5 mt-5"
+                         th:if="${blog.tags != null and !blog.tags.empty}">
+                        <div class="tagcloud">
+                            <a th:each="t : ${blog.tags}"
+                               th:href="@{/bloq(tag=${t.slug})}"
+                               class="tag-cloud-link"
+                               th:text="${t.name}">
+                                Teq
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- AUTHOR -->
+                    <div class="about-author d-flex p-4 bg-light"
+                         th:if="${blog.authorName != null}">
+                        <div class="bio mr-4">
+                            <img class="author-avatar"
+                                 th:src="${blog.authorAvatarUrl != null ? blog.authorAvatarUrl : '/images/person_1.jpg'}"
+                                 alt="Müəllif">
+                        </div>
+
+                        <div class="desc">
+                            <h3 class="mb-1" th:text="${blog.authorName}">Müəllif</h3>
+                            <p class="mb-0" th:text="${blog.authorBio != null ? blog.authorBio : 'CarBook istifadəçisi'}">
+                                Bio
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- COMMENTS -->
+                    <div class="pt-5 mt-5">
+
+                        <h3 class="mb-5" id="comments">
+                            <span th:text="${blog.commentCount}">0</span> Şərh
+                        </h3>
+
+                        <ul class="comment-list">
+
+                            <li th:if="${blog.comments == null or #lists.isEmpty(blog.comments)}" style="color:#6c757d;">
+                                Hələ şərh yazılmayıb.
+                            </li>
+
+                            <li class="comment" th:each="c : ${blog.comments}">
+
+                                <div class="vcard bio">
+                                    <div class="user-img"
+                                         th:style="|background-image:url('${c != null && c.avatarUrl != null ? c.avatarUrl : '/images/person_1.jpg'}')|">
+                                    </div>
+                                </div>
+
+                                <div class="comment-body">
+                                    <h3 th:text="${c.fullName}">Ad</h3>
+
+                                    <div class="meta"
+                                         th:text="${#temporals.format(c.createdAt, 'dd MMMM, yyyy HH:mm')}">
+                                        29 oktyabr, 2019 13:21
+                                    </div>
+
+                                    <p th:text="${c.message}">Mesaj</p>
+
+                                    <p>
+                                        <a href="javascript:void(0)"
+                                           class="reply"
+                                           th:attr="data-parent=${c.id},data-name=${c.fullName}">
+                                            Cavab yaz
+                                        </a>
+                                    </p>
+                                </div>
+
+                                <ul class="children" th:if="${c.replies != null and !c.replies.empty}">
+                                    <li class="comment" th:each="r : ${c.replies}">
+
+                                        <div class="vcard bio">
+                                            <div class="user-img"
+                                                 th:style="|background-image:url('${r != null && r.avatarUrl != null ? r.avatarUrl : '/images/person_1.jpg'}')|">
+                                            </div>
+                                        </div>
+
+                                        <div class="comment-body">
+                                            <h3 th:text="${r.fullName}">Ad</h3>
+
+                                            <div class="meta"
+                                                 th:text="${#temporals.format(r.createdAt, 'dd MMMM, yyyy HH:mm')}">
+                                                29 oktyabr, 2019 13:21
+                                            </div>
+
+                                            <p th:text="${r.message}">Mesaj</p>
+
+                                            <p>
+                                                <a href="javascript:void(0)"
+                                                   class="reply"
+                                                   th:attr="data-parent=${r.id},data-name=${r.fullName}">
+                                                    Cavab yaz
+                                                </a>
+                                            </p>
+                                        </div>
+
+                                        <ul class="children" th:if="${r.replies != null and !r.replies.empty}">
+                                            <li class="comment" th:each="r2 : ${r.replies}">
+
+                                                <div class="vcard bio">
+                                                    <div class="user-img"
+                                                         th:style="|background-image:url('${r2 != null && r2.avatarUrl != null ? r2.avatarUrl : '/images/person_1.jpg'}')|">
+                                                    </div>
+                                                </div>
+
+                                                <div class="comment-body">
+                                                    <h3 th:text="${r2.fullName}">Ad</h3>
+
+                                                    <div class="meta"
+                                                         th:text="${#temporals.format(r2.createdAt, 'dd MMMM, yyyy HH:mm')}">
+                                                    </div>
+
+                                                    <p th:text="${r2.message}"></p>
+
+                                                    <p>
+                                                        <a href="javascript:void(0)"
+                                                           class="reply"
+                                                           th:attr="data-parent=${r2.id},data-name=${r2.fullName}">
+                                                            Cavab yaz
+                                                        </a>
+                                                    </p>
+                                                </div>
+
+                                            </li>
+                                        </ul>
+
+                                    </li>
+                                </ul>
+
+                            </li>
+                        </ul>
+
+                        <!-- REPLY FORM -->
+                        <div class="comment-form-wrap pt-5" id="replyFormBlock" style="display:none;" th:if="${isLoggedIn}">
+                            <h3 class="mb-4">Cavab yaz</h3>
+
+                            <div class="alert alert-info py-2" id="replyInfo" style="display:none;">
+                                <span id="replyText"></span>
+                                <a href="javascript:void(0)" class="ml-2" id="cancelReply">Ləğv et</a>
+                            </div>
+
+                            <form th:action="@{/bloq/{id}/cavab(id=${blog.id})}"
+                                  th:object="${replyForm}"
+                                  method="post"
+                                  class="p-5 bg-light">
+
+                                <input type="hidden" th:field="*{parentId}" id="replyParentId"/>
+
+                                <div class="form-group">
+                                    <label for="replyMessage">Mesaj *</label>
+                                    <textarea id="replyMessage" cols="30" rows="6"
+                                              class="form-control"
+                                              th:field="*{message}"></textarea>
+
+                                    <small class="text-danger"
+                                           th:if="${#fields.hasErrors('parentId')}"
+                                           th:errors="*{parentId}"></small>
+
+                                    <small class="text-danger"
+                                           th:if="${#fields.hasErrors('message')}"
+                                           th:errors="*{message}"></small>
+                                </div>
+
+                                <div class="form-group">
+                                    <input type="submit" value="Cavabı göndər" class="btn py-3 px-4 btn-primary">
+                                    <a class="btn btn-outline-secondary py-3 px-4" href="#comments">Şərhlərə qayıt</a>
+                                </div>
+                            </form>
+                        </div>
+
+                        <div class="comment-form-wrap pt-5" th:if="${!isLoggedIn}">
+                            <div class="alert alert-warning">
+                                Cavab yazmaq üçün giriş etməlisən.
+                                <a th:href="@{/auth/login}">Giriş</a>
+                            </div>
+                        </div>
+
+                        <!-- COMMENT FORM -->
+                        <div class="comment-form-wrap pt-5" id="commentForm">
+                            <h3 class="mb-4">Şərh yaz</h3>
+
+                            <div class="alert alert-warning" th:if="${!isLoggedIn}">
+                                Şərh yazmaq üçün giriş etməlisən.
+                                <a th:href="@{/auth/login}">Giriş</a>
+                            </div>
+
+                            <form th:if="${isLoggedIn}"
+                                  th:action="@{/bloq/{id}/serh(id=${blog.id})}"
+                                  th:object="${commentForm}"
+                                  method="post"
+                                  class="p-5 bg-light">
+
+                                <div class="form-group">
+                                    <label for="message">Mesaj *</label>
+                                    <textarea id="message" cols="30" rows="8" class="form-control"
+                                              th:field="*{message}"></textarea>
+
+                                    <small class="text-danger"
+                                           th:if="${#fields.hasErrors('message')}"
+                                           th:errors="*{message}"></small>
+                                </div>
+
+                                <div class="form-group">
+                                    <input type="submit" value="Şərhi göndər" class="btn py-3 px-4 btn-primary">
+                                </div>
+
+                                <div class="text-muted" style="font-size:13px;">
+                                    Ad və email profilindən avtomatik götürülür.
+                                </div>
+                            </form>
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <!-- RIGHT SIDEBAR -->
+                <div class="col-lg-4 sidebar ftco-animate">
+
+                    <div class="sidebar-box">
+                        <form th:action="@{/bloq}" method="get" class="search-form">
+                            <div class="form-group">
+                                <span class="icon icon-search"></span>
+                                <input type="text" name="search" class="form-control"
+                                       th:value="${search}"
+                                       placeholder="Açar sözü yaz və Enter-ə bas">
+                            </div>
+                        </form>
+                    </div>
+
+                    <div class="sidebar-box ftco-animate">
+                        <div class="categories">
+                            <h3>Avtomobil kateqoriyaları</h3>
+                            <ul class="category-list">
+                                <li th:each="cc : ${carCategories}">
+                                    <a th:href="@{/car(category=${cc.slug})}" class="cat-row">
+                                        <div class="cat-left" th:text="${cc.name}">SUV</div>
+                                        <div class="cat-right"
+                                             th:text="'(' + ${cc.activeCarCount != null ? cc.activeCarCount : 0} + ')'">
+                                            (0)
+                                        </div>
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="sidebar-box ftco-animate">
+                        <h3>Son bloqlar</h3>
+
+                        <div th:if="${recentBlogs == null or #lists.isEmpty(recentBlogs)}" style="color:#6c757d;">
+                            Hələ başqa bloq yoxdur.
+                        </div>
+
+                        <div class="block-21 mb-4 d-flex" th:each="rb : ${recentBlogs}">
+                            <a class="blog-img mr-4"
+                               th:href="@{/bloq/{id}(id=${rb.id})}"
+                               th:style="|background-image: url('${rb.imageUrl != null ? rb.imageUrl : '/images/image_1.jpg'}');|">
+                            </a>
+
+                            <div class="text">
+                                <h3 class="heading">
+                                    <a th:href="@{/bloq/{id}(id=${rb.id})}"
+                                       th:text="${rb.title}">
+                                        Bloq başlığı
+                                    </a>
+                                </h3>
+
+                                <div class="meta">
+                                    <div>
+                                        <a th:href="@{/bloq/{id}(id=${rb.id})}">
+                                            <span class="icon-calendar"></span>
+                                            <span th:text="${#temporals.format(rb.createdAt, 'dd MMMM, yyyy')}">01 Fevral, 2026</span>
+                                        </a>
+                                    </div>
+
+                                    <div>
+                                        <a th:href="@{/bloq/{id}(id=${rb.id})}">
+                                            <span class="icon-person"></span>
+                                            <span th:text="${rb.author}">Admin</span>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <script>
+        (function () {
+            const replyBlock = document.getElementById('replyFormBlock');
+            const parentField = document.getElementById('replyParentId');
+            const replyInfo = document.getElementById('replyInfo');
+            const replyText = document.getElementById('replyText');
+            const cancelReply = document.getElementById('cancelReply');
+
+            document.querySelectorAll('a.reply').forEach(a => {
+                a.addEventListener('click', function (e) {
+                    e.preventDefault();
+
+                    const parentId = this.getAttribute('data-parent');
+                    const name = this.getAttribute('data-name') || '';
+
+                    if (parentField) parentField.value = parentId;
+
+                    if (replyInfo && replyText) {
+                        replyText.textContent = 'Cavab yazılır: ' + name;
+                        replyInfo.style.display = 'block';
+                    }
+
+                    if (replyBlock) {
+                        replyBlock.style.display = 'block';
+                        replyBlock.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    }
+                });
+            });
+
+            if (cancelReply) {
+                cancelReply.addEventListener('click', function () {
+                    if (parentField) parentField.value = '';
+                    if (replyInfo) replyInfo.style.display = 'none';
+                    if (replyText) replyText.textContent = '';
+                    if (replyBlock) replyBlock.style.display = 'none';
+                });
+            }
+        })();
+    </script>
+
+</div>
+</body>
+</html>

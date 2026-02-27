@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html
+        lang="az"
+        xmlns:th="http://www.thymeleaf.org"
+        xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+        layout:decorate="~{dashboard/layout}">
+
+<head>
+  <title>Avto Qiymətləri</title>
+</head>
+
+<body>
+
+<div layout:fragment="content">
+
+  <div class="d-sm-flex align-items-center justify-content-between mb-4">
+    <h1 class="h3 mb-0 text-gray-800">Avto qiymətləri</h1>
+  </div>
+
+  <!-- YARATMA KARTI -->
+  <div class="card shadow mb-4">
+    <div class="card-header py-3">
+      <h6 class="m-0 font-weight-bold text-primary">Qiymət yarat (avto üçün)</h6>
+    </div>
+    <div class="card-body">
+
+      <form th:action="@{/dashboard/car-pricings/create}" th:object="${createForm}" method="post">
+
+        <th:block th:if="${_csrf != null}">
+          <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+        </th:block>
+
+        <div class="form-row">
+
+          <div class="form-group col-md-4">
+            <label>Avtomobil</label>
+            <select class="form-control" th:field="*{carId}" required>
+              <option value="" th:selected="${createForm.carId == null}" disabled>Avtomobil seç</option>
+              <option th:each="c : ${cars}"
+                      th:value="${c.id}"
+                      th:text="${c.brand + ' - ' + c.title}">
+              </option>
+            </select>
+          </div>
+
+          <div class="form-group col-md-2">
+            <label>Saatlıq</label>
+            <input type="number" step="0.01" min="0" class="form-control" th:field="*{hourlyRate}" required>
+          </div>
+
+          <div class="form-group col-md-2">
+            <label>Günlük</label>
+            <input type="number" step="0.01" min="0" class="form-control" th:field="*{dailyRate}" required>
+          </div>
+
+          <div class="form-group col-md-2">
+            <label>Lizinqlə</label>
+            <input type="number" step="0.01" min="0" class="form-control" th:field="*{monthlyLeasingRate}" required>
+          </div>
+
+          <div class="form-group col-md-2">
+            <label>Yanacaq əlavəsi</label>
+            <input type="number" step="0.01" min="0" class="form-control" th:field="*{fuelSurchargePerHour}">
+            <small class="text-muted">istəyə bağlı</small>
+          </div>
+
+        </div>
+
+        <!-- ✅ ENDİRİMLƏR (ayrı) -->
+        <div class="form-row">
+          <div class="form-group col-md-4">
+            <div class="border rounded p-3">
+              <div class="custom-control custom-checkbox">
+                <input type="checkbox" class="custom-control-input"
+                       id="createHourlyDiscountActive"
+                       th:field="*{hourlyDiscountActive}">
+                <label class="custom-control-label" for="createHourlyDiscountActive">Saatlıq endirim aktiv</label>
+              </div>
+              <div class="mt-2">
+                <label class="mb-1">Saatlıq endirim % (0..100)</label>
+                <input type="number" step="0.01" min="0" max="100"
+                       class="form-control"
+                       th:field="*{hourlyDiscountPercent}"
+                       placeholder="məs: 10">
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group col-md-4">
+            <div class="border rounded p-3">
+              <div class="custom-control custom-checkbox">
+                <input type="checkbox" class="custom-control-input"
+                       id="createDailyDiscountActive"
+                       th:field="*{dailyDiscountActive}">
+                <label class="custom-control-label" for="createDailyDiscountActive">Günlük endirim aktiv</label>
+              </div>
+              <div class="mt-2">
+                <label class="mb-1">Günlük endirim % (0..100)</label>
+                <input type="number" step="0.01" min="0" max="100"
+                       class="form-control"
+                       th:field="*{dailyDiscountPercent}"
+                       placeholder="məs: 15">
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group col-md-4">
+            <div class="border rounded p-3">
+              <div class="custom-control custom-checkbox">
+                <input type="checkbox" class="custom-control-input"
+                       id="createLeasingDiscountActive"
+                       th:field="*{leasingDiscountActive}">
+                <label class="custom-control-label" for="createLeasingDiscountActive">Lizinqlə endirim aktiv</label>
+              </div>
+              <div class="mt-2">
+                <label class="mb-1">Lizinqlə endirim % (0..100)</label>
+                <input type="number" step="0.01" min="0" max="100"
+                       class="form-control"
+                       th:field="*{leasingDiscountPercent}"
+                       placeholder="məs: 5">
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <button class="btn btn-primary" type="submit">
+          <i class="fas fa-plus"></i> Yarat
+        </button>
+
+      </form>
+
+    </div>
+  </div>
+
+  <!-- SİYAHI CƏDVƏLİ -->
+  <div class="card shadow mb-4">
+    <div class="card-header py-3 d-flex align-items-center justify-content-between">
+      <h6 class="m-0 font-weight-bold text-primary">Qiymət sətirləri</h6>
+    </div>
+
+    <div class="card-body">
+
+      <div class="table-responsive">
+        <table class="table table-bordered" width="100%" cellspacing="0">
+          <thead>
+          <tr>
+            <th>#</th>
+            <th>Avtomobil</th>
+            <th>Saatlıq</th>
+            <th>Günlük</th>
+            <th>Lizinqlə</th>
+            <th>Yanacaq</th>
+            <th>Endirimlər</th>
+            <th>Status</th>
+            <th style="width: 180px;">Əməliyyatlar</th>
+          </tr>
+          </thead>
+
+          <tbody>
+          <tr th:if="${rows == null || #lists.isEmpty(rows)}">
+            <td colspan="9" class="text-center">Hələ qiymət sətri yoxdur.</td>
+          </tr>
+
+          <tr th:each="cp, i : ${rows}">
+            <td th:text="${i.count}">1</td>
+
+            <td>
+              <div class="d-flex align-items-center">
+                <img th:if="${cp.car.imageUrl != null}"
+                     th:src="@{${cp.car.imageUrl}}"
+                     style="width:40px;height:40px;object-fit:cover;border-radius:6px;"
+                     class="mr-2"
+                     alt="car">
+                <div>
+                  <div class="font-weight-bold" th:text="${cp.car.brand + ' - ' + cp.car.title}">Car</div>
+                  <small class="text-muted" th:text="${cp.car.slug}">slug</small>
+                </div>
+              </div>
+            </td>
+
+            <td th:text="${cp.hourlyRate}">0</td>
+            <td th:text="${cp.dailyRate}">0</td>
+            <td th:text="${cp.monthlyLeasingRate}">0</td>
+            <td th:text="${cp.fuelSurchargePerHour != null ? cp.fuelSurchargePerHour : '-'}">-</td>
+
+            <!-- ✅ ENDİRİM BADGELƏRİ -->
+            <td style="white-space:nowrap;">
+              <span class="badge badge-success mr-1"
+                    th:if="${cp.hourlyDiscountActive != null and cp.hourlyDiscountActive and cp.hourlyDiscountPercent != null and cp.hourlyDiscountPercent.doubleValue() > 0}"
+                    th:text="${'S: -' + cp.hourlyDiscountPercent + '%'}">S: -10%</span>
+
+              <span class="badge badge-success mr-1"
+                    th:if="${cp.dailyDiscountActive != null and cp.dailyDiscountActive and cp.dailyDiscountPercent != null and cp.dailyDiscountPercent.doubleValue() > 0}"
+                    th:text="${'G: -' + cp.dailyDiscountPercent + '%'}">G: -15%</span>
+
+              <span class="badge badge-success"
+                    th:if="${cp.leasingDiscountActive != null and cp.leasingDiscountActive and cp.leasingDiscountPercent != null and cp.leasingDiscountPercent.doubleValue() > 0}"
+                    th:text="${'L: -' + cp.leasingDiscountPercent + '%'}">L: -5%</span>
+
+              <span class="text-muted"
+                    th:if="${(cp.hourlyDiscountActive == null or !cp.hourlyDiscountActive or cp.hourlyDiscountPercent == null or cp.hourlyDiscountPercent.doubleValue() <= 0)
+                         and (cp.dailyDiscountActive == null or !cp.dailyDiscountActive or cp.dailyDiscountPercent == null or cp.dailyDiscountPercent.doubleValue() <= 0)
+                         and (cp.leasingDiscountActive == null or !cp.leasingDiscountActive or cp.leasingDiscountPercent == null or cp.leasingDiscountPercent.doubleValue() <= 0)}">
+                -
+              </span>
+            </td>
+
+            <td>
+              <span class="badge badge-success" th:if="${cp.isActive}">AKTİV</span>
+              <span class="badge badge-secondary" th:unless="${cp.isActive}">PASSİV</span>
+            </td>
+
+            <td>
+              <button type="button"
+                      class="btn btn-sm btn-warning"
+                      data-toggle="modal"
+                      data-target="#editPricingModal"
+                      th:attr="data-carid=${cp.car.id},
+                               data-hourly=${cp.hourlyRate},
+                               data-daily=${cp.dailyRate},
+                               data-leasing=${cp.monthlyLeasingRate},
+                               data-fuel=${cp.fuelSurchargePerHour},
+
+                               data-hdiscactive=${cp.hourlyDiscountActive},
+                               data-hdiscpercent=${cp.hourlyDiscountPercent},
+
+                               data-ddiscactive=${cp.dailyDiscountActive},
+                               data-ddiscpercent=${cp.dailyDiscountPercent},
+
+                               data-ldiscactive=${cp.leasingDiscountActive},
+                               data-ldiscpercent=${cp.leasingDiscountPercent}">
+                <i class="fas fa-edit"></i> Redaktə
+              </button>
+
+              <form th:action="@{/dashboard/car-pricings/deactivate/{carId}(carId=${cp.car.id})}"
+                    method="post"
+                    class="d-inline"
+                    onsubmit="return confirm('Bu qiymətlənmə passiv edilsin?');">
+
+                <th:block th:if="${_csrf != null}">
+                  <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                </th:block>
+
+                <button type="submit" class="btn btn-sm btn-danger">
+                  <i class="fas fa-ban"></i>
+                </button>
+              </form>
+            </td>
+          </tr>
+          </tbody>
+
+        </table>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- REDAKTƏ MODALI -->
+  <div class="modal fade" id="editPricingModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+      <div class="modal-content">
+
+        <form th:action="@{/dashboard/car-pricings/update}"
+              th:object="${editForm}"
+              method="post">
+
+          <th:block th:if="${_csrf != null}">
+            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+          </th:block>
+
+          <div class="modal-header">
+            <h5 class="modal-title">Qiymətlənməni redaktə et</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">×</span>
+            </button>
+          </div>
+
+          <div class="modal-body">
+
+            <input type="hidden" th:field="*{carId}" id="editCarId"/>
+
+            <div class="form-row">
+              <div class="form-group col-md-3">
+                <label>Saatlıq</label>
+                <input type="number" step="0.01" min="0" class="form-control" th:field="*{hourlyRate}" id="editHourly" required>
+              </div>
+              <div class="form-group col-md-3">
+                <label>Günlük</label>
+                <input type="number" step="0.01" min="0" class="form-control" th:field="*{dailyRate}" id="editDaily" required>
+              </div>
+              <div class="form-group col-md-3">
+                <label>Lizinqlə</label>
+                <input type="number" step="0.01" min="0" class="form-control" th:field="*{monthlyLeasingRate}" id="editLeasing" required>
+              </div>
+              <div class="form-group col-md-3">
+                <label>Yanacaq əlavəsi</label>
+                <input type="number" step="0.01" min="0" class="form-control" th:field="*{fuelSurchargePerHour}" id="editFuel">
+                <small class="text-muted">istəyə bağlı</small>
+              </div>
+            </div>
+
+            <!-- ✅ ENDİRİMLƏR -->
+            <div class="form-row">
+              <div class="form-group col-md-4">
+                <div class="border rounded p-3">
+                  <div class="custom-control custom-checkbox">
+                    <input type="checkbox"
+                           class="custom-control-input"
+                           id="editHourlyDiscountActive"
+                           th:field="*{hourlyDiscountActive}">
+                    <label class="custom-control-label" for="editHourlyDiscountActive">Saatlıq endirim aktiv</label>
+                  </div>
+                  <div class="mt-2">
+                    <label class="mb-1">Saatlıq endirim %</label>
+                    <input type="number" step="0.01" min="0" max="100"
+                           class="form-control"
+                           th:field="*{hourlyDiscountPercent}"
+                           id="editHourlyDiscountPercent"
+                           placeholder="məs: 10">
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-group col-md-4">
+                <div class="border rounded p-3">
+                  <div class="custom-control custom-checkbox">
+                    <input type="checkbox"
+                           class="custom-control-input"
+                           id="editDailyDiscountActive"
+                           th:field="*{dailyDiscountActive}">
+                    <label class="custom-control-label" for="editDailyDiscountActive">Günlük endirim aktiv</label>
+                  </div>
+                  <div class="mt-2">
+                    <label class="mb-1">Günlük endirim %</label>
+                    <input type="number" step="0.01" min="0" max="100"
+                           class="form-control"
+                           th:field="*{dailyDiscountPercent}"
+                           id="editDailyDiscountPercent"
+                           placeholder="məs: 15">
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-group col-md-4">
+                <div class="border rounded p-3">
+                  <div class="custom-control custom-checkbox">
+                    <input type="checkbox"
+                           class="custom-control-input"
+                           id="editLeasingDiscountActive"
+                           th:field="*{leasingDiscountActive}">
+                    <label class="custom-control-label" for="editLeasingDiscountActive">Lizinqlə endirim aktiv</label>
+                  </div>
+                  <div class="mt-2">
+                    <label class="mb-1">Lizinqlə endirim %</label>
+                    <input type="number" step="0.01" min="0" max="100"
+                           class="form-control"
+                           th:field="*{leasingDiscountPercent}"
+                           id="editLeasingDiscountPercent"
+                           placeholder="məs: 5">
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Ləğv et</button>
+            <button type="submit" class="btn btn-primary">
+              <i class="fas fa-save"></i> Yadda saxla
+            </button>
+          </div>
+
+        </form>
+
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<th:block layout:fragment="js">
+  <script>
+    $('#editPricingModal').on('show.bs.modal', function (event) {
+      const btn = $(event.relatedTarget);
+
+      $('#editCarId').val(btn.data('carid'));
+      $('#editHourly').val(btn.data('hourly'));
+      $('#editDaily').val(btn.data('daily'));
+      $('#editLeasing').val(btn.data('leasing'));
+
+      const fuel = btn.data('fuel');
+      $('#editFuel').val(fuel != null ? fuel : '');
+
+      // Saatlıq
+      const hA = btn.data('hdiscactive');
+      const hP = btn.data('hdiscpercent');
+      $('#editHourlyDiscountActive').prop('checked', hA === true || hA === 'true');
+      $('#editHourlyDiscountPercent').val(hP != null ? hP : '');
+
+      // Günlük
+      const dA = btn.data('ddiscactive');
+      const dP = btn.data('ddiscpercent');
+      $('#editDailyDiscountActive').prop('checked', dA === true || dA === 'true');
+      $('#editDailyDiscountPercent').val(dP != null ? dP : '');
+
+      // Lizinqlə
+      const lA = btn.data('ldiscactive');
+      const lP = btn.data('ldiscpercent');
+      $('#editLeasingDiscountActive').prop('checked', lA === true || lA === 'true');
+      $('#editLeasingDiscountPercent').val(lP != null ? lP : '');
+    });
+  </script>
+</th:block>
+
+</body>
+</html>

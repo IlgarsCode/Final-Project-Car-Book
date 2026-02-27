@@ -1,0 +1,816 @@
+<!DOCTYPE html>
+<html lang="az"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}" xmlns:sec="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${car.title}">Avtomobil detalları</title>
+
+    <style>
+        /* ==== CAR DETAIL: OXUNAQLILIQ OVERRIDE ==== */
+        .ftco-car-details{
+          color:#111; /* ümumi mətn */
+        }
+
+        /* Bu blok car-details içində çox şeyi tünd edir */
+        .ftco-car-details .car-details,
+        .ftco-car-details .car-details .text,
+        .ftco-car-details .car-details .text h1,
+        .ftco-car-details .car-details .text h2,
+        .ftco-car-details .car-details .text h3,
+        .ftco-car-details .car-details .text h4,
+        .ftco-car-details .car-details .text h5,
+        .ftco-car-details .car-details .text p,
+        .ftco-car-details .car-details .text span,
+        .ftco-car-details .car-details .text small,
+        .ftco-car-details .car-details .text label,
+        .ftco-car-details .car-details .text li{
+          color:#111 !important;
+        }
+
+        /* Açıq boz yerlər oxunaqlı boz olsun */
+        .ftco-car-details .text-muted{
+          color:#6c757d !important;
+        }
+
+        /* Linklər görünən olsun */
+        .ftco-car-details a{
+          color:#0d6efd !important;
+          text-decoration:none;
+        }
+        .ftco-car-details a:hover{
+          text-decoration:underline;
+        }
+
+        /* Subheading solğun olmasın */
+        .ftco-car-details .subheading{
+          color:#0b7285 !important; /* fərqli rəng istəyirdin deyə */
+          font-weight:700;
+          letter-spacing:.3px;
+        }
+
+        /* Qiymət hissəsi vurğulu */
+        .ftco-car-details .price{
+          color:#111 !important;
+          font-weight:800;
+        }
+        .ftco-car-details .price span:first-child{
+          color:#1089ff !important; /* ₼ mavi */
+          font-weight:900;
+        }
+
+        /* Təsvir mətnin (desc-text) daha tünd */
+        .ftco-car-details .desc-text{
+          color:#111 !important;
+          font-size:16.5px;
+          line-height:1.85;
+        }
+
+        /* Tab card içindəki mətnlər */
+        .ftco-car-details .car-tab-card .card-head h4{
+          color:#111 !important;
+        }
+        .ftco-car-details .car-tab-card .card-body{
+          color:#111 !important;
+        }
+
+        /* Feature list item text */
+        .ftco-car-details .feature-list li span{
+          color:#111 !important;
+        }
+
+        /* Review hissəsində yazılar */
+        .ftco-car-details .review-name,
+        .ftco-car-details .review-msg{
+          color:#111 !important;
+        }
+        .ftco-car-details .review-date{
+          color:#6c757d !important;
+        }
+    </style>
+</head>
+<body>
+<div layout:fragment="content">
+
+    <section class="hero-wrap hero-wrap-2 js-fullheight"
+             th:if="${banner != null}"
+             th:style="|background-image: url('${banner.photoUrl}');|"
+             data-stellar-background-ratio="0.5">
+        <div class="overlay"></div>
+        <div class="container">
+            <div class="row no-gutters slider-text js-fullheight align-items-end justify-content-start">
+                <div class="col-md-9 ftco-animate pb-5">
+                    <p class="breadcrumbs">
+                        <span class="mr-2">
+                            <a th:href="@{/}">Ana səhifə <i class="ion-ios-arrow-forward"></i></a>
+                        </span>
+                        <span>Avtomobil detalları <i class="ion-ios-arrow-forward"></i></span>
+                    </p>
+                    <h1 class="mb-3 bread" th:text="${banner.title}">Avtomobil detalları</h1>
+                    <p th:text="${banner.description}"></p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="ftco-section ftco-car-details">
+        <div class="container">
+
+            <div class="row justify-content-center">
+                <div class="col-md-12">
+                    <div class="car-details">
+
+                        <div class="img rounded"
+                             th:style="|background-image: url('${car.imageUrl != null ? car.imageUrl : '/images/car-1.jpg'}');|"></div>
+
+                        <div class="text text-center">
+                            <span class="subheading" th:text="${car.brand}">Brend</span>
+                            <h2 th:text="${car.title}">Başlıq</h2>
+
+                            <!-- ✅ $ -> ₼ -->
+                            <p class="price mt-2">
+                                <span>₼</span><span th:text="${car.displayPrice != null ? car.displayPrice : 0}">0</span>
+                                <span th:text="${car.displayUnit != null ? car.displayUnit : '/gün'}">/gün</span>
+                            </p>
+
+                            <div class="mt-2">
+                                <span class="badge badge-info"
+                                      th:text="${car.selectedRate != null ? car.selectedRate : 'DAILY'}">DAILY</span>
+
+                                <span class="badge badge-success ml-2"
+                                      th:if="${car.hasDiscount != null and car.hasDiscount and car.discountPercent != null and car.discountPercent.doubleValue() > 0}"
+                                      th:text="${'-' + car.discountPercent + '%'}">-10%</span>
+
+                                <!-- ✅ $ -> ₼ -->
+                                <span class="text-muted ml-2"
+                                      th:if="${car.hasDiscount != null and car.hasDiscount and car.discountPercent != null and car.discountPercent.doubleValue() > 0}">
+                                    <del>₼<span th:text="${car.selectedRate == 'HOURLY' ? car.baseHourlyRate : (car.selectedRate == 'LEASING' ? car.baseMonthlyLeasingRate : car.baseDailyRate)}">0</span></del>
+                                </span>
+                            </div>
+
+                            <div class="d-flex justify-content-center mt-3" style="gap:10px; flex-wrap:wrap;">
+                                <a class="btn btn-outline-primary btn-sm"
+                                   th:href="@{'/avtomobiller/' + ${car.slug}(
+                                        rate='HOURLY',
+                                        pickupLoc=${trip != null ? trip.pickupLoc : null},
+                                        dropoffLoc=${trip != null ? trip.dropoffLoc : null},
+                                        pickupDate=${trip != null ? trip.pickupDate : null},
+                                        dropoffDate=${trip != null ? trip.dropoffDate : null}
+                                   )}">Saatlıq</a>
+
+                                <a class="btn btn-outline-primary btn-sm"
+                                   th:href="@{'/avtomobiller/' + ${car.slug}(
+                                        rate='DAILY',
+                                        pickupLoc=${trip != null ? trip.pickupLoc : null},
+                                        dropoffLoc=${trip != null ? trip.dropoffLoc : null},
+                                        pickupDate=${trip != null ? trip.pickupDate : null},
+                                        dropoffDate=${trip != null ? trip.dropoffDate : null}
+                                   )}">Günlük</a>
+
+                                <a class="btn btn-outline-primary btn-sm"
+                                   th:href="@{'/avtomobiller/' + ${car.slug}(
+                                        rate='LEASING',
+                                        pickupLoc=${trip != null ? trip.pickupLoc : null},
+                                        dropoffLoc=${trip != null ? trip.dropoffLoc : null},
+                                        pickupDate=${trip != null ? trip.pickupDate : null},
+                                        dropoffDate=${trip != null ? trip.dropoffDate : null}
+                                   )}">Lizinq</a>
+                            </div>
+
+                            <div class="mt-4"
+                                 th:if="${trip == null or trip.pickupLoc == null or trip.dropoffLoc == null or trip.pickupDate == null or trip.dropoffDate == null}">
+                                <div class="availability-card mx-auto" style="max-width:760px;">
+                                    <div class="row align-items-end">
+                                        <div class="col-md-4">
+                                            <label class="small text-muted mb-1">Götürmə tarixi</label>
+                                            <input id="avPickup" type="date" class="form-control">
+                                        </div>
+                                        <div class="col-md-4">
+                                            <label class="small text-muted mb-1">Qaytarma tarixi</label>
+                                            <input id="avDropoff" type="date" class="form-control">
+                                        </div>
+                                        <div class="col-md-4">
+                                            <button id="avBtn" type="button" class="btn btn-primary btn-block">
+                                                Uyğunluğu yoxla
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    <div class="mt-3">
+                                        <div id="avMsg" class="alert mb-0" style="display:none;"></div>
+                                        <small class="text-muted d-block mt-2">
+                                            Qeyd: Bu hissə yalnız “icarədədir/uyğundur” yoxlayır. Checkout zamanı yenidən yoxlanılır.
+                                        </small>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <div class="d-flex justify-content-center mt-4" style="gap:10px; flex-wrap:wrap;">
+                            <form th:action="@{/sebet/elave-et}" method="post">
+                                <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+
+                                <input type="hidden" name="carId" th:value="${car.id}">
+                                <input type="hidden" name="rateType"
+                                       th:value="${car.selectedRate != null ? car.selectedRate : 'DAILY'}">
+                                <input type="hidden" name="unitCount" value="1">
+
+                                <input type="hidden" name="pickupLoc" th:value="${trip != null ? trip.pickupLoc : ''}">
+                                <input type="hidden" name="dropoffLoc" th:value="${trip != null ? trip.dropoffLoc : ''}">
+                                <input type="hidden" name="pickupDate" th:value="${trip != null ? trip.pickupDate : ''}">
+                                <input type="hidden" name="dropoffDate" th:value="${trip != null ? trip.dropoffDate : ''}">
+
+                                <button type="submit" class="btn btn-primary py-2 px-4">İndi bron et</button>
+                            </form>
+
+                            <a th:href="@{/sebet}" class="btn btn-secondary py-2 px-4">Səbətə bax</a>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            <!-- ICON STATISTICS -->
+            <div class="row car-stats-row">
+
+                <div class="car-stat-col d-flex align-self-stretch ftco-animate">
+                    <div class="media block-6 services">
+                        <div class="media-body py-md-4">
+                            <div class="d-flex mb-3 align-items-center">
+                                <div class="icon d-flex align-items-center justify-content-center">
+                                    <span class="flaticon-dashboard"></span>
+                                </div>
+                                <div class="text">
+                                    <h3 class="heading mb-0 pl-3">
+                                        Yürüş
+                                        <span th:text="${car.mileage != null ? car.mileage : '-'}">-</span>
+                                    </h3>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="car-stat-col d-flex align-self-stretch ftco-animate">
+                    <div class="media block-6 services">
+                        <div class="media-body py-md-4">
+                            <div class="d-flex mb-3 align-items-center">
+                                <div class="icon d-flex align-items-center justify-content-center">
+                                    <span class="flaticon-pistons"></span>
+                                </div>
+                                <div class="text">
+                                    <h3 class="heading mb-0 pl-3">
+                                        Sürət qutusu
+                                        <span th:text="${car.transmission != null ? car.transmission : '-'}">-</span>
+                                    </h3>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="car-stat-col d-flex align-self-stretch ftco-animate">
+                    <div class="media block-6 services">
+                        <div class="media-body py-md-4">
+                            <div class="d-flex mb-3 align-items-center">
+                                <div class="icon d-flex align-items-center justify-content-center">
+                                    <span class="flaticon-car-seat"></span>
+                                </div>
+                                <div class="text">
+                                    <h3 class="heading mb-0 pl-3">
+                                        Oturacaq sayı
+                                        <span th:text="${car.seats != null ? car.seats : '-'}">-</span>
+                                    </h3>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="car-stat-col d-flex align-self-stretch ftco-animate">
+                    <div class="media block-6 services">
+                        <div class="media-body py-md-4">
+                            <div class="d-flex mb-3 align-items-center">
+                                <div class="icon d-flex align-items-center justify-content-center">
+                                    <span class="flaticon-backpack"></span>
+                                </div>
+                                <div class="text">
+                                    <h3 class="heading mb-0 pl-3">
+                                        Baqaj
+                                        <span th:text="${car.luggage != null ? car.luggage : '-'}">-</span>
+                                    </h3>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="car-stat-col d-flex align-self-stretch ftco-animate">
+                    <div class="media block-6 services">
+                        <div class="media-body py-md-4">
+                            <div class="d-flex mb-3 align-items-center">
+                                <div class="icon d-flex align-items-center justify-content-center">
+                                    <span class="flaticon-diesel"></span>
+                                </div>
+                                <div class="text">
+                                    <h3 class="heading mb-0 pl-3">
+                                        Yanacaq
+                                        <span th:text="${car.fuel != null ? car.fuel : '-'}">-</span>
+                                    </h3>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="car-stat-col d-flex align-self-stretch ftco-animate">
+                    <div class="media block-6 services">
+                        <div class="media-body py-md-4">
+                            <div class="d-flex mb-3 align-items-center">
+                                <div class="icon d-flex align-items-center justify-content-center">
+                                    <span class="flaticon-dashboard"></span>
+                                </div>
+                                <div class="text">
+                                    <h3 class="heading mb-0 pl-3">
+                                        İl
+                                        <span th:text="${car.year != null ? car.year : '-'}">-</span>
+                                    </h3>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="car-stat-col d-flex align-self-stretch ftco-animate">
+                    <div class="media block-6 services">
+                        <div class="media-body py-md-4">
+                            <div class="d-flex mb-3 align-items-center">
+                                <div class="icon d-flex align-items-center justify-content-center">
+                                    <span class="flaticon-pistons"></span>
+                                </div>
+                                <div class="text">
+                                    <h3 class="heading mb-0 pl-3">
+                                        Mühərrik
+                                        <span th:text="${car.engineVolume != null ? car.engineVolume : '-'}">-</span>
+                                    </h3>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- STYLES (səninki kimi qalır) -->
+            <style>
+                .car-stats-row{ display:flex; flex-wrap:wrap; }
+                @media (min-width: 768px){
+                    .car-stat-col{ flex: 0 0 14.2857%; max-width: 14.2857%; }
+                }
+                @media (max-width: 767.98px){
+                    .car-stat-col{ flex: 0 0 50%; max-width: 50%; }
+                }
+
+                .availability-card{
+                    background:#fff;
+                    border: 1px solid rgba(0,0,0,.06);
+                    border-radius: 16px;
+                    box-shadow: 0 10px 24px rgba(0,0,0,.06);
+                    padding: 18px;
+                }
+
+                .car-tabs-wrap { margin-top: 48px; }
+                .car-tabs-nav {
+                    display: flex;
+                    justify-content: center;
+                    gap: 10px;
+                    flex-wrap: wrap;
+                    margin-bottom: 18px;
+                }
+                .car-tabs-nav .nav-link{
+                    border: 1px solid rgba(0,0,0,.08);
+                    background: #fff;
+                    color: #111;
+                    border-radius: 999px;
+                    padding: 10px 18px;
+                    font-weight: 600;
+                    transition: all .2s ease;
+                }
+                .car-tabs-nav .nav-link:hover{
+                    transform: translateY(-1px);
+                    box-shadow: 0 8px 18px rgba(0,0,0,.08);
+                }
+                .car-tabs-nav .nav-link.active{
+                    background: #1089ff;
+                    color: #fff;
+                    border-color: transparent;
+                    box-shadow: 0 10px 22px rgba(16,137,255,.25);
+                }
+
+                .car-tab-card{
+                    background: #fff;
+                    border-radius: 16px;
+                    box-shadow: 0 12px 28px rgba(0,0,0,.08);
+                    overflow: hidden;
+                }
+                .car-tab-card .card-head{
+                    padding: 18px 22px;
+                    border-bottom: 1px solid rgba(0,0,0,.06);
+                    background: linear-gradient(180deg, rgba(16,137,255,.06), rgba(255,255,255,0));
+                }
+                .car-tab-card .card-head h4{
+                    margin: 0;
+                    font-weight: 800;
+                    letter-spacing: .2px;
+                    text-align: center;
+                }
+                .car-tab-card .card-body{
+                    padding: 22px;
+                }
+
+                .feature-list{
+                    list-style: none;
+                    padding-left: 0;
+                    margin: 0;
+                }
+                .feature-list li{
+                    padding: 10px 12px;
+                    border: 1px solid rgba(0,0,0,.06);
+                    border-radius: 12px;
+                    margin-bottom: 10px;
+                    display: flex;
+                    align-items: center;
+                    gap: 10px;
+                    background: rgba(0,0,0,.015);
+                }
+                .feature-dot{
+                    width: 8px;
+                    height: 8px;
+                    border-radius: 50%;
+                    background: #1089ff;
+                    flex: 0 0 auto;
+                }
+
+                .desc-text{
+                    font-size: 16px;
+                    line-height: 1.8;
+                    color: #444;
+                }
+
+                .stars .ion-ios-star { color: #f5c518; }
+                .stars .ion-ios-star-outline { color: #d6d6d6; }
+                .review-card{
+                    display:flex;
+                    gap:14px;
+                    padding:16px;
+                    border:1px solid rgba(0,0,0,.06);
+                    border-radius:16px;
+                    background:#fff;
+                    box-shadow:0 8px 18px rgba(0,0,0,.05);
+                    margin-bottom:14px;
+                }
+                .review-avatar{
+                    width:56px;height:56px;border-radius:50%;
+                    background-size:cover;background-position:center;
+                    border:2px solid rgba(245,197,24,.35);
+                    flex:0 0 auto;
+                }
+                .review-head{display:flex;justify-content:space-between;gap:12px;align-items:baseline;}
+                .review-name{font-weight:800;margin:0;color:#111;}
+                .review-date{color:#888;font-size:13px;white-space:nowrap;}
+                .review-msg{margin:8px 0 0;color:#444;line-height:1.7;}
+
+                .review-form-card{
+                    border: 1px solid rgba(0,0,0,.06);
+                    border-radius: 16px;
+                    background: #fff;
+                    box-shadow: 0 10px 24px rgba(0,0,0,.06);
+                    padding: 18px;
+                    margin-bottom: 18px;
+                }
+                .review-form-card h5{
+                    margin: 0 0 10px;
+                    font-weight: 800;
+                    text-align: center;
+                }
+                .review-form-card .form-control{
+                    border-radius: 12px;
+                    border: 1px solid rgba(0,0,0,.10);
+                }
+
+                .rating-select{
+                    display:flex;
+                    flex-direction: row-reverse;
+                    justify-content: flex-end;
+                    gap: 6px;
+                    margin-top: 6px;
+                }
+                .rating-select input{ display:none; }
+                .rating-select label{
+                    cursor:pointer;
+                    font-size: 20px;
+                    color:#d6d6d6;
+                    transition: .15s;
+                    margin:0;
+                }
+                .rating-select input:checked ~ label{ color:#f5c518; }
+                .rating-select label:hover,
+                .rating-select label:hover ~ label{ color:#f5c518; }
+            </style>
+
+            <!-- TABS + Reviews -->
+            <div class="row car-tabs-wrap">
+                <div class="col-md-12">
+
+                    <nav class="nav car-tabs-nav" role="tablist">
+                        <a class="nav-link active" id="tab-features" data-toggle="tab" href="#pane-features" role="tab">Xüsusiyyətlər</a>
+                        <a class="nav-link" id="tab-description" data-toggle="tab" href="#pane-description" role="tab">Təsvir</a>
+                        <a class="nav-link" id="tab-reviews" data-toggle="tab" href="#pane-reviews" role="tab">Rəylər</a>
+                    </nav>
+
+                    <div class="tab-content car-tab-card">
+
+                        <!-- Features -->
+                        <div class="tab-pane fade show active" id="pane-features" role="tabpanel">
+                            <div class="card-head"><h4>Xüsusiyyətlər</h4></div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <ul class="feature-list" th:if="${car.features1 != null and !#lists.isEmpty(car.features1)}">
+                                            <li th:each="f : ${car.features1}">
+                                                <span class="feature-dot"></span>
+                                                <span th:text="${f}">Xüsusiyyət</span>
+                                            </li>
+                                        </ul>
+                                    </div>
+
+                                    <div class="col-md-4">
+                                        <ul class="feature-list" th:if="${car.features2 != null and !#lists.isEmpty(car.features2)}">
+                                            <li th:each="f : ${car.features2}">
+                                                <span class="feature-dot"></span>
+                                                <span th:text="${f}">Xüsusiyyət</span>
+                                            </li>
+                                        </ul>
+                                    </div>
+
+                                    <div class="col-md-4">
+                                        <ul class="feature-list" th:if="${car.features3 != null and !#lists.isEmpty(car.features3)}">
+                                            <li th:each="f : ${car.features3}">
+                                                <span class="feature-dot"></span>
+                                                <span th:text="${f}">Xüsusiyyət</span>
+                                            </li>
+                                        </ul>
+                                    </div>
+
+                                    <div class="col-md-12"
+                                         th:if="${(car.features1 == null or #lists.isEmpty(car.features1))
+                                           and (car.features2 == null or #lists.isEmpty(car.features2))
+                                           and (car.features3 == null or #lists.isEmpty(car.features3))}">
+                                        <p class="text-muted mb-0">Xüsusiyyət yoxdur.</p>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Description -->
+                        <div class="tab-pane fade" id="pane-description" role="tabpanel">
+                            <div class="card-head"><h4>Təsvir</h4></div>
+                            <div class="card-body">
+                                <p class="desc-text" th:if="${car.description != null}" th:text="${car.description}">Təsvir</p>
+                                <p class="text-muted mb-0" th:if="${car.description == null}">Təsvir yoxdur.</p>
+                            </div>
+                        </div>
+
+                        <div class="review-form-card" sec:authorize="isAuthenticated()">
+                            <h5>Rəy yaz</h5>
+
+                            <form th:action="@{'/avtomobiller/' + ${car.slug} + '/rey'}"
+                                  method="post"
+                                  th:object="${reviewForm}">
+
+                                <input type="hidden" th:if="${_csrf != null}"
+                                       th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+
+                                <div class="form-group">
+                                    <label>Şərh</label>
+                                    <textarea class="form-control" rows="4"
+                                              th:field="*{message}"
+                                              placeholder="Rəyinizi yazın..."></textarea>
+                                    <small class="text-danger"
+                                           th:if="${#fields.hasErrors('message')}"
+                                           th:errors="*{message}"></small>
+                                </div>
+
+                                <div class="form-group">
+                                    <label>Qiymətləndirmə</label>
+                                    <div class="rating-select">
+                                        <input type="radio" id="rate5" th:field="*{rating}" value="5"><label for="rate5" class="ion-ios-star"></label>
+                                        <input type="radio" id="rate4" th:field="*{rating}" value="4"><label for="rate4" class="ion-ios-star"></label>
+                                        <input type="radio" id="rate3" th:field="*{rating}" value="3"><label for="rate3" class="ion-ios-star"></label>
+                                        <input type="radio" id="rate2" th:field="*{rating}" value="2"><label for="rate2" class="ion-ios-star"></label>
+                                        <input type="radio" id="rate1" th:field="*{rating}" value="1"><label for="rate1" class="ion-ios-star"></label>
+                                    </div>
+                                    <small class="text-danger"
+                                           th:if="${#fields.hasErrors('rating')}"
+                                           th:errors="*{rating}"></small>
+                                </div>
+
+                                <div class="text-center mt-3">
+                                    <button class="btn btn-primary px-4">Göndər</button>
+                                </div>
+                            </form>
+                        </div>
+
+                        <!-- login olmayanlar üçün -->
+                        <div class="review-form-card" sec:authorize="isAnonymous()">
+                            <h5>Rəy yaz</h5>
+                            <div class="alert alert-info mb-0">
+                                Rəy yazmaq üçün <a th:href="@{/giris}">daxil ol</a>.
+                            </div>
+                        </div>
+
+                                <div th:if="${reviews == null or #lists.isEmpty(reviews)}" class="text-muted">
+                                    Rəy yoxdur.
+                                </div>
+
+                                <div th:if="${reviews != null and !#lists.isEmpty(reviews)}">
+                                    <div class="review-card" th:each="r : ${reviews}">
+                                        <div class="review-avatar"
+                                             th:style="|background-image:url('${r.photoUrl != null ? r.photoUrl : '/images/person_1.jpg'}')|">
+                                        </div>
+
+                                        <div style="flex:1;">
+                                            <div class="review-head">
+                                                <p class="review-name" th:text="${r.fullName}">İstifadəçi</p>
+                                                <span class="review-date"
+                                                      th:text="${r.createdAt != null ? #temporals.format(r.createdAt, 'yyyy-MM-dd') : ''}">
+                                                </span>
+                                            </div>
+
+                                            <div class="stars">
+                                                <span th:each="i : ${#numbers.sequence(1,5)}"
+                                                      th:class="${(r.rating != null and i <= r.rating) ? 'ion-ios-star' : 'ion-ios-star-outline'}"></span>
+                                            </div>
+
+                                            <p class="review-msg" th:text="${r.message}">...</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+
+                    </div><!-- /tab-content -->
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- RELATED CARS -->
+    <section class="ftco-section ftco-no-pt">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4" th:each="rc : ${relatedCars}">
+                    <div class="car-wrap rounded ftco-animate">
+                        <div class="img rounded d-flex align-items-end"
+                             th:style="|background-image: url('${rc.imageUrl != null ? rc.imageUrl : '/images/car-1.jpg'}');|">
+                        </div>
+
+                        <div class="text">
+                            <h2 class="mb-0">
+                                <a th:href="@{'/avtomobiller/' + ${rc.slug}(
+                                       rate=${car.selectedRate != null ? car.selectedRate : 'DAILY'},
+                                       pickupLoc=${trip != null ? trip.pickupLoc : null},
+                                       dropoffLoc=${trip != null ? trip.dropoffLoc : null},
+                                       pickupDate=${trip != null ? trip.pickupDate : null},
+                                       dropoffDate=${trip != null ? trip.dropoffDate : null}
+                                )}"
+                                   th:text="${rc.title}">Avtomobil</a>
+                            </h2>
+
+                            <div class="d-flex mb-3">
+                                <span class="cat" th:text="${rc.brand}">Brend</span>
+
+                                <!-- ✅ $ -> ₼ -->
+                                <p class="price ml-auto">
+                                    ₼<span th:text="${rc.dailyRate != null ? rc.dailyRate : 0}">0</span> <span>/gün</span>
+                                </p>
+                            </div>
+
+                            <div class="d-flex mb-0 d-block" style="gap:10px; flex-wrap:wrap;">
+                                <form th:action="@{/sebet/elave-et}" method="post" class="mr-1">
+                                    <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+
+                                    <input type="hidden" name="carId" th:value="${rc.id}">
+                                    <input type="hidden" name="rateType"
+                                           th:value="${car.selectedRate != null ? car.selectedRate : 'DAILY'}">
+                                    <input type="hidden" name="unitCount" value="1">
+
+                                    <input type="hidden" name="pickupLoc" th:value="${trip != null ? trip.pickupLoc : ''}">
+                                    <input type="hidden" name="dropoffLoc" th:value="${trip != null ? trip.dropoffLoc : ''}">
+                                    <input type="hidden" name="pickupDate" th:value="${trip != null ? trip.pickupDate : ''}">
+                                    <input type="hidden" name="dropoffDate" th:value="${trip != null ? trip.dropoffDate : ''}">
+
+                                    <button type="submit" class="btn btn-primary py-2">İndi bron et</button>
+                                </form>
+
+                                <a th:href="@{'/avtomobiller/' + ${rc.slug}(
+                                       rate=${car.selectedRate != null ? car.selectedRate : 'DAILY'},
+                                       pickupLoc=${trip != null ? trip.pickupLoc : null},
+                                       dropoffLoc=${trip != null ? trip.dropoffLoc : null},
+                                       pickupDate=${trip != null ? trip.pickupDate : null},
+                                       dropoffDate=${trip != null ? trip.dropoffDate : null}
+                                )}"
+                                   class="btn btn-secondary py-2 ml-1">Ətraflı</a>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script th:inline="javascript">
+        (function(){
+            const carId = /*[[${car.id}]]*/ 0;
+
+            const pickupEl = document.getElementById('avPickup');
+            const dropoffEl = document.getElementById('avDropoff');
+            const btnEl = document.getElementById('avBtn');
+            const msgEl = document.getElementById('avMsg');
+
+            if (!pickupEl || !dropoffEl || !btnEl || !msgEl) { return; }
+
+            function todayISO(){
+                const d = new Date();
+                const yyyy = d.getFullYear();
+                const mm = String(d.getMonth()+1).padStart(2,'0');
+                const dd = String(d.getDate()).padStart(2,'0');
+                return `${yyyy}-${mm}-${dd}`;
+            }
+
+            function showMsg(type, text){
+                msgEl.style.display = 'block';
+                msgEl.className = 'alert mb-0 ' + type;
+                msgEl.textContent = text;
+            }
+
+            const t = todayISO();
+            pickupEl.min = t;
+            dropoffEl.min = t;
+
+            pickupEl.addEventListener('change', function(){
+                if (pickupEl.value) {
+                    dropoffEl.min = pickupEl.value;
+                    if (dropoffEl.value && dropoffEl.value < pickupEl.value) {
+                        dropoffEl.value = pickupEl.value;
+                    }
+                } else {
+                    dropoffEl.min = t;
+                }
+            });
+
+            async function checkAvailability(){
+                const pickup = pickupEl.value;
+                const dropoff = dropoffEl.value;
+
+                if (!pickup || !dropoff) { showMsg('alert-warning', 'Tarixləri seç.'); return; }
+                if (dropoff < pickup) { showMsg('alert-warning', 'Qaytarma tarixi götürmə tarixindən əvvəl ola bilməz.'); return; }
+
+                btnEl.disabled = true;
+                btnEl.textContent = 'Yoxlanılır...';
+
+                try {
+                    const url = `/api/availability/car/${carId}?pickupDate=${encodeURIComponent(pickup)}&dropoffDate=${encodeURIComponent(dropoff)}`;
+                    const res = await fetch(url, { headers: { 'Accept': 'application/json' } });
+
+                    const data = await res.json().catch(() => null);
+
+                    if (!res.ok) {
+                        const m = data && data.message ? data.message : 'Yoxlama alınmadı.';
+                        showMsg('alert-danger', m);
+                        return;
+                    }
+
+                    if (data && data.available) showMsg('alert-success', data.message || 'Uyğundur');
+                    else showMsg('alert-danger', data && data.message ? data.message : 'İcarədədir');
+
+                } catch (e) {
+                    showMsg('alert-danger', 'Serverə qoşulmaq olmadı.');
+                } finally {
+                    btnEl.disabled = false;
+                    btnEl.textContent = 'Uyğunluğu yoxla';
+                }
+            }
+
+            btnEl.addEventListener('click', checkAvailability);
+        })();
+    </script>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+<body>
+<div layout:fragment="content">
+    <section class="ftco-section">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-md-6">
+                    <h3 class="mb-4">Qeydiyyat</h3>
+
+                    <form th:action="@{/qeydiyyat}" th:object="${form}" method="post" class="p-4 bg-light">
+
+                        <div class="form-group">
+                            <label>E-poçt</label>
+                            <input type="email" class="form-control" th:field="*{email}">
+                            <small class="text-danger" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></small>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Ad Soyad</label>
+                            <input type="text" class="form-control" th:field="*{fullName}">
+                            <small class="text-danger" th:if="${#fields.hasErrors('fullName')}" th:errors="*{fullName}"></small>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Şifrə</label>
+                            <input type="password" class="form-control" th:field="*{password}">
+                            <small class="text-danger" th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></small>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Şifrənin təkrarı</label>
+                            <input type="password" class="form-control" th:field="*{confirmPassword}">
+                            <small class="text-danger" th:if="${#fields.hasErrors('confirmPassword')}" th:errors="*{confirmPassword}"></small>
+                        </div>
+
+                        <div class="alert alert-danger" th:if="${serverError}" th:text="${serverError}"></div>
+
+                        <button type="submit" class="btn btn-primary py-2 px-4">Qeydiyyat</button>
+                        <a th:href="@{/giris}" class="btn btn-link">Daxil ol</a>
+
+                    </form>
+
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+</body>
+</html>

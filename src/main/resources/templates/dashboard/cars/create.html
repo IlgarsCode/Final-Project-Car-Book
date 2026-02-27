@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{dashboard/layout}">
+<head>
+    <title>Maşın yarat</title>
+</head>
+<body>
+<div layout:fragment="content">
+
+    <h1 class="h3 mb-3 text-gray-800">Maşın yarat</h1>
+
+    <form th:action="@{/dashboard/cars/create}"
+          th:object="${form}"
+          method="post"
+          enctype="multipart/form-data"
+          class="card shadow p-4">
+
+        <th:block th:if="${_csrf != null}">
+            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+        </th:block>
+
+        <div class="form-row">
+            <div class="form-group col-md-6">
+                <label>Brend</label>
+                <input class="form-control" th:field="*{brand}">
+                <div class="text-danger" th:if="${#fields.hasErrors('brand')}" th:errors="*{brand}"></div>
+            </div>
+
+            <div class="form-group col-md-6">
+                <label>Model</label>
+                <input class="form-control" th:field="*{title}">
+                <div class="text-danger" th:if="${#fields.hasErrors('title')}" th:errors="*{title}"></div>
+            </div>
+        </div>
+
+        <!-- ✅ CATEGORY -->
+        <div class="form-group">
+            <label>Kateqoriya</label>
+            <select class="form-control" th:field="*{categoryId}" required>
+                <option value="" th:selected="${form.categoryId == null}" disabled>Kateqoriya seç</option>
+                <option th:each="cat : ${categories}"
+                        th:value="${cat.id}"
+                        th:text="${cat.name}">
+                </option>
+            </select>
+            <div class="text-danger" th:if="${#fields.hasErrors('categoryId')}" th:errors="*{categoryId}"></div>
+        </div>
+
+        <!-- ✅ SEGMENT (Econom/Comfort/Sport/Premium) -->
+        <select class="form-control" th:field="*{segmentId}" required>
+            <option value="" disabled>Seqment seç</option>
+            <option th:each="s : ${segments}"
+                    th:value="${s.id}"
+                    th:text="${s.name}"
+                    th:selected="${form.segmentId != null and form.segmentId == s.id}">
+            </option>
+        </select>
+
+        <div class="form-group">
+            <label>Şəkil (istəyə görə)</label>
+            <input type="file" class="form-control" name="image" accept="image/*">
+        </div>
+
+        <div class="form-group">
+            <label>Təsvir</label>
+            <textarea class="form-control" rows="4" th:field="*{description}"></textarea>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group col-md-2">
+                <label>İl</label>
+                <input class="form-control" th:field="*{year}">
+                <div class="text-danger" th:if="${#fields.hasErrors('year')}" th:errors="*{year}"></div>
+            </div>
+
+            <div class="form-group col-md-2">
+                <label>Mühərrik həcmi</label>
+                <input class="form-control" th:field="*{engineVolume}" placeholder="2.0">
+                <div class="text-danger" th:if="${#fields.hasErrors('engineVolume')}" th:errors="*{engineVolume}"></div>
+            </div>
+
+            <div class="form-group col-md-2"><label>Yürüş</label><input class="form-control" th:field="*{mileage}"></div>
+            <div class="form-group col-md-2"><label>Transmissiya</label><input class="form-control" th:field="*{transmission}"></div>
+            <div class="form-group col-md-2"><label>Oturacaq sayı</label><input class="form-control" th:field="*{seats}"></div>
+            <div class="form-group col-md-2"><label>Yanacaq</label><input class="form-control" th:field="*{fuel}"></div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group col-md-2"><label>Bağaj</label><input class="form-control" th:field="*{luggage}"></div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group col-md-4"><label>Xüsusiyyətlər Sütun 1</label><textarea class="form-control" rows="3" th:field="*{featuresCol1}"></textarea></div>
+            <div class="form-group col-md-4"><label>Xüsusiyyətlər Sütun 2</label><textarea class="form-control" rows="3" th:field="*{featuresCol2}"></textarea></div>
+            <div class="form-group col-md-4"><label>Xüsusiyyətlər Sütun 3</label><textarea class="form-control" rows="3" th:field="*{featuresCol3}"></textarea></div>
+        </div>
+
+        <div class="form-group form-check">
+            <input class="form-check-input" type="checkbox" th:field="*{isActive}">
+            <label class="form-check-label">Aktiv</label>
+        </div>
+
+        <div class="d-flex" style="gap:10px;">
+            <button class="btn btn-primary" type="submit">Yadda saxla</button>
+            <a class="btn btn-secondary" th:href="@{/dashboard/cars}">Geri</a>
+        </div>
+    </form>
+
+</div>
+</body>
+</html>

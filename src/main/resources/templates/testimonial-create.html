@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="az"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+<head>
+    <meta charset="UTF-8">
+    <title>Rəy yaz</title>
+</head>
+<body>
+
+<div layout:fragment="content">
+
+    <section class="ftco-section">
+        <div class="container">
+
+            <div class="row justify-content-center">
+                <div class="col-md-8">
+
+                    <div class="heading-section text-center mb-4">
+                        <span class="subheading">Rəy</span>
+                        <h2 class="mb-3">Rəyinizi yazın</h2>
+                    </div>
+
+                    <!-- ✅ AZ: /reyler/yeni -->
+                    <form th:action="@{/reyler/yeni}" th:object="${form}" method="post">
+
+                        <div class="form-group">
+                            <label>Vəzifə (istəyə görə)</label>
+                            <input class="form-control"
+                                   th:field="*{position}"
+                                   placeholder="məs: Müştəri">
+                            <small class="text-danger"
+                                   th:if="${#fields.hasErrors('position')}"
+                                   th:errors="*{position}"></small>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Rəy</label>
+                            <textarea class="form-control"
+                                      rows="8"
+                                      th:field="*{comment}"
+                                      placeholder="Rəyinizi yazın..."></textarea>
+                            <small class="text-danger"
+                                   th:if="${#fields.hasErrors('comment')}"
+                                   th:errors="*{comment}"></small>
+                        </div>
+
+                        <button class="btn btn-primary">Göndər</button>
+                    </form>
+
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+<head>
+    <meta charset="UTF-8">
+    <title>Ödəniş Nəticəsi</title>
+</head>
+<body>
+<div layout:fragment="content">
+
+    <section class="ftco-section">
+        <div class="container">
+            <h3 class="mb-3">Ödəniş Nəticəsi</h3>
+
+            <div class="alert alert-success" th:if="${success}">
+                ✅ Ödəniş uğurlu oldu.
+            </div>
+
+            <div class="alert alert-danger" th:if="${success == false}">
+                ❌ Ödəniş uğursuz oldu.
+            </div>
+
+            <div class="mb-3">
+                <b>Ödəniş statusu:</b> <span th:text="${payment.status}">PROCESSING</span>
+            </div>
+
+            <!-- ✅ order detail: /sifarislerim/{no}  (no = userOrderNo) -->
+            <a class="btn btn-primary"
+               th:if="${orderNo != null}"
+               th:href="@{/sifarislerim/{no}(no=${orderNo})}">
+                Sifarişi göstər
+            </a>
+
+            <!-- ✅ order list: /sifarislerim -->
+            <a class="btn btn-outline-secondary ml-2"
+               th:if="${orderNo == null}"
+               th:href="@{/sifarislerim}">
+                Sifarişlərim
+            </a>
+        </div>
+    </section>
+
+</div>
+</body>
+</html>

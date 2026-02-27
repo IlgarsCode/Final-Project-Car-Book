@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="az"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+<head>
+    <meta charset="UTF-8">
+    <title>Profil</title>
+
+    <style>
+        .profile-card { border: 1px solid rgba(0,0,0,.06); border-radius: 14px; }
+        .profile-divider { height: 1px; background: rgba(0,0,0,.06); margin: 18px 0; }
+
+        .pwd-actions {
+            display:flex; gap:12px; flex-wrap:wrap; align-items:center; margin-top: 10px;
+        }
+
+        .hint-box {
+            border-radius: 12px;
+            border: 1px dashed rgba(79,134,247,.35);
+            background: rgba(79,134,247,.06);
+            padding: 12px 14px;
+            margin-top: 14px;
+        }
+
+        .hint-box .title {
+            font-weight: 700;
+            margin-bottom: 4px;
+            color: #1f2d3d;
+        }
+
+        .hint-box .text {
+            margin:0;
+            color: rgba(0,0,0,.65);
+            font-size: 14px;
+            line-height: 1.35;
+        }
+
+        .link-soft {
+            display:inline-flex;
+            align-items:center;
+            gap:8px;
+            text-decoration:none;
+            font-weight: 600;
+        }
+        .link-soft:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
+<div layout:fragment="content">
+
+    <section class="ftco-section bg-light">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-md-9">
+
+                    <h3 class="mb-4">Profilim</h3>
+
+                    <div class="alert alert-success" th:if="${ok}">Profil yeniləndi.</div>
+                    <div class="alert alert-success" th:if="${avatarOk}">Avatar yeniləndi.</div>
+                    <div class="alert alert-success" th:if="${pwdOk}">Şifrə dəyişdirildi.</div>
+
+                    <!-- PROFILE CARD -->
+                    <div class="card shadow p-4 mb-4 profile-card">
+
+                        <div class="row align-items-center">
+                            <div class="col-md-3 text-center mb-3 mb-md-0">
+                                <div style="width:120px;height:120px;border-radius:50%;overflow:hidden;margin:0 auto;border:1px solid rgba(0,0,0,.08);">
+                                    <img th:src="${me.photoUrl != null ? me.photoUrl : '/images/person_1.jpg'}"
+                                         style="width:100%;height:100%;object-fit:cover;">
+                                </div>
+
+                                <form th:action="@{/profil/avatar}" method="post" enctype="multipart/form-data" class="mt-3">
+                                    <input type="file" name="avatar" accept="image/*" class="form-control form-control-sm" required>
+                                    <button class="btn btn-primary btn-sm mt-2" type="submit">Avatarı yenilə</button>
+                                </form>
+                            </div>
+
+                            <div class="col-md-9">
+                                <form th:action="@{/profil}" th:object="${form}" method="post">
+
+                                    <div class="form-row">
+                                        <div class="form-group col-md-6">
+                                            <label>Ad və soyad</label>
+                                            <input class="form-control" th:field="*{fullName}">
+                                            <small class="text-danger" th:if="${#fields.hasErrors('fullName')}" th:errors="*{fullName}"></small>
+                                        </div>
+
+                                        <div class="form-group col-md-6">
+                                            <label>E-poçt</label>
+                                            <input class="form-control" th:field="*{email}">
+                                            <small class="text-danger" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></small>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label>Telefon</label>
+                                        <input class="form-control" th:field="*{phone}" placeholder="+994...">
+                                        <small class="text-danger" th:if="${#fields.hasErrors('phone')}" th:errors="*{phone}"></small>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label>Haqqımda</label>
+                                        <textarea class="form-control" th:field="*{bio}" rows="4"
+                                                  placeholder="Özünüz haqqında qısa məlumat..."></textarea>
+                                        <small class="text-danger" th:if="${#fields.hasErrors('bio')}" th:errors="*{bio}"></small>
+                                        <small class="text-muted" style="font-size:12px;">
+                                            Bu məlumat blog və rəylərdə “müəllif bio” kimi görünəcək.
+                                        </small>
+                                    </div>
+
+                                    <button class="btn btn-primary" type="submit">Dəyişiklikləri yadda saxla</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- PASSWORD CARD -->
+                    <div class="card shadow p-4 profile-card">
+                        <div class="d-flex justify-content-between align-items-center flex-wrap" style="gap:10px;">
+                            <h5 class="mb-0">Şifrəni dəyiş</h5>
+
+                            <!-- Qeyd: bu endpoint səndə yoxdursa 404 verəcək -->
+                            <a class="link-soft text-primary"
+                               th:href="@{/sifreni-unutdum}"
+                               title="Şifrənizi unutmusunuzsa e-poçt ilə yeniləyin">
+                                <span class="icon ion-ios-help-circle-outline"></span>
+                                Şifrəni unutdum?
+                            </a>
+                        </div>
+
+                        <div class="profile-divider"></div>
+
+                        <form th:action="@{/profil/sifre}" th:object="${pwdForm}" method="post">
+
+                            <div class="form-group">
+                                <label>Köhnə şifrə</label>
+                                <input type="password" class="form-control" th:field="*{oldPassword}">
+                                <small class="text-danger" th:if="${#fields.hasErrors('oldPassword')}" th:errors="*{oldPassword}"></small>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group col-md-6">
+                                    <label>Yeni şifrə</label>
+                                    <input type="password" class="form-control" th:field="*{newPassword}">
+                                    <small class="text-danger" th:if="${#fields.hasErrors('newPassword')}" th:errors="*{newPassword}"></small>
+                                </div>
+
+                                <div class="form-group col-md-6">
+                                    <label>Yeni şifrəni təsdiqlə</label>
+                                    <input type="password" class="form-control" th:field="*{confirmNewPassword}">
+                                    <small class="text-danger" th:if="${#fields.hasErrors('confirmNewPassword')}" th:errors="*{confirmNewPassword}"></small>
+                                </div>
+                            </div>
+
+                            <div class="pwd-actions">
+                                <button class="btn btn-secondary" type="submit">Şifrəni yenilə</button>
+                                <small class="text-muted" style="font-size:12px;">
+                                    Köhnə şifrən yadında deyilsə, “Şifrəni unutdum?” ilə e-poçt OTP istifadə et.
+                                </small>
+                            </div>
+
+                        </form>
+
+                        <div class="hint-box">
+                            <div class="title">Təhlükəsizlik qeydi</div>
+                            <p class="text">
+                                “Şifrəni unutdum” prosesi e-poçta OTP göndərir. E-poçt hesabına giriş səndə deyilsə, şifrə yenilənməyəcək.
+                            </p>
+                        </div>
+
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </section>
+
+</div>
+</body>
+</html>

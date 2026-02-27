@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="az"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{dashboard/layout}">
+
+<head>
+    <title>Məkan Redaktə</title>
+
+    <th:block layout:fragment="css">
+        <style>
+            .form-card{
+                border-radius:16px;
+                box-shadow:0 12px 34px rgba(0,0,0,.08);
+                border:1px solid rgba(0,0,0,.06);
+                overflow:hidden;
+                background:#fff;
+            }
+            .form-head{
+                padding:16px 18px;
+                border-bottom:1px solid rgba(0,0,0,.06);
+                background:rgba(0,0,0,.02);
+            }
+            .form-body{ padding:18px; }
+            .req{ color:#dc3545; font-weight:700; }
+        </style>
+    </th:block>
+</head>
+
+<body>
+
+<div layout:fragment="content">
+
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">Məkan Redaktə</h1>
+
+        <a class="btn btn-sm btn-outline-secondary" th:href="@{/dashboard/locations}">
+            <i class="fas fa-arrow-left"></i> Geri
+        </a>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-8 col-xl-7">
+
+            <div class="form-card">
+
+                <div class="form-head d-flex align-items-center justify-content-between">
+                    <div>
+                        <div class="font-weight-bold">Məlumatları yenilə</div>
+                        <div class="text-muted small">
+                            ID: <span th:text="${id}">0</span>
+                        </div>
+                    </div>
+                    <i class="fas fa-map-marker-alt text-primary"></i>
+                </div>
+
+                <div class="form-body">
+
+                    <form method="post"
+                          th:action="@{/dashboard/locations/edit/{id}(id=${id})}"
+                          th:object="${editForm}">
+
+                        <!-- CSRF -->
+                        <input type="hidden" th:if="${_csrf != null}"
+                               th:name="${_csrf.parameterName}"
+                               th:value="${_csrf.token}"/>
+
+                        <!-- ✅ GLOBAL ERRORLAR (mütləq formun içində olmalıdır) -->
+                        <div class="alert alert-danger"
+                             th:if="${#fields.hasGlobalErrors()}"
+                             role="alert">
+                            <div th:each="e : ${#fields.globalErrors()}" th:text="${e}">Xəta</div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Ad <span class="req">*</span></label>
+                            <input type="text"
+                                   class="form-control"
+                                   th:field="*{name}"
+                                   placeholder="Məs: Bakı Hava Limanı">
+                            <small class="text-danger"
+                                   th:if="${#fields.hasErrors('name')}"
+                                   th:errors="*{name}">Name error</small>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Sıralama (Sort Order) <span class="req">*</span></label>
+                            <input type="number"
+                                   class="form-control"
+                                   th:field="*{sortOrder}"
+                                   min="0" step="1"
+                                   placeholder="0">
+                            <small class="text-danger"
+                                   th:if="${#fields.hasErrors('sortOrder')}"
+                                   th:errors="*{sortOrder}">Sort error</small>
+                            <small class="text-muted">
+                                Kiçik rəqəm = daha yuxarıda görünəcək.
+                            </small>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="custom-control custom-switch">
+                                <input type="checkbox"
+                                       class="custom-control-input"
+                                       id="isActiveSwitch"
+                                       th:field="*{isActive}">
+                                <label class="custom-control-label" for="isActiveSwitch">
+                                    Aktiv
+                                </label>
+                            </div>
+                            <small class="text-muted">
+                                Aktiv deyilsə, istifadəçi tərəfdə göstərilməyəcək.
+                            </small>
+                        </div>
+
+                        <hr>
+
+                        <div class="d-flex" style="gap:10px; flex-wrap:wrap;">
+                            <button class="btn btn-primary" type="submit">
+                                <i class="fas fa-save"></i> Yadda saxla
+                            </button>
+
+                            <a class="btn btn-outline-secondary" th:href="@{/dashboard/locations}">
+                                İmtina
+                            </a>
+                        </div>
+
+                    </form>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+</div>
+
+<th:block layout:fragment="js"></th:block>
+
+</body>
+</html>

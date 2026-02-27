@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html
+        xmlns:th="http://www.thymeleaf.org"
+        xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+        layout:decorate="~{layout}">
+<head>
+    <meta charset="UTF-8">
+    <title>Qiymətlər</title>
+</head>
+<body>
+<div layout:fragment="content">
+
+    <section class="hero-wrap hero-wrap-2 js-fullheight"
+             th:if="${banner != null}"
+             th:style="|background-image: url('${banner.photoUrl}');|"
+             data-stellar-background-ratio="0.5">
+        <div class="overlay"></div>
+        <div class="container">
+            <div class="row no-gutters slider-text js-fullheight align-items-end justify-content-start">
+                <div class="col-md-9 ftco-animate pb-5">
+                    <p class="breadcrumbs">
+                        <span class="mr-2">
+                            <a th:href="@{/}">Ana səhifə <i class="ion-ios-arrow-forward"></i></a>
+                        </span>
+                        <span>Qiymətlər <i class="ion-ios-arrow-forward"></i></span>
+                    </p>
+
+                    <h1 class="mb-3 bread" th:text="${banner.title}">Qiymətlər</h1>
+                    <p th:text="${banner.description}"></p>
+
+                    <a th:if="${banner.buttonText != null and banner.buttonUrl != null}"
+                       th:href="${banner.buttonUrl}"
+                       class="btn btn-primary mt-3"
+                       th:text="${banner.buttonText}">
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="ftco-section ftco-cart">
+        <div class="container">
+
+            <div class="row mb-4">
+                <div class="col-md-12 ftco-animate d-flex justify-content-between align-items-center flex-wrap"
+                     style="gap:12px;">
+
+                    <h3 class="mb-0">Qiymətlər</h3>
+
+                    <form th:action="@{/qiymetler}" method="get"
+                          class="d-flex align-items-center flex-wrap"
+                          style="gap:10px;">
+
+                        <input type="hidden" name="pickupLoc"
+                               th:value="${trip != null ? trip.pickupLoc : ''}"
+                               th:disabled="${trip == null or trip.pickupLoc == null}">
+
+                        <input type="hidden" name="dropoffLoc"
+                               th:value="${trip != null ? trip.dropoffLoc : ''}"
+                               th:disabled="${trip == null or trip.dropoffLoc == null}">
+
+                        <input type="hidden" name="pickupDate"
+                               th:value="${trip != null ? trip.pickupDate : ''}"
+                               th:disabled="${trip == null or trip.pickupDate == null}">
+
+                        <input type="hidden" name="dropoffDate"
+                               th:value="${trip != null ? trip.dropoffDate : ''}"
+                               th:disabled="${trip == null or trip.dropoffDate == null}">
+
+                        <select name="category" class="form-control" style="max-width:260px;">
+                            <option value="">Bütün kateqoriyalar</option>
+                            <option th:each="c : ${carCategories}"
+                                    th:value="${c.slug}"
+                                    th:text="${c.name + ' (' + c.activeCarCount + ')'}"
+                                    th:selected="${selectedCategory != null and selectedCategory == c.slug}">
+                            </option>
+                        </select>
+
+                        <select name="segment" class="form-control" style="max-width:260px;">
+                            <option value="">Bütün seqmentlər</option>
+                            <option th:each="s : ${segments}"
+                                    th:value="${s.slug}"
+                                    th:text="${s.name + ' (' + s.activeCarCount + ')'}"
+                                    th:selected="${selectedSegment != null and selectedSegment == s.slug}">
+                            </option>
+                        </select>
+
+                        <button class="btn btn-primary" type="submit">Filtrlə</button>
+
+                        <a class="btn btn-outline-secondary"
+                           th:href="@{/qiymetler(
+                                pickupLoc=${trip != null ? trip.pickupLoc : null},
+                                dropoffLoc=${trip != null ? trip.dropoffLoc : null},
+                                pickupDate=${trip != null ? trip.pickupDate : null},
+                                dropoffDate=${trip != null ? trip.dropoffDate : null}
+                           )}"
+                           th:if="${(selectedCategory != null and selectedCategory != '') or (selectedSegment != null and selectedSegment != '')}">
+                            Sıfırla
+                        </a>
+                    </form>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12 ftco-animate">
+                    <div class="car-list">
+                        <table class="table">
+                            <thead class="thead-primary">
+                            <tr class="text-center">
+                                <th>&nbsp;</th>
+                                <th>&nbsp;</th>
+                                <th class="bg-primary heading">Saatlıq tarif</th>
+                                <th class="bg-dark heading">Günlük tarif</th>
+                                <th class="bg-black heading">Lizinq</th>
+                            </tr>
+                            </thead>
+
+                            <tbody>
+
+                            <tr th:if="${rows == null or #lists.isEmpty(rows)}">
+                                <td colspan="5" class="text-center py-5" style="color:#6c757d;">
+                                    Qiymət məlumatı tapılmadı.
+                                </td>
+                            </tr>
+
+                            <tr th:each="row : ${rows}">
+                                <td class="car-image">
+                                    <div class="img"
+                                         th:style="|background-image:url('${row.carImageUrl != null ? row.carImageUrl : '/images/car-1.jpg'}');|"></div>
+                                </td>
+
+                                <td class="product-name">
+                                    <h3 th:text="${row.carTitle}">Maşın</h3>
+
+                                    <p class="mb-0 rated">
+                                        <span>reytinq:</span>
+                                        <span th:each="i : ${#numbers.sequence(1,5)}"
+                                              th:class="${i <= T(java.lang.Math).round(row.averageRating) ? 'ion-ios-star' : 'ion-ios-star-outline'}"></span>
+                                        <small style="margin-left:8px; color:#6c757d;"
+                                               th:text="'(' + ${row.reviewCount} + ')'">(0)</small>
+                                    </p>
+                                </td>
+
+                                <!-- HOURLY -->
+                                <td class="price">
+                                    <p class="btn-custom">
+                                        <a th:href="@{'/avtomobiller/' + ${row.carSlug}(
+                                                rate='HOURLY',
+                                                pickupLoc=${trip != null ? trip.pickupLoc : null},
+                                                dropoffLoc=${trip != null ? trip.dropoffLoc : null},
+                                                pickupDate=${trip != null ? trip.pickupDate : null},
+                                                dropoffDate=${trip != null ? trip.dropoffDate : null}
+                                        )}">Ətraflı</a>
+                                    </p>
+
+                                    <form th:action="@{/sebet/elave-et}" method="post" style="margin:0 0 10px 0;">
+                                        <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+
+                                        <input type="hidden" name="carId" th:value="${row.carId}">
+                                        <input type="hidden" name="rateType" value="HOURLY">
+                                        <input type="hidden" name="unitCount" value="1">
+
+                                        <input type="hidden" name="pickupLoc" th:value="${trip != null ? trip.pickupLoc : ''}">
+                                        <input type="hidden" name="dropoffLoc" th:value="${trip != null ? trip.dropoffLoc : ''}">
+                                        <input type="hidden" name="pickupDate" th:value="${trip != null ? trip.pickupDate : ''}">
+                                        <input type="hidden" name="dropoffDate" th:value="${trip != null ? trip.dropoffDate : ''}">
+
+                                        <button type="submit" class="btn btn-primary btn-sm">İndi bron et</button>
+                                    </form>
+
+                                    <div class="price-rate">
+                                        <h3>
+                                            <span class="num">
+                                                <small class="currency">₼</small>
+
+                                                <del class="text-muted mr-1"
+                                                     th:if="${row.hourlyHasDiscount != null and row.hourlyHasDiscount and row.baseHourlyRate != null and row.baseHourlyRate.compareTo(row.hourlyRate) > 0}">
+                                                    <span th:text="${row.baseHourlyRate}">0</span>
+                                                </del>
+
+                                                <span th:text="${row.hourlyRate != null ? row.hourlyRate : 0}">0</span>
+
+                                                <span class="badge badge-success ml-2"
+                                                      th:if="${row.hourlyHasDiscount != null and row.hourlyHasDiscount and row.hourlyDiscountPercent != null and row.hourlyDiscountPercent.doubleValue() > 0}"
+                                                      th:text="${'-' + row.hourlyDiscountPercent + '%'}">-10%</span>
+                                            </span>
+                                            <span class="per">/saat</span>
+                                        </h3>
+
+                                        <span class="subheading"
+                                              th:if="${row.fuelSurchargePerHour != null and row.fuelSurchargePerHour.doubleValue() > 0}"
+                                              th:text="'₼' + ${row.fuelSurchargePerHour} + '/saat yanacaq əlavəsi'"></span>
+                                    </div>
+                                </td>
+
+                                <!-- DAILY -->
+                                <td class="price">
+                                    <p class="btn-custom">
+                                        <a th:href="@{'/avtomobiller/' + ${row.carSlug}(
+                                                rate='DAILY',
+                                                pickupLoc=${trip != null ? trip.pickupLoc : null},
+                                                dropoffLoc=${trip != null ? trip.dropoffLoc : null},
+                                                pickupDate=${trip != null ? trip.pickupDate : null},
+                                                dropoffDate=${trip != null ? trip.dropoffDate : null}
+                                        )}">Ətraflı</a>
+                                    </p>
+
+                                    <form th:action="@{/sebet/elave-et}" method="post" style="margin:0 0 10px 0;">
+                                        <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+
+                                        <input type="hidden" name="carId" th:value="${row.carId}">
+                                        <input type="hidden" name="rateType" value="DAILY">
+                                        <input type="hidden" name="unitCount" value="1">
+
+                                        <input type="hidden" name="pickupLoc" th:value="${trip != null ? trip.pickupLoc : ''}">
+                                        <input type="hidden" name="dropoffLoc" th:value="${trip != null ? trip.dropoffLoc : ''}">
+                                        <input type="hidden" name="pickupDate" th:value="${trip != null ? trip.pickupDate : ''}">
+                                        <input type="hidden" name="dropoffDate" th:value="${trip != null ? trip.dropoffDate : ''}">
+
+                                        <button type="submit" class="btn btn-primary btn-sm">İndi bron et</button>
+                                    </form>
+
+                                    <div class="price-rate">
+                                        <h3>
+                                            <span class="num">
+                                                <small class="currency">₼</small>
+
+                                                <del class="text-muted mr-1"
+                                                     th:if="${row.dailyHasDiscount != null and row.dailyHasDiscount and row.baseDailyRate != null and row.baseDailyRate.compareTo(row.dailyRate) > 0}">
+                                                    <span th:text="${row.baseDailyRate}">0</span>
+                                                </del>
+
+                                                <span th:text="${row.dailyRate != null ? row.dailyRate : 0}">0</span>
+
+                                                <span class="badge badge-success ml-2"
+                                                      th:if="${row.dailyHasDiscount != null and row.dailyHasDiscount and row.dailyDiscountPercent != null and row.dailyDiscountPercent.doubleValue() > 0}"
+                                                      th:text="${'-' + row.dailyDiscountPercent + '%'}">-15%</span>
+                                            </span>
+                                            <span class="per">/gün</span>
+                                        </h3>
+                                    </div>
+                                </td>
+
+                                <!-- LEASING -->
+                                <td class="price">
+                                    <p class="btn-custom">
+                                        <a th:href="@{'/avtomobiller/' + ${row.carSlug}(
+                                                rate='LEASING',
+                                                pickupLoc=${trip != null ? trip.pickupLoc : null},
+                                                dropoffLoc=${trip != null ? trip.dropoffLoc : null},
+                                                pickupDate=${trip != null ? trip.pickupDate : null},
+                                                dropoffDate=${trip != null ? trip.dropoffDate : null}
+                                        )}">Ətraflı</a>
+                                    </p>
+
+                                    <form th:action="@{/sebet/elave-et}" method="post" style="margin:0 0 10px 0;">
+                                        <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+
+                                        <input type="hidden" name="carId" th:value="${row.carId}">
+                                        <input type="hidden" name="rateType" value="LEASING">
+                                        <input type="hidden" name="unitCount" value="1">
+
+                                        <input type="hidden" name="pickupLoc" th:value="${trip != null ? trip.pickupLoc : ''}">
+                                        <input type="hidden" name="dropoffLoc" th:value="${trip != null ? trip.dropoffLoc : ''}">
+                                        <input type="hidden" name="pickupDate" th:value="${trip != null ? trip.pickupDate : ''}">
+                                        <input type="hidden" name="dropoffDate" th:value="${trip != null ? trip.dropoffDate : ''}">
+
+                                        <button type="submit" class="btn btn-primary btn-sm">İndi bron et</button>
+                                    </form>
+
+                                    <div class="price-rate">
+                                        <h3>
+                                            <span class="num">
+                                                <small class="currency">₼</small>
+
+                                                <del class="text-muted mr-1"
+                                                     th:if="${row.leasingHasDiscount != null and row.leasingHasDiscount and row.baseMonthlyLeasingRate != null and row.baseMonthlyLeasingRate.compareTo(row.monthlyLeasingRate) > 0}">
+                                                    <span th:text="${row.baseMonthlyLeasingRate}">0</span>
+                                                </del>
+
+                                                <span th:text="${row.monthlyLeasingRate != null ? row.monthlyLeasingRate : 0}">0</span>
+
+                                                <span class="badge badge-success ml-2"
+                                                      th:if="${row.leasingHasDiscount != null and row.leasingHasDiscount and row.leasingDiscountPercent != null and row.leasingDiscountPercent.doubleValue() > 0}"
+                                                      th:text="${'-' + row.leasingDiscountPercent + '%'}">-5%</span>
+                                            </span>
+                                            <span class="per">/ay</span>
+                                        </h3>
+                                    </div>
+                                </td>
+
+                            </tr>
+
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+</div>
+</body>
+</html>

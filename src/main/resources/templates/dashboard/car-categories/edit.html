@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{dashboard/layout}">
+<head>
+    <title>Avtomobil kateqoriyasını redaktə et</title>
+</head>
+<body>
+
+<div layout:fragment="content">
+
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">Kateqoriyanı redaktə et</h1>
+        <a class="btn btn-secondary" th:href="@{/dashboard/car-categories}">
+            Geri
+        </a>
+    </div>
+
+    <div class="card shadow mb-4">
+        <div class="card-body">
+
+            <form th:action="@{/dashboard/car-categories/edit/{id}(id=${id})}"
+                  th:object="${editForm}"
+                  method="post">
+
+                <th:block th:if="${_csrf != null}">
+                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                </th:block>
+
+                <div class="form-group col-md-6 p-0">
+                    <label>Ad</label>
+                    <input class="form-control" th:field="*{name}" />
+                    <small class="text-danger"
+                           th:if="${#fields.hasErrors('name')}"
+                           th:errors="*{name}"></small>
+                </div>
+
+                <button class="btn btn-primary" type="submit">
+                    <i class="fas fa-save"></i> Yadda saxla
+                </button>
+
+            </form>
+
+        </div>
+    </div>
+
+</div>
+
+</body>
+</html>

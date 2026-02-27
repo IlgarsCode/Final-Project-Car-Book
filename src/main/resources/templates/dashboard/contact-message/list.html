@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{dashboard/layout}">
+<head>
+  <meta charset="UTF-8">
+  <title>Əlaqə mesajları</title>
+</head>
+
+<body>
+<div layout:fragment="content">
+
+  <div class="d-sm-flex align-items-center justify-content-between mb-4">
+    <h1 class="h3 mb-0 text-gray-800">Əlaqə mesajları</h1>
+
+    <div class="d-flex align-items-center gap-2">
+      <span class="badge badge-danger" th:text="'Oxunmamış: ' + ${unreadCount}">Oxunmamış: 0</span>
+
+      <a class="btn btn-sm btn-primary ml-2"
+         th:href="@{/dashboard/contact-messages(unread=true)}">
+        Yalnız oxunmamış
+      </a>
+      <a class="btn btn-sm btn-outline-secondary ml-2"
+         th:href="@{/dashboard/contact-messages}">
+        Hamısı
+      </a>
+    </div>
+  </div>
+
+  <div th:if="${param.deleted}" class="alert alert-success">Silindi ✔️</div>
+
+  <div class="card shadow mb-4">
+    <div class="card-header py-3 d-flex align-items-center justify-content-between">
+      <h6 class="m-0 font-weight-bold text-primary">Mesajlar</h6>
+      <small class="text-muted" th:text="'Cəmi: ' + ${messages.totalElements}">Cəmi: 0</small>
+    </div>
+
+    <div class="card-body p-0">
+      <div class="table-responsive">
+        <table class="table table-bordered table-hover mb-0">
+          <thead class="thead-light">
+          <tr>
+            <th style="width:110px;">Status</th>
+            <th>Ad</th>
+            <th>Email</th>
+            <th>Mövzu</th>
+            <th style="width:170px;">Tarix</th>
+            <th style="width:120px;">Əməliyyatlar</th>
+          </tr>
+          </thead>
+
+          <tbody>
+          <tr th:each="it : ${messages.content}">
+            <td>
+              <span th:if="${!it.read}" class="badge badge-danger">Oxunmayıb</span>
+              <span th:if="${it.read}" class="badge badge-secondary">Oxunub</span>
+            </td>
+
+            <td th:text="${it.name}">Name</td>
+            <td>
+              <a th:href="'mailto:' + ${it.email}" th:text="${it.email}">email</a>
+            </td>
+            <td th:text="${it.subject}">Subject</td>
+            <td th:text="${it.createdAt}">2026-02-08</td>
+
+            <td class="text-nowrap">
+              <a class="btn btn-sm btn-info"
+                 th:href="@{/dashboard/contact-messages/{id}(id=${it.id})}">
+                Bax
+              </a>
+
+              <form th:action="@{/dashboard/contact-messages/{id}/delete(id=${it.id})}"
+                    method="post"
+                    style="display:inline;">
+                <button class="btn btn-sm btn-outline-danger"
+                        type="submit"
+                        onclick="return confirm('Bu mesaj silinsin?')">
+                  Sil
+                </button>
+              </form>
+            </td>
+          </tr>
+
+          <tr th:if="${#lists.isEmpty(messages.content)}">
+            <td colspan="6" class="text-center text-muted p-4">
+              Hələ mesaj yoxdur.
+            </td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Pagination -->
+    <div class="card-footer d-flex justify-content-between align-items-center">
+      <div class="text-muted"
+           th:text="'Səhifə ' + ${messages.number + 1} + ' / ' + ${messages.totalPages}">
+        Səhifə 1 / 1
+      </div>
+
+      <div class="btn-group">
+        <a class="btn btn-sm btn-outline-primary"
+           th:classappend="${messages.first} ? ' disabled' : ''"
+           th:href="@{/dashboard/contact-messages(page=${messages.number - 1}, size=${messages.size}, unread=${unread})}">
+          Əvvəlki
+        </a>
+
+        <a class="btn btn-sm btn-outline-primary"
+           th:classappend="${messages.last} ? ' disabled' : ''"
+           th:href="@{/dashboard/contact-messages(page=${messages.number + 1}, size=${messages.size}, unread=${unread})}">
+          Növbəti
+        </a>
+      </div>
+    </div>
+
+  </div>
+
+</div>
+</body>
+</html>

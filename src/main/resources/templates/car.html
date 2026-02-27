@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="az"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Avtomobillər</title>
+
+    <style>
+        .cars-filter-wrap{ margin-top:18px; margin-bottom:26px; position:relative; z-index:2; }
+        .cars-filter-card{
+            position:relative; border-radius:18px; padding:16px 18px;
+            background: linear-gradient(135deg, rgba(16,137,255,.10), rgba(16,137,255,.04), rgba(255,255,255,.92));
+            border:1px solid rgba(0,0,0,.06);
+            box-shadow:0 14px 34px rgba(0,0,0,.10);
+            overflow:hidden;
+        }
+        .cars-filter-card:before{
+            content:""; position:absolute; inset:-2px;
+            background: radial-gradient(circle at 20% 10%, rgba(16,137,255,.35), transparent 55%),
+                        radial-gradient(circle at 90% 30%, rgba(0,198,255,.18), transparent 55%);
+            pointer-events:none;
+        }
+        .cars-filter-card:after{
+            content:""; position:absolute; top:0; left:0; right:0; height:4px;
+            background: linear-gradient(90deg, #1089ff, #00c6ff, #1089ff);
+            opacity:.9; pointer-events:none;
+        }
+        .cars-filter-inner{ position:relative; }
+
+        .cars-filter-head{
+            display:flex; align-items:flex-start; justify-content:space-between;
+            gap:12px; margin-bottom:12px; flex-wrap:wrap;
+        }
+        .cars-filter-title{
+            display:flex; align-items:center; gap:10px; font-weight:900;
+            color:#0b1220; margin:0; letter-spacing:.2px;
+        }
+        .cars-filter-title .chip{
+            display:inline-flex; align-items:center; justify-content:center;
+            width:34px; height:34px; border-radius:12px;
+            background: rgba(16,137,255,.14);
+            border:1px solid rgba(16,137,255,.25);
+            box-shadow:0 10px 22px rgba(16,137,255,.14);
+            font-size:16px;
+        }
+        .cars-filter-sub{ color:#5f6b7a; font-size:13px; margin:4px 0 0; }
+
+        .cars-filter-badges{ display:flex; gap:8px; align-items:center; flex-wrap:wrap; }
+        .cars-filter-badges .badge{
+            border-radius:999px; padding:7px 10px;
+            border:1px solid rgba(0,0,0,.06);
+            background: rgba(255,255,255,.70);
+            color:#111;
+        }
+
+        .cars-filter-form{ display:flex; gap:12px; align-items:end; flex-wrap:wrap; }
+        .cars-filter-group{ min-width:220px; flex:1 1 240px; }
+        .cars-filter-label{
+            display:block; font-size:12px; font-weight:800;
+            color:#0b1220; margin-bottom:6px;
+        }
+        .cars-filter-select{
+            width:100%; height:46px; border-radius:14px;
+            border:1px solid rgba(0,0,0,.10);
+            background: rgba(255,255,255,.92);
+            padding:10px 12px; outline:none; transition:.15s;
+        }
+        .cars-filter-select:focus{
+            border-color: rgba(16,137,255,.55);
+            box-shadow:0 0 0 4px rgba(16,137,255,.14);
+        }
+
+        .cars-filter-actions{ display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
+        .cars-filter-btn{
+            height:46px; border-radius:14px; font-weight:800; padding:0 18px;
+            display:inline-flex; align-items:center; justify-content:center;
+            border:0; cursor:pointer; transition:.15s; user-select:none;
+        }
+        .cars-filter-btn.btn-primary{
+            background: linear-gradient(90deg, #1089ff, #00c6ff);
+            box-shadow:0 14px 26px rgba(16,137,255,.26);
+            color:#fff;
+        }
+        .cars-filter-btn.btn-primary:hover{
+            transform: translateY(-1px);
+            box-shadow:0 18px 30px rgba(16,137,255,.30);
+        }
+        .cars-filter-btn.btn-outline{
+            background: rgba(255,255,255,.85);
+            border:1px solid rgba(0,0,0,.14);
+            color:#0b1220;
+        }
+        .cars-filter-btn.btn-outline:hover{ background: rgba(255,255,255,.95); transform: translateY(-1px); }
+
+        @media (max-width:575.98px){
+            .cars-filter-card{ padding:14px; }
+            .cars-filter-group{ min-width:100%; }
+            .cars-filter-actions{ width:100%; }
+            .cars-filter-btn{ width:100%; }
+        }
+    </style>
+</head>
+
+<body>
+<div layout:fragment="content">
+
+    <section class="hero-wrap hero-wrap-2 js-fullheight"
+             th:if="${banner != null}"
+             th:style="|background-image: url('${banner.photoUrl}');|">
+
+        <div class="overlay"></div>
+
+        <div class="container">
+            <div class="row no-gutters slider-text js-fullheight align-items-end justify-content-start">
+                <div class="col-md-9 ftco-animate pb-5">
+
+                    <p class="breadcrumbs">
+                        <span class="mr-2">
+                            <a th:href="@{/}">Ana səhifə <i class="ion-ios-arrow-forward"></i></a>
+                        </span>
+                        <span>Avtomobillər <i class="ion-ios-arrow-forward"></i></span>
+                    </p>
+
+                    <h1 class="mb-3 bread" th:text="${banner.title}">Avtomobillər</h1>
+                    <p th:text="${banner.description}"></p>
+
+                    <a th:if="${banner.buttonText != null and banner.buttonUrl != null}"
+                       th:href="${banner.buttonUrl}"
+                       class="btn btn-primary mt-3"
+                       th:text="${banner.buttonText}">
+                    </a>
+
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="cars-filter-wrap">
+        <div class="container">
+            <div class="cars-filter-card ftco-animate">
+                <div class="cars-filter-inner">
+
+                    <div class="cars-filter-head">
+                        <div>
+                            <h4 class="cars-filter-title">
+                                <span class="chip">⚡</span>
+                                Avtomobilləri filtrlə
+                            </h4>
+                            <p class="cars-filter-sub">Kateqoriya və seqment seç — nəticələr avtomatik daralır.</p>
+                        </div>
+
+                        <div class="cars-filter-badges">
+                            <span class="badge"
+                                  th:if="${selectedCategory != null and selectedCategory != ''}"
+                                  th:text="${'Kateqoriya: ' + selectedCategory}">Kateqoriya</span>
+                            <span class="badge"
+                                  th:if="${selectedSegment != null and selectedSegment != ''}"
+                                  th:text="${'Seqment: ' + selectedSegment}">Seqment</span>
+                        </div>
+                    </div>
+
+                    <form class="cars-filter-form" th:action="@{/avtomobiller}" method="get">
+                        <input type="hidden" name="page" value="1"/>
+
+                        <div class="cars-filter-group">
+                            <label class="cars-filter-label">Kateqoriya</label>
+                            <select name="category" class="cars-filter-select">
+                                <option value="">Bütün kateqoriyalar</option>
+                                <option th:each="c : ${carCategories}"
+                                        th:value="${c.slug}"
+                                        th:text="${c.name + ' (' + c.activeCarCount + ')'}"
+                                        th:selected="${selectedCategory != null and selectedCategory == c.slug}">
+                                    Kateqoriya
+                                </option>
+                            </select>
+                        </div>
+
+                        <div class="cars-filter-group">
+                            <label class="cars-filter-label">Seqment</label>
+                            <select name="segment" class="cars-filter-select">
+                                <option value="">Bütün seqmentlər</option>
+                                <option th:each="s : ${segments}"
+                                        th:value="${s.slug}"
+                                        th:text="${s.name + ' (' + s.activeCarCount + ')'}"
+                                        th:selected="${selectedSegment != null and selectedSegment == s.slug}">
+                                    Seqment
+                                </option>
+                            </select>
+                        </div>
+
+                        <div class="cars-filter-actions">
+                            <button class="cars-filter-btn btn-primary" type="submit">Filtrlə</button>
+
+                            <a class="cars-filter-btn btn-outline"
+                               th:href="@{/avtomobiller}"
+                               th:if="${(selectedCategory != null and selectedCategory != '') or (selectedSegment != null and selectedSegment != '')}">
+                                Sıfırla
+                            </a>
+                        </div>
+                    </form>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <section class="ftco-section bg-light">
+        <div class="container">
+            <div class="row">
+
+                <div class="col-md-4" th:each="car : ${cars}">
+                    <div class="car-wrap rounded ftco-animate">
+
+                        <div class="img rounded d-flex align-items-end"
+                             th:style="|background-image: url('${car.imageUrl != null ? car.imageUrl : '/images/car-1.jpg'}');|">
+                        </div>
+
+                        <div class="text">
+
+                            <span class="d-block mb-1"
+                                  style="font-weight:700; color:#000;"
+                                  th:text="${car.brand}">
+                                Brend
+                            </span>
+
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+
+                                <span style="color:#000; font-weight:400;"
+                                      th:text="${car.title}">
+                                    Model
+                                </span>
+
+                                <span style="display:flex; align-items:baseline; gap:8px; flex-wrap:wrap; justify-content:flex-end;">
+                                    <span th:if="${car.baseDailyRate != null and car.dailyRate != null and car.baseDailyRate.compareTo(car.dailyRate) > 0}"
+                                          style="color:#6c757d;">
+                                        <del>₼<span th:text="${car.baseDailyRate}">0</span></del>
+                                    </span>
+
+                                    <span style="color:#4f86f7; font-weight:600;">
+                                        ₼<span th:text="${car.dailyRate != null ? car.dailyRate : 0}">0</span>
+                                    </span>
+
+                                    <span style="color:#000; font-weight:400;">/gün</span>
+
+                                    <span class="badge badge-success"
+                                          th:if="${car.discountPercent != null and car.discountPercent.doubleValue() > 0}"
+                                          th:text="${'-' + car.discountPercent + '%'}">-10%</span>
+                                </span>
+
+                            </div>
+
+                            <div class="d-flex align-items-center" style="gap:10px;">
+
+                                <form th:action="@{/sebet/elave-et}" method="post" style="margin:0;">
+                                    <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+
+                                    <input type="hidden" name="carId" th:value="${car.id}">
+                                    <input type="hidden" name="rateType" value="DAILY">
+                                    <input type="hidden" name="unitCount" value="1">
+                                    <button type="submit" class="btn btn-primary py-2 px-3">İndi bron et</button>
+                                </form>
+
+                                <a th:href="@{'/avtomobiller/' + ${car.slug}}"
+                                   class="btn btn-secondary py-2 px-3">Ətraflı</a>
+
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-12" th:if="${cars == null or #lists.isEmpty(cars)}">
+                    <div class="alert alert-info">Hazırda avtomobil yoxdur.</div>
+                </div>
+
+            </div>
+
+            <div class="row mt-4" th:if="${totalPages != null and totalPages > 1}">
+                <div class="col text-center">
+                    <div class="block-27">
+                        <ul>
+
+                            <li th:classappend="${currentPage == 1} ? 'disabled'">
+                                <a th:if="${currentPage > 1}"
+                                   th:href="@{/avtomobiller(page=${currentPage-1}, category=${selectedCategory}, segment=${selectedSegment})}">&lt;</a>
+                                <span th:if="${currentPage == 1}">&lt;</span>
+                            </li>
+
+                            <li th:each="i : ${#numbers.sequence(1, totalPages)}"
+                                th:classappend="${i == currentPage} ? 'active'">
+                                <a th:if="${i != currentPage}"
+                                   th:href="@{/avtomobiller(page=${i}, category=${selectedCategory}, segment=${selectedSegment})}"
+                                   th:text="${i}">1</a>
+                                <span th:if="${i == currentPage}" th:text="${i}">1</span>
+                            </li>
+
+                            <li th:classappend="${currentPage == totalPages} ? 'disabled'">
+                                <a th:if="${currentPage < totalPages}"
+                                   th:href="@{/avtomobiller(page=${currentPage+1}, category=${selectedCategory}, segment=${selectedSegment})}">&gt;</a>
+                                <span th:if="${currentPage == totalPages}">&gt;</span>
+                            </li>
+
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+</div>
+</body>
+</html>

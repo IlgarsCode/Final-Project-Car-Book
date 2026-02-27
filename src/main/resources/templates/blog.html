@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="az"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+<head>
+    <meta charset="UTF-8">
+    <title>Bloq</title>
+
+    <style>
+        .ftco-section {
+            padding-top: 40px !important;
+            padding-bottom: 40px !important;
+        }
+
+        .blog-grid .block-20 {
+            height: auto !important;
+            padding-top: 100% !important;
+            background-size: cover !important;
+            background-position: center center !important;
+            border-radius: 6px;
+        }
+
+        .blog-grid .blog-entry {
+            width: 100%;
+            margin: 0;
+        }
+
+        .blog-sidebar {
+            position: sticky;
+            top: 20px;
+        }
+
+        .blog-sidebar .sidebar-box {
+            margin-top: 0 !important;
+            padding-top: 0 !important;
+        }
+    </style>
+</head>
+
+<body>
+<div layout:fragment="content">
+
+    <section class="hero-wrap hero-wrap-2 js-fullheight"
+             th:style="'background-image: url(' + ${banner.photoUrl} + ');'"
+             data-stellar-background-ratio="0.5">
+
+        <div class="overlay"></div>
+
+        <div class="container">
+            <div class="row no-gutters slider-text js-fullheight align-items-end justify-content-start">
+                <div class="col-md-9 ftco-animate pb-5">
+                    <p class="breadcrumbs">
+                        <span class="mr-2">
+                            <a th:href="@{/}">
+                                Ana səhifə <i class="ion-ios-arrow-forward"></i>
+                            </a>
+                        </span>
+                        <span>
+                            Bloq <i class="ion-ios-arrow-forward"></i>
+                        </span>
+                    </p>
+
+                    <h1 class="mb-3 bread" th:text="${banner.title}">Bloq</h1>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="ftco-section">
+        <div class="container">
+
+            <div class="row align-items-start">
+
+                <div class="col-lg-9">
+
+                    <div class="alert alert-info" th:if="${blogs == null or blogs.empty}">
+                        Heç bir bloq tapılmadı.
+                    </div>
+
+                    <div class="row blog-grid" th:if="${blogs != null and !blogs.empty}">
+
+                        <div class="col-md-4 d-flex ftco-animate mb-4"
+                             th:each="blog : ${blogs}">
+
+                            <div class="blog-entry justify-content-end w-100">
+
+                                <a th:href="@{'/bloq/' + ${blog.id}}"
+                                   class="block-20 img"
+                                   th:style="'background-image: url(' + ${blog.imageUrl} + ');'">
+                                </a>
+
+                                <div class="text px-md-3 pt-4">
+
+                                    <div class="meta mb-2">
+
+                                        <div class="meta mb-2">
+                                            <div style="color:#007bff;"
+                                                 th:text="${#temporals.format(blog.createdAt, 'dd MMMM yyyy')}">
+                                                29 Yanvar 2026
+                                            </div>
+
+                                            <!-- ✅ burda artıq email yox, ad çıxacaq -->
+                                            <div style="color:#007bff;"
+                                                 th:text="${blog.authorName != null ? blog.authorName : blog.author}">
+                                                Müəllif
+                                            </div>
+
+                                            <div>
+                                                <a th:href="@{'/bloq/' + ${blog.id} + '#comments'}" class="meta-chat">
+                                                    <span class="icon-chat"></span>
+                                                    <span th:text="${blog.commentCount}">0</span>
+                                                </a>
+                                            </div>
+                                        </div>
+
+                                    <h3 class="heading mt-2">
+                                        <a th:href="@{'/bloq/' + ${blog.id}}"
+                                           th:text="${blog.title}">
+                                            Bloq başlığı
+                                        </a>
+                                    </h3>
+
+                                    <p th:text="${blog.shortDescription}">
+                                        Bloq üçün qısa təsvir
+                                    </p>
+
+                                    <p class="mb-0">
+                                        <a th:href="@{'/bloq/' + ${blog.id}}"
+                                           class="btn btn-primary">
+                                            Davamını oxu <span class="icon-long-arrow-right"></span>
+                                        </a>
+                                    </p>
+
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <!-- PAGINATION -->
+                    <div class="row mt-4" th:if="${totalPages != null and totalPages > 1}">
+                        <div class="col text-center">
+                            <div class="block-27">
+                                <ul>
+
+                                    <li th:classappend="${currentPage == 1} ? 'disabled'">
+                                        <a th:if="${currentPage > 1}"
+                                           th:href="@{/bloq(page=${currentPage - 1}, search=${search}, tag=${tag})}">&lt;</a>
+                                        <span th:if="${currentPage == 1}">&lt;</span>
+                                    </li>
+
+                                    <li th:each="i : ${#numbers.sequence(1, totalPages)}"
+                                        th:classappend="${i == currentPage} ? 'active'">
+                                        <a th:if="${i != currentPage}"
+                                           th:href="@{/bloq(page=${i}, search=${search}, tag=${tag})}"
+                                           th:text="${i}">1</a>
+                                        <span th:if="${i == currentPage}" th:text="${i}">1</span>
+                                    </li>
+
+                                    <li th:classappend="${currentPage == totalPages} ? 'disabled'">
+                                        <a th:if="${currentPage < totalPages}"
+                                           th:href="@{/bloq(page=${currentPage + 1}, search=${search}, tag=${tag})}">&gt;</a>
+                                        <span th:if="${currentPage == totalPages}">&gt;</span>
+                                    </li>
+
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- RIGHT: SEARCH -->
+                <div class="col-lg-3 sidebar ftco-animate blog-sidebar">
+
+                    <div class="sidebar-box">
+                        <form th:action="@{/bloq}" method="get" class="search-form">
+                            <div class="form-group">
+                                <span class="icon icon-search"></span>
+
+                                <input type="text" name="search" class="form-control"
+                                       th:value="${search}"
+                                       placeholder="Açar sözü yaz və Enter-ə bas">
+
+                                <input type="hidden" name="tag" th:value="${tag}">
+                            </div>
+                        </form>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+    </section>
+
+</div>
+</body>
+</html>

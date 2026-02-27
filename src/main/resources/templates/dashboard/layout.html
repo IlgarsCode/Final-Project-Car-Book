@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html
+        lang="az"
+        xmlns:th="http://www.thymeleaf.org"
+        xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+        xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title layout:title-pattern="$CONTENT_TITLE - Carbook Admin">Carbook Admin</title>
+
+    <!-- Bu şablon üçün xüsusi şriftlər -->
+    <link th:href="@{/admin/vendor/fontawesome-free/css/all.min.css}" rel="stylesheet" type="text/css">
+    <link
+            href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
+            rel="stylesheet">
+
+    <!-- Bu şablon üçün xüsusi stillər -->
+    <link th:href="@{/admin/css/sb-admin-2.min.css}" rel="stylesheet">
+
+    <!-- Səhifəyə xüsusi CSS -->
+    <th:block layout:fragment="css"></th:block>
+</head>
+
+<body id="page-top">
+
+<!-- Səhifə sarğısı -->
+<div id="wrapper">
+
+    <!-- Yan menyu (Sidebar) -->
+    <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
+
+        <!-- Yan menyu - Brend -->
+        <a class="sidebar-brand d-flex align-items-center justify-content-center" th:href="@{/dashboard}">
+            <div class="sidebar-brand-icon rotate-n-15">
+                <i class="fas fa-laugh-wink"></i>
+            </div>
+            <div class="sidebar-brand-text mx-3">Carbook Admin</div>
+        </a>
+
+        <hr class="sidebar-divider my-0">
+
+        <!-- İdarə Paneli -->
+        <li class="nav-item">
+            <a class="nav-link" th:href="@{/dashboard}">
+                <i class="fas fa-fw fa-tachometer-alt"></i>
+                <span>İdarə Paneli</span>
+            </a>
+        </li>
+
+        <li class="nav-item">
+            <a class="nav-link" th:href="@{/dashboard/locations}">
+                <i class="fas fa-map-marker-alt"></i>
+                <span>Məkanlar</span>
+            </a>
+        </li>
+
+        <hr class="sidebar-divider">
+
+        <div class="sidebar-heading">Məzmun</div>
+
+        <li class="nav-item">
+            <a class="nav-link" th:href="@{/dashboard/banner}">
+                <i class="fas fa-image"></i>
+                <span>Banner</span>
+            </a>
+        </li>
+
+        <li class="nav-item">
+            <a class="nav-link" th:href="@{/dashboard/about}">
+                <i class="fas fa-info-circle"></i>
+                <span>Haqqında</span>
+            </a>
+        </li>
+
+        <li class="nav-item">
+            <a class="nav-link" th:href="@{/dashboard/services}">
+                <i class="fas fa-concierge-bell"></i>
+                <span>Xidmətlər</span>
+            </a>
+        </li>
+
+        <li class="nav-item">
+            <a class="nav-link" th:href="@{/dashboard/testimonial}">
+                <i class="fas fa-comment-dots"></i>
+                <span>Rəylər</span>
+            </a>
+        </li>
+
+        <li class="nav-item">
+            <a class="nav-link" th:href="@{/dashboard/contact-info}">
+                <i class="fas fa-address-card"></i>
+                <span>Əlaqə Məlumatları</span>
+            </a>
+        </li>
+
+        <li class="nav-item">
+            <a class="nav-link" th:href="@{/dashboard/contact-messages}">
+                <i class="fas fa-envelope-open-text"></i>
+                <span>Əlaqə Mesajları</span>
+            </a>
+        </li>
+
+        <hr class="sidebar-divider">
+
+        <div class="sidebar-heading">Maşınlar və Qiymətlər</div>
+
+        <li class="nav-item">
+            <a class="nav-link" th:href="@{/dashboard/cars}">
+                <i class="fas fa-car"></i>
+                <span>Maşınlar</span>
+            </a>
+        </li>
+
+        <li class="nav-item">
+            <a class="nav-link" th:href="@{/dashboard/car-categories}">
+                <i class="fas fa-list"></i>
+                <span>Maşın Kateqoriyaları</span>
+            </a>
+        </li>
+
+        <li class="nav-item">
+            <a class="nav-link" th:href="@{/dashboard/car-segments}">
+                <i class="fas fa-list"></i>
+                <span>Maşın Seqmentləri</span>
+            </a>
+        </li>
+
+        <li class="nav-item">
+            <a class="nav-link" th:href="@{/dashboard/car-pricings}">
+                <i class="fas fa-dollar-sign"></i>
+                <span>Maşın Qiymətləri</span>
+            </a>
+        </li>
+
+        <li class="nav-item">
+            <a class="nav-link" th:href="@{/dashboard/car-reviews}">
+                <i class="fas fa-star"></i>
+                <span>Maşın Rəyləri</span>
+            </a>
+        </li>
+
+        <hr class="sidebar-divider">
+
+        <div class="sidebar-heading">Bloq</div>
+
+        <li class="nav-item">
+            <a class="nav-link" th:href="@{/dashboard/blogs}">
+                <i class="fas fa-blog"></i>
+                <span>Bloqlar</span>
+            </a>
+        </li>
+
+        <li class="nav-item">
+            <a class="nav-link" th:href="@{/dashboard/blog-comment}">
+                <i class="fas fa-comments"></i>
+                <span>Bloq Şərhləri</span>
+            </a>
+        </li>
+
+        <hr class="sidebar-divider">
+
+        <div class="sidebar-heading">Sifarişlər və İstifadəçilər</div>
+
+        <li class="nav-item">
+            <a class="nav-link" th:href="@{/dashboard/locations}">
+                <i class="fas fa-map-marker-alt"></i>
+                <span>Məkanlar</span>
+            </a>
+        </li>
+
+        <li class="nav-item">
+            <a class="nav-link" th:href="@{/dashboard/orders}">
+                <i class="fas fa-shopping-cart"></i>
+                <span>Sifarişlər</span>
+            </a>
+        </li>
+
+        <li class="nav-item">
+            <a class="nav-link" th:href="@{/dashboard/carts}">
+                <i class="fas fa-shopping-basket"></i>
+                <span>Səbətlər</span>
+            </a>
+        </li>
+
+        <!-- ✅ YALNIZ SUPER ADMIN -->
+        <li class="nav-item" sec:authorize="hasRole('ROLE_SUPER_ADMIN')">
+            <a class="nav-link" th:href="@{/dashboard/users}">
+                <i class="fas fa-users"></i>
+                <span>İstifadəçilər</span>
+            </a>
+        </li>
+
+        <!-- ✅ YALNIZ SUPER ADMIN -->
+        <li class="nav-item" sec:authorize="hasRole('ROLE_SUPER_ADMIN')">
+            <a class="nav-link" th:href="@{/dashboard/roles}">
+                <i class="fas fa-user-shield"></i>
+                <span>Rollar</span>
+            </a>
+        </li>
+
+        <hr class="sidebar-divider d-none d-md-block">
+
+        <div class="text-center d-none d-md-inline">
+            <button class="rounded-circle border-0" id="sidebarToggle"></button>
+        </div>
+
+        <div class="sidebar-card d-none d-lg-flex">
+            <img class="sidebar-card-illustration mb-2" th:src="@{/admin/img/undraw_rocket.svg}" alt="...">
+            <p class="text-center mb-2">
+                <strong>Carbook Admin</strong> panelindən idarə et.
+            </p>
+            <a class="btn btn-success btn-sm" th:href="@{/}">Sayta keç</a>
+        </div>
+
+    </ul>
+    <!-- Yan menyunun sonu -->
+
+    <!-- Məzmun sarğısı -->
+    <div id="content-wrapper" class="d-flex flex-column">
+
+        <!-- Əsas məzmun -->
+        <div id="content">
+
+            <!-- Yuxarı panel (Topbar) -->
+            <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
+                <button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle mr-3">
+                    <i class="fa fa-bars"></i>
+                </button>
+
+                <ul class="navbar-nav ml-auto">
+                    <div class="topbar-divider d-none d-sm-block"></div>
+
+                    <li class="nav-item dropdown no-arrow">
+                        <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button"
+                           data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                           <span class="mr-2 d-none d-lg-inline text-gray-600 small"
+                                 th:text="${currentUserFullName != null ? currentUserFullName : 'Admin'}">
+                             Admin
+                           </span>
+                            <img class="img-profile rounded-circle" th:src="@{/admin/img/undraw_profile.svg}" alt="profil">
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in"
+                             aria-labelledby="userDropdown">
+                            <a class="dropdown-item" href="#" data-toggle="modal" data-target="#logoutModal">
+                                <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
+                                Çıxış
+                            </a>
+                        </div>
+                    </li>
+                </ul>
+            </nav>
+            <!-- Yuxarı panelin sonu -->
+
+            <!-- Səhifə məzmunu -->
+            <div class="container-fluid" layout:fragment="content">
+                <!-- səhifələr buranı dolduracaq -->
+            </div>
+
+        </div>
+        <!-- Əsas məzmunun sonu -->
+
+        <!-- Alt hissə (Footer) -->
+        <footer class="sticky-footer bg-white">
+            <div class="container my-auto">
+                <div class="copyright text-center my-auto">
+                    <span>Müəllif hüquqları &copy; Sizin sayt 2021</span>
+                </div>
+            </div>
+        </footer>
+        <!-- Alt hissənin sonu -->
+
+    </div>
+    <!-- Məzmun sarğısının sonu -->
+
+</div>
+<!-- Səhifə sarğısının sonu -->
+
+<a class="scroll-to-top rounded" href="#page-top">
+    <i class="fas fa-angle-up"></i>
+</a>
+
+<!-- Çıxış Modalı -->
+<div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Çıxmaq istəyirsiniz?</h5>
+                <button class="close" type="button" data-dismiss="modal" aria-label="Bağla">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <div class="modal-body">Cari sessiyanı bitirmək üçün aşağıdan “Çıxış” seçin.</div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" type="button" data-dismiss="modal">İmtina</button>
+                <!-- ✅ SƏNDƏ logoutUrl: /auth/logout -->
+                <a class="btn btn-primary" th:href="@{/auth/logout}">Çıxış</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script th:src="@{/admin/vendor/jquery/jquery.min.js}"></script>
+<script th:src="@{/admin/vendor/bootstrap/js/bootstrap.bundle.min.js}"></script>
+<script th:src="@{/admin/vendor/jquery-easing/jquery.easing.min.js}"></script>
+<script th:src="@{/admin/js/sb-admin-2.min.js}"></script>
+
+<!-- Səhifəyə xüsusi JS -->
+<th:block layout:fragment="js"></th:block>
+
+<script>
+    // sadə active link (controllerlər tam oturanda daha yaxşı edəcəyik)
+    const path = window.location.pathname;
+    document.querySelectorAll('#accordionSidebar .nav-item a.nav-link').forEach(link => {
+        const href = link.getAttribute('href');
+        if (href === path) link.parentElement.classList.add('active');
+    });
+</script>
+
+</body>
+</html>

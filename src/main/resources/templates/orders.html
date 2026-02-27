@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="az"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+<head>
+    <meta charset="UTF-8">
+    <title>Mənim sifarişlərim</title>
+</head>
+<body>
+<div layout:fragment="content">
+
+    <section class="hero-wrap hero-wrap-2 js-fullheight"
+             style="background-image: url('/images/bg_3.jpg');"
+             data-stellar-background-ratio="0.5">
+        <div class="overlay"></div>
+        <div class="container">
+            <div class="row no-gutters slider-text js-fullheight align-items-end justify-content-start">
+                <div class="col-md-9 ftco-animate pb-5">
+                    <p class="breadcrumbs">
+                        <span class="mr-2">
+                            <a th:href="@{/}">Ana səhifə <i class="ion-ios-arrow-forward"></i></a>
+                        </span>
+                        <span>Sifarişlərim <i class="ion-ios-arrow-forward"></i></span>
+                    </p>
+                    <h1 class="mb-3 bread">Mənim sifarişlərim</h1>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="ftco-section">
+        <div class="container">
+
+            <div th:if="${orders == null or #lists.isEmpty(orders)}" class="alert alert-info">
+                Hələ sifariş yoxdur.
+            </div>
+
+            <div th:if="${orders != null and !#lists.isEmpty(orders)}" class="table-responsive">
+                <table class="table">
+                    <thead class="thead-primary">
+                    <tr class="text-center">
+                        <th>Sifariş №</th>
+                        <th>Status</th>
+                        <th>Tarixlər</th>
+                        <th>Cəmi</th>
+                        <th>Əməliyyatlar</th>
+                    </tr>
+                    </thead>
+
+                    <tbody>
+                    <tr th:each="o : ${orders}" th:if="${o != null}" class="text-center">
+                        <td>
+                            <span th:text="${o.userOrderNo}">1</span>
+                        </td>
+
+                        <td>
+                            <span th:text="${o.status}">PENDING</span>
+
+                            <span class="badge badge-success ml-2"
+                                  th:if="${o.status != null and o.status.name() == 'PAID'}">ÖDƏNİLİB</span>
+
+                            <span class="badge badge-warning ml-2"
+                                  th:if="${o.status != null and o.status.name() == 'PENDING'}">ÖDƏNİŞ GÖZLƏYİR</span>
+
+                            <span class="badge badge-danger ml-2"
+                                  th:if="${o.status != null and o.status.name() == 'PAYMENT_FAILED'}">UĞURSUZ</span>
+
+                            <span class="badge badge-info ml-2"
+                                  th:if="${o.status != null and o.status.name() == 'APPROVED'}">TƏSDİQLƏNİB</span>
+
+                            <span class="badge badge-secondary ml-2"
+                                  th:if="${o.status != null and o.status.name() == 'CANCELED'}">LƏĞV EDİLİB</span>
+
+                            <span class="badge badge-dark ml-2"
+                                  th:if="${o.status != null and o.status.name() == 'COMPLETED'}">TAMAMLANIB</span>
+                        </td>
+
+                        <td>
+                            <span th:text="${#temporals.format(o.pickupDate, 'dd.MM.yyyy')}"></span> →
+                            <span th:text="${#temporals.format(o.dropoffDate, 'dd.MM.yyyy')}"></span>
+                        </td>
+
+                        <td>₼<span th:text="${o.totalAmount}">0</span></td>
+
+                        <td style="display:flex; gap:8px; justify-content:center; flex-wrap:wrap;">
+                            <a class="btn btn-sm btn-primary"
+                               th:href="@{/sifarislerim/{no}(no=${o.userOrderNo})}">
+                                Detallar
+                            </a>
+
+                            <a class="btn btn-sm btn-success"
+                               th:if="${o.status != null and (o.status.name() == 'PENDING' or o.status.name() == 'PAYMENT_FAILED')}"
+                               th:href="@{/odenis/baslat/{orderId}(orderId=${o.id})}">
+                                İndi ödə
+                            </a>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+    </section>
+
+</div>
+</body>
+</html>

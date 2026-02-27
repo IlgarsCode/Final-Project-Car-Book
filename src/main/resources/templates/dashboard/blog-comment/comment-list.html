@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{dashboard/layout}">
+<head>
+  <title>Bloq şərhləri</title>
+</head>
+<body>
+<div layout:fragment="content">
+
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h1 class="h3 mb-0 text-gray-800">Bloq şərhləri</h1>
+    <div class="text-muted" th:text="'Cəmi: ' + (${totalItems} != null ? ${totalItems} : 0)">Cəmi: 0</div>
+  </div>
+
+  <div class="card shadow mb-4">
+    <div class="card-body">
+      <form th:action="@{/dashboard/blog-comment}" method="get">
+        <div class="form-row">
+
+          <div class="form-group col-md-6">
+            <label>Axtarış</label>
+            <input class="form-control" name="q" th:value="${q}" placeholder="ad, e-poçt, mesaj, bloq başlığı...">
+          </div>
+
+          <div class="form-group col-md-6">
+            <label>Bloq</label>
+            <select class="form-control" name="blogId">
+              <option value="" th:selected="${blogId == null}">Bütün bloqlar</option>
+              <option th:each="b : ${blogs}"
+                      th:value="${b.id}"
+                      th:selected="${blogId != null and b.id.toString() == blogId.toString()}"
+                      th:text="${b.title}">
+                Bloq
+              </option>
+            </select>
+          </div>
+
+          <div class="form-group col-md-3">
+            <label>Status</label>
+            <select class="form-control" name="active">
+              <option value="" th:selected="${active == null}">Hamısı</option>
+              <option value="true" th:selected="${active != null and active == true}">Aktiv</option>
+              <option value="false" th:selected="${active != null and active == false}">Deaktiv</option>
+            </select>
+          </div>
+
+          <div class="form-group col-md-3">
+            <label>Yalnız kök</label>
+            <select class="form-control" name="rootOnly">
+              <option value="false" th:selected="${rootOnly == false}">Hamısı</option>
+              <option value="true" th:selected="${rootOnly == true}">Yalnız kök şərhlər</option>
+            </select>
+          </div>
+
+          <div class="form-group col-md-3">
+            <label>Səhifə ölçüsü</label>
+            <select class="form-control" name="size">
+              <option value="10" th:selected="${size == 10}">10</option>
+              <option value="20" th:selected="${size == 20}">20</option>
+              <option value="50" th:selected="${size == 50}">50</option>
+              <option value="100" th:selected="${size == 100}">100</option>
+            </select>
+          </div>
+
+          <div class="form-group col-md-3 d-flex align-items-end">
+            <button class="btn btn-primary w-100" type="submit">Filtrlə</button>
+          </div>
+
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="card shadow mb-4">
+    <div class="card-body table-responsive">
+
+      <table class="table table-bordered table-hover">
+        <thead>
+        <tr>
+          <th style="width:70px;">#</th>
+          <th>Bloq</th>
+          <th>İstifadəçi</th>
+          <th>Mesaj</th>
+          <th style="width:170px;">Yaradılma</th>
+          <th style="width:110px;">Tip</th>
+          <th style="width:110px;">Aktiv</th>
+          <th style="width:220px;">Əməliyyatlar</th>
+        </tr>
+        </thead>
+
+        <tbody>
+        <tr th:if="${rows == null or #lists.isEmpty(rows)}">
+          <td colspan="8" class="text-center">Şərh tapılmadı.</td>
+        </tr>
+
+        <tr th:each="r, i : ${rows}">
+          <td th:text="${i.count}">1</td>
+
+          <td>
+            <div th:text="${r.blogTitle}">Blog title</div>
+            <small class="text-muted" th:text="'BlogId: ' + ${r.blogId}">BlogId: 1</small>
+          </td>
+
+          <td>
+            <div th:text="${r.fullName}">Name</div>
+            <small class="text-muted" th:text="${r.email}">email</small>
+          </td>
+
+          <td th:text="${r.messagePreview}">Preview</td>
+
+          <td th:text="${r.createdAt != null ? #temporals.format(r.createdAt, 'dd MMM yyyy HH:mm') : '-'}">-</td>
+
+          <td>
+            <span class="badge badge-info" th:if="${r.parentId == null}">KÖK</span>
+            <span class="badge badge-secondary" th:if="${r.parentId != null}">CAVAB</span>
+          </td>
+
+          <td>
+            <span class="badge"
+                  th:classappend="${r.isActive == true} ? ' badge-success' : ' badge-secondary'"
+                  th:text="${r.isActive == true} ? 'AKTİV' : 'DEAKTİV'">AKTİV</span>
+          </td>
+
+          <td>
+            <form th:if="${r.isActive == true}"
+                  th:action="@{/dashboard/blog-comment/deactivate/{id}(id=${r.id})}"
+                  method="post" style="display:inline;">
+              <input type="hidden" name="redirect"
+                     th:value="@{/dashboard/blog-comment(page=${currentPage},size=${size},q=${q},blogId=${blogId},active=${active},rootOnly=${rootOnly})}"/>
+              <button class="btn btn-sm btn-warning"
+                      onclick="return confirm('Bu şərh deaktiv edilsin?')">Deaktiv et</button>
+            </form>
+
+            <form th:if="${r.isActive != true}"
+                  th:action="@{/dashboard/blog-comment/activate/{id}(id=${r.id})}"
+                  method="post" style="display:inline;">
+              <input type="hidden" name="redirect"
+                     th:value="@{/dashboard/blog-comment(page=${currentPage},size=${size},q=${q},blogId=${blogId},active=${active},rootOnly=${rootOnly})}"/>
+              <button class="btn btn-sm btn-success"
+                      onclick="return confirm('Bu şərh aktiv edilsin?')">Aktiv et</button>
+            </form>
+
+            <form th:action="@{/dashboard/blog-comment/hard-delete/{id}(id=${r.id})}"
+                  method="post" style="display:inline;">
+              <input type="hidden" name="redirect"
+                     th:value="@{/dashboard/blog-comment(page=${currentPage},size=${size},q=${q},blogId=${blogId},active=${active},rootOnly=${rootOnly})}"/>
+              <button class="btn btn-sm btn-danger"
+                      onclick="return confirm('SƏRT SİLİNSİN? Geri qaytarılmır!')">Sərt sil</button>
+            </form>
+          </td>
+        </tr>
+        </tbody>
+      </table>
+
+      <div class="row mt-3" th:if="${totalPages != null and totalPages > 1}">
+        <div class="col text-center">
+          <div class="block-27">
+            <ul>
+              <li th:classappend="${currentPage == 1} ? 'disabled'">
+                <a th:if="${currentPage > 1}"
+                   th:href="@{/dashboard/blog-comment(page=${currentPage - 1},size=${size},q=${q},blogId=${blogId},active=${active},rootOnly=${rootOnly})}">&lt;</a>
+                <span th:if="${currentPage == 1}">&lt;</span>
+              </li>
+
+              <li th:each="p : ${#numbers.sequence(1, totalPages)}"
+                  th:classappend="${p == currentPage} ? 'active'">
+                <a th:if="${p != currentPage}"
+                   th:href="@{/dashboard/blog-comment(page=${p},size=${size},q=${q},blogId=${blogId},active=${active},rootOnly=${rootOnly})}"
+                   th:text="${p}">1</a>
+                <span th:if="${p == currentPage}" th:text="${p}">1</span>
+              </li>
+
+              <li th:classappend="${currentPage == totalPages} ? 'disabled'">
+                <a th:if="${currentPage < totalPages}"
+                   th:href="@{/dashboard/blog-comment(page=${currentPage + 1},size=${size},q=${q},blogId=${blogId},active=${active},rootOnly=${rootOnly})}">&gt;</a>
+                <span th:if="${currentPage == totalPages}">&gt;</span>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+</body>
+</html>
